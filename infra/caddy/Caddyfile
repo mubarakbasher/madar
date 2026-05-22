@@ -1,0 +1,75 @@
+# Production Caddyfile — automatic HTTPS via Let's Encrypt for three subdomains.
+# Domains come from env (.env.production). Caddy reads them at startup.
+#
+# Edit the three blocks below to match your actual hostnames before deploying:
+#   TENANT_HOST=shop.example.com
+#   ADMIN_HOST=admin.example.com
+#   API_HOST=api.example.com
+
+{
+	# Email for ACME / Let's Encrypt expiration notices.
+	email {$CADDY_ACME_EMAIL}
+	# Force HTTPS — Caddy redirects http → https by default. Keep on prod.
+}
+
+{$TENANT_HOST} {
+	encode zstd gzip
+	# Long-lived static assets — Next.js fingerprints them.
+	@static path /_next/static/* /favicon.ico /icons/* /sw.js
+	header @static Cache-Control "public, max-age=31536000, immutable"
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		# Permissions-Policy — WebUSB needs explicit allow for the cash-drawer
+		# feature. Same-origin only.
+		Permissions-Policy "usb=(self)"
+	}
+
+	reverse_proxy web:3000 {
+		header_up X-Real-IP {remote_host}
+		header_up X-Forwarded-Proto https
+	}
+}
+
+{$ADMIN_HOST} {
+	encode zstd gzip
+	@static path /_next/static/* /favicon.ico
+	header @static Cache-Control "public, max-age=31536000, immutable"
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+
+	reverse_proxy admin:3001 {
+		header_up X-Real-IP {remote_host}
+		header_up X-Forwarded-Proto https
+	}
+}
+
+{$API_HOST} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+	}
+
+	# Multipart uploads (payment proofs, product images, logos) are 5 MB
+	# max in the app; give Caddy a 10 MB ceiling so it never refuses
+	# something the app would accept.
+	request_body {
+		max_size 10MB
+	}
+
+	reverse_proxy api:4000 {
+		header_up X-Real-IP {remote_host}
+		header_up X-Forwarded-Proto https
+	}
+}

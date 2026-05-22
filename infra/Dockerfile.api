@@ -1,0 +1,45 @@
+# Multi-stage build for the Madar API (NestJS).
+# Build with: docker compose -f docker-compose.yml -f infra/docker-compose.prod.yml build api
+
+FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat openssl
+WORKDIR /repo
+
+# Install pnpm.
+RUN corepack enable && corepack prepare pnpm@9.12.0 --activate
+
+# ─── Step 1: install all deps (dev + prod) ─────────────────────────────
+FROM base AS deps
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY apps/api/package.json ./apps/api/
+COPY packages/db/package.json ./packages/db/
+RUN pnpm install --frozen-lockfile
+
+# ─── Step 2: build ─────────────────────────────────────────────────────
+FROM base AS build
+COPY --from=deps /repo/node_modules ./node_modules
+COPY --from=deps /repo/apps/api/node_modules ./apps/api/node_modules
+COPY --from=deps /repo/packages/db/node_modules ./packages/db/node_modules
+COPY . .
+RUN pnpm --filter=@madar/db exec prisma generate
+RUN pnpm --filter @madar/api build
+
+# ─── Step 3: runtime ───────────────────────────────────────────────────
+FROM node:20-alpine AS runtime
+RUN apk add --no-cache libc6-compat openssl tini
+WORKDIR /app
+ENV NODE_ENV=production
+
+RUN corepack enable && corepack prepare pnpm@9.12.0 --activate
+
+# Only copy what runtime needs: built dist, node_modules, prisma artifacts.
+COPY --from=build /repo/apps/api/dist ./apps/api/dist
+COPY --from=build /repo/apps/api/package.json ./apps/api/package.json
+COPY --from=build /repo/node_modules ./node_modules
+COPY --from=build /repo/packages ./packages
+COPY --from=build /repo/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --from=build /repo/package.json ./package.json
+
+EXPOSE 4000
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["node", "apps/api/dist/main.js"]

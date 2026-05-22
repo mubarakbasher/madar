@@ -1,0 +1,255 @@
+/* P&L report — statement-style layout. Tokens only, logical CSS, RTL-safe. */
+
+.pnl-shell {
+  padding: 24px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pnl-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.pnl-title {
+  font-family: var(--font-serif, "Fraunces", serif);
+  font-size: 32px;
+  font-weight: 500;
+  margin: 6px 0 0;
+}
+
+.pnl-subtitle {
+  color: var(--ink-2);
+  font-size: 14px;
+  max-width: 720px;
+}
+
+.pnl-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  padding: 16px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--bg-elev);
+}
+
+.pnl-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+}
+
+.pnl-field-label {
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pnl-input,
+.pnl-select {
+  font: inherit;
+  padding: 8px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 36px;
+}
+
+.pnl-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pnl-preset-btn,
+.pnl-segment-btn {
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+}
+
+.pnl-preset-btn[aria-pressed="true"],
+.pnl-segment-btn[aria-pressed="true"] {
+  background: var(--bg-sunk);
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.pnl-warning {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--rule);
+  background: var(--bg-warn-soft, var(--bg-elev));
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.pnl-statement {
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--bg-elev);
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  row-gap: 10px;
+  column-gap: 32px;
+}
+
+.pnl-statement-kicker {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+}
+
+.pnl-statement-period {
+  grid-column: 1 / -1;
+  font-family: var(--font-serif, "Fraunces", serif);
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.pnl-row-label {
+  color: var(--ink-2);
+}
+
+.pnl-row-value {
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+  color: var(--ink);
+}
+
+.pnl-row-rule {
+  grid-column: 1 / -1;
+  height: 1px;
+  background: var(--rule);
+  margin: 4px 0;
+}
+
+.pnl-row-total .pnl-row-label,
+.pnl-row-total .pnl-row-value {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.pnl-row-net .pnl-row-label,
+.pnl-row-net .pnl-row-value {
+  font-family: var(--font-serif, "Fraunces", serif);
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.pnl-breakdown {
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--bg-elev);
+  overflow: hidden;
+}
+
+.pnl-breakdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--rule);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pnl-breakdown-title {
+  font-family: var(--font-serif, "Fraunces", serif);
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.pnl-segments {
+  display: flex;
+  gap: 4px;
+}
+
+.pnl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.pnl-table th,
+.pnl-table td {
+  padding: 10px 18px;
+  text-align: start;
+  border-bottom: 1px solid var(--rule);
+}
+
+.pnl-table th:nth-child(n + 2),
+.pnl-table td:nth-child(n + 2) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.pnl-table thead th {
+  font-weight: 500;
+  color: var(--ink-3);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pnl-csv-btn {
+  font: inherit;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.pnl-csv-btn:disabled {
+  opacity: 0.55;
+  cursor: progress;
+}
+
+.pnl-empty {
+  padding: 32px 18px;
+  text-align: center;
+  color: var(--ink-3);
+}
+
+.pnl-empty-title {
+  font-family: var(--font-serif, "Fraunces", serif);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.pnl-error {
+  padding: 24px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--bg-elev);
+}
+
+.pnl-error-title {
+  font-family: var(--font-serif, "Fraunces", serif);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 4px;
+}

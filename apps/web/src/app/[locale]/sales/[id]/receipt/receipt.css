@@ -1,0 +1,239 @@
+.receipt-shell {
+  max-width: 100%;
+  display: grid;
+  place-items: start center;
+  padding: 24px 16px;
+  background: #F5F0E8;
+  min-height: 100vh;
+}
+
+.receipt {
+  background: white;
+  padding: 16px;
+  box-shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.18);
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  color: #1A1714;
+  position: relative;
+}
+
+.receipt-80mm { width: 80mm; font-size: 11px; }
+.receipt-58mm { width: 58mm; font-size: 10px; }
+
+.receipt-ar { direction: rtl; }
+
+.receipt-header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.receipt-logo {
+  max-width: 70%;
+  max-height: 60px;
+  object-fit: contain;
+  margin: 0 auto 6px;
+  display: block;
+}
+
+@media print {
+  .receipt-logo {
+    filter: grayscale(100%) contrast(140%);
+  }
+}
+
+.receipt-name {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+
+.receipt-ar .receipt-name {
+  font-family: "IBM Plex Serif Arabic", Georgia, serif;
+}
+
+.receipt-meta {
+  font-size: 10px;
+  color: #5B554B;
+  margin-bottom: 12px;
+  border-top: 1px solid #E8E4DD;
+  border-bottom: 1px solid #E8E4DD;
+  padding: 6px 0;
+}
+
+.receipt-meta-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 2px 0;
+}
+
+.receipt-items {
+  margin: 8px 0 12px;
+}
+
+.receipt-line {
+  display: grid;
+  grid-template-columns: 1.7em 1fr auto;
+  gap: 6px;
+  padding: 3px 0;
+  align-items: baseline;
+}
+
+.receipt-line-qty {
+  font-weight: 600;
+}
+
+.receipt-line-name {
+  word-break: break-word;
+}
+
+.receipt-line-note {
+  font-size: 9px;
+  color: #8A8478;
+  margin-top: 2px;
+}
+
+.receipt-line-amount {
+  font-variant-numeric: tabular-nums;
+}
+
+.receipt-totals {
+  border-top: 1px solid #E8E4DD;
+  padding-top: 6px;
+  margin-bottom: 8px;
+}
+
+.receipt-totals-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+}
+
+.receipt-totals-row-muted {
+  color: #8A8478;
+}
+
+.receipt-total-row {
+  display: flex;
+  justify-content: space-between;
+  border-top: 2px solid #1A1714;
+  padding-top: 8px;
+  margin-top: 8px;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 18px;
+}
+
+.receipt-ar .receipt-total-row {
+  font-family: "IBM Plex Serif Arabic", Georgia, serif;
+}
+
+.receipt-stamp {
+  display: inline-block;
+  border: 2px solid #3F5A47;
+  color: #3F5A47;
+  padding: 4px 10px;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  transform: rotate(-3deg);
+  margin: 12px auto;
+  text-align: center;
+}
+
+.receipt-stamp-pending {
+  border-color: #C97A30;
+  color: #C97A30;
+}
+
+.receipt-bank {
+  border-top: 1px dashed #C9C2B5;
+  border-bottom: 1px dashed #C9C2B5;
+  padding: 8px 0;
+  margin: 12px 0;
+  font-size: 10px;
+}
+
+.receipt-footer {
+  text-align: center;
+  font-size: 10px;
+  color: #5B554B;
+  margin-top: 16px;
+}
+
+.receipt-thanks {
+  font-style: italic;
+  font-family: "Fraunces", Georgia, serif;
+}
+
+.receipt-ar .receipt-thanks {
+  font-family: "IBM Plex Serif Arabic", Georgia, serif;
+}
+
+.no-print {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 16px 0 0;
+}
+
+.no-print button,
+.no-print a {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: #C96442;
+  color: white;
+  border: none;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.no-print a {
+  background: transparent;
+  color: #5B554B;
+  border: 1px solid #C9C2B5;
+}
+
+.no-print a.receipt-refund-link {
+  background: white;
+  color: #B85450;
+  border: 1px solid #E0B7B0;
+}
+
+.no-print button.receipt-drawer-btn {
+  background: white;
+  color: #5B554B;
+  border: 1px solid #C9C2B5;
+}
+
+.no-print button.receipt-drawer-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media print {
+  .receipt-shell {
+    background: white;
+    padding: 0;
+    min-height: auto;
+  }
+  .receipt {
+    box-shadow: none;
+    padding: 4mm;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+
+@media print {
+  @page {
+    margin: 0;
+  }
+  .receipt-80mm {
+    width: 80mm;
+  }
+  .receipt-58mm {
+    width: 58mm;
+  }
+}

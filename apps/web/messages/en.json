@@ -1,0 +1,3361 @@
+{
+  "brand": {
+    "name": "Madar",
+    "tagline": "Run your shop the way it should run."
+  },
+  "offline": {
+    "title": "You're offline",
+    "body": "We can't reach the server right now. You can still ring up sales from the POS — they'll sync when you're back online.",
+    "reload": "Try reloading",
+    "goToPos": "Go to POS"
+  },
+  "install": {
+    "title": "Install Madar",
+    "body": "Add Madar to your home screen for one-tap launch and faster offline access.",
+    "cta": "Install",
+    "dismiss": "Not now"
+  },
+  "reports": {
+    "center": {
+      "kicker": "Reports",
+      "title": "Reports center",
+      "subtitle": "Drill into your revenue, margin, and tax — by period, branch, category, or SKU.",
+      "scheduledLink": "Scheduled reports",
+      "cards": {
+        "pnl": {
+          "title": "Profit & loss",
+          "body": "Revenue minus discounts, tax, COGS and refunds."
+        },
+        "movers": {
+          "title": "Top movers & margin",
+          "body": "Best and slow movers by revenue, units, or profit."
+        },
+        "trends": {
+          "title": "Trend analysis",
+          "body": "7/30/90-day rolling averages with year-over-year overlay."
+        },
+        "tax": {
+          "title": "Tax report",
+          "body": "Taxable sales and tax collected, by tax class."
+        },
+        "scheduled": {
+          "title": "Scheduled reports",
+          "body": "Email a report to your inbox on a cadence."
+        }
+      }
+    },
+    "pnl": {
+      "kicker": "Reports · Financials",
+      "title": "Profit & Loss",
+      "subtitle": "Revenue minus discounts, tax, COGS, and refunds — the bottom line for any window you pick.",
+      "presets": {
+        "thisWeek": "This week",
+        "thisMonth": "This month",
+        "last30": "Last 30 days",
+        "thisYear": "This year",
+        "custom": "Custom"
+      },
+      "filters": {
+        "currency": "Currency",
+        "branch": "Branch",
+        "category": "Category",
+        "allBranches": "All branches",
+        "allCategories": "All categories",
+        "from": "From",
+        "to": "To"
+      },
+      "statement": {
+        "revenue": "Revenue",
+        "discount": "Discount",
+        "tax": "Tax",
+        "cogs": "Cost of goods sold",
+        "grossProfit": "Gross profit",
+        "grossProfitPct": "Margin",
+        "refunds": "Refunds",
+        "netRevenue": "Net revenue",
+        "transactions": "Transactions"
+      },
+      "breakdown": {
+        "label": "Breakdown",
+        "groupByPeriod": "By period",
+        "groupByBranch": "By branch",
+        "groupByCategory": "By category",
+        "groupBySku": "By SKU",
+        "columns": {
+          "key": "Bucket",
+          "revenue": "Revenue",
+          "cogs": "COGS",
+          "profit": "Gross profit",
+          "transactions": "Transactions"
+        }
+      },
+      "mixedCurrencyWarning": "Your branches use more than one currency. Totals are limited to the currency you selected — pick another to see the rest.",
+      "csv": {
+        "download": "Download CSV",
+        "downloading": "Preparing…",
+        "error": "We couldn't generate the CSV. Try again in a moment."
+      },
+      "empty": {
+        "title": "Nothing to report yet",
+        "body": "No sales fell inside this window. Adjust the dates or filters and try again."
+      },
+      "loading": "Crunching the numbers…",
+      "error": {
+        "title": "We couldn't load the report",
+        "body": "The report service is temporarily unavailable.",
+        "retry": "Try again"
+      },
+      "errors": {
+        "forbidden_role": "You don't have permission to view financial reports.",
+        "validation_failed": "Some filters aren't valid — double-check the date range and currency code.",
+        "generic": "Something went wrong while generating the report."
+      }
+    },
+    "movers": {
+      "kicker": "Movers & margin",
+      "title": "Top movers",
+      "subtitle": "Ranked products with 7-day momentum, margin, and slow-stock alerts.",
+      "tabs": {
+        "revenue": "Revenue",
+        "units": "Units",
+        "profit": "Gross profit"
+      },
+      "filters": {
+        "currency": "Currency",
+        "branch": "Branch",
+        "category": "Category",
+        "from": "From",
+        "to": "To"
+      },
+      "columns": {
+        "product": "Product",
+        "value": "Value",
+        "margin": "Margin",
+        "sparkline": "7-day trend"
+      },
+      "slowMovers": {
+        "title": "Slow movers",
+        "body": "In stock, but barely selling in this window."
+      },
+      "empty": {
+        "title": "No sales yet",
+        "body": "Once paid sales land in this window, your top movers appear here."
+      },
+      "loading": "Loading movers…",
+      "error": {
+        "title": "Couldn't load movers",
+        "body": "We hit a problem fetching this report. Retry or come back shortly.",
+        "retry": "Retry"
+      },
+      "errors": {
+        "forbidden_role": "Your role can't view margin reports.",
+        "generic": "Something went wrong. Try again."
+      }
+    },
+    "trends": {
+      "kicker": "Reports",
+      "title": "Trend analysis",
+      "subtitle": "Rolling-window time series with peak and trough call-outs.",
+      "filters": {
+        "window": "Window",
+        "metric": "Metric",
+        "compare": "Compare to",
+        "branch": "Branch",
+        "branchOptionAll": "All branches",
+        "windowOptions": {
+          "7d": "Last 7 days",
+          "30d": "Last 30 days",
+          "90d": "Last 90 days"
+        },
+        "metricOptions": {
+          "revenue": "Revenue",
+          "transactions": "Transactions",
+          "gross_profit": "Gross profit"
+        },
+        "compareOptions": {
+          "none": "None",
+          "prev_period": "Previous period",
+          "yoy": "Year over year"
+        }
+      },
+      "summary": {
+        "currentTotal": "Current total",
+        "prevTotal": "Previous total",
+        "delta": "Change",
+        "peakDay": "Peak day",
+        "troughDay": "Trough day"
+      },
+      "chartAria": "Trend chart with rolling average and optional overlay",
+      "empty": {
+        "title": "No activity yet",
+        "body": "Once sales begin posting to this branch, the trend will populate here."
+      },
+      "loading": "Loading trend…",
+      "error": {
+        "title": "Couldn't load the trend",
+        "body": "We hit a problem fetching the series. Try again in a moment.",
+        "retry": "Retry"
+      },
+      "errors": {
+        "forbidden_role": "Your role can't open this report.",
+        "generic": "Something went wrong."
+      }
+    },
+    "tax": {
+      "kicker": "Reporting",
+      "title": "Tax report",
+      "subtitle": "Taxable sales and tax collected, grouped by tax class.",
+      "taxRegLabel": "Tax registration number",
+      "filters": {
+        "currency": "Currency",
+        "branch": "Branch",
+        "allBranches": "All branches",
+        "from": "From",
+        "to": "To"
+      },
+      "table": {
+        "taxClass": "Tax class",
+        "rate": "Rate %",
+        "taxableSales": "Taxable sales",
+        "taxCollected": "Tax collected",
+        "transactions": "Transactions",
+        "totals": "Totals",
+        "noTaxClass": "No tax class"
+      },
+      "downloads": {
+        "pdf": "Download PDF",
+        "csv": "Download CSV",
+        "downloading": "Preparing…",
+        "error": "Download failed. Please try again."
+      },
+      "empty": {
+        "title": "No taxable sales in this period",
+        "body": "Sales completed in the selected window will appear here grouped by tax class."
+      },
+      "loading": "Loading tax report…",
+      "error": {
+        "title": "Couldn't load the report",
+        "body": "The tax report query failed. Try again or narrow the period.",
+        "retry": "Retry"
+      },
+      "errors": {
+        "forbidden_role": "You do not have permission to view the tax report.",
+        "generic": "Something went wrong while loading the tax report."
+      }
+    },
+    "scheduled": {
+      "kicker": "Automation",
+      "title": "Scheduled reports",
+      "subtitle": "Send your P&L, tax, and trend reports to inboxes on a schedule.",
+      "newSchedule": "New schedule",
+      "loading": "Loading schedules…",
+      "columns": {
+        "name": "Name",
+        "kind": "Report",
+        "cadence": "Cadence",
+        "recipients": "Recipients",
+        "lastRun": "Last run",
+        "active": "Active",
+        "actions": "Actions"
+      },
+      "kinds": {
+        "pnl": "P&L",
+        "tax": "Tax",
+        "trends": "Trends"
+      },
+      "cadences": {
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly"
+      },
+      "status": {
+        "pending": "Pending",
+        "sent": "Sent",
+        "failed": "Failed",
+        "never": "Never run"
+      },
+      "actions": {
+        "edit": "Edit",
+        "runNow": "Run now",
+        "delete": "Delete",
+        "deactivate": "Pause",
+        "activate": "Resume"
+      },
+      "modal": {
+        "create": "New scheduled report",
+        "edit": "Edit scheduled report",
+        "fields": {
+          "name": "Name",
+          "kind": "Report",
+          "cadence": "Cadence",
+          "recipients": "Recipients",
+          "recipientsHint": "Press Enter or comma to add. Up to 20 addresses.",
+          "format": "Format",
+          "params": "Settings",
+          "timezone": "Timezone"
+        },
+        "submit": "Save",
+        "cancel": "Cancel",
+        "createdToast": "Schedule created.",
+        "updatedToast": "Schedule updated."
+      },
+      "runNowToast": "Queued — recipients should receive it shortly.",
+      "deleteConfirm": {
+        "title": "Delete this schedule?",
+        "body": "Future runs will stop and recipients will no longer receive this report.",
+        "confirm": "Delete",
+        "cancel": "Cancel"
+      },
+      "empty": {
+        "title": "No schedules yet",
+        "body": "Set up your first scheduled report to keep stakeholders in the loop without lifting a finger."
+      },
+      "error": {
+        "title": "Couldn't load schedules",
+        "body": "The server didn't respond. Try again in a moment.",
+        "retry": "Retry"
+      },
+      "errors": {
+        "forbidden_role": "You don't have permission to manage scheduled reports.",
+        "validation_failed": "Some fields need attention.",
+        "invalid_email": "Enter a valid email address.",
+        "generic": "Something went wrong. Try again."
+      }
+    }
+  },
+  "salesConflicts": {
+    "kicker": "Sync · oldest first",
+    "title": "Sync conflicts",
+    "subtitle": "Sales that need manager review — typically caused by offline-ringing past available stock.",
+    "tabs": {
+      "open": "Open",
+      "acknowledged": "Acknowledged",
+      "resolved": "Resolved",
+      "ignored": "Ignored"
+    },
+    "kinds": {
+      "negative_stock": "Negative stock",
+      "duplicate_uuid": "Duplicate sale",
+      "product_unknown": "Unknown product",
+      "price_drift": "Price drift"
+    },
+    "actions": {
+      "acknowledge": "Acknowledge",
+      "resolve": "Resolve",
+      "ignore": "Ignore"
+    },
+    "detail": {
+      "kindLabel": "Conflict kind",
+      "occurredAtLabel": "Occurred at",
+      "detailsLabel": "Details",
+      "reviewLabel": "Review notes (optional)",
+      "reviewerLabel": "Reviewed by"
+    },
+    "empty": {
+      "title": "No conflicts",
+      "body": "Nothing to review right now. Offline-ringing past available stock or other sync issues will appear here."
+    },
+    "loading": "Loading conflicts…",
+    "error": {
+      "title": "Couldn't load conflicts",
+      "body": "We hit a snag fetching the conflict queue.",
+      "retry": "Try again"
+    },
+    "errors": {
+      "not_resolvable": "This conflict has already been reviewed.",
+      "forbidden_role": "Only owners, managers, and auditors can view conflicts.",
+      "validation_failed": "Some fields need attention.",
+      "generic": "Something went wrong."
+    }
+  },
+  "auth": {
+    "shell": {
+      "brandHeadline": "Run your shop the way it should run.",
+      "brandTagline": "Madar is the calm, bilingual point of sale for retailers, restaurants, and pharmacies — built on transparency.",
+      "copyright": "© Madar"
+    },
+    "common": {
+      "show": "Show",
+      "hide": "Hide",
+      "required": "Required",
+      "comingSoon": "coming soon",
+      "remove": "Remove"
+    },
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to your shop.",
+      "emailLabel": "Work email",
+      "passwordLabel": "Password",
+      "remember": "Keep me signed in",
+      "forgot": "Forgot password?",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "signupPrompt": "New to Madar?",
+      "signupCta": "Create an account",
+      "errors": {
+        "invalid_credentials": "Email or password is incorrect.",
+        "inactive": "This account is disabled. Contact your owner.",
+        "tenant_inactive": "Your shop is not currently active.",
+        "rate_limited": "Too many attempts. Try again in a minute.",
+        "validation_failed": "Please check the fields and try again.",
+        "network": "Network error — please try again.",
+        "emailInvalid": "Enter a valid email."
+      }
+    },
+    "signup": {
+      "title": "Open your Madar shop",
+      "subtitle": "14-day free trial. No card.",
+      "businessNameLabel": "Business name",
+      "slugLabel": "Shop URL",
+      "slugSuffix": ".madar.app",
+      "slugChecking": "Checking…",
+      "slugFree": "Available",
+      "slugTaken": "Taken — try another",
+      "slugReserved": "Reserved name — pick another",
+      "slugInvalid": "Use lowercase letters, numbers, and hyphens.",
+      "ownerNameLabel": "Your name",
+      "emailLabel": "Work email",
+      "passwordLabel": "Password",
+      "countryLabel": "Country",
+      "localeLabel": "Default language",
+      "submit": "Create my shop",
+      "submitting": "Creating your shop…",
+      "loginPrompt": "Already have an account?",
+      "loginCta": "Sign in",
+      "errors": {
+        "slug_taken": "That shop URL is taken.",
+        "slug_reserved": "That shop URL is reserved.",
+        "email_taken": "An account with this email already exists.",
+        "weakPassword": "Use 8+ characters with a letter and a number.",
+        "rate_limited": "Too many signups from this network — try again later.",
+        "validation_failed": "Please check the fields and try again.",
+        "network": "Network error — please try again."
+      }
+    },
+    "forgot": {
+      "title": "Forgot your password?",
+      "subtitle": "Enter the email you use to sign in. We'll send a link to reset.",
+      "emailLabel": "Work email",
+      "submit": "Send reset link",
+      "submitting": "Sending…",
+      "successTitle": "Check your inbox",
+      "successBody": "If an account exists for that email, a reset link is on its way. It expires in 1 hour.",
+      "backToLogin": "Back to sign in",
+      "errors": {
+        "network": "Network error — please try again."
+      }
+    },
+    "reset": {
+      "title": "Set a new password",
+      "subtitle": "Pick something fresh — at least 8 characters with a letter and a number.",
+      "newPasswordLabel": "New password",
+      "confirmLabel": "Confirm password",
+      "mismatch": "Passwords don't match.",
+      "submit": "Update password",
+      "submitting": "Updating…",
+      "successTitle": "Password updated",
+      "successBody": "You can now sign in with your new password.",
+      "requestNew": "Request a new link",
+      "errors": {
+        "invalid_token": "This reset link is invalid or has been used already.",
+        "reset_token_expired": "This reset link has expired. Request a new one.",
+        "weak_password": "Use 8+ characters with a letter and a number.",
+        "validation_failed": "Please check the fields and try again.",
+        "network": "Network error — please try again."
+      }
+    },
+    "verify": {
+      "loading": "Confirming your email…",
+      "successTitle": "Email verified",
+      "successBody": "Thanks — your account is now confirmed.",
+      "expiredTitle": "This link expired",
+      "expiredBody": "Verification links last 24 hours. Enter your email below to get a fresh one.",
+      "invalidTitle": "Invalid link",
+      "invalidBody": "We couldn't verify with that link. It may already be used.",
+      "resend": "Send a new link",
+      "resendDone": "Sent. Check your inbox.",
+      "errors": {
+        "network": "Network error — please try again."
+      }
+    },
+    "passwordStrength": {
+      "label": "Strength",
+      "weak": "Weak",
+      "okay": "Okay",
+      "good": "Good",
+      "strong": "Strong",
+      "excellent": "Excellent"
+    },
+    "mfa": {
+      "challenge": {
+        "title": "Enter your code",
+        "subtitle": "Open your authenticator app for {email}.",
+        "pad": "Digit",
+        "useRecovery": "Use a recovery code instead",
+        "useTotp": "Use your authenticator code",
+        "submit": "Verify",
+        "submitting": "Verifying…",
+        "back": "Back to password",
+        "errors": {
+          "mfa_invalid": "Code is incorrect. Try again.",
+          "mfa_pending_invalid": "Your session expired. Sign in again.",
+          "rate_limited": "Too many attempts. Try again in a minute.",
+          "network": "Network error — please try again."
+        }
+      },
+      "enroll": {
+        "title": "Set up two-factor authentication",
+        "intro": "Use an authenticator app like 1Password, Authy, or Google Authenticator.",
+        "step1Title": "Scan the QR code",
+        "step1Body": "Add Madar to your authenticator. If you can't scan, enter the key manually.",
+        "manualKey": "Or enter this key manually",
+        "step2Title": "Enter the 6-digit code",
+        "step2Body": "Your app will show a code that rotates every 30 seconds.",
+        "step3Title": "Save your recovery codes",
+        "step3Body": "Each code works once if you lose access to your authenticator. Print or store them somewhere safe.",
+        "copyAll": "Copy all",
+        "download": "Download (.txt)",
+        "confirmSaved": "I've saved these somewhere safe.",
+        "close": "Done",
+        "errors": {
+          "network": "Network error — please try again.",
+          "enroll_expired": "Setup expired. Start again from Settings."
+        }
+      },
+      "disable": {
+        "title": "Turn off two-factor authentication",
+        "body": "Confirm your password to disable two-factor sign-in. We strongly recommend keeping it on.",
+        "passwordLabel": "Current password",
+        "confirm": "Turn off",
+        "cancel": "Cancel",
+        "errors": {
+          "wrongPassword": "Password is incorrect.",
+          "notEnabled": "Two-factor authentication isn't on."
+        }
+      },
+      "regenerate": {
+        "title": "Generate new recovery codes",
+        "body": "Re-entering your password creates a fresh set of single-use codes. Your old codes stop working immediately.",
+        "passwordLabel": "Current password",
+        "confirm": "Generate new codes",
+        "cancel": "Cancel",
+        "codesIntro": "Store these in a password manager — they're shown once and replace any codes from before.",
+        "codesWarning": "Any previously saved codes are now invalid.",
+        "copyAll": "Copy all",
+        "copied": "Copied",
+        "done": "Done",
+        "errors": {
+          "wrongPassword": "Password is incorrect.",
+          "notEnabled": "Two-factor authentication isn't on.",
+          "network": "Network error — please try again."
+        }
+      }
+    }
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "back": "Back",
+    "continue": "Continue",
+    "close": "Close",
+    "done": "Done",
+    "save": "Save",
+    "remove": "Remove",
+    "edit": "Edit",
+    "loading": "Loading…",
+    "all": "All",
+    "today": "Today",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "home": {
+    "headline": "Madar",
+    "subhead": "Multi-branch point of sale for specialty retail.",
+    "openPos": "Open POS terminal",
+    "previewNote": "Phase 1 preview — POS Sell Screen with mock data."
+  },
+  "shell": {
+    "brand": "Madar",
+    "brandSub": "POS · v1",
+    "section": {
+      "operations": "Operations",
+      "network": "Network",
+      "money": "Money"
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "checkout": "Checkout",
+      "checkoutBadge": "Live",
+      "sales": "Sales records",
+      "inventory": "Inventory",
+      "transfers": "Stock transfers",
+      "suppliers": "Suppliers",
+      "purchases": "Purchase orders",
+      "returns": "Supplier returns",
+      "branches": "Branches",
+      "customers": "Customers",
+      "shifts": "Shifts",
+      "verification": "Verification",
+      "syncConflicts": "Sync conflicts",
+      "reports": "Reports",
+      "reconcile": "Reconcile",
+      "analysis": "Income & analysis",
+      "billing": "Billing",
+      "settings": "Settings",
+      "help": "Help",
+      "soon": "Soon"
+    },
+    "merchant": {
+      "name": "Bayt Coffee Co.",
+      "meta": "5 branches · Cairo"
+    },
+    "topbar": {
+      "searchPlaceholder": "Search products, orders, branches…",
+      "kbdHint": "⌘K",
+      "live": "Live",
+      "syncing": "Syncing {count}",
+      "offline": "Offline · {count} queued",
+      "switchLang": "Switch language",
+      "notifications": "Notifications",
+      "askMadar": "Ask Madar",
+      "allBranches": "All branches",
+      "branchSwitcher": "Branch"
+    },
+    "crumb": {
+      "dashboard": "Dashboard",
+      "dashboardSub": "Mon · 8 May 2026",
+      "checkout": "Checkout",
+      "checkoutSub": "Live terminal",
+      "inventory": "Inventory",
+      "inventorySub": "Catalog & stock"
+    }
+  },
+  "inventory": {
+    "productForm": {
+      "taxClass": {
+        "label": "Tax class",
+        "placeholder": "Use tenant default",
+        "useDefault": "Use tenant default",
+        "hint": "Leave on default to inherit the shop's default tax class."
+      }
+    },
+    "empty": {
+      "title": "No products yet",
+      "body": "Add your first SKU to start tracking catalog and stock. You can import in bulk or add them one at a time.",
+      "addProduct": "Add a product",
+      "comingSoon": "Coming soon"
+    },
+    "error": {
+      "title": "Couldn't load your catalog",
+      "body": "The server didn't respond. Check your connection or try again.",
+      "retry": "Retry"
+    },
+    "skeleton": {
+      "loading": "Loading products…"
+    },
+    "kicker": "Inventory",
+    "title": "Catalog & stock",
+    "summary": {
+      "skus": "SKUs",
+      "onHand": "on-hand value",
+      "lowStock": "low-stock"
+    },
+    "actions": {
+      "export": "Export",
+      "categories": "Categories",
+      "stockTransfer": "Stock transfer",
+      "reorderLowStock": "Reorder low-stock",
+      "newProduct": "New product",
+      "movements": "Movements",
+      "importCsv": "Import CSV"
+    },
+    "ai": {
+      "headline": "<b>3 SKUs</b> will run out within 7 days. Madar suggests reordering <b>Yirgacheffe (120)</b>, <b>Kenya AA (60)</b>, and <b>Geisha (24)</b> — bundled into one PO with Sidamo Direct.",
+      "review": "Review reorder",
+      "why": "Why?"
+    },
+    "filters": {
+      "allCategories": "All categories",
+      "lowStock": "Low stock",
+      "searchPlaceholder": "Search SKU, name, barcode…"
+    },
+    "bulk": {
+      "selected": "{count} selected",
+      "editPrice": "Edit price",
+      "adjustStock": "Adjust stock",
+      "printLabels": {
+        "title": "{count, plural, one {# label} other {# labels}} ready to print",
+        "printButton": "Print",
+        "close": "Close",
+        "hint": "Press Ctrl/⌘+P or use the Print button. Tip: in the browser print dialog turn on \"Background graphics\" for accurate colors."
+      },
+      "clear": "Clear",
+      "editPriceModal": {
+        "title": "Edit price for selected",
+        "subtitle": "{count, plural, one {# product} other {# products}} selected",
+        "close": "Close",
+        "modes": {
+          "set": "Set price to…",
+          "pct": "Adjust by %"
+        },
+        "setLabel": "New price (in major units)",
+        "pctLabel": "Percentage change (e.g. -5 or +10)",
+        "preview": "{name}: {from} → {to}",
+        "progress": "Applied {done} of {total}…",
+        "apply": "Apply to {count}",
+        "applying": "Applying…",
+        "cancel": "Cancel",
+        "errors": {
+          "invalidNumber": "Enter a valid number.",
+          "negativePrice": "Price can't be negative.",
+          "partial": "{failed} of {total} updates failed. Refresh to confirm what saved.",
+          "impersonating": "Bulk edits are blocked during impersonation."
+        }
+      },
+      "adjustStockModal": {
+        "title": "Adjust stock for selected",
+        "subtitle": "{count, plural, one {# product} other {# products}} selected · same delta applied to each",
+        "close": "Close",
+        "branchLabel": "Branch",
+        "deltaLabel": "Qty delta (signed)",
+        "kinds": {
+          "adjustment": "Recount",
+          "waste": "Waste / damage"
+        },
+        "noteLabel": "Reason (required)",
+        "notePlaceholder": "Why is the count changing?",
+        "progress": "Applied {done} of {total}…",
+        "apply": "Adjust {count}",
+        "applying": "Applying…",
+        "cancel": "Cancel",
+        "errors": {
+          "branchRequired": "Pick a branch.",
+          "invalidDelta": "Enter a non-zero integer.",
+          "noteRequired": "A reason is required so the ledger stays auditable.",
+          "negativeStock": "\"{name}\" would go below zero. Lower the delta or split the batch.",
+          "partial": "{failed} of {total} adjustments failed."
+        }
+      }
+    },
+    "cols": {
+      "sku": "SKU",
+      "product": "Product",
+      "price": "Price",
+      "cost": "Cost",
+      "margin": "Margin",
+      "stock": "Stock",
+      "velocity": "Vel/wk"
+    },
+    "row": {
+      "lowBadge": "Low",
+      "moreActions": "More actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleting": "Deleting…",
+      "cancel": "Cancel",
+      "confirmDelete": "Delete \"{name}\"? It will be hidden from the catalog and POS.",
+      "confirmYes": "Yes, delete",
+      "deleteFailed": "Could not delete this product.",
+      "impersonationBlocked": "Deletes are blocked during impersonation."
+    },
+    "form": {
+      "createTitle": "New product",
+      "createSubtitle": "Add a SKU to your catalog. Both English and Arabic names are required.",
+      "editTitle": "Edit product",
+      "editSubtitle": "Update product details. Stock changes use the bulk Adjust stock action.",
+      "backToInventory": "Back to inventory",
+      "marginPreview": "Margin: {percent}%",
+      "sections": {
+        "basics": "Basics",
+        "identification": "Identification",
+        "pricing": "Pricing",
+        "initialStock": "Initial stock",
+        "initialStockSubtitle": "Optional — seed on-hand quantities and reorder points per branch. You can do this later from each branch.",
+        "status": "Status"
+      },
+      "fields": {
+        "nameEn": "Name (English)",
+        "nameAr": "Name (Arabic)",
+        "descriptionEn": "Description (English)",
+        "descriptionAr": "Description (Arabic)",
+        "sku": "SKU",
+        "barcode": "Barcode",
+        "category": "Category",
+        "categoryNone": "— No category —",
+        "priceMajor": "Price ({currency})",
+        "costMajor": "Cost ({currency})",
+        "isActive": "Active — visible at POS"
+      },
+      "initialStock": {
+        "addBranch": "Add a branch",
+        "selectBranch": "Select branch…",
+        "branch": "Branch",
+        "qty": "Qty on hand",
+        "reorderPoint": "Reorder at",
+        "reorderQty": "Reorder qty",
+        "emptyHint": "No initial stock yet. Add a branch row to seed on-hand quantities."
+      },
+      "actions": {
+        "save": "Save product",
+        "saving": "Saving…",
+        "cancel": "Cancel"
+      },
+      "errors": {
+        "required": "Required",
+        "skuFormat": "Use uppercase letters, digits, and dashes only",
+        "loadFailed": "Could not load this product.",
+        "network": "Network error — please try again."
+      },
+      "image": {
+        "section": "Image",
+        "upload": "Upload image",
+        "replace": "Replace image",
+        "remove": "Remove",
+        "hint": "JPG, PNG, or WEBP · up to 5 MB · resized + EXIF stripped server-side",
+        "tooLarge": "Image must be 5 MB or smaller.",
+        "uploadFailed": "Image upload failed: {reason}"
+      }
+    },
+    "detail": {
+      "backToInventory": "Back to inventory",
+      "kicker": "Product",
+      "loading": "Loading product…",
+      "errors": {
+        "loadFailed": "Couldn't load this product."
+      },
+      "header": {
+        "edit": "Edit",
+        "active": "Active",
+        "inactive": "Hidden from POS",
+        "branches": "{count, plural, =0 {no branches} =1 {1 branch} other {# branches}}",
+        "lastMovement": "Last movement {when}",
+        "noMovement": "No movements yet"
+      },
+      "tabs": {
+        "overview": "Overview",
+        "stock": "Stock",
+        "activity": "Activity"
+      },
+      "overview": {
+        "description": "Description",
+        "noDescription": "No description yet — add one to help cashiers and customers.",
+        "category": "Category",
+        "uncategorized": "Uncategorized",
+        "barcode": "Barcode",
+        "noBarcode": "No barcode",
+        "pricing": "Pricing",
+        "price": "Price",
+        "cost": "Cost",
+        "margin": "Margin"
+      },
+      "stock": {
+        "perBranch": "Per-branch stock",
+        "branch": "Branch",
+        "qty": "On hand",
+        "reorderPoint": "Reorder at",
+        "available": "Available",
+        "lastMovement": "Last movement",
+        "empty": "No branch stock yet. Stock is added per-branch on product creation or via stock movements.",
+        "movements": "Stock movements",
+        "movementsEmpty": "No movements yet. Sales, transfers, and adjustments will appear here.",
+        "kinds": {
+          "sale": "Sale",
+          "return_in": "Return",
+          "transfer_in": "Transfer in",
+          "transfer_out": "Transfer out",
+          "adjustment": "Adjustment",
+          "receive": "Receive",
+          "waste": "Waste"
+        }
+      },
+      "activity": {
+        "title": "Recent activity",
+        "empty": "No activity recorded for this product yet.",
+        "actions": {
+          "product_created": "Created the product",
+          "product_updated": "Updated the product",
+          "product_deleted": "Archived the product",
+          "product_image_set": "Set the product image",
+          "product_image_cleared": "Removed the product image"
+        }
+      },
+      "kpis": {
+        "stockValue": "Stock value",
+        "unitsSold": "Units sold (30d)",
+        "velocity": "Velocity / day",
+        "daysOfCover": "Days of cover",
+        "neverRunOut": "∞"
+      }
+    },
+    "footer": {
+      "showing": "Showing {shown} of {total}",
+      "prevPage": "Previous page",
+      "nextPage": "Next page"
+    },
+    "categories": {
+      "espresso": "Espresso",
+      "pourover": "Pour-over",
+      "cold": "Cold drinks",
+      "beans": "Whole bean",
+      "pastry": "Pastries"
+    },
+    "movements": {
+      "kicker": "Inventory",
+      "title": "Stock movements",
+      "subtitle": "Every ledger entry across branches, in order.",
+      "loading": "Loading movements…",
+      "error": "Couldn't load movements — please retry.",
+      "emptyTitle": "No movements in this range",
+      "emptyBody": "Widen the date range or change the filters.",
+      "systemUser": "(system)",
+      "filters": {
+        "from": "From",
+        "to": "To",
+        "branch": "Branch",
+        "allBranches": "All branches",
+        "user": "User",
+        "allUsers": "Anyone"
+      },
+      "kindChips": {
+        "all": "All",
+        "sale": "Sale",
+        "return_in": "Return",
+        "transfer_in": "Transfer in",
+        "transfer_out": "Transfer out",
+        "adjustment": "Adjust",
+        "receive": "Receive",
+        "waste": "Waste"
+      },
+      "columns": {
+        "time": "When",
+        "product": "Product",
+        "branch": "Branch",
+        "type": "Type",
+        "qty": "Qty",
+        "reason": "Reason",
+        "reference": "Reference",
+        "user": "User"
+      },
+      "drawer": {
+        "title": "Movement",
+        "cost": "Unit cost",
+        "openLink": "Open linked entity",
+        "close": "Close"
+      },
+      "pagination": {
+        "summary": "{shown} of {total}",
+        "page": "Page {page} of {total}",
+        "prev": "Previous",
+        "next": "Next"
+      }
+    },
+    "import": {
+      "title": "Import products from CSV",
+      "subtitle": "Upsert by SKU. Existing SKUs are updated; new SKUs are created. Max 2MB / 5000 rows.",
+      "close": "Close",
+      "pickFile": "Choose CSV file",
+      "downloadTemplate": "Download template",
+      "preview": "Preview (dry run)",
+      "checking": "Checking…",
+      "import": "Import",
+      "importing": "Importing…",
+      "created": "Created",
+      "updated": "Updated",
+      "errorsLabel": "Errors",
+      "moreErrors": "…and {count} more errors",
+      "networkError": "Network error — please retry.",
+      "col": {
+        "row": "Row",
+        "sku": "SKU",
+        "error": "Error"
+      }
+    }
+  },
+  "categoriesPage": {
+    "kicker": "Inventory",
+    "title": "Categories",
+    "loading": "Loading categories…",
+    "retry": "Try again",
+    "backToInventory": "Back to inventory",
+    "actions": {
+      "addCategory": "Add category",
+      "addChild": "Add child",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "tree": {
+      "label": "Category tree",
+      "expand": "Expand",
+      "collapse": "Collapse",
+      "countLabel": "{count, plural, =0 {no products} one {# product} other {# products}}"
+    },
+    "panel": {
+      "label": "Selected category",
+      "empty": "Select a category to view details.",
+      "nameEn": "Name (English)",
+      "nameAr": "Name (Arabic)",
+      "parent": "Parent",
+      "noParent": "Top level",
+      "productCount": "Products",
+      "sortOrder": "Sort order"
+    },
+    "empty": {
+      "title": "No categories yet.",
+      "cta": "Add the first category"
+    },
+    "dialog": {
+      "titleNew": "New category",
+      "titleEdit": "Edit category",
+      "close": "Close",
+      "cancel": "Cancel",
+      "create": "Create",
+      "save": "Save"
+    },
+    "form": {
+      "code": "Code",
+      "nameEn": "Name (English)",
+      "nameAr": "Name (Arabic)",
+      "parent": "Parent",
+      "parentNone": "— Top level —",
+      "sortOrder": "Sort order"
+    },
+    "confirmDelete": {
+      "title": "Delete category?",
+      "body": "Delete \"{name}\"? This can't be undone. Categories that still have products attached cannot be deleted.",
+      "confirm": "Delete"
+    },
+    "errors": {
+      "required": "Required",
+      "codeFormat": "Letters, numbers, underscore and dash only.",
+      "codeTaken": "A category with this code already exists.",
+      "selfParent": "A category can't be its own parent.",
+      "inUse": "This category still has products. Move or delete them first.",
+      "impersonating": "Deletes are blocked during impersonation.",
+      "sortOrder": "Must be 0 or greater.",
+      "loadFailed": "Couldn't load categories.",
+      "network": "Network error. Please try again."
+    }
+  },
+  "billing": {
+    "kicker": "Plan & billing",
+    "title": "Plan & billing",
+    "subtitle": "Bank transfer · manual verification by our finance team for {tenant}",
+    "loading": "Loading billing details…",
+    "tabs": {
+      "plan": "Plan & usage",
+      "invoices": "Invoices",
+      "history": "Payment history"
+    },
+    "errors": {
+      "loadFailed": "Couldn't load billing details. Check your connection and try again."
+    },
+    "trial": {
+      "headline": "Trial ends in {days} days",
+      "body": "Start your subscription by paying your first invoice. You'll keep everything you've configured.",
+      "cta": "Pay first invoice"
+    },
+    "currentPlan": {
+      "kicker": "Current plan",
+      "month": "month"
+    },
+    "nextInvoice": {
+      "kicker": "Next invoice",
+      "none": "No upcoming invoice.",
+      "due": "due {date}",
+      "payCta": "Pay by bank transfer"
+    },
+    "usage": {
+      "transactions": "Transactions this period",
+      "users": "Users",
+      "branches": "Branches"
+    },
+    "plans": {
+      "title": "Plan comparison",
+      "current": "current"
+    },
+    "invoices": {
+      "empty": "No invoices yet.",
+      "payCta": "Pay",
+      "viewStatus": "View status",
+      "col": {
+        "ref": "Invoice",
+        "period": "Period",
+        "due": "Due",
+        "amount": "Amount",
+        "status": "Status"
+      }
+    },
+    "history": {
+      "timeline": "Timeline",
+      "empty": "No payments yet — your history will show up here once invoices are paid.",
+      "paid": "Paid",
+      "lifetime": "Lifetime spend",
+      "acrossPayments": "across {count} payments",
+      "receiptsNote": "Downloadable PDF receipts are coming soon."
+    },
+    "pay": {
+      "back": "Back to billing",
+      "title": "Pay invoice",
+      "subtitle": "{ref} · bank transfer + receipt upload",
+      "loading": "Loading…",
+      "step1": {
+        "kicker": "Step 1 of 3 · Make the transfer",
+        "heading": "Send {amount} by bank transfer",
+        "body": "Transfer to one of our platform accounts. Include the reference code in your transfer memo so verification is fast.",
+        "noBanks": "No bank accounts available for your currency yet. Contact support.",
+        "next": "I've sent the transfer →"
+      },
+      "step2": {
+        "kicker": "Step 2 of 3 · Upload your receipt",
+        "heading": "Upload your transfer receipt",
+        "upload": "Click or drop a PDF / JPG / PNG here",
+        "uploadHint": "Up to 5 MB · auto-scanned",
+        "payerName": "Payer name",
+        "transferDate": "Transfer date",
+        "transferReference": "Bank reference",
+        "amount": "Amount",
+        "back": "Back",
+        "submit": "Submit for verification",
+        "submitting": "Submitting…"
+      },
+      "step3": {
+        "kicker": "Step 3 of 3 · Awaiting verification",
+        "heading": "Your payment is being verified",
+        "body": "Receipt for {amount} on {ref} received. Our finance team verifies within 24h. You keep full access in the meantime.",
+        "cta": "Back to billing"
+      },
+      "bank": {
+        "bankName": "Bank",
+        "holder": "Account holder",
+        "iban": "IBAN",
+        "swift": "SWIFT / BIC",
+        "currency": "Currency",
+        "qrHint": "Scan with your phone camera to copy the bank, reference, and amount."
+      },
+      "reference": {
+        "label": "Reference code · must be in transfer memo",
+        "copy": "Copy reference",
+        "note": "Without the reference, manual verification can take 24–48h longer."
+      },
+      "errors": {
+        "fileRequired": "Please attach a receipt file before submitting.",
+        "invoiceLoad": "Couldn't load this invoice.",
+        "network": "Network error — please try again."
+      }
+    }
+  },
+  "dashboard": {
+    "kicker": "Weekly digest",
+    "byline": "by <brand>Madar AI</brand>",
+    "loading": {
+      "title": "Loading your dashboard…",
+      "body": "Pulling this week's numbers from across your branches."
+    },
+    "redirecting": "Loading branch dashboard…",
+    "error": {
+      "title": "Couldn't load your dashboard.",
+      "body": "Something went wrong reaching the server. Check your connection and try again.",
+      "retry": "Retry"
+    },
+    "mixedCurrencyWarning": "Some of this week's sales were in a different currency. Revenue totals show your default currency only; transactions include all currencies.",
+    "actions": {
+      "why": "Why?",
+      "readFull": "Read full digest",
+      "skipWeek": "Skip this week"
+    },
+    "headline": {
+      "revenueUp": "Revenue is up <pct></pct> at <branch></branch>.",
+      "revenueDown": "Revenue is down <pct></pct> at <branch></branch>.",
+      "firstWeek": "Your first week of insights. Make a few sales to populate this dashboard."
+    },
+    "kpi": {
+      "revenueLabel": "Revenue · this week",
+      "grossProfitLabel": "Gross profit",
+      "transactionsLabel": "Transactions",
+      "sparklineLabel": "Last 7 days",
+      "vsLastWeek": "vs last week"
+    },
+    "hero": {
+      "title": "Revenue · last 30 days",
+      "branchAll": "All branches",
+      "empty": "No sales recorded in the last 30 days."
+    },
+    "insights": {
+      "confidence": "{percent}% confidence",
+      "rail": {
+        "title": "For your attention",
+        "dismiss": "Dismiss",
+        "askMadar": "Ask Madar →",
+        "empty": "All quiet on the radar."
+      },
+      "urgency": {
+        "high": "High priority",
+        "medium": "Worth a look",
+        "low": "FYI"
+      }
+    },
+    "leaderboard": {
+      "title": "Branch leaderboard",
+      "columns": {
+        "rank": "Rank",
+        "branch": "Branch",
+        "revenue": "Revenue",
+        "change": "Change"
+      },
+      "allLink": "All branches →",
+      "rank": "#{n}"
+    },
+    "heatmap": {
+      "title": "When customers buy",
+      "body": "Each cell is one hour × one weekday over the last 4 weeks. Darker = busier. Use this to spot a soft afternoon or a missed morning rush.",
+      "legend": "lower → higher",
+      "days": {
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat",
+        "sun": "Sun"
+      }
+    },
+    "recent": {
+      "title": "Recent transactions",
+      "empty": "No transactions yet.",
+      "items": "{count, plural, one {# item} other {# items}}",
+      "method": {
+        "cash": "Cash",
+        "card": "Card",
+        "bank_transfer": "Bank transfer",
+        "store_credit": "Store credit",
+        "manual_card": "Card (manual)"
+      },
+      "status": {
+        "paid": "Paid",
+        "payment_pending": "Pending",
+        "disputed": "Disputed",
+        "refunded": "Refunded"
+      }
+    }
+  },
+  "subscription": {
+    "banner": {
+      "trialEndingBody": "Your trial ends in {days, plural, =0 {today} one {1 day} other {# days}}. Pay your first invoice to keep selling.",
+      "trialEndingCta": "Pay now",
+      "graceBody": "Subscription payment is overdue. You can keep working — pay before access pauses.",
+      "payNow": "Pay now",
+      "suspendedTitle": "Account suspended",
+      "suspendedBody": "Read-only until the outstanding invoice is paid.",
+      "cancelledTitle": "Account cancelled",
+      "cancelledBody": "Export your data within the retention window.",
+      "exportCta": "Open billing"
+    }
+  },
+  "shifts": {
+    "kicker": "Cash drawer",
+    "listTitle": "Shifts",
+    "listSubtitle": "Open cashier sessions and end-of-day reconciliation.",
+    "loading": "Loading shifts…",
+    "errorBody": "Couldn't load shifts. Try again.",
+    "emptyTitle": "No shifts yet",
+    "emptyBody": "Open the POS to start the day — sales attach to whichever shift is currently open.",
+    "notFoundTitle": "Shift not found",
+    "notFoundBody": "This shift may have been deleted, or never existed.",
+    "backToList": "Back to shifts",
+    "tabs": {
+      "open": "Open",
+      "closed": "Closed",
+      "all": "All"
+    },
+    "colCashier": "Cashier",
+    "colBranch": "Branch",
+    "colOpened": "Opened",
+    "colClosed": "Closed",
+    "colFloat": "Opening float",
+    "colVariance": "Variance",
+    "colStatus": "Status",
+    "status": {
+      "open": "Open",
+      "closed": "Closed"
+    },
+    "detail": {
+      "kicker": "Z-report",
+      "title": "Shift detail",
+      "print": "Print",
+      "summary": "Summary",
+      "grossRevenue": "Gross revenue",
+      "transactions": "Transactions",
+      "itemsSold": "Items sold",
+      "cashHeader": "Cash reconciliation",
+      "openingFloat": "Opening float",
+      "cashSales": "Cash sales",
+      "cashRefunds": "Cash refunds",
+      "expectedCash": "Expected cash",
+      "declaredCash": "Declared cash",
+      "variance": "Variance",
+      "byPaymentHeader": "Payments by method",
+      "noPayments": "No payments yet.",
+      "topProductsHeader": "Top products",
+      "noTopProducts": "No sales yet.",
+      "notes": "Notes",
+      "method": {
+        "cash": "Cash",
+        "card": "Card",
+        "bank_transfer": "Bank transfer",
+        "store_credit": "Store credit",
+        "split": "Split"
+      }
+    }
+  },
+  "pos": {
+    "shift": {
+      "loading": "Loading shift…",
+      "openRequired": "Open a shift to start ringing sales.",
+      "chip": {
+        "openFor": "Open · {duration}",
+        "float": "Float {amount}",
+        "end": "End shift"
+      },
+      "open": {
+        "title": "Open shift",
+        "subtitle": "Set your opening cash float so end-of-shift reconciliation matches.",
+        "floatLabel": "Opening float ({currency})",
+        "open": "Open shift",
+        "opening": "Opening…",
+        "cancel": "Cancel"
+      },
+      "close": {
+        "title": "End shift",
+        "subtitle": "Count the drawer cash. The variance shows over or under.",
+        "cashLabel": "Counted cash ({currency})",
+        "notesLabel": "Notes (optional)",
+        "close": "End shift",
+        "closing": "Closing…",
+        "cancel": "Cancel"
+      },
+      "errors": {
+        "alreadyOpen": "You already have an open shift. Close it before opening another.",
+        "alreadyClosed": "This shift is already closed.",
+        "forbiddenBranch": "You can only open a shift at your assigned branch.",
+        "forbiddenRole": "Your role can't end this shift.",
+        "unknownBranch": "That branch wasn't found.",
+        "invalidFloat": "Enter a non-negative number.",
+        "invalidCash": "Enter a non-negative number.",
+        "generic": "Something went wrong. Try again.",
+        "network": "Network error. Check your connection and try again."
+      }
+    },
+    "customerPicker": {
+      "title": "Attach customer",
+      "close": "Close",
+      "searchPlaceholder": "Search by name, phone, email, or code…",
+      "loading": "Loading customers…",
+      "loadError": "Couldn't load customers. Try again.",
+      "noResults": "No matches.",
+      "createNew": "Add a new customer",
+      "salesCount": "{count, plural, =0 {no sales yet} one {# sale} other {# sales}}"
+    },
+    "header": {
+      "shiftOpen": "Shift open",
+      "exit": "Exit POS",
+      "cashier": "Cashier",
+      "shift": "Shift",
+      "since": "since",
+      "held": "Held",
+      "tickets": "tickets",
+      "endShift": "End shift",
+      "endShiftBusy": "Signing out…",
+      "endShiftConfirm": "End shift and sign out? Any held tickets stay saved on this device."
+    },
+    "search": {
+      "placeholder": "Search or scan barcode…",
+      "clear": "Clear search",
+      "noResults": "No products match",
+      "clearLabel": "Clear search"
+    },
+    "categories": {
+      "all": "All"
+    },
+    "cart": {
+      "title": "Cart",
+      "clear": "Clear",
+      "hold": "Hold",
+      "addCustomer": "Add customer to this sale",
+      "visits": "{count, plural, one {# visit} other {# visits}}",
+      "storeCredit": "store credit",
+      "subtotal": "Subtotal",
+      "tax": "Tax",
+      "taxIncluded": "Tax (included)",
+      "discount": "Discount",
+      "totalKicker": "Total · {currency}",
+      "pay": "Pay",
+      "empty": {
+        "title": "Scan or tap a product to start",
+        "body": "Items appear here as you add them. Press <esc>Esc</esc> to return focus to the scanner."
+      }
+    },
+    "line": {
+      "editTitle": "Edit line",
+      "each": "each",
+      "sku": "SKU",
+      "quantity": "Quantity",
+      "lineDiscount": "Line discount",
+      "discountNone": "None",
+      "noteHeader": "Note for kitchen",
+      "notePlaceholder": "e.g. oat milk, no sugar",
+      "newTotal": "New total",
+      "remove": "Remove line",
+      "update": "Update"
+    },
+    "held": {
+      "kicker": "Parked tickets",
+      "title": "Held sales · {count}",
+      "items": "{count, plural, one {# item} other {# items}}",
+      "justNow": "just now",
+      "minutesAgo": "{minutes} min ago",
+      "hoursAgo": "{hours, plural, one {# hr ago} other {# hrs ago}}",
+      "empty": "No held sales. Use Hold in the cart to park a ticket for later.",
+      "resume": "Resume",
+      "discard": "Discard",
+      "walkInCustomer": "walk-in customer",
+      "heldToast": "Ticket saved. Recall it from the Held tray.",
+      "resumeError": "Couldn't recall that ticket — it may have already been resumed elsewhere.",
+      "listError": "Couldn't sync held tickets. Check your connection.",
+      "discardConfirm": {
+        "body": "Discard this held ticket? This can't be undone.",
+        "discardedToast": "Ticket discarded."
+      }
+    },
+    "offline": {
+      "statusOnline": "Online",
+      "statusOffline": "Offline · {count, plural, =0 {no pending} one {1 pending} other {# pending}}",
+      "statusSyncing": "Syncing {count}",
+      "statusPending": "Pending {count}",
+      "queuedToast": "Saved offline. Will sync when back online.",
+      "conflictsBanner": "{count, plural, one {1 sync conflict needs review} other {# sync conflicts need review}}",
+      "conflictsBannerCta": "Review"
+    },
+    "payment": {
+      "kicker": "Payment · Ticket #{id}",
+      "openReceipt": "Open receipt →",
+      "fullyCovered": "Fully covered",
+      "remaining": "{amount} remaining",
+      "changeDue": "{amount} change due",
+      "splitAcross": "Split across methods",
+      "addSplit": "Add split",
+      "continueToReceipt": "Continue to receipt",
+      "completeSale": "Complete sale",
+      "saveSale": "Save sale",
+      "pendingVerification": "Pending verification",
+      "cashTendered": "Cash tendered — quick amounts",
+      "exact": "Exact",
+      "changeDueLabel": "Change due",
+      "bankReceiptTitle": "Bank receipt",
+      "bankReceiptBody": "Customer paid by bank transfer. Enter the reference number and capture the receipt — a manager will verify it daily.",
+      "transactionRef": "Transaction reference",
+      "transactionRefPlaceholder": "e.g. CIB-2026-0508-94821",
+      "captureReceipt": "Capture or upload receipt",
+      "receiptCaptured": "Receipt captured · receipt-{id}.jpg",
+      "pendingNotice": "This sale will be marked Pending until verified. It appears in Reconciliation; managers verify daily against the bank statement.",
+      "methods": {
+        "cash": "Cash",
+        "card": "Card",
+        "transfer": "Transfer",
+        "storeCredit": "Credit",
+        "split": "Split"
+      },
+      "upload": {
+        "pickReceipt": "Pick or capture receipt",
+        "replaceReceipt": "Replace receipt",
+        "fileTooLarge": "Receipt must be 5MB or smaller",
+        "invalidType": "Receipt must be JPG, PNG, or PDF",
+        "fallbackError": "Sale was created, but receipt upload failed. Re-upload from Verification.",
+        "payerName": "Payer name",
+        "payerNamePlaceholder": "Who paid"
+      },
+      "taxBreakdown": {
+        "label": "Tax",
+        "inclusiveHint": "Tax inclusive — already in the line price.",
+        "exclusiveHint": "Tax added to the subtotal."
+      },
+      "card": {
+        "title": "Card",
+        "approvalCodeLabel": "Terminal approval code",
+        "approvalCodePlaceholder": "e.g. APP1234",
+        "terminalHint": "Read the approval code from the card terminal display and type it exactly. This is a manual entry — no gateway is involved.",
+        "submit": "Complete sale",
+        "errors": {
+          "required": "Approval code is required.",
+          "length": "Approval code must be 4–20 characters."
+        }
+      },
+      "split": {
+        "title": "Split payment",
+        "addPayment": "Add payment",
+        "removeSlice": "Remove",
+        "sliceLabel": "Payment {index}",
+        "methodLabel": "Method",
+        "methods": {
+          "cash": "Cash",
+          "card": "Card",
+          "storeCredit": "Store credit"
+        },
+        "amountLabel": "Amount",
+        "approvalCodeLabel": "Approval code",
+        "tenderedLabel": "Tendered",
+        "footer": {
+          "paid": "Paid",
+          "total": "Total",
+          "remaining": "Remaining"
+        },
+        "submit": "Complete sale",
+        "errors": {
+          "remaining_nonzero": "Adjust the amounts until the remaining is exactly zero.",
+          "min_two_slices": "Add at least one more payment to split.",
+          "sum_mismatch": "Payments don't add up to the total."
+        }
+      },
+      "storeCredit": {
+        "title": "Store credit",
+        "availableLabel": "Available credit{name, select, , {} other{ · {name}}}",
+        "afterSaleLabel": "After this sale",
+        "apply": "Apply credit",
+        "tooltipNeedsCustomer": "Attach a customer to use store credit.",
+        "errors": {
+          "insufficient": "Customer's credit doesn't cover the total.",
+          "customer_required": "A customer must be attached to use store credit.",
+          "currency_mismatch": "Customer credit is in a different currency."
+        }
+      }
+    }
+  },
+  "receipt": {
+    "loading": "Loading receipt…",
+    "errors": {
+      "loadFailed": "Couldn't load receipt."
+    },
+    "meta": {
+      "ticket": "Ticket",
+      "cashier": "Cashier",
+      "date": "Date"
+    },
+    "totals": {
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "tax": "VAT",
+      "total": "Total"
+    },
+    "tender": {
+      "cashTendered": "Cash tendered",
+      "changeDue": "Change due"
+    },
+    "bank": {
+      "heading": "Bank transfer details",
+      "bankName": "Bank",
+      "holder": "Account holder",
+      "iban": "IBAN"
+    },
+    "status": {
+      "paid": "PAID",
+      "pending": "PENDING VERIFY"
+    },
+    "thanks": "Thank you — visit again soon.",
+    "footer": {
+      "tagline": "Madar — calm bilingual POS."
+    },
+    "buttons": {
+      "print": "Print",
+      "switch58": "Switch to 58mm",
+      "switch80": "Switch to 80mm",
+      "refund": "Refund",
+      "popDrawer": "Open drawer",
+      "popDrawerPair": "Pair cash drawer",
+      "popDrawerPending": "Opening…",
+      "popDrawerDone": "Drawer opened",
+      "popDrawerRetry": "Open drawer — retry"
+    }
+  },
+  "verification": {
+    "title": "Verification",
+    "subtitle": "Sale receipts pending verification",
+    "kicker": "Manager · oldest first",
+    "empty": {
+      "pending": "Queue is clear.",
+      "completed": "No proofs match this filter.",
+      "selectProof": "Select a proof from the list."
+    },
+    "filters": {
+      "pending": "Pending",
+      "verified": "Verified",
+      "rejected": "Rejected",
+      "all": "All"
+    },
+    "actions": {
+      "approve": "Approve",
+      "approving": "Approving…",
+      "reject": "Reject",
+      "openDetail": "Open detail →",
+      "back": "Back to queue",
+      "cancel": "Cancel",
+      "retry": "Retry"
+    },
+    "reject": {
+      "title": "Reject this proof",
+      "body": "Pick a reason. The customer will be notified and can resubmit.",
+      "submit": "Reject and notify",
+      "submitting": "Rejecting…",
+      "notes": "Notes",
+      "notesHint": "(internal — visible to your teammates)",
+      "notesPlaceholder": "Optional context for the audit log",
+      "reasons": {
+        "amount": "Wrong amount transferred",
+        "unread": "Unreadable / blurry receipt",
+        "account": "Sent to wrong account",
+        "dup": "Duplicate of an earlier proof",
+        "fraud": "Suspected fraud / mismatch",
+        "other": "Other (explain below)"
+      }
+    },
+    "match": {
+      "amount": "Amount",
+      "date": "Date",
+      "reference": "Reference",
+      "account": "Account",
+      "accountTenant": "This shop",
+      "accountPlatform": "Platform",
+      "missing": "missing"
+    },
+    "detail": {
+      "amount": "Amount",
+      "context": "Context",
+      "transferDate": "Transfer date",
+      "bankRef": "Bank reference",
+      "payerBank": "Payer bank",
+      "accountKind": "Account",
+      "submittedAt": "Submitted",
+      "tenant": "Tenant"
+    },
+    "resolved": {
+      "verified": "Verified",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled by submitter."
+    },
+    "errors": {
+      "loadList": "Couldn't load the queue. Refresh to retry.",
+      "loadDetail": "Couldn't load this proof.",
+      "loadReceipt": "Couldn't load receipt",
+      "verifyFailed": "Couldn't verify proof. Please try again.",
+      "rejectFailed": "Couldn't reject proof. Please try again."
+    },
+    "toast": {
+      "verified": "Proof verified",
+      "rejected": "Proof rejected"
+    },
+    "access": {
+      "denied": "You don't have access to this page",
+      "deniedBody": "Only owners and managers can verify payment proofs. Ask your shop owner if you need access."
+    },
+    "loading": "Loading queue…",
+    "loadingProof": "Loading proof…",
+    "list": {
+      "noRef": "no ref",
+      "today": "today",
+      "daysPending": "{n}d pending"
+    }
+  },
+  "branches": {
+    "kicker": "Operations",
+    "title": "Branches",
+    "subtitle": "Your locations and their stock.",
+    "addBranch": "Add a branch",
+    "addBranchHint": "Open a new location.",
+    "salesToday": "Today",
+    "statusOpen": "Open",
+    "statusClosed": "Closed",
+    "statusInactive": "Inactive",
+    "quick": {
+      "stock": "Stock",
+      "staff": "Staff",
+      "edit": "Edit",
+      "view": "Open"
+    },
+    "empty": {
+      "title": "No branches yet",
+      "body": "Add your first location to start running registers and tracking stock by branch.",
+      "cta": "Add a branch"
+    },
+    "loading": "Loading branches…",
+    "error": {
+      "title": "Couldn't load branches",
+      "body": "The server didn't respond. Check your connection or try again.",
+      "retry": "Retry"
+    },
+    "form": {
+      "kickerCreate": "Open a branch",
+      "kickerEdit": "Edit branch",
+      "titleCreate": "Add a branch",
+      "titleEdit": "Edit details",
+      "sections": {
+        "basics": "Basics",
+        "locale": "Locale & money",
+        "schedule": "Schedule",
+        "status": "Status",
+        "geo": "Map coordinates"
+      },
+      "fields": {
+        "code": "Branch code",
+        "codeHint": "Short uppercase ID, 2–16 chars. Used in reports and receipts.",
+        "nameEn": "Name (English)",
+        "nameAr": "Name (Arabic)",
+        "namePlaceholder": "Maadi",
+        "addressEn": "Address (English)",
+        "addressAr": "Address (Arabic)",
+        "currency": "Currency",
+        "timezone": "Time zone",
+        "openedAt": "Opening date",
+        "isActive": "Active",
+        "isActiveHint": "Inactive branches don't appear in the switcher.",
+        "geoLat": "Latitude",
+        "geoLng": "Longitude",
+        "geoHint": "Optional. Used on the branch map view. Both fields together or neither."
+      },
+      "tabs": {
+        "en": "English",
+        "ar": "Arabic"
+      },
+      "actions": {
+        "save": "Save",
+        "saving": "Saving…",
+        "create": "Create branch",
+        "creating": "Creating…",
+        "cancel": "Cancel"
+      },
+      "errors": {
+        "required": "Required",
+        "codePattern": "Use uppercase letters, digits, underscores, or dashes.",
+        "code_taken": "A branch with this code already exists.",
+        "validation_failed": "Some fields need attention.",
+        "currency_locked_after_sales": "Currency can't change once sales have been recorded.",
+        "branch_has_stock": "There's still stock at this branch — move or zero it before deleting.",
+        "branch_has_users": "Reassign staff before deleting this branch.",
+        "forbidden_during_impersonation": "Deletion is blocked during impersonation.",
+        "forbidden_role": "Only owners can do that.",
+        "forbidden_branch": "You can only edit your own branch.",
+        "saveFailed": "Couldn't save. Please try again.",
+        "deleteFailed": "Couldn't delete this branch."
+      }
+    },
+    "detail": {
+      "kicker": "Branch",
+      "edit": "Edit",
+      "back": "Branches",
+      "tabs": {
+        "overview": "Overview",
+        "stock": "Stock",
+        "settings": "Settings",
+        "banking": "Banking",
+        "hours": "Hours"
+      },
+      "overview": {
+        "todayRevenue": "Today",
+        "weekRevenue": "This week",
+        "transactionsToday": "Tickets today",
+        "transactionsWeek": "Tickets this week",
+        "topProduct": "Top product today",
+        "topProductEmpty": "No sales today.",
+        "recentActivity": "Recent activity",
+        "recentEmpty": "Nothing to show yet.",
+        "users": "Staff assigned",
+        "usersEmpty": "No staff assigned to this branch.",
+        "saleRef": "Sale {code}"
+      },
+      "stock": {
+        "title": "Stock at this branch",
+        "search": "Search SKU or name",
+        "lowOnly": "Low only",
+        "headerProduct": "Product",
+        "headerSku": "SKU",
+        "headerOnHand": "On hand",
+        "headerReorder": "Reorder at",
+        "headerAvailable": "Available",
+        "headerLastMovement": "Last movement",
+        "neverMoved": "—",
+        "empty": "No stock recorded at this branch yet.",
+        "lowEmpty": "Nothing is low at this branch."
+      },
+      "settings": {
+        "title": "Settings",
+        "currency": "Currency",
+        "timezone": "Time zone",
+        "openedAt": "Opened",
+        "editButton": "Edit settings",
+        "deleteBranch": "Delete branch",
+        "deleteHint": "You can delete a branch only when no stock or staff are assigned.",
+        "deleteConfirm": "Delete this branch? This cannot be undone.",
+        "deleting": "Deleting…"
+      },
+      "hours": {
+        "title": "Operating hours",
+        "subtitle": "When the doors are open. Used on receipts and the customer-facing landing page.",
+        "closed": "Closed",
+        "open": "Open",
+        "save": "Save hours",
+        "saving": "Saving…",
+        "saved": "Hours saved.",
+        "useDefaults": "Use suggested hours",
+        "validationError": "Closing time must be after opening time.",
+        "days": {
+          "mon": "Monday",
+          "tue": "Tuesday",
+          "wed": "Wednesday",
+          "thu": "Thursday",
+          "fri": "Friday",
+          "sat": "Saturday",
+          "sun": "Sunday"
+        }
+      },
+      "holidays": {
+        "title": "Holiday calendar",
+        "subtitle": "Days you'll be closed. Surfaces on receipts and the shift schedule.",
+        "addButton": "+ Add holiday",
+        "save": "Save calendar",
+        "saving": "Saving…",
+        "saved": "Calendar saved.",
+        "date": "Date",
+        "labelEn": "Label (EN)",
+        "labelAr": "Label (AR)",
+        "remove": "Remove",
+        "empty": "No holidays yet.",
+        "validationError": "Each holiday needs a date and labels."
+      },
+      "banking": {
+        "title": "Receiving accounts",
+        "subtitle": "Where customers send bank transfers paid at this branch.",
+        "usesTenantDefault": "Uses the chain-wide default account.",
+        "addBranchOverride": "Add a branch-specific account",
+        "manageGlobal": "Manage chain-wide accounts in settings →",
+        "defaultPill": "Default",
+        "inactivePill": "Inactive",
+        "currency": "Currency",
+        "iban": "IBAN ending",
+        "swift": "SWIFT"
+      },
+      "performance": {
+        "linkLabel": "Performance",
+        "kicker": "Performance",
+        "back": "Back to branch",
+        "todayLabel": "Today's revenue",
+        "vsYesterday": "vs yesterday",
+        "cards": {
+          "transactions": "Transactions",
+          "avgBasket": "Avg basket",
+          "itemsSold": "Items sold",
+          "returns": "Returns"
+        },
+        "charts": {
+          "hourly": "Hourly sales today",
+          "hourlyEmpty": "No sales yet today.",
+          "topCategories": "Top categories (7d)",
+          "topCategoriesEmpty": "Nothing sold in the last 7 days."
+        },
+        "leaderboard": {
+          "title": "Branch leaderboard (today)",
+          "single": "You're the only branch right now.",
+          "rank": "#{rank}",
+          "thisBranch": "this branch"
+        },
+        "recent": "Recent activity"
+      },
+      "map": {
+        "linkLabel": "Map view",
+        "listView": "List",
+        "mapView": "Map",
+        "missing": "No coordinates on this branch yet.",
+        "missingHint": "Add latitude and longitude on the edit page to drop a pin here.",
+        "dossier": {
+          "open": "Open",
+          "performance": "Performance",
+          "stock": "View stock"
+        }
+      }
+    },
+    "actions": {
+      "delete": "Delete branch",
+      "deleted": "Branch deleted",
+      "saved": "Branch saved"
+    },
+    "notFound": {
+      "title": "Branch not found",
+      "body": "We couldn't find that branch. It may have been removed."
+    }
+  },
+  "transfers": {
+    "kicker": "Operations",
+    "title": "Stock transfers",
+    "subtitle": "Move stock between your branches.",
+    "newTransfer": "+ New transfer",
+    "loading": "Loading transfers…",
+    "backToList": "Back to transfers",
+    "tabs": {
+      "draft": "Draft",
+      "in_transit": "In transit",
+      "received": "Received",
+      "cancelled": "Cancelled",
+      "all": "All"
+    },
+    "status": {
+      "draft": "Draft",
+      "in_transit": "In transit",
+      "received": "Received",
+      "cancelled": "Cancelled"
+    },
+    "table": {
+      "code": "ID",
+      "from": "From",
+      "to": "To",
+      "items": "Items · Units",
+      "status": "Status",
+      "created": "Created"
+    },
+    "empty": {
+      "title": "Nothing here yet",
+      "body": {
+        "draft": "Start a transfer when you need to move stock between branches.",
+        "in_transit": "No transfers are en route right now.",
+        "received": "No completed transfers yet.",
+        "cancelled": "No cancelled transfers.",
+        "all": "Create your first stock transfer."
+      }
+    },
+    "error": {
+      "title": "Couldn't load transfers",
+      "body": "The server didn't respond. Try again.",
+      "retry": "Retry"
+    },
+    "notFound": {
+      "title": "Transfer not found",
+      "body": "We couldn't find that transfer. It may have been removed."
+    },
+    "wizard": {
+      "kicker": "New transfer",
+      "title": "Move stock between branches",
+      "steps": {
+        "1": "Branches",
+        "2": "Items",
+        "3": "Review"
+      },
+      "step1": {
+        "title": "Select the source and destination branches",
+        "fromBranch": "From branch (sender)",
+        "toBranch": "To branch (receiver)",
+        "selectBranch": "Choose a branch",
+        "loadingBranches": "Loading branches…",
+        "branchesError": "Couldn't load branches.",
+        "retry": "Retry",
+        "sameBranchError": "Source and destination must be different."
+      },
+      "step2": {
+        "title": "Add items",
+        "searchLabel": "Search products",
+        "searchPlaceholder": "Search by SKU or name",
+        "noResults": "No products match.",
+        "onHand": "in stock",
+        "linesTitle": "Lines",
+        "linesEmpty": "Add at least one product.",
+        "removeLine": "Remove line"
+      },
+      "step3": {
+        "title": "Review and send",
+        "from": "From",
+        "to": "To",
+        "lines": "Lines",
+        "units": "units",
+        "notes": "Notes (optional)"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "back": "Back",
+        "next": "Continue",
+        "saving": "Saving…",
+        "sending": "Sending…",
+        "saveDraft": "Save as draft",
+        "sendNow": "Save and send"
+      }
+    },
+    "detail": {
+      "kicker": "Transfer",
+      "inTransitBanner": "These goods are in transit. Confirm receipt when they arrive.",
+      "discrepancyBanner": "This transfer arrived with a discrepancy. Adjust stock manually if needed.",
+      "linesTitle": "Lines",
+      "receiveTitle": "Confirm what arrived",
+      "receiveHint": "Enter the actual quantity received. Any difference will be flagged.",
+      "sent": "Sent",
+      "recv": "Received",
+      "notes": "Notes",
+      "discrepancyPlaceholder": "Why the count differs (e.g. damaged, missing)",
+      "timeline": "Timeline",
+      "events": {
+        "created": "Draft created",
+        "sent": "Sent",
+        "received": "Received",
+        "cancelled": "Cancelled"
+      }
+    },
+    "actions": {
+      "cancel": "Cancel transfer",
+      "cancelling": "Cancelling…",
+      "send": "Send",
+      "sending": "Sending…",
+      "delete": "Delete",
+      "deleting": "Deleting…",
+      "deleteConfirm": "Click again to confirm",
+      "receiving": "Confirming…",
+      "confirmReceive": "Confirm receipt"
+    },
+    "errors": {
+      "unknown_product": "One of the products no longer exists.",
+      "unknown_branch": "A branch was not found.",
+      "duplicate_product": "The same product appears more than once.",
+      "transfer_empty": "Add at least one line before sending.",
+      "transfer_not_sendable": "Only drafts can be sent.",
+      "transfer_not_receivable": "Only in-transit transfers can be received.",
+      "transfer_not_cancellable": "Only drafts can be cancelled.",
+      "transfer_not_deletable": "Only drafts or cancelled transfers can be deleted.",
+      "transfer_not_editable": "Only drafts can be edited.",
+      "incomplete_receive": "Every line must be confirmed when receiving.",
+      "forbidden_role": "Cashiers can't manage stock transfers.",
+      "forbidden_branch": "You can only act on transfers involving your assigned branch.",
+      "forbidden_during_impersonation": "Deletion is blocked during impersonation.",
+      "validation_failed": "Some fields need attention.",
+      "saveFailed": "Couldn't save. Please try again."
+    }
+  },
+  "settings": {
+    "nav": {
+      "title": "Settings",
+      "security": "Security",
+      "profile": "Profile",
+      "business": "Business",
+      "users": "Users",
+      "taxClasses": "Tax classes",
+      "notifications": "Notifications"
+    },
+    "security": {
+      "kicker": "Account",
+      "title": "Security",
+      "subtitle": "Sign-in and account safety.",
+      "mfaCardTitle": "Two-factor authentication",
+      "mfaOn": "On — codes from your authenticator are required when you sign in.",
+      "mfaOff": "Off — add a second factor to keep your account safe.",
+      "enableButton": "Enable",
+      "disableButton": "Turn off",
+      "regenerateButton": "Generate new recovery codes"
+    },
+    "users": {
+      "kicker": "Team",
+      "title": "Users",
+      "subtitle": "Invite teammates and manage their access. Owner only.",
+      "inviteUser": "Invite user",
+      "loading": "Loading users…",
+      "youBadge": "You",
+      "empty": {
+        "title": "No teammates yet",
+        "body": "Invite your first teammate to share the workload."
+      },
+      "error": {
+        "title": "Couldn't load users",
+        "body": "The server didn't respond. Check your connection and try again.",
+        "retry": "Retry"
+      },
+      "filters": {
+        "search": "Search by name or email",
+        "activeOnly": "Active only"
+      },
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "branch": "Branch",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "pending": "Pending invite"
+      },
+      "roles": {
+        "owner": "Owner",
+        "manager": "Manager",
+        "cashier": "Cashier",
+        "accountant": "Accountant",
+        "auditor": "Auditor"
+      },
+      "branch": {
+        "unassigned": "—"
+      },
+      "actions": {
+        "edit": "Edit",
+        "resendInvite": "Resend invite",
+        "deactivate": "Deactivate",
+        "reactivate": "Reactivate",
+        "resetPassword": "Reset password"
+      },
+      "inviteModal": {
+        "title": "Invite teammate",
+        "submit": "Send invite",
+        "cancel": "Cancel",
+        "sentToast": "Invite sent to {email}",
+        "fields": {
+          "email": "Email",
+          "name": "Full name",
+          "role": "Role",
+          "branch": "Branch",
+          "branchPlaceholder": "— Unassigned —"
+        }
+      },
+      "editModal": {
+        "title": "Edit user",
+        "submit": "Save changes",
+        "cancel": "Cancel",
+        "selfNote": "You can't edit your own role or access.",
+        "fields": {
+          "role": "Role",
+          "branch": "Branch",
+          "isActive": "Active"
+        }
+      },
+      "resendConfirm": {
+        "title": "Resend invitation?",
+        "body": "This emails a fresh invite. The previous link will stop working.",
+        "confirm": "Resend invite",
+        "cancel": "Cancel",
+        "sentToast": "Invite re-sent"
+      },
+      "deactivateConfirm": {
+        "title": "Deactivate {name}?",
+        "body": "{name} will lose access immediately. You can reactivate any time.",
+        "confirm": "Deactivate",
+        "cancel": "Cancel"
+      },
+      "reactivateConfirm": {
+        "title": "Reactivate {name}?",
+        "body": "{name} will regain access. Are you sure?",
+        "confirm": "Reactivate",
+        "cancel": "Cancel"
+      },
+      "ownerOnly": {
+        "title": "Owner-only page",
+        "body": "Only the tenant owner can manage users.",
+        "back": "Back to settings"
+      },
+      "errors": {
+        "email_taken": "Someone with that email already has access.",
+        "manager_requires_branch": "Managers must be assigned to a branch.",
+        "cannot_edit_self": "You can't edit your own role or access.",
+        "cannot_resend_self": "You can't resend an invite to yourself.",
+        "last_owner_lock": "There must be at least one active owner.",
+        "unknown_branch": "That branch doesn't exist.",
+        "unknown_user": "That user no longer exists.",
+        "forbidden_role": "Only the owner can manage users.",
+        "validation_failed": "Some fields need attention.",
+        "generic": "Something went wrong. Please try again."
+      },
+      "resetPasswordConfirm": {
+        "title": "Reset password?",
+        "body": "{name} will receive an email at {email} with a link to set a new password. Their current password keeps working until they use the link.",
+        "confirm": "Send reset link",
+        "cancel": "Cancel",
+        "sentToast": "Reset link sent to {email}"
+      }
+    },
+    "taxClasses": {
+      "kicker": "Tax",
+      "title": "Tax classes",
+      "subtitle": "Define the VAT, GST, or other tax rates you apply to products. Owner only.",
+      "addTaxClass": "Add tax class",
+      "loading": "Loading tax classes…",
+      "defaultBadge": "Default",
+      "taxRateHint": "Enter the rate as a percent (e.g. 15 for 15%). Stored internally as basis points.",
+      "updatedToast": "Saved",
+      "empty": {
+        "title": "No tax classes yet",
+        "body": "Create your first tax class to start applying tax on sales."
+      },
+      "error": {
+        "title": "Couldn't load tax classes",
+        "body": "The server didn't respond. Check your connection and try again.",
+        "retry": "Retry"
+      },
+      "filters": {
+        "search": "Search by code or name"
+      },
+      "columns": {
+        "code": "Code",
+        "name": "Name",
+        "rate": "Rate",
+        "status": "Status",
+        "default": "Default",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "setDefault": "Set default"
+      },
+      "modal": {
+        "create": {
+          "title": "Add tax class"
+        },
+        "edit": {
+          "title": "Edit tax class"
+        },
+        "fields": {
+          "code": "Code",
+          "nameEn": "Name (English)",
+          "nameAr": "Name (Arabic)",
+          "ratePercent": "Rate (%)",
+          "isActive": "Active"
+        },
+        "submit": "Save",
+        "cancel": "Cancel",
+        "createdToast": "Tax class created",
+        "updatedToast": "Tax class updated"
+      },
+      "ownerOnly": {
+        "title": "Owner-only page",
+        "body": "Only the tenant owner can manage tax classes."
+      },
+      "errors": {
+        "tax_class_code_taken": "A tax class with this code already exists.",
+        "tax_class_in_use": "This tax class can't be deleted — products reference it or it's the default.",
+        "forbidden_role": "Only the owner can manage tax classes.",
+        "validation_failed": "Some fields need attention.",
+        "generic": "Something went wrong. Please try again."
+      }
+    },
+    "profile": {
+      "kicker": "Account",
+      "title": "Profile",
+      "subtitle": "Manage your name, email, password, and language.",
+      "identity": {
+        "title": "Identity",
+        "name": "Display name",
+        "email": "Email",
+        "emailVerified": "Verified",
+        "emailPending": "Pending verification",
+        "resendVerify": "Resend verification email",
+        "resendSent": "Sent.",
+        "locale": "Language",
+        "localeEn": "English",
+        "localeAr": "العربية",
+        "save": "Save",
+        "saving": "Saving…",
+        "saved": "Saved"
+      },
+      "changeEmail": "Change email",
+      "password": {
+        "title": "Password",
+        "subtitle": "Change your password and sign out of other devices.",
+        "cta": "Change password"
+      },
+      "security": {
+        "title": "Two-factor authentication",
+        "enabled": "2FA is on for this account.",
+        "disabled": "2FA is off — add it from the Security tab.",
+        "manage": "Manage 2FA"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "soon": "Coming soon — manage email and in-app notifications here."
+      },
+      "passwordModal": {
+        "title": "Change password",
+        "current": "Current password",
+        "new": "New password",
+        "confirm": "Confirm new password",
+        "submit": "Change password",
+        "submitting": "Changing…",
+        "cancel": "Cancel",
+        "mismatch": "Passwords don't match."
+      },
+      "emailModal": {
+        "title": "Change email",
+        "newEmail": "New email",
+        "password": "Confirm with your password",
+        "submit": "Change email",
+        "submitting": "Updating…",
+        "cancel": "Cancel"
+      },
+      "errors": {
+        "invalid_credentials": "Wrong password.",
+        "weak_password": "Password is too weak — mix letters, digits, and a symbol.",
+        "same_password": "New password must differ from the current one.",
+        "email_taken": "Another user already has this email.",
+        "same_email": "New email must differ from the current one.",
+        "network": "Network error — please retry."
+      }
+    },
+    "business": {
+      "kicker": "Settings",
+      "title": "Business",
+      "subtitle": "Identity, operations, and tax defaults for the whole shop.",
+      "loading": "Loading business settings…",
+      "error": "Couldn't load business settings — please retry.",
+      "identity": {
+        "title": "Identity",
+        "name": "Display name",
+        "legalName": "Legal name",
+        "taxId": "Tax registration number",
+        "businessType": "Business type"
+      },
+      "businessTypes": {
+        "retail": "Retail",
+        "wholesale": "Wholesale",
+        "restaurant": "Restaurant",
+        "pharmacy": "Pharmacy",
+        "services": "Services",
+        "other": "Other",
+        "unset": "Not set"
+      },
+      "operations": {
+        "title": "Operations",
+        "currency": "Primary currency",
+        "currencyHint": "Default for new branches; existing branches keep their own currency.",
+        "country": "Country",
+        "timezone": "Timezone",
+        "fiscalYear": "Fiscal year start month",
+        "defaultLocale": "Default language",
+        "defaultLocaleHint": "Used for new staff invites and system emails. Individual users can still pick their own."
+      },
+      "tax": {
+        "title": "Tax defaults",
+        "inclusive": "Display prices with tax included",
+        "inclusiveHint": "When on, the sticker price already includes tax.",
+        "defaultClass": "Default tax class",
+        "manageClasses": "Manage tax classes"
+      },
+      "lifecycle": {
+        "title": "Subscription",
+        "plan": "Plan",
+        "status": "Status",
+        "trialEnds": "Trial ends",
+        "manage": "Manage subscription"
+      },
+      "actions": {
+        "save": "Save changes",
+        "saving": "Saving…",
+        "saved": "Saved",
+        "cancel": "Cancel",
+        "discard": "Discard",
+        "dirty": "Unsaved changes"
+      },
+      "errors": {
+        "invalid_timezone": "That timezone isn't recognized — pick from the list.",
+        "validation_failed": "Some fields aren't valid yet.",
+        "forbidden_role": "Only the owner can edit business settings.",
+        "network": "Network error — please retry."
+      },
+      "branding": {
+        "title": "Branding",
+        "subtitle": "Logo shown on every printed receipt.",
+        "preview": "Logo preview",
+        "placeholder": "No logo",
+        "upload": "Upload logo",
+        "replace": "Replace",
+        "remove": "Remove",
+        "uploading": "Uploading…",
+        "removing": "Removing…",
+        "hint": "JPG / PNG / WebP up to 5 MB. Squareish + transparent background prints best.",
+        "tooLarge": "Logo must be 5MB or smaller.",
+        "uploadFailed": "Upload failed — please retry."
+      }
+    },
+    "notifications": {
+      "kicker": "Settings",
+      "title": "Notifications",
+      "subtitle": "Pick which events ping which channel. Defaults to everything on.",
+      "loading": "Loading preferences…",
+      "error": "Couldn't load preferences — please retry.",
+      "col": {
+        "event": "Event"
+      },
+      "channel": {
+        "email": "Email",
+        "in_app": "In-app"
+      },
+      "events": {
+        "low_stock": {
+          "label": "Low stock alerts",
+          "description": "Daily digest when a product hits its reorder point."
+        },
+        "trial_ending": {
+          "label": "Trial ending reminder",
+          "description": "3 days before your trial expires."
+        },
+        "invoice_issued": {
+          "label": "New invoice",
+          "description": "When a subscription invoice is generated."
+        },
+        "invoice_overdue": {
+          "label": "Invoice overdue",
+          "description": "When an unpaid invoice passes its due date."
+        },
+        "payment_received": {
+          "label": "Payment received",
+          "description": "When a customer payment lands on a sale."
+        },
+        "payment_verified": {
+          "label": "Subscription payment verified",
+          "description": "When an admin clears your transfer proof."
+        },
+        "refund_completed": {
+          "label": "Refund completed",
+          "description": "When a customer refund is processed."
+        },
+        "shift_variance": {
+          "label": "Shift variance",
+          "description": "When a cashier's Z-report variance exceeds threshold."
+        },
+        "sync_failure": {
+          "label": "Offline sync failure",
+          "description": "When an offline-ringed sale fails to sync."
+        }
+      },
+      "errors": {
+        "forbidden_role": "Only owners and managers can change notifications.",
+        "network": "Network error — please retry."
+      }
+    }
+  },
+  "suppliers": {
+    "kicker": "Network",
+    "title": "Suppliers",
+    "subtitle": "Your supply network — terms, performance, and what's owed.",
+    "newSupplier": "Add supplier",
+    "addSupplier": "Add a supplier",
+    "addSupplierHint": "Bring a new partner into your network.",
+    "loading": "Loading suppliers…",
+    "empty": {
+      "title": "No suppliers yet",
+      "body": "Add your first partner to start placing purchase orders.",
+      "cta": "Add a supplier"
+    },
+    "error": {
+      "title": "Couldn't load suppliers",
+      "body": "The server didn't respond. Check your connection or try again.",
+      "retry": "Retry"
+    },
+    "notFound": {
+      "title": "Supplier not found",
+      "body": "It may have been removed or you no longer have access."
+    },
+    "hero": {
+      "activeSuppliers": "Active suppliers",
+      "totalOwed": "Total owed",
+      "openPos": "Open POs"
+    },
+    "filters": {
+      "search": "Search by name or code",
+      "activeOnly": "Active only"
+    },
+    "card": {
+      "leadTime": "{days}d lead",
+      "paymentTerms": "Payment terms",
+      "owed": "Owed",
+      "lastOrder": "Last order",
+      "never": "Never",
+      "openProfile": "Open profile →"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "detail": {
+      "kicker": "Supplier",
+      "back": "Suppliers",
+      "edit": "Edit",
+      "delete": "Delete",
+      "tabs": {
+        "overview": "Overview",
+        "catalog": "Catalog",
+        "purchaseOrders": "Purchase Orders",
+        "documents": "Documents",
+        "activity": "Activity"
+      },
+      "deleteConfirm": {
+        "title": "Delete this supplier?",
+        "body": "The supplier will be archived. Existing purchase orders are preserved. This action can't be undone.",
+        "confirm": "Delete",
+        "cancel": "Cancel",
+        "deleting": "Deleting…"
+      }
+    },
+    "scorecard": {
+      "fillRate": "Fill rate",
+      "onTime": "On-time delivery",
+      "avgLeadTime": "Avg lead time",
+      "totalSpend": "Total spend",
+      "totalOrders": "Total orders",
+      "lastOrder": "Last order",
+      "noData": "—",
+      "days": "{days}d",
+      "never": "No orders yet"
+    },
+    "alerts": {
+      "title": "Reliability slipping",
+      "body": "{name} is below 80% on fill rate or on-time delivery. Review recent POs and consider alternates.",
+      "reviewCta": "Review activity"
+    },
+    "orderHistory": {
+      "title": "Recent purchase orders",
+      "empty": "No purchase orders yet.",
+      "newPo": "Create PO",
+      "columns": {
+        "code": "PO Code",
+        "created": "Created",
+        "status": "Status",
+        "branch": "Branch",
+        "total": "Total"
+      },
+      "statuses": {
+        "draft": "Draft",
+        "ordered": "Ordered",
+        "received": "Received",
+        "cancelled": "Cancelled"
+      }
+    },
+    "form": {
+      "kickerCreate": "Add supplier",
+      "kickerEdit": "Edit supplier",
+      "titleCreate": "Add a supplier",
+      "titleEdit": "Edit details",
+      "sections": {
+        "basics": "Basics",
+        "contact": "Contact",
+        "terms": "Terms",
+        "address": "Address",
+        "other": "Other",
+        "status": "Status"
+      },
+      "fields": {
+        "code": "Supplier code",
+        "codeHint": "Short uppercase ID, 2–16 chars.",
+        "codeLocked": "Code can't change after creation.",
+        "nameEn": "Name (English)",
+        "nameAr": "Name (Arabic)",
+        "namePlaceholder": "Atlas Packaging",
+        "country": "Country (ISO 2-letter)",
+        "currency": "Currency",
+        "leadTimeDays": "Lead time (days)",
+        "paymentTerms": "Payment terms",
+        "paymentTermsHint": "e.g. Net 30, COD, 50% upfront.",
+        "contactEmail": "Contact email",
+        "contactPhone": "Contact phone",
+        "addressEn": "Address (English)",
+        "addressAr": "Address (Arabic)",
+        "taxId": "Tax ID",
+        "notes": "Notes",
+        "isActive": "Active",
+        "isActiveHint": "Inactive suppliers don't appear in PO creation."
+      },
+      "tabs": {
+        "en": "English",
+        "ar": "Arabic"
+      },
+      "actions": {
+        "save": "Save",
+        "saving": "Saving…",
+        "create": "Create supplier",
+        "creating": "Creating…",
+        "cancel": "Cancel"
+      },
+      "errors": {
+        "required": "Required",
+        "codePattern": "Use uppercase letters, digits, underscores, or dashes.",
+        "code_taken": "A supplier with this code already exists.",
+        "validation_failed": "Some fields need attention.",
+        "forbidden_role": "Only owners and managers can do that.",
+        "emailInvalid": "Enter a valid email.",
+        "saveFailed": "Couldn't save. Please try again.",
+        "deleteFailed": "Couldn't delete this supplier."
+      }
+    },
+    "catalog": {
+      "title": "Catalog",
+      "subtitle": "Products you source from this supplier.",
+      "add": "Add product",
+      "empty": "No products linked yet.",
+      "columns": {
+        "product": "Product",
+        "supplierSku": "Supplier SKU",
+        "unitCost": "Unit cost",
+        "currency": "Currency",
+        "preferred": "Preferred",
+        "effectiveFrom": "Effective from",
+        "actions": "Actions"
+      },
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "remove": "Remove",
+      "removeConfirm": "Remove this catalog entry?",
+      "search": "Search SKU or name",
+      "noResults": "No matching products."
+    },
+    "documents": {
+      "title": "Documents",
+      "subtitle": "Contracts, tax certificates, and bank letters.",
+      "uploadTitle": "Upload a document",
+      "kindLabel": "Kind",
+      "fileLabel": "File",
+      "notesLabel": "Notes (optional)",
+      "upload": "Upload",
+      "uploading": "Uploading…",
+      "kind": {
+        "contract": "Contract",
+        "tax_certificate": "Tax certificate",
+        "bank_letter": "Bank letter",
+        "other": "Other"
+      },
+      "download": "Download",
+      "delete": "Delete",
+      "empty": "No documents uploaded yet.",
+      "maxSize": "Max 5 MB.",
+      "allowedTypes": "JPG, PNG, or PDF.",
+      "size": "{kb} KB",
+      "uploadedOn": "Uploaded {date}",
+      "errors": {
+        "too_large": "File too large. Max 5 MB.",
+        "bad_type": "Unsupported file type."
+      }
+    },
+    "activity": {
+      "title": "Activity",
+      "empty": "No activity yet.",
+      "po": "Purchase order {code}",
+      "audit": "{action}"
+    }
+  },
+  "purchases": {
+    "kicker": "Procurement",
+    "title": "Purchase orders",
+    "subtitle": "Stock the shelves — order, receive, reconcile.",
+    "newPo": "New purchase order",
+    "loading": "Loading purchase orders…",
+    "notFound": {
+      "title": "Purchase order not found",
+      "body": "It may have been removed or you no longer have access."
+    },
+    "empty": {
+      "all": "No purchase orders yet",
+      "draft": "No drafts",
+      "ordered": "Nothing on order",
+      "received": "Nothing received yet",
+      "cancelled": "No cancelled orders",
+      "body": "Start your first PO to restock from a supplier."
+    },
+    "error": {
+      "title": "Couldn't load purchase orders",
+      "body": "The server didn't respond. Check your connection or try again.",
+      "retry": "Retry"
+    },
+    "editGuard": {
+      "title": "This PO can't be edited",
+      "body": "Only draft purchase orders are editable. Use the receive flow for ordered POs."
+    },
+    "hero": {
+      "openPos": "Open POs",
+      "openOwed": "Open owed",
+      "thisMonthSpend": "This month spend"
+    },
+    "filters": {
+      "supplier": "Supplier",
+      "branch": "Branch",
+      "allSuppliers": "All suppliers",
+      "allBranches": "All branches"
+    },
+    "tabs": {
+      "all": "All",
+      "draft": "Draft",
+      "ordered": "Ordered",
+      "received": "Received",
+      "cancelled": "Cancelled"
+    },
+    "status": {
+      "draft": "Draft",
+      "ordered": "Ordered",
+      "received": "Received",
+      "cancelled": "Cancelled"
+    },
+    "columns": {
+      "code": "PO Code",
+      "sku": "SKU",
+      "product": "Product",
+      "supplier": "Supplier",
+      "branch": "Branch",
+      "created": "Created",
+      "expected": "Expected",
+      "status": "Status",
+      "total": "Total",
+      "qtyOrdered": "Qty ordered",
+      "qtyReceived": "Qty received",
+      "unitCost": "Unit cost",
+      "lineTotal": "Line total",
+      "discrepancy": "Discrepancy",
+      "discrepancyTooltip": "Quantity received didn't match",
+      "actions": "Actions"
+    },
+    "detail": {
+      "kicker": "Created {date}",
+      "backToList": "Back to list",
+      "expectedLabel": "Expected",
+      "hasDiscrepancy": "Has discrepancy",
+      "notesTitle": "Notes",
+      "lines": {
+        "title": "Order lines"
+      },
+      "kpis": {
+        "subtotal": "Subtotal",
+        "tax": "Tax",
+        "shipping": "Shipping",
+        "total": "Total"
+      },
+      "timeline": {
+        "title": "Timeline",
+        "created": "Draft created",
+        "ordered": "Ordered",
+        "received": "Received",
+        "cancelled": "Cancelled"
+      },
+      "actions": {
+        "edit": "Edit",
+        "cancel": "Cancel",
+        "cancelConfirm": "Confirm cancel?",
+        "cancelling": "Cancelling…",
+        "markAsOrdered": "Mark as ordered",
+        "ordering": "Ordering…",
+        "receive": "Receive",
+        "downloadPdf": "Download PDF",
+        "delete": "Delete",
+        "deleteConfirm": "Confirm delete?",
+        "deleting": "Deleting…",
+        "dismissConfirm": "Dismiss"
+      }
+    },
+    "wizard": {
+      "kicker": "New purchase order · step {step} of {total}",
+      "back": "Back",
+      "cancel": "Cancel",
+      "saving": "Saving…",
+      "loadingSuppliers": "Loading suppliers…",
+      "loadingBranches": "Loading branches…",
+      "suppliersError": "Couldn't load suppliers",
+      "branchesError": "Couldn't load branches",
+      "stepLabels": {
+        "1": "Supplier & branch",
+        "2": "Lines",
+        "3": "Review"
+      },
+      "step1": {
+        "title": "Choose supplier and branch",
+        "supplier": "Supplier",
+        "branch": "Receiving branch",
+        "selectSupplier": "Select a supplier",
+        "selectBranch": "Select a branch",
+        "expectedAt": "Expected delivery (optional)",
+        "expectedAtHint": "Defaults to the supplier's lead time when left blank.",
+        "next": "Next: add lines"
+      },
+      "step2": {
+        "title": "Add the lines you'd like to order",
+        "addLine": "Add line",
+        "productPicker": "Search products by name or SKU",
+        "supplierSkuPrefix": "supplier SKU",
+        "changeProduct": "Change",
+        "qty": "Qty",
+        "unitCost": "Unit cost (cents)",
+        "fromCatalog": "From catalog",
+        "notInCatalog": "Not in catalog",
+        "subtotal": "Subtotal",
+        "tax": "Tax (cents)",
+        "shipping": "Shipping (cents)",
+        "centsHint": "In smallest currency unit (e.g. cents).",
+        "moreLabel": "Add tax or shipping",
+        "currency": "Currency: {code}",
+        "next": "Next: review",
+        "removeLine": "Remove line",
+        "prefillLoading": "Looking for low-stock items in the supplier's catalog…"
+      },
+      "step3": {
+        "title": "Review and submit",
+        "supplier": "Supplier",
+        "branch": "Receiving branch",
+        "expectedAt": "Expected delivery",
+        "currency": "Currency",
+        "product": "Product",
+        "qty": "Qty",
+        "unitCost": "Unit cost",
+        "lineTotal": "Line total",
+        "subtotal": "Subtotal",
+        "tax": "Tax",
+        "shipping": "Shipping",
+        "grandTotal": "Grand total",
+        "notes": "Notes (optional)",
+        "notesPlaceholder": "Internal context for your team or the supplier.",
+        "saveDraft": "Save as draft",
+        "saveAndOrder": "Save and mark as ordered"
+      }
+    },
+    "receive": {
+      "kicker": "Receive goods",
+      "title": "Receive goods",
+      "linesTitle": "Lines to receive",
+      "expected": "Expected",
+      "actual": "Actual",
+      "shortBy": "Short by {n}",
+      "overBy": "Over by {n}",
+      "addNote": "Add note",
+      "notePlaceholder": "What was the discrepancy? (damaged, short shipped, swap, …)",
+      "receiveAll": "Receive all",
+      "receiving": "Receiving…",
+      "success": "Received successfully",
+      "statusGuard": {
+        "title": "This PO can't be received",
+        "body": "Only ordered POs can be received. Someone may have already received this one in another tab.",
+        "backToDetail": "Back to PO"
+      }
+    },
+    "sendDialog": {
+      "title": "Mark as ordered",
+      "body": "We'll move this PO to the ordered state. Want to email it to {supplier} too?",
+      "recipient": "Recipient",
+      "edit": "Edit",
+      "done": "Done",
+      "attachPdf": "Attach PDF (recommended)",
+      "cancel": "Cancel",
+      "confirm": "Confirm and send",
+      "sending": "Sending…",
+      "noEmail": {
+        "title": "No email on file",
+        "body": "This supplier doesn't have a contact email. You can mark the PO as ordered without sending — share the PDF manually later.",
+        "skipSending": "Mark as ordered without email"
+      }
+    },
+    "errors": {
+      "validation_failed": "Some fields need attention.",
+      "duplicate_product": "The same product appears more than once.",
+      "unknown_supplier": "We couldn't find that supplier.",
+      "unknown_branch": "We couldn't find that branch.",
+      "unknown_product": "We couldn't find that product.",
+      "product_not_in_catalog": "This product isn't in the supplier's catalog yet.",
+      "forbidden_branch": "You don't have access to that branch.",
+      "forbidden_role": "Only owners and managers can do that.",
+      "not_draft": "This PO is no longer a draft.",
+      "not_ordered": "This PO is no longer in the ordered state.",
+      "incomplete_receive": "Every line needs a received quantity.",
+      "purchase_order_locked": "This PO is locked and can't be changed.",
+      "not_deletable": "This PO can't be deleted in its current state."
+    }
+  },
+  "returns": {
+    "kicker": "Procurement",
+    "title": "Supplier returns",
+    "subtitle": "Send goods back to the supplier and reconcile the refund.",
+    "newReturn": "New return",
+    "loading": "Loading supplier returns…",
+    "notFound": {
+      "title": "Supplier return not found",
+      "body": "It may have been removed or you no longer have access."
+    },
+    "empty": {
+      "all": "No supplier returns yet",
+      "draft": "No drafts",
+      "sent": "Nothing sent",
+      "refunded": "No refunds yet",
+      "cancelled": "No cancelled returns",
+      "body": "Start a return when goods need to go back — damage, wrong item, or expired stock."
+    },
+    "error": {
+      "title": "Couldn't load supplier returns",
+      "body": "The server didn't respond. Check your connection or try again.",
+      "retry": "Retry"
+    },
+    "editGuard": {
+      "title": "This return can't be edited",
+      "body": "Only draft returns are editable. This one has moved on."
+    },
+    "hero": {
+      "openReturns": "Open returns",
+      "refundPending": "Refund pending",
+      "thisMonthRefunded": "Refunded this month"
+    },
+    "filters": {
+      "supplier": "Supplier",
+      "branch": "Branch",
+      "allSuppliers": "All suppliers",
+      "allBranches": "All branches"
+    },
+    "tabs": {
+      "all": "All",
+      "draft": "Draft",
+      "sent": "Sent",
+      "refunded": "Refunded",
+      "cancelled": "Cancelled"
+    },
+    "status": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "refunded": "Refunded",
+      "cancelled": "Cancelled"
+    },
+    "columns": {
+      "code": "RMA Code",
+      "supplier": "Supplier",
+      "branch": "Branch",
+      "created": "Created",
+      "reason": "Reason",
+      "status": "Status",
+      "total": "Total",
+      "product": "Product",
+      "qty": "Qty",
+      "unitCost": "Unit cost",
+      "lineTotal": "Line total",
+      "reasonCode": "Reason code",
+      "actions": "Actions"
+    },
+    "cancelConfirm": {
+      "title": "Discard this draft?",
+      "body": "You'll lose any unsaved changes.",
+      "confirm": "Discard",
+      "cancel": "Keep editing"
+    },
+    "deleteConfirm": {
+      "title": "Delete this return?",
+      "body": "This will remove the draft permanently.",
+      "confirm": "Delete",
+      "cancel": "Keep"
+    },
+    "detail": {
+      "kicker": "Created {date}",
+      "backToList": "Back to list",
+      "statusLabel": "Status",
+      "totalLabel": "Total",
+      "lineCount": "Line count",
+      "currency": "Currency",
+      "refundedAt": "Refunded",
+      "sentAt": "Sent",
+      "reasonTitle": "Reason",
+      "notesTitle": "Notes",
+      "linesTitle": "Return lines",
+      "sentToast": "{code} sent and stock decremented",
+      "timeline": {
+        "title": "Timeline",
+        "created": "Draft created",
+        "sent": "Sent to supplier",
+        "refunded": "Refund received",
+        "cancelled": "Cancelled"
+      },
+      "actions": {
+        "send": "Send",
+        "sendConfirm": "Confirm send?",
+        "sending": "Sending…",
+        "edit": "Edit",
+        "cancel": "Cancel",
+        "cancelConfirm": "Confirm cancel?",
+        "cancelling": "Cancelling…",
+        "delete": "Delete",
+        "deleteConfirm": "Confirm delete?",
+        "deleting": "Deleting…",
+        "refund": "Mark refund received",
+        "dismissConfirm": "Dismiss"
+      }
+    },
+    "form": {
+      "newTitle": "New supplier return",
+      "editTitle": "Edit draft return",
+      "supplierAndBranch": "Supplier and branch",
+      "linesTitle": "Lines to return",
+      "supplier": "Supplier",
+      "branch": "Receiving branch",
+      "selectSupplier": "Select a supplier",
+      "selectBranch": "Select a branch",
+      "loadingSuppliers": "Loading suppliers…",
+      "loadingBranches": "Loading branches…",
+      "suppliersError": "Couldn't load suppliers",
+      "branchesError": "Couldn't load branches",
+      "reason": "Reason for return",
+      "reasonPlaceholder": "Short note explaining why these goods are going back.",
+      "notes": "Notes (optional)",
+      "notesPlaceholder": "Anything else for your team or the supplier.",
+      "addLine": "Add line",
+      "productPicker": "Search products by name or SKU",
+      "changeProduct": "Change",
+      "qty": "Qty",
+      "unitCost": "Unit cost (cents)",
+      "reasonCode": "Reason code",
+      "suggested": {
+        "damaged": "Damaged",
+        "wrongItem": "Wrong item",
+        "expired": "Expired",
+        "other": "Other"
+      },
+      "subtotal": "Subtotal",
+      "currency": "Currency: {code}",
+      "saveDraft": "Save as draft",
+      "saveAndSend": "Save and send",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "removeLine": "Remove line"
+    },
+    "refundDialog": {
+      "title": "Mark refund received?",
+      "body": "We'll move {code} to refunded. This is bookkeeping only — no stock will move.",
+      "notesLabel": "Notes (optional)",
+      "notesPlaceholder": "Reference number, payment method, anything worth recording.",
+      "cancel": "Cancel",
+      "confirm": "Mark refunded",
+      "confirming": "Saving…"
+    },
+    "errors": {
+      "validation_failed": "Some fields need attention.",
+      "duplicate_product": "The same product appears more than once.",
+      "unknown_supplier": "We couldn't find that supplier.",
+      "unknown_branch": "We couldn't find that branch.",
+      "unknown_product": "We couldn't find that product.",
+      "forbidden_branch": "You don't have access to that branch.",
+      "forbidden_role": "Only owners and managers can do that.",
+      "not_draft": "This return is no longer a draft.",
+      "not_sent": "This return is no longer in the sent state.",
+      "not_deletable": "This return can't be deleted in its current state."
+    }
+  },
+  "customers": {
+    "kicker": "Customers",
+    "listTitle": "Customers",
+    "listSubtitle": "Your regulars, walk-ins, and loyalty members in one place.",
+    "newTitle": "Add a customer",
+    "newSubtitle": "Capture the basics now — you can fill in more later.",
+    "editTitle": "Edit customer",
+    "addCustomer": "Add customer",
+    "searchPlaceholder": "Search by name, phone, email, or code…",
+    "colName": "Name",
+    "colPhone": "Phone",
+    "colEmail": "Email",
+    "colStoreCredit": "Store credit",
+    "colSalesCount": "Sales",
+    "colLastSale": "Last visit",
+    "loading": "Loading customers…",
+    "errorTitle": "Couldn't load customers",
+    "errorBody": "The server didn't answer. Try again in a moment.",
+    "retry": "Retry",
+    "emptyTitle": "No customers yet",
+    "emptyBody": "Start by adding your first regular or capturing a walk-in's details.",
+    "notFoundTitle": "Customer not found",
+    "notFoundBody": "This customer may have been deleted or never existed.",
+    "backToList": "Back to customers",
+    "edit": "Edit",
+    "deleteCustomer": "Delete",
+    "deleting": "Deleting…",
+    "confirmDelete": "Delete customer",
+    "confirmDeleteTitle": "Delete this customer?",
+    "confirmDeleteBody": "{name} will be removed from your list. This can't be undone.",
+    "memberSince": "Member since {date}",
+    "notes": "Notes",
+    "tabs": {
+      "overview": "Overview",
+      "credit": "Store credit",
+      "sales": "Sales history"
+    },
+    "kpi": {
+      "balance": "Store credit balance",
+      "salesCount": "Total sales",
+      "lastSale": "Last visit"
+    },
+    "credit": {
+      "balance": "Current balance",
+      "body": "Use the store-credit ledger to top up, refund, or adjust this customer's balance.",
+      "openLedger": "Open ledger"
+    },
+    "sales": {
+      "emptyTitle": "No sales yet",
+      "emptyBody": "Sales attached to this customer will appear here.",
+      "colCode": "Receipt",
+      "colDate": "Date",
+      "colTotal": "Total",
+      "colStatus": "Status"
+    },
+    "form": {
+      "name": "Full name",
+      "phone": "Phone",
+      "email": "Email",
+      "code": "Customer code",
+      "codeHelp": "Optional internal reference (uppercase letters, digits, dashes).",
+      "notes": "Notes",
+      "save": "Save changes",
+      "create": "Create customer",
+      "cancel": "Cancel",
+      "saving": "Saving…",
+      "errors": {
+        "nameRequired": "Name is required.",
+        "emailInvalid": "Enter a valid email address.",
+        "codeInvalid": "Code may only contain uppercase letters, digits, underscores, and dashes."
+      }
+    },
+    "errors": {
+      "emailTaken": "Another customer already uses this email.",
+      "phoneTaken": "Another customer already uses this phone.",
+      "hasStoreCredit": "This customer has a non-zero store-credit balance. Zero it first, then delete.",
+      "impersonationForbidden": "Delete is blocked while you're impersonating a tenant.",
+      "forbiddenRole": "Your role can't perform this action.",
+      "validationFailed": "Check the highlighted fields and try again.",
+      "generic": "Something went wrong. Try again.",
+      "network": "Network error. Check your connection and try again."
+    },
+    "storeCredit": {
+      "kicker": "Customer",
+      "title": "Store credit",
+      "subtitle": "Balance and history",
+      "adjustCta": "Adjust",
+      "balanceLabel": "Current balance",
+      "currencyLabel": "Currency",
+      "loading": "Loading store credit…",
+      "empty": {
+        "title": "No history yet",
+        "body": "When this customer earns or spends credit it will appear here."
+      },
+      "error": {
+        "title": "Couldn't load store credit",
+        "body": "We hit a snag fetching this customer's balance.",
+        "retry": "Try again"
+      },
+      "columns": {
+        "date": "Date",
+        "reference": "Reference",
+        "amount": "Amount",
+        "balanceAfter": "Balance after",
+        "note": "Note"
+      },
+      "references": {
+        "sale": "Sale",
+        "refund": "Refund",
+        "manual_adjust": "Adjustment",
+        "expiration": "Expired",
+        "cancel": "Cancelled"
+      },
+      "modal": {
+        "title": "Adjust store credit",
+        "fields": {
+          "amountSigned": "Amount (cents, signed)",
+          "currency": "Currency (3-letter ISO)",
+          "noteEn": "Note (English)",
+          "noteAr": "Note (Arabic)"
+        },
+        "submit": "Save adjustment",
+        "cancel": "Cancel",
+        "adjustedToast": "Store credit adjusted."
+      },
+      "errors": {
+        "insufficient_balance": "That would put the customer's balance below zero.",
+        "currency_mismatch": "The currency doesn't match this customer's existing credit.",
+        "validation_failed": "Please fill in all required fields with valid values.",
+        "forbidden": "Only owners and managers can adjust store credit.",
+        "amount_zero": "The amount can't be zero.",
+        "generic": "Something went wrong. Please try again."
+      }
+    }
+  },
+  "refunds": {
+    "kicker": "Refund",
+    "title": "Refund this sale",
+    "subtitle": "Pick lines to refund, choose how to refund, and confirm.",
+    "loading": "Loading sale…",
+    "steps": {
+      "lines": "Pick lines",
+      "method": "Refund method",
+      "review": "Review"
+    },
+    "lines": {
+      "title": "Pick lines to refund",
+      "subtitle": "Quantities are capped at the amount remaining (not already refunded).",
+      "col": {
+        "sku": "SKU",
+        "name": "Item",
+        "unitPrice": "Unit price",
+        "remaining": "Remaining",
+        "qty": "Refund qty",
+        "restock": "Restock"
+      },
+      "restock": "Return to stock"
+    },
+    "method": {
+      "title": "How are you refunding?",
+      "subtitle": "The amount will be returned to the customer using this method.",
+      "approvalCode": "Terminal approval code",
+      "approvalCodePlaceholder": "e.g. 04829",
+      "customer": "Customer",
+      "attachCustomer": "Attach customer",
+      "changeCustomer": "Change",
+      "attachedFromSale": "Customer attached on the original sale",
+      "notes": "Notes",
+      "notesPlaceholder": "Reason, condition, internal note…",
+      "options": {
+        "cash": "Cash",
+        "card": "Card",
+        "bank_transfer": "Bank transfer",
+        "store_credit": "Store credit"
+      },
+      "hints": {
+        "cash": "Cash will be deducted from the drawer.",
+        "card": "Enter the terminal void/reversal code.",
+        "bank_transfer": "Tracked as an obligation; finance reconciles externally.",
+        "store_credit": "Adds to the customer's store-credit balance."
+      }
+    },
+    "review": {
+      "title": "Review and confirm",
+      "subtitle": "Once submitted, the refund code is locked and the audit log is written.",
+      "sale": "Original sale",
+      "lines": "Lines",
+      "linesCount": "{count, plural, =0 {No items} one {1 item} other {# items}}",
+      "method": "Refund method",
+      "customer": "Customer"
+    },
+    "summary": {
+      "subtotal": "Subtotal",
+      "tax": "Tax",
+      "total": "Refund total"
+    },
+    "actions": {
+      "back": "Back",
+      "next": "Next",
+      "submit": "Submit refund",
+      "submitting": "Refunding…"
+    },
+    "errors": {
+      "sale_not_found": "Sale not found.",
+      "not_refundable": "This sale is not paid — refund is only possible after payment is confirmed.",
+      "fully_refunded": "All lines on this sale have already been refunded.",
+      "refund_total_mismatch": "The amounts don't add up — please retry.",
+      "qty_exceeds_remaining": "You can't refund more than the remaining qty on a line.",
+      "store_credit_requires_customer": "Store-credit refunds need a customer attached.",
+      "currency_mismatch": "Customer store-credit currency does not match this sale.",
+      "manager_approval_required": "This refund needs manager approval.",
+      "network": "Network error — please retry."
+    },
+    "picker": {
+      "title": "Attach customer",
+      "searchPlaceholder": "Search name, phone, email…",
+      "close": "Close",
+      "loading": "Searching…",
+      "loadError": "Couldn't load customers.",
+      "noResults": "No matching customer.",
+      "createNew": "Add a new customer"
+    },
+    "approval": {
+      "title": "Manager approval required",
+      "subtitle": "This refund is above the limit for cashiers. Pick an owner or manager who is approving.",
+      "pickApprover": "Approver",
+      "placeholder": "Pick an approver…",
+      "loading": "Loading approvers…",
+      "none": "No approvers found.",
+      "role": {
+        "owner": "Owner",
+        "manager": "Manager"
+      },
+      "cancel": "Cancel",
+      "confirm": "Approve and refund",
+      "submitting": "Refunding…"
+    }
+  },
+  "salesList": {
+    "kicker": "Sales",
+    "title": "Sales history",
+    "subtitle": "Filter and review every sale made across your branches.",
+    "loading": "Loading sales…",
+    "error": "Couldn't load sales — please retry.",
+    "emptyTitle": "No sales in this range",
+    "emptyBody": "Try widening the date range or clearing the filters.",
+    "filters": {
+      "from": "From",
+      "to": "To",
+      "branch": "Branch",
+      "allBranches": "All branches",
+      "method": "Payment method",
+      "allMethods": "All methods"
+    },
+    "statuses": {
+      "all": "All",
+      "paid": "Paid",
+      "payment_pending": "Pending",
+      "disputed": "Disputed",
+      "refunded": "Refunded"
+    },
+    "methods": {
+      "cash": "Cash",
+      "card": "Card",
+      "bank_transfer": "Transfer",
+      "store_credit": "Store credit",
+      "split": "Split"
+    },
+    "columns": {
+      "code": "Ticket",
+      "date": "Date",
+      "branch": "Branch",
+      "cashier": "Cashier",
+      "items": "Items",
+      "total": "Total",
+      "method": "Method",
+      "status": "Status"
+    },
+    "pagination": {
+      "summary": "{shown} of {total}",
+      "page": "Page {page} of {total}",
+      "prev": "Previous",
+      "next": "Next"
+    }
+  },
+  "reconcile": {
+    "kicker": "Money",
+    "title": "End-of-day reconciliation",
+    "subtitle": "Chain-wide cash truth across all shifts for the picked date.",
+    "print": "Print",
+    "loading": "Loading reconciliation…",
+    "error": "Couldn't load reconciliation — please retry.",
+    "filters": {
+      "date": "Date"
+    },
+    "chain": {
+      "title": "Chain total"
+    },
+    "totals": {
+      "gross": "Gross revenue",
+      "txns": "Transactions",
+      "cashSales": "Cash sales",
+      "cashRefunds": "Cash refunds",
+      "expected": "Expected cash",
+      "declared": "Declared cash",
+      "variance": "Variance"
+    },
+    "branch": {
+      "shifts": "{count, plural, =0 {No shifts} one {1 shift} other {# shifts}}",
+      "balanced": "Balanced",
+      "short": "Short {amount}",
+      "over": "Over {amount}",
+      "byPayment": "By payment method",
+      "noShifts": "No shifts opened for this day."
+    },
+    "shifts": {
+      "cashier": "Cashier",
+      "status": "Status",
+      "float": "Opening",
+      "expected": "Expected",
+      "declared": "Declared",
+      "variance": "Variance"
+    }
+  }
+}

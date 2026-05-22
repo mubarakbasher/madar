@@ -1,0 +1,1078 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280">
+<title>Madar — Printable artifacts</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="design-tokens.css">
+
+<style>
+  body {
+    background: var(--bg-sunk);
+    padding: 32px 0 80px;
+    min-height: 100vh;
+  }
+
+  /* ── Top bar with selector ───────────────────────────────────────── */
+  .pa-top {
+    max-width: 1280px;
+    margin: 0 auto 24px;
+    padding: 0 32px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .pa-top .brand {
+    display: flex; align-items: center; gap: 10px;
+    margin-inline-end: auto;
+  }
+  .pa-top .brand-mark {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: var(--accent); color: #fff;
+    display: grid; place-items: center;
+    font-family: var(--serif); font-size: 16px;
+    font-weight: 500;
+  }
+  .pa-top h1 {
+    font-family: var(--serif); font-size: 24px;
+    font-weight: 500; margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .pa-top h1 small {
+    font-family: var(--sans); font-size: 11.5px;
+    color: var(--ink-3); margin-inline-start: 8px;
+    font-weight: 400;
+  }
+  .pa-print {
+    padding: 8px 14px; border-radius: 8px;
+    background: var(--accent); color: #fff;
+    border: 0; font-family: inherit;
+    font-size: 13px; font-weight: 500;
+    display: inline-flex; align-items: center; gap: 8px;
+    cursor: pointer;
+  }
+  .pa-print:hover { background: var(--accent-ink); }
+
+  /* ── Tab selector ─────────────────────────────────────────────────── */
+  .pa-tabs {
+    max-width: 1280px;
+    margin: 0 auto 24px;
+    padding: 0 32px;
+    display: flex; gap: 6px;
+    flex-wrap: wrap;
+  }
+  .pa-tab {
+    border: 1px solid var(--rule);
+    background: var(--bg);
+    border-radius: 100px;
+    padding: 8px 14px;
+    font-family: inherit; font-size: 13px;
+    color: var(--ink-2);
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .pa-tab:hover { border-color: var(--ink-4); color: var(--ink); }
+  .pa-tab[aria-current="true"] {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+  .pa-tab .pa-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--ink-4);
+  }
+  .pa-tab[data-thermal="58"]  .pa-dot { background: #C8553D; }
+  .pa-tab[data-thermal="80"]  .pa-dot { background: #3F6B4E; }
+  .pa-tab[data-thermal="a4"]  .pa-dot { background: #2F4D8A; }
+  .pa-tab[data-thermal="shift"] .pa-dot { background: #B98A3D; }
+
+  /* ── Artifact stage ──────────────────────────────────────────────── */
+  .pa-stage {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 32px;
+    display: grid; place-items: center;
+    min-height: 600px;
+  }
+  .pa-artifact { display: none; }
+  body[data-show="r58-en"] .a-r58-en,
+  body[data-show="r58-ar"] .a-r58-ar,
+  body[data-show="r80-en"] .a-r80-en,
+  body[data-show="r80-pending"] .a-r80-pending,
+  body[data-show="invoice"] .a-invoice,
+  body[data-show="shift"] .a-shift { display: block; }
+
+  /* ── Receipt — common paper styles ───────────────────────────────── */
+  .receipt {
+    background: #FFFEF8;
+    color: #1A1410;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    line-height: 1.45;
+    box-shadow:
+      0 1px 0 rgba(26,20,16,0.04),
+      0 20px 50px rgba(26,20,16,0.12),
+      0 4px 12px rgba(26,20,16,0.06);
+    border-radius: 1px;
+    padding: 14px 14px 18px;
+    position: relative;
+  }
+  .receipt::after {
+    /* zig-zag torn-paper bottom */
+    content: "";
+    position: absolute;
+    bottom: -10px; left: 0; right: 0; height: 10px;
+    background:
+      linear-gradient(135deg, transparent 50%, #FFFEF8 50%) -1px 0/12px 12px,
+      linear-gradient(-135deg, transparent 50%, #FFFEF8 50%) 5px 0/12px 12px;
+  }
+  .receipt-58 { width: 220px; font-size: 10px; }
+  .receipt-80 { width: 300px; font-size: 11px; }
+  .receipt h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px; font-weight: 500;
+    letter-spacing: -0.02em;
+    text-align: center;
+    margin: 0;
+  }
+  .receipt .sub {
+    text-align: center;
+    font-size: 9px;
+    color: #6B6353;
+    margin: 2px 0 8px;
+  }
+  .receipt-rule {
+    border-top: 1px dashed #C8BA9C;
+    margin: 8px 0;
+  }
+  .receipt-rule.solid { border-top-style: solid; }
+  .receipt-rule.thick { border-top-width: 2px; border-top-style: solid; border-top-color: #1A1410; }
+  .receipt-row {
+    display: flex; justify-content: space-between;
+    align-items: baseline;
+    padding: 1px 0;
+  }
+  .receipt-row.muted { color: #6B6353; }
+  .receipt-line {
+    display: grid;
+    grid-template-columns: 1.7em 1fr auto;
+    gap: 4px;
+    padding: 1px 0;
+  }
+  .receipt-line .qty { font-weight: 600; }
+  .receipt-line .name { line-height: 1.3; }
+  .receipt-line .name small { color: #6B6353; font-size: 0.86em; display: block; }
+  .receipt-line .amt { text-align: end; font-variant-numeric: tabular-nums; }
+
+  .receipt-total {
+    font-family: 'Fraunces', serif;
+    font-size: 22px; font-weight: 500;
+    letter-spacing: -0.01em;
+    margin: 8px 0 4px;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .receipt-total small {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #6B6353;
+    font-weight: 400;
+  }
+  .receipt-foot {
+    text-align: center;
+    font-size: 9px;
+    color: #6B6353;
+    line-height: 1.55;
+    margin-top: 10px;
+  }
+  .receipt-foot .thanks {
+    font-family: 'Fraunces', serif;
+    font-size: 13px;
+    color: #1A1410;
+    font-style: italic;
+    margin-bottom: 4px;
+  }
+  .receipt-stamp {
+    border: 2px solid currentColor;
+    color: #B98A3D;
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    transform: rotate(-3deg);
+    margin: 8px auto;
+  }
+  .receipt-stamp.paid { color: #4A6B45; }
+  .receipt-qr {
+    width: 64px; height: 64px;
+    margin: 8px auto 0;
+    background:
+      repeating-linear-gradient(0deg, #1A1410 0 2px, transparent 2px 4px),
+      repeating-linear-gradient(90deg, #1A1410 0 2px, transparent 2px 4px);
+    border-radius: 2px;
+    position: relative;
+    display: block;
+  }
+  .receipt-qr::before, .receipt-qr::after {
+    content: ""; position: absolute;
+    width: 16px; height: 16px;
+    border: 3px solid #1A1410;
+    background: #FFFEF8;
+  }
+  .receipt-qr::before { top: 0; left: 0; }
+  .receipt-qr::after  { top: 0; right: 0; }
+  .receipt-logo {
+    width: 36px; height: 36px;
+    margin: 0 auto 6px;
+    background: #1A1410;
+    color: #FFFEF8;
+    border-radius: 6px;
+    display: grid; place-items: center;
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+  }
+
+  /* Arabic */
+  .receipt-ar { direction: rtl; font-family: 'IBM Plex Sans Arabic', sans-serif; }
+  .receipt-ar h1 { font-family: 'Fraunces', serif; }
+  .receipt-ar .receipt-total { font-family: 'Fraunces', serif; }
+
+  /* ── A4 Invoice ──────────────────────────────────────────────────── */
+  .invoice {
+    background: #FFFEFB;
+    width: 794px;        /* approx A4 at 96dpi */
+    min-height: 1123px;
+    padding: 56px 56px 48px;
+    box-shadow:
+      0 1px 0 rgba(0,0,0,0.04),
+      0 24px 60px rgba(0,0,0,0.12),
+      0 8px 16px rgba(0,0,0,0.06);
+    font-family: var(--sans);
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .invoice-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 18px;
+    margin-bottom: 24px;
+  }
+  .invoice-head h1 {
+    font-family: var(--serif); font-size: 48px;
+    font-weight: 500; letter-spacing: -0.02em;
+    margin: 0;
+  }
+  .invoice-head .meta { text-align: end; font-size: 12px; color: var(--ink-3); }
+  .invoice-head .meta .num { font-family: var(--mono); font-size: 14px; color: var(--ink); font-weight: 500; }
+  .invoice-mark {
+    width: 40px; height: 40px;
+    background: var(--accent); color: #fff;
+    border-radius: 8px;
+    display: grid; place-items: center;
+    font-family: var(--serif); font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  .invoice-parties {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  .invoice-party h3 {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-3); margin: 0 0 8px;
+  }
+  .invoice-party strong { font-size: 15px; }
+  .invoice-party .addr { color: var(--ink-2); margin-top: 4px; font-size: 12.5px; }
+  .invoice-party .mono { font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); margin-top: 4px; }
+
+  .invoice-amount-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+    padding: 18px 20px;
+    background: var(--paper);
+    border-radius: 12px;
+  }
+  .invoice-amount-strip .kicker { font-size: 9.5px; letter-spacing: 0.14em; }
+  .invoice-amount-strip .v {
+    font-family: var(--serif); font-size: 18px; font-weight: 500;
+    letter-spacing: -0.005em;
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .invoice-amount-strip .due .v { color: var(--accent); }
+
+  table.invoice-items {
+    width: 100%; border-collapse: collapse;
+    margin-bottom: 24px;
+    font-variant-numeric: tabular-nums;
+  }
+  .invoice-items th {
+    text-align: start;
+    padding: 10px 0;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-3);
+    border-bottom: 1px solid var(--ink);
+  }
+  .invoice-items th:last-child, .invoice-items td:last-child { text-align: end; }
+  .invoice-items td {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 13px;
+  }
+  .invoice-items td strong { font-weight: 500; }
+  .invoice-items td .desc { font-size: 11.5px; color: var(--ink-3); margin-top: 2px; }
+
+  .invoice-totals {
+    display: grid; grid-template-columns: 1fr 280px;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  .invoice-totals .summary {
+    background: var(--ink); color: var(--bg-elev);
+    border-radius: 12px;
+    padding: 20px 22px;
+  }
+  .invoice-totals .summary .row {
+    display: flex; justify-content: space-between;
+    font-size: 13px; padding: 4px 0;
+    color: color-mix(in oklab, var(--bg-elev) 75%, transparent);
+  }
+  .invoice-totals .summary .row.grand {
+    border-top: 1px solid color-mix(in oklab, var(--bg-elev) 30%, transparent);
+    margin-top: 8px; padding-top: 12px;
+    color: var(--bg-elev);
+    align-items: baseline;
+  }
+  .invoice-totals .summary .row.grand .v {
+    font-family: var(--serif); font-size: 30px;
+    font-weight: 500; letter-spacing: -0.01em;
+  }
+
+  .invoice-pay-block {
+    background: var(--paper);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+  }
+  .invoice-pay-block h3 {
+    font-family: var(--serif); font-size: 18px;
+    font-weight: 500; margin: 0 0 4px;
+    letter-spacing: -0.005em;
+  }
+  .invoice-pay-block p { margin: 0 0 14px; color: var(--ink-2); font-size: 12.5px; line-height: 1.55; }
+  .invoice-pay-block .ref {
+    background: var(--bg-elev);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 14px; font-weight: 500;
+    letter-spacing: 0.04em;
+    margin-bottom: 12px;
+  }
+  .invoice-banks {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .invoice-bank {
+    background: var(--bg-elev);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .invoice-bank b { font-size: 12.5px; }
+  .invoice-bank small { display: block; font-size: 10px; color: var(--ink-3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
+  .invoice-bank .iban { font-family: var(--mono); font-size: 11px; margin-top: 2px; word-break: break-all; }
+
+  .invoice-foot {
+    margin-top: 36px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+    display: flex; justify-content: space-between;
+    font-size: 10.5px; color: var(--ink-3);
+  }
+
+  /* ── Shift report ───────────────────────────────────────────────── */
+  .shift {
+    background: #FFFEFB;
+    width: 794px;
+    padding: 48px;
+    box-shadow:
+      0 1px 0 rgba(0,0,0,0.04),
+      0 24px 60px rgba(0,0,0,0.12),
+      0 8px 16px rgba(0,0,0,0.06);
+    font-family: var(--sans);
+    color: var(--ink);
+    font-size: 12.5px;
+  }
+  .shift-head {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 18px; padding-bottom: 18px;
+    border-bottom: 1px solid var(--ink);
+  }
+  .shift-head h1 {
+    font-family: var(--serif); font-size: 36px;
+    font-weight: 500; margin: 6px 0 0;
+    letter-spacing: -0.015em;
+  }
+  .shift-head .meta {
+    text-align: end; color: var(--ink-3); font-size: 11.5px;
+  }
+  .shift-head .meta .num { font-family: var(--mono); font-size: 14px; color: var(--ink); font-weight: 500; }
+
+  .shift-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 12px; margin-bottom: 22px;
+  }
+  .shift-strip .cell {
+    background: var(--paper);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .shift-strip .cell .kicker { font-size: 9.5px; letter-spacing: 0.14em; }
+  .shift-strip .cell .v {
+    font-family: var(--serif); font-size: 22px; font-weight: 500;
+    letter-spacing: -0.005em;
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shift-section { margin-bottom: 18px; }
+  .shift-section h2 {
+    font-family: var(--serif); font-size: 17px;
+    font-weight: 500; margin: 0 0 10px;
+    letter-spacing: -0.005em;
+  }
+
+  .shift-payments {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .shift-pay {
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .shift-pay .ico { color: var(--ink-3); }
+  .shift-pay .v {
+    font-family: var(--serif); font-size: 20px; font-weight: 500;
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .shift-pay .meta { font-size: 11px; color: var(--ink-3); }
+
+  .shift-cash {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+    background: var(--paper);
+    border-radius: 10px;
+    padding: 16px 20px;
+  }
+  .shift-cash .cell .kicker { font-size: 9.5px; }
+  .shift-cash .v { font-family: var(--serif); font-size: 26px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .shift-cash .v.diff.ok { color: var(--sage); }
+  .shift-cash .v.diff.bad { color: var(--rose); }
+
+  .shift-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  .shift-table th {
+    text-align: start; padding: 8px 0;
+    font-size: 9.5px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-3);
+    border-bottom: 1px solid var(--ink);
+  }
+  .shift-table th:last-child, .shift-table td:last-child { text-align: end; }
+  .shift-table td {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 12px;
+  }
+
+  .shift-sign {
+    margin-top: 36px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  .shift-sign-block {
+    border-top: 1px solid var(--ink);
+    padding-top: 6px;
+    font-size: 10.5px; color: var(--ink-3);
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+
+  /* ── Print rules ─────────────────────────────────────────────────── */
+  @media print {
+    body { background: #fff; padding: 0; }
+    .pa-top, .pa-tabs { display: none; }
+    .pa-stage { display: block; min-height: 0; padding: 0; margin: 0; }
+
+    .receipt { box-shadow: none; padding: 4mm; border-radius: 0; }
+    .receipt::after { display: none; }
+
+    body[data-show="r58-en"], body[data-show="r58-ar"] {
+      width: 58mm;
+    }
+    body[data-show="r58-en"] .receipt-58, body[data-show="r58-ar"] .receipt-58 {
+      width: 58mm;
+    }
+    body[data-show="r80-en"], body[data-show="r80-pending"] {
+      width: 80mm;
+    }
+    body[data-show="r80-en"] .receipt-80, body[data-show="r80-pending"] .receipt-80 {
+      width: 80mm;
+    }
+    @page { margin: 0; }
+    body[data-show="r58-en"], body[data-show="r58-ar"] { @page { size: 58mm auto; } }
+    body[data-show="r80-en"], body[data-show="r80-pending"] { @page { size: 80mm auto; } }
+    body[data-show="invoice"], body[data-show="shift"] { @page { size: A4; margin: 0; } }
+
+    .invoice, .shift {
+      box-shadow: none; width: 100%;
+      padding: 18mm;
+    }
+  }
+</style>
+</head>
+<body data-show="r80-en">
+
+<!-- ── Top bar ────────────────────────────────────────────────────────── -->
+<header class="pa-top">
+  <div class="brand">
+    <div class="brand-mark">M</div>
+    <h1>Printable artifacts <small>thermal receipts · invoice · shift report</small></h1>
+  </div>
+  <button class="pa-print" onclick="window.print()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>
+    </svg>
+    Print this artifact
+  </button>
+</header>
+
+<!-- ── Selector ───────────────────────────────────────────────────────── -->
+<nav class="pa-tabs">
+  <button class="pa-tab" data-show="r80-en"      data-thermal="80"><span class="pa-dot"></span>Sale receipt · 80mm</button>
+  <button class="pa-tab" data-show="r58-en"      data-thermal="58"><span class="pa-dot"></span>Sale receipt · 58mm</button>
+  <button class="pa-tab" data-show="r58-ar"      data-thermal="58"><span class="pa-dot"></span>Sale receipt · 58mm Arabic</button>
+  <button class="pa-tab" data-show="r80-pending" data-thermal="80"><span class="pa-dot"></span>Bank-transfer pending · 80mm</button>
+  <button class="pa-tab" data-show="invoice"     data-thermal="a4"><span class="pa-dot"></span>Subscription invoice · A4</button>
+  <button class="pa-tab" data-show="shift"       data-thermal="shift"><span class="pa-dot"></span>End-of-day shift report · A4</button>
+</nav>
+
+<!-- ── Stage ──────────────────────────────────────────────────────────── -->
+<main class="pa-stage">
+
+  <!-- ─── 80mm English receipt — Paid ─── -->
+  <section class="pa-artifact a-r80-en">
+    <div class="receipt receipt-80">
+      <div class="receipt-logo">M</div>
+      <h1>Bayt Coffee Co.</h1>
+      <div class="sub">
+        Maadi branch · 12 Road 9, Cairo<br>
+        Tax ID: 540-22-018 · Tel: 02 2750 1212
+      </div>
+      <div class="receipt-rule"></div>
+      <div class="receipt-row muted">
+        <span>Ticket</span><span>TX-94821</span>
+      </div>
+      <div class="receipt-row muted">
+        <span>Cashier</span><span>Mariam Saleh</span>
+      </div>
+      <div class="receipt-row muted">
+        <span>08 May 2026</span><span>11:42</span>
+      </div>
+      <div class="receipt-rule"></div>
+
+      <div class="receipt-line">
+        <span class="qty">2×</span>
+        <span class="name">Flat White<small>+ oat milk</small></span>
+        <span class="amt">130</span>
+      </div>
+      <div class="receipt-line">
+        <span class="qty">1×</span>
+        <span class="name">Yirgacheffe V60</span>
+        <span class="amt">85</span>
+      </div>
+      <div class="receipt-line">
+        <span class="qty">2×</span>
+        <span class="name">Croissant<small>− 10% staff discount</small></span>
+        <span class="amt">81</span>
+      </div>
+
+      <div class="receipt-rule"></div>
+      <div class="receipt-row"><span>Subtotal</span><span>296</span></div>
+      <div class="receipt-row muted"><span>Discount</span><span>− 9</span></div>
+      <div class="receipt-row muted"><span>VAT 14%</span><span>40</span></div>
+      <div class="receipt-rule thick"></div>
+
+      <div class="receipt-total">
+        <span>Total</span>
+        <span>£336<small> EGP</small></span>
+      </div>
+
+      <div class="receipt-rule"></div>
+      <div class="receipt-row"><span>Cash tendered</span><span>500</span></div>
+      <div class="receipt-row"><span>Change</span><span>164</span></div>
+      <div class="receipt-rule"></div>
+
+      <div style="text-align: center;">
+        <div class="receipt-stamp paid">✓ PAID</div>
+      </div>
+
+      <div class="receipt-foot">
+        <div class="thanks">Thank you. See you tomorrow.</div>
+        Refunds within 24 hrs with this receipt.<br>
+        Issues? wave at Mariam, or write hi@baytcoffee.eg.
+        <div class="receipt-qr" aria-label="QR code"></div>
+        <div style="margin-top: 4px; font-family: 'JetBrains Mono', monospace;">tx.madar.app/r/TX-94821</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 80mm Bank-transfer pending receipt ─── -->
+  <section class="pa-artifact a-r80-pending">
+    <div class="receipt receipt-80">
+      <div class="receipt-logo">M</div>
+      <h1>Bayt Coffee Co.</h1>
+      <div class="sub">
+        Maadi branch · 12 Road 9, Cairo<br>
+        Tax ID: 540-22-018 · Tel: 02 2750 1212
+      </div>
+      <div class="receipt-rule"></div>
+      <div class="receipt-row muted">
+        <span>Ticket</span><span>TX-94821</span>
+      </div>
+      <div class="receipt-row muted">
+        <span>Cashier</span><span>Mariam Saleh</span>
+      </div>
+      <div class="receipt-row muted">
+        <span>08 May 2026</span><span>11:42</span>
+      </div>
+      <div class="receipt-row muted">
+        <span>Customer</span><span>Adam Saleh</span>
+      </div>
+      <div class="receipt-rule"></div>
+
+      <div class="receipt-line">
+        <span class="qty">3×</span>
+        <span class="name">Yirgacheffe 250g<small>retail bag</small></span>
+        <span class="amt">720</span>
+      </div>
+      <div class="receipt-line">
+        <span class="qty">1×</span>
+        <span class="name">Espresso Blend 1kg</span>
+        <span class="amt">480</span>
+      </div>
+      <div class="receipt-line">
+        <span class="qty">1×</span>
+        <span class="name">Hario V60 02<small>02 ceramic dripper</small></span>
+        <span class="amt">340</span>
+      </div>
+
+      <div class="receipt-rule"></div>
+      <div class="receipt-row"><span>Subtotal</span><span>1,540</span></div>
+      <div class="receipt-row muted"><span>VAT 14%</span><span>216</span></div>
+      <div class="receipt-rule thick"></div>
+
+      <div class="receipt-total">
+        <span>Total</span>
+        <span>£1,756<small> EGP</small></span>
+      </div>
+
+      <div class="receipt-rule"></div>
+      <div class="receipt-row"><span>Payment</span><span>Bank transfer</span></div>
+      <div class="receipt-row muted"><span>Reference</span><span>CIB-PAY-94821</span></div>
+      <div class="receipt-row muted"><span>To CIB account</span><span>•••• 6712</span></div>
+      <div class="receipt-rule"></div>
+
+      <div style="text-align: center;">
+        <div class="receipt-stamp">⏵ PENDING VERIFY</div>
+      </div>
+
+      <div class="receipt-foot">
+        <div class="thanks">Thanks, Adam.</div>
+        We'll mark this paid once the transfer<br>
+        clears our bank statement — usually next<br>
+        morning. SMS confirmation will follow.
+        <div class="receipt-qr" aria-label="QR code"></div>
+        <div style="margin-top: 4px; font-family: 'JetBrains Mono', monospace;">tx.madar.app/r/TX-94821</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 58mm English receipt — narrow ─── -->
+  <section class="pa-artifact a-r58-en">
+    <div class="receipt receipt-58">
+      <h1 style="font-size: 17px;">Bayt Coffee</h1>
+      <div class="sub" style="font-size: 8px;">
+        Maadi · 02 2750 1212<br>
+        Tax ID 540-22-018
+      </div>
+      <div class="receipt-rule"></div>
+      <div class="receipt-row muted"><span>TX-94821</span><span>08 May 11:42</span></div>
+      <div class="receipt-row muted"><span>Cashier</span><span>Mariam S.</span></div>
+      <div class="receipt-rule"></div>
+
+      <div class="receipt-line">
+        <span class="qty">2×</span><span class="name">Flat White<small>oat milk</small></span><span class="amt">130</span>
+      </div>
+      <div class="receipt-line">
+        <span class="qty">1×</span><span class="name">Yirgacheffe V60</span><span class="amt">85</span>
+      </div>
+      <div class="receipt-line">
+        <span class="qty">2×</span><span class="name">Croissant</span><span class="amt">90</span>
+      </div>
+
+      <div class="receipt-rule"></div>
+      <div class="receipt-row muted"><span>Subtotal</span><span>305</span></div>
+      <div class="receipt-row muted"><span>VAT 14%</span><span>43</span></div>
+      <div class="receipt-rule thick"></div>
+
+      <div class="receipt-total" style="font-size: 18px;">
+        <span>Total</span>
+        <span>£348<small style="font-size: 9px;"> EGP</small></span>
+      </div>
+
+      <div class="receipt-rule"></div>
+      <div class="receipt-row"><span>Cash</span><span>500</span></div>
+      <div class="receipt-row"><span>Change</span><span>152</span></div>
+
+      <div class="receipt-foot" style="margin-top: 6px;">
+        <div class="thanks" style="font-size: 11px;">Thank you.</div>
+        See you tomorrow.<br>
+        tx.madar.app/r/TX-94821
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 58mm Arabic receipt — RTL ─── -->
+  <section class="pa-artifact a-r58-ar">
+    <div class="receipt receipt-58 receipt-ar">
+      <h1 style="font-size: 17px;">بيت القهوة</h1>
+      <div class="sub" style="font-size: 9px;">
+        فرع المعادي · ٠٢ ٢٧٥٠ ١٢١٢<br>
+        الرقم الضريبي ٥٤٠-٢٢-٠١٨
+      </div>
+      <div class="receipt-rule"></div>
+      <div class="receipt-row muted"><span>TX-94821</span><span>٨ مايو ١١:٤٢</span></div>
+      <div class="receipt-row muted"><span>الكاشيير</span><span>مريم صالح</span></div>
+      <div class="receipt-rule"></div>
+
+      <div class="receipt-line">
+        <span class="qty">٢×</span><span class="name">فلات وايت<small>حليب الشوفان</small></span><span class="amt">١٣٠</span>
+      </div>
+      <div class="receipt-line">
+        <span class="qty">١×</span><span class="name">يرغاتشيف V60</span><span class="amt">٨٥</span>
+      </div>
+      <div class="receipt-line">
+        <span class="qty">٢×</span><span class="name">كرواسون</span><span class="amt">٩٠</span>
+      </div>
+
+      <div class="receipt-rule"></div>
+      <div class="receipt-row muted"><span>المجموع الفرعي</span><span>٣٠٥</span></div>
+      <div class="receipt-row muted"><span>ضريبة ١٤٪</span><span>٤٣</span></div>
+      <div class="receipt-rule thick"></div>
+
+      <div class="receipt-total" style="font-size: 18px;">
+        <span>الإجمالي</span>
+        <span>٣٤٨ £<small style="font-size: 9px;"> جنيه</small></span>
+      </div>
+
+      <div class="receipt-rule"></div>
+      <div class="receipt-row"><span>المدفوع نقدًا</span><span>٥٠٠</span></div>
+      <div class="receipt-row"><span>الباقي</span><span>١٥٢</span></div>
+
+      <div class="receipt-foot" style="margin-top: 6px;">
+        <div class="thanks" style="font-size: 12px; font-family: 'IBM Plex Sans Arabic', sans-serif; font-style: normal;">شكرًا لك.</div>
+        نراك غدًا.<br>
+        tx.madar.app/r/TX-94821
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── A4 Invoice ─── -->
+  <section class="pa-artifact a-invoice">
+    <div class="invoice">
+      <header class="invoice-head">
+        <div>
+          <div class="invoice-mark">M</div>
+          <h1>Invoice</h1>
+          <div style="font-size: 12px; color: var(--ink-3); margin-top: 4px;">
+            Madar subscription · Growth plan
+          </div>
+        </div>
+        <div class="meta">
+          <div style="margin-bottom: 4px;">Invoice number</div>
+          <div class="num">INV-2026-0005</div>
+          <div style="margin: 12px 0 4px;">Issued</div>
+          <div style="font-family: var(--mono); color: var(--ink); font-size: 13px;">2026-05-01</div>
+          <div style="margin: 8px 0 4px;">Due</div>
+          <div style="font-family: var(--mono); color: var(--accent); font-size: 13px; font-weight: 500;">2026-05-15</div>
+        </div>
+      </header>
+
+      <section class="invoice-parties">
+        <div class="invoice-party">
+          <h3>From</h3>
+          <strong>Madar Software Technologies LLC</strong>
+          <div class="addr">14 Sherif St, Downtown<br>Cairo, Egypt 11511</div>
+          <div class="mono">VAT 290-118-441 · billing@madar.app</div>
+        </div>
+        <div class="invoice-party" style="text-align: end;">
+          <h3>Bill to</h3>
+          <strong>Bayt Coffee Co.</strong>
+          <div class="addr">12 Road 9, Maadi<br>Cairo, Egypt 11431</div>
+          <div class="mono">Tax ID 540-22-018 · adam@baytcoffee.eg</div>
+        </div>
+      </section>
+
+      <section class="invoice-amount-strip">
+        <div>
+          <div class="kicker">Total due</div>
+          <div class="v due" style="color: var(--accent);">£1,490.00</div>
+        </div>
+        <div>
+          <div class="kicker">Currency</div>
+          <div class="v">EGP</div>
+        </div>
+        <div>
+          <div class="kicker">Period</div>
+          <div class="v" style="font-size: 14px;">1 — 31 May 2026</div>
+        </div>
+        <div>
+          <div class="kicker">Plan</div>
+          <div class="v" style="font-size: 14px;">Growth · monthly</div>
+        </div>
+      </section>
+
+      <table class="invoice-items">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Qty</th>
+            <th>Unit</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <strong>Madar Growth plan</strong>
+              <div class="desc">Up to 5 branches, 12 users, 5,000 transactions / mo. May 2026.</div>
+            </td>
+            <td>1</td>
+            <td>£1,307.00</td>
+            <td>£1,307.00</td>
+          </tr>
+          <tr>
+            <td>
+              <strong>Stripe payment processing</strong>
+              <div class="desc">Not applicable — paid by bank transfer.</div>
+            </td>
+            <td>—</td>
+            <td>—</td>
+            <td>£0.00</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <section class="invoice-totals">
+        <div></div>
+        <div class="summary">
+          <div class="row"><span>Subtotal</span><span class="tnum">£1,307.00</span></div>
+          <div class="row"><span>VAT 14%</span><span class="tnum">£183.00</span></div>
+          <div class="row grand"><span>Total due</span><span class="v">£1,490.00</span></div>
+        </div>
+      </section>
+
+      <section class="invoice-pay-block">
+        <h3>How to pay</h3>
+        <p>
+          Transfer the total above to one of our bank accounts. <strong>Include this payment reference in the transfer description</strong> so we match it automatically:
+        </p>
+        <div class="ref">MDR-BAYT-0005</div>
+        <div class="invoice-banks">
+          <div class="invoice-bank">
+            <small>CIB · EGP · default</small>
+            <b>Madar Software Technologies LLC</b>
+            <div class="iban">EG38 0010 0001 0000 0001 8420 6712</div>
+            <div style="font-family: var(--mono); font-size: 10.5px; margin-top: 4px; color: var(--ink-3);">SWIFT · CIBEEGCX</div>
+          </div>
+          <div class="invoice-bank">
+            <small>NBE · EGP</small>
+            <b>Madar Software Technologies LLC</b>
+            <div class="iban">EG24 0030 0002 0001 1110 2308 5544</div>
+            <div style="font-family: var(--mono); font-size: 10.5px; margin-top: 4px; color: var(--ink-3);">SWIFT · NBEGEGCX</div>
+          </div>
+        </div>
+        <p style="margin: 12px 0 0; font-size: 11px;">
+          After transferring, upload the receipt at <strong>app.madar.app/billing/invoices/INV-2026-0005/pay</strong>. We verify within 24 hours and your service is uninterrupted in the meantime.
+        </p>
+      </section>
+
+      <footer class="invoice-foot">
+        <span>Madar Software Technologies LLC · CR 7142819 · Cairo, Egypt</span>
+        <span>Generated by Madar · v1.2 · Page 1 / 1</span>
+      </footer>
+    </div>
+  </section>
+
+  <!-- ─── End-of-day shift report ─── -->
+  <section class="pa-artifact a-shift">
+    <div class="shift">
+      <header class="shift-head">
+        <div>
+          <div style="font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3);">End of day · shift report</div>
+          <h1>Maadi branch — Mon 8 May 2026</h1>
+          <div style="font-size: 12px; color: var(--ink-3); margin-top: 6px;">
+            Shift opened 07:30 · closed 21:42 · cashier <strong style="color: var(--ink);">Mariam Saleh</strong>
+          </div>
+        </div>
+        <div class="meta">
+          Shift<br>
+          <div class="num">#247</div>
+          <div style="margin-top: 8px;">Printed 21:48</div>
+        </div>
+      </header>
+
+      <section class="shift-strip">
+        <div class="cell">
+          <div class="kicker">Revenue (excl. tax)</div>
+          <div class="v">£7,388</div>
+        </div>
+        <div class="cell">
+          <div class="kicker">Tax collected</div>
+          <div class="v">£1,034</div>
+        </div>
+        <div class="cell">
+          <div class="kicker">Tickets</div>
+          <div class="v">142</div>
+        </div>
+        <div class="cell">
+          <div class="kicker">Avg basket</div>
+          <div class="v">£59.30</div>
+        </div>
+      </section>
+
+      <section class="shift-section">
+        <h2>Payments breakdown</h2>
+        <div class="shift-payments">
+          <div class="shift-pay">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div class="kicker">Cash</div>
+              <span class="ico">💵</span>
+            </div>
+            <div class="v">£3,648</div>
+            <div class="meta">68 tickets · 43.4% of revenue</div>
+          </div>
+          <div class="shift-pay">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div class="kicker">Card</div>
+              <span class="ico">💳</span>
+            </div>
+            <div class="v">£3,015</div>
+            <div class="meta">52 tickets · 35.8% of revenue</div>
+          </div>
+          <div class="shift-pay">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div class="kicker">Bank transfer</div>
+              <span class="ico">🏦</span>
+            </div>
+            <div class="v">£1,759</div>
+            <div class="meta">
+              22 tickets · <span style="color: var(--amber);">14 pending verify</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="shift-section">
+        <h2>Cash reconciliation</h2>
+        <div class="shift-cash">
+          <div class="cell">
+            <div class="kicker">Opening float</div>
+            <div class="v">£500</div>
+          </div>
+          <div class="cell">
+            <div class="kicker">Expected in drawer</div>
+            <div class="v">£3,648</div>
+          </div>
+          <div class="cell">
+            <div class="kicker">Counted</div>
+            <div class="v">£3,656</div>
+          </div>
+          <div class="cell">
+            <div class="kicker">Refunds (cash)</div>
+            <div class="v">− £85</div>
+          </div>
+          <div class="cell">
+            <div class="kicker">Drops to safe</div>
+            <div class="v">£3,000</div>
+          </div>
+          <div class="cell">
+            <div class="kicker">Variance</div>
+            <div class="v diff ok">+ £8 ✓</div>
+          </div>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 12px; color: var(--ink-3); text-wrap: pretty;">
+          Variance within tolerance (±£20). Cashier note: <em>"Round-up from tip jar separated by counter, deposited after shift."</em>
+        </p>
+      </section>
+
+      <section class="shift-section">
+        <h2>Top sellers (units)</h2>
+        <table class="shift-table">
+          <thead>
+            <tr><th>Item</th><th>Units</th><th>Revenue</th><th>Margin %</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Flat White</td><td>38</td><td>£2,470</td><td>69%</td></tr>
+            <tr><td>Cortado</td><td>22</td><td>£1,210</td><td>67%</td></tr>
+            <tr><td>Iced Latte</td><td>19</td><td>£1,425</td><td>71%</td></tr>
+            <tr><td>Yirgacheffe V60</td><td>14</td><td>£1,190</td><td>56%</td></tr>
+            <tr><td>Croissant</td><td>24</td><td>£1,080</td><td>52%</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="shift-section">
+        <h2>Inventory exceptions</h2>
+        <table class="shift-table">
+          <thead><tr><th>SKU</th><th>Item</th><th>Type</th><th>Change</th></tr></thead>
+          <tbody>
+            <tr><td style="font-family: var(--mono); font-size: 11px;">POV-001</td><td>Yirgacheffe V60</td><td>Low stock</td><td>− 14 (22 left)</td></tr>
+            <tr><td style="font-family: var(--mono); font-size: 11px;">PST-001</td><td>Croissant</td><td>Sold out 18:30</td><td>− 24 (0 left)</td></tr>
+            <tr><td style="font-family: var(--mono); font-size: 11px;">BNS-003</td><td>Espresso Blend 1kg</td><td>Write-off · damaged</td><td>− 1</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <footer class="shift-sign">
+        <div class="shift-sign-block">Cashier signature</div>
+        <div class="shift-sign-block">Manager signature</div>
+      </footer>
+    </div>
+  </section>
+</main>
+
+<script>
+  const tabs = document.querySelectorAll('.pa-tab');
+  function setShow(k) {
+    document.body.setAttribute('data-show', k);
+    tabs.forEach(t => t.setAttribute('aria-current', t.dataset.show === k ? 'true' : 'false'));
+  }
+  tabs.forEach(t => t.addEventListener('click', () => setShow(t.dataset.show)));
+  setShow('r80-en');
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1163 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-accent="terracotta" data-typeface="fraunces">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280">
+<title>Madar — Sign in, sign up, recover access</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="design-tokens.css">
+
+<style>
+  body { min-height: 100vh; }
+
+  /* ── Top bar shared between landing & auth ───────────────── */
+  .auth-top {
+    position: sticky; top: 0; z-index: 5;
+    height: 64px;
+    display: flex; align-items: center;
+    padding: 0 32px;
+    background: color-mix(in oklab, var(--bg) 92%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid color-mix(in oklab, var(--rule) 60%, transparent);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-mark {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: var(--accent); color: #fff;
+    display: grid; place-items: center;
+    font-family: var(--serif); font-size: 18px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .brand-name { font-family: var(--serif); font-size: 20px; font-weight: 500; letter-spacing: -0.01em; }
+  .brand-tag { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); margin-inline-start: 8px; margin-top: 2px; }
+
+  .top-nav { margin-inline-start: auto; display: flex; align-items: center; gap: 8px; }
+  .top-nav a, .top-nav button {
+    border: 0; background: transparent;
+    color: var(--ink-2); font-size: 13px;
+    padding: 8px 12px; border-radius: 8px;
+    text-decoration: none; cursor: pointer; font-family: inherit;
+  }
+  .top-nav a:hover, .top-nav button:hover { color: var(--ink); background: var(--bg-elev); }
+  .top-nav .primary {
+    background: var(--ink); color: var(--bg);
+    padding: 8px 14px;
+  }
+  .top-nav .primary:hover { background: var(--accent); color: #fff; }
+
+  /* ── View switcher (designer tool) ───────────────────────── */
+  .view-switcher {
+    position: fixed; bottom: 18px; inset-inline-end: 18px;
+    background: var(--bg-elev);
+    border: 1px solid var(--rule);
+    border-radius: 100px;
+    padding: 4px;
+    display: flex; gap: 2px;
+    box-shadow: var(--shadow);
+    z-index: 50;
+    font-size: 12px;
+  }
+  .view-switcher button {
+    border: 0; background: transparent;
+    padding: 6px 12px;
+    border-radius: 100px;
+    color: var(--ink-3);
+    font-family: inherit; cursor: pointer;
+  }
+  .view-switcher button:hover { color: var(--ink); }
+  .view-switcher button[aria-current="true"] {
+    background: var(--accent); color: #fff;
+  }
+  .view-switcher .label {
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-4); padding: 6px 8px 6px 12px;
+  }
+
+  /* ── Landing ─────────────────────────────────────────────── */
+  .landing { display: none; }
+  body[data-view="landing"] .landing { display: block; }
+
+  .hero {
+    position: relative;
+    padding: 100px 32px 120px;
+    max-width: 1280px; margin: 0 auto;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: ""; position: absolute;
+    top: -80px; inset-inline-end: -120px;
+    width: 720px; height: 720px;
+    background: radial-gradient(closest-side, color-mix(in oklab, var(--accent-soft) 65%, transparent), transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+  .hero-inner { position: relative; z-index: 1; max-width: 980px; }
+  .hero-kicker {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 10px;
+    border: 1px solid color-mix(in oklab, var(--accent) 30%, var(--rule));
+    background: color-mix(in oklab, var(--accent-soft) 40%, var(--bg-elev));
+    border-radius: 100px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent-ink);
+    margin-bottom: 24px;
+  }
+  .hero-kicker .pulse {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(48px, 7vw, 88px);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    font-weight: 500;
+    margin: 0 0 18px;
+    text-wrap: balance;
+  }
+  .hero h1 em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .hero .lede {
+    font-size: clamp(17px, 1.4vw, 21px);
+    line-height: 1.5;
+    color: var(--ink-2);
+    max-width: 620px;
+    margin: 0 0 32px;
+    text-wrap: pretty;
+  }
+  .cta-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .btn-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 22px; border-radius: 10px;
+    background: var(--accent); color: #fff;
+    border: 1px solid var(--accent);
+    font-family: inherit; font-size: 15px; font-weight: 500;
+    cursor: pointer; letter-spacing: -0.005em;
+  }
+  .btn-cta:hover { background: var(--accent-ink); border-color: var(--accent-ink); }
+  .btn-cta.ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
+  .btn-cta.ghost:hover { border-color: var(--ink); background: var(--bg-elev); }
+  .fine { font-size: 12px; color: var(--ink-3); margin-top: 14px; }
+
+  /* "card stack" preview to the side of hero — abstract product peek */
+  .hero-peek {
+    position: absolute;
+    top: 120px; inset-inline-end: -80px;
+    width: 480px;
+    z-index: 0;
+    display: none;
+  }
+  @media (min-width: 1200px) { .hero-peek { display: block; } }
+  .peek-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 16px 18px;
+    position: absolute;
+    font-size: 12.5px;
+    transform: rotate(var(--r, 0deg));
+  }
+  .peek-card.a { top: 0; inset-inline-start: 0; width: 280px; --r: -3deg; }
+  .peek-card.b { top: 140px; inset-inline-start: 180px; width: 260px; --r: 2deg; }
+  .peek-card.c { top: 280px; inset-inline-start: 40px; width: 300px; --r: -1deg; }
+  .peek-card .head {
+    font-size: 9.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-3); margin-bottom: 6px;
+  }
+  .peek-amount { font-family: var(--serif); font-size: 30px; font-variant-numeric: tabular-nums; }
+  .peek-row { display: flex; justify-content: space-between; padding: 4px 0; }
+  .peek-row.muted { color: var(--ink-3); font-size: 12px; }
+
+  /* Features */
+  .features { max-width: 1080px; margin: 0 auto; padding: 60px 32px; display: grid; gap: 80px; }
+  .feature {
+    display: grid;
+    grid-template-columns: 0.4fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .feature:nth-child(even) .feature-visual { order: -1; }
+  .feature-num {
+    font-family: var(--serif);
+    font-size: clamp(80px, 8vw, 128px);
+    line-height: 0.9;
+    color: var(--ink-4);
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    opacity: 0.4;
+  }
+  .feature-body h2 {
+    font-family: var(--serif);
+    font-size: clamp(28px, 3vw, 40px);
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    font-weight: 500;
+    margin: 0 0 14px;
+    text-wrap: balance;
+  }
+  .feature-body p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    max-width: 56ch;
+    margin: 0;
+    text-wrap: pretty;
+  }
+  .feature-visual {
+    aspect-ratio: 5 / 4;
+    background: var(--paper);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--rule);
+    padding: 20px;
+    color: var(--ink-3);
+    font-family: var(--mono);
+    font-size: 11px;
+    overflow: hidden;
+    position: relative;
+  }
+  .visual-grid {
+    background-image:
+      linear-gradient(var(--rule-2) 1px, transparent 1px),
+      linear-gradient(90deg, var(--rule-2) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* Pricing teaser */
+  .pricing-teaser {
+    max-width: 1080px;
+    margin: 60px auto 0;
+    padding: 0 32px;
+  }
+  .pricing-teaser h2 {
+    font-family: var(--serif);
+    font-size: 36px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    margin: 0 0 6px;
+  }
+  .pricing-teaser .sub { color: var(--ink-3); font-size: 14px; margin-bottom: 28px; }
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .price-card {
+    background: var(--bg-elev);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    padding: 22px;
+  }
+  .price-card h3 {
+    font-family: var(--serif); font-size: 22px; font-weight: 500;
+    margin: 0 0 4px; letter-spacing: -0.01em;
+  }
+  .price-card .from { font-size: 11.5px; color: var(--ink-3); letter-spacing: 0.04em; text-transform: uppercase; }
+  .price-card .price {
+    font-family: var(--serif);
+    font-size: 38px; font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+    margin: 6px 0 0;
+  }
+  .price-card .price small {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink-3);
+    font-weight: 400;
+    margin-inline-start: 4px;
+  }
+  .price-card .tag {
+    margin-top: 10px;
+    font-size: 12.5px;
+    color: var(--ink-3);
+    text-wrap: pretty;
+    min-height: 36px;
+    line-height: 1.4;
+  }
+  .price-link {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .pricing-foot {
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+  .pricing-foot a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+
+  /* Final CTA */
+  .final-cta {
+    margin: 100px auto 60px;
+    padding: 0 32px;
+    text-align: center;
+    max-width: 720px;
+  }
+  .final-cta h2 {
+    font-family: var(--serif);
+    font-size: clamp(36px, 4.5vw, 56px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-weight: 500;
+    margin: 0 0 24px;
+    text-wrap: balance;
+  }
+  .final-cta .row { display: inline-flex; gap: 10px; }
+
+  /* Footer */
+  .auth-footer {
+    border-top: 1px solid var(--rule);
+    background: var(--paper);
+    padding: 32px;
+    margin-top: 60px;
+  }
+  .auth-footer-inner {
+    max-width: 1280px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    font-size: 12.5px; color: var(--ink-3);
+    flex-wrap: wrap;
+  }
+  .auth-footer-inner .links { margin-inline-start: auto; display: flex; gap: 18px; }
+  .auth-footer-inner a { color: var(--ink-3); text-decoration: none; }
+  .auth-footer-inner a:hover { color: var(--ink); }
+
+  /* ── Auth card pages ─────────────────────────────────────── */
+  .auth-screen { display: none; }
+  body[data-view="signup"]  .auth-signup,
+  body[data-view="login"]   .auth-login,
+  body[data-view="forgot"]  .auth-forgot,
+  body[data-view="reset"]   .auth-reset,
+  body[data-view="verify"]  .auth-verify { display: block; }
+
+  .auth-shell {
+    min-height: calc(100vh - 64px - 100px);
+    display: grid;
+    grid-template-columns: 1fr 480px;
+    align-items: stretch;
+  }
+  @media (max-width: 880px) { .auth-shell { grid-template-columns: 1fr; } }
+
+  /* Left rail — quiet editorial column */
+  .auth-rail {
+    padding: 80px 56px 60px;
+    position: relative;
+    background:
+      radial-gradient(800px 600px at -10% 0%, color-mix(in oklab, var(--accent-soft) 55%, transparent), transparent 60%),
+      var(--bg);
+    overflow: hidden;
+  }
+  .auth-rail-inner { max-width: 460px; position: relative; z-index: 1; }
+  .auth-rail h2 {
+    font-family: var(--serif);
+    font-size: clamp(34px, 3.4vw, 48px);
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+    font-weight: 500;
+    margin: 16px 0 12px;
+    text-wrap: balance;
+  }
+  .auth-rail .quote {
+    margin: 36px 0 0;
+    padding: 20px;
+    background: var(--bg-elev);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-2);
+  }
+  .auth-rail .quote .who {
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid var(--rule);
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+  .auth-rail .quote .who strong { color: var(--ink-2); }
+
+  /* Right side — the form card */
+  .auth-card-wrap {
+    display: grid;
+    place-items: center;
+    padding: 60px 32px;
+    background: var(--bg);
+    border-inline-start: 1px solid var(--rule);
+  }
+  .auth-card {
+    width: 100%; max-width: 420px;
+    background: var(--bg-elev);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 36px;
+  }
+  .auth-card h1 {
+    font-family: var(--serif);
+    font-size: 30px;
+    letter-spacing: -0.015em;
+    font-weight: 500;
+    margin: 0 0 6px;
+  }
+  .auth-card .sub {
+    color: var(--ink-3);
+    font-size: 13.5px;
+    margin: 0 0 24px;
+  }
+
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-3); margin-bottom: 6px;
+  }
+  .field label .hint { float: inline-end; font-weight: 500; color: var(--accent); text-transform: none; letter-spacing: 0; font-size: 11.5px; text-decoration: none; }
+  .field input,
+  .field select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    background: var(--bg);
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    color: var(--ink);
+  }
+  .field input:focus, .field select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 18%, transparent);
+  }
+  .field input::placeholder { color: var(--ink-4); }
+  .field .help { font-size: 11.5px; color: var(--ink-4); margin-top: 4px; }
+
+  /* Password strength bars */
+  .pw-strength {
+    display: flex; gap: 4px; margin-top: 6px;
+  }
+  .pw-strength i {
+    flex: 1; height: 3px; border-radius: 2px;
+    background: var(--bg-sunk);
+    transition: background .25s;
+  }
+  .pw-strength.w-1 i:nth-child(1) { background: var(--rose); }
+  .pw-strength.w-2 i:nth-child(-n+2) { background: var(--amber); }
+  .pw-strength.w-3 i:nth-child(-n+3) { background: var(--accent); }
+  .pw-strength.w-4 i { background: var(--sage); }
+
+  .btn-submit {
+    width: 100%;
+    padding: 13px 16px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--accent); color: #fff;
+    font-family: inherit;
+    font-size: 14px; font-weight: 500;
+    letter-spacing: -0.005em;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background .15s;
+  }
+  .btn-submit:hover { background: var(--accent-ink); }
+  .btn-submit[data-loading="true"] {
+    background: var(--accent-ink);
+    pointer-events: none;
+    display: inline-flex; align-items: center; gap: 8px; justify-content: center;
+  }
+  .btn-submit .spin {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.35);
+    border-top-color: #fff;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .auth-foot {
+    margin-top: 22px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+  .auth-foot a {
+    color: var(--accent); text-decoration: none; font-weight: 500;
+    margin-inline-start: 4px;
+  }
+  .auth-foot a:hover { text-decoration: underline; }
+  .tiny {
+    font-size: 11px; color: var(--ink-4);
+    text-align: center; margin-top: 18px;
+    line-height: 1.55;
+  }
+  .tiny a { color: var(--ink-3); }
+
+  /* OR divider */
+  .or-divider {
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center;
+    margin: 16px 0;
+    color: var(--ink-4); font-size: 11px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .or-divider::before, .or-divider::after {
+    content: ""; height: 1px; background: var(--rule);
+  }
+
+  .sso-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px; }
+  .sso-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 11px 14px;
+    border: 1px solid var(--rule); border-radius: 10px;
+    background: var(--bg);
+    font-family: inherit; font-size: 13px; cursor: pointer;
+    color: var(--ink-2);
+  }
+  .sso-btn:hover { border-color: var(--ink-4); background: var(--bg-elev); }
+  .sso-btn .g {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: conic-gradient(from 0deg, #EA4335, #FBBC05, #34A853, #4285F4, #EA4335);
+  }
+
+  /* MFA — 6 digit boxes */
+  .mfa-row { display: flex; gap: 8px; justify-content: space-between; margin: 4px 0 12px; }
+  .mfa-box {
+    width: 48px; height: 60px;
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    background: var(--bg);
+    font-family: var(--serif);
+    font-size: 28px; font-weight: 500;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    outline: none; color: var(--ink);
+  }
+  .mfa-box:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 18%, transparent);
+  }
+
+  /* Success state (verify email / sent reset) */
+  .auth-success { text-align: center; padding: 12px 0; }
+  .auth-success .icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--sage-soft); color: var(--sage);
+    display: grid; place-items: center;
+    margin: 0 auto 18px;
+  }
+  .auth-success .icon svg { width: 30px; height: 30px; }
+  .auth-success .icon.warn { background: var(--amber-soft); color: var(--amber); }
+  .auth-success h1 { margin-bottom: 8px; }
+  .auth-success p {
+    color: var(--ink-2); font-size: 13.5px; line-height: 1.55;
+    margin: 0 0 22px;
+    text-wrap: pretty;
+  }
+
+  /* row helpers */
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); margin: 4px 0 8px; }
+  .checkbox-row input { accent-color: var(--accent); }
+</style>
+</head>
+<body data-view="landing">
+
+<!-- ─── Shared top bar ──────────────────────────────────────────────── -->
+<header class="auth-top">
+  <div class="brand">
+    <div class="brand-mark">M</div>
+    <div class="brand-name">Madar</div>
+    <span class="brand-tag">POS · v1</span>
+  </div>
+  <nav class="top-nav">
+    <a href="#" data-go="landing">Why Madar</a>
+    <a href="#" data-go="landing">Pricing</a>
+    <a href="#" data-go="landing">Docs</a>
+    <button data-go="login">Sign in</button>
+    <button class="primary" data-go="signup">Start free trial</button>
+  </nav>
+</header>
+
+<!-- ════════════════════════════════════════════════════════════════
+     LANDING
+     ════════════════════════════════════════════════════════════════ -->
+<main class="landing">
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="hero-kicker"><span class="pulse"></span>Built for shops with more than one branch</span>
+      <h1>Run your shop the&nbsp;way it&nbsp;<em>should</em>&nbsp;run.</h1>
+      <p class="lede">
+        Madar is a point-of-sale and inventory system that takes multi-branch seriously.
+        Cash, card, or bank-transfer — sell anywhere, reconcile at the end of the day, and
+        actually trust your numbers in the morning.
+      </p>
+      <div class="cta-row">
+        <button class="btn-cta" data-go="signup">
+          Start free trial
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>
+        </button>
+        <button class="btn-cta ghost">See how it works</button>
+      </div>
+      <p class="fine">14 days free. No card. No commitment.</p>
+    </div>
+
+    <div class="hero-peek" aria-hidden="true">
+      <div class="peek-card a">
+        <div class="head">Today · all branches</div>
+        <div class="peek-amount">£28,420</div>
+        <div class="peek-row muted"><span>vs. yesterday</span><span style="color: var(--sage);">+ 12.4 %</span></div>
+        <div class="peek-row muted"><span>Tickets</span><span>312</span></div>
+        <div class="peek-row muted"><span>Avg. basket</span><span>£91</span></div>
+      </div>
+      <div class="peek-card b">
+        <div class="head">Low stock · Maadi</div>
+        <div style="font-size: 13px; padding: 4px 0;">Yirgacheffe 250g · 14 left</div>
+        <div style="font-size: 13px; padding: 4px 0;">Geisha (single) · 8 left</div>
+        <div style="font-size: 12px; color: var(--accent); margin-top: 8px;">Suggest PO with Sidamo Direct →</div>
+      </div>
+      <div class="peek-card c">
+        <div class="head">Bank receipts · pending</div>
+        <div class="peek-row"><span>TX-94821</span><span style="font-family: var(--mono);">£420</span></div>
+        <div class="peek-row"><span>TX-94818</span><span style="font-family: var(--mono);">£185</span></div>
+        <div class="peek-row"><span>TX-94815</span><span style="font-family: var(--mono);">£220</span></div>
+        <div style="font-size: 12px; color: var(--ink-3); margin-top: 6px;">12 awaiting verification</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <article class="feature">
+      <div class="feature-num">01</div>
+      <div class="feature-body">
+        <h2>One ledger across every branch.</h2>
+        <p>
+          Sales in Maadi, transfers to Zamalek, refunds in Sheikh Zayed — all in one place.
+          Stock follows the money. So do the audit trails. Your accountant will, frankly,
+          stop calling.
+        </p>
+      </div>
+      <div class="feature-visual visual-grid">
+        <div style="position: absolute; top: 20px; inset-inline-start: 20px; font-size: 13px; color: var(--ink-2);">[ branch ledger view — placeholder ]</div>
+      </div>
+    </article>
+
+    <article class="feature">
+      <div class="feature-num">02</div>
+      <div class="feature-body">
+        <h2>Bank-transfer payments, finally tidy.</h2>
+        <p>
+          Cairo customers love a bank transfer. Madar embraces it — receipts captured,
+          references matched, statements imported. No more sticky-note reconciliation
+          at the end of every shift.
+        </p>
+      </div>
+      <div class="feature-visual visual-grid">
+        <div style="position: absolute; top: 20px; inset-inline-start: 20px; font-size: 13px; color: var(--ink-2);">[ verification queue — placeholder ]</div>
+      </div>
+    </article>
+
+    <article class="feature">
+      <div class="feature-num">03</div>
+      <div class="feature-body">
+        <h2>Speaks Arabic, thinks bilingual.</h2>
+        <p>
+          Receipts, reports, and the entire POS render in Arabic with proper RTL — and switch
+          to English with a single tap. Built from the script up, not bolted on.
+        </p>
+      </div>
+      <div class="feature-visual visual-grid">
+        <div style="position: absolute; top: 20px; inset-inline-start: 20px; font-size: 13px; color: var(--ink-2);">[ receipt EN ⇆ AR — placeholder ]</div>
+      </div>
+    </article>
+  </section>
+
+  <section class="pricing-teaser">
+    <h2>Plans for shops, not enterprises.</h2>
+    <p class="sub">Pay monthly, by bank transfer. Switch any time.</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="from">From</div>
+        <h3>Starter</h3>
+        <div class="price">£590<small>/ mo</small></div>
+        <div class="tag">Single shop. Owners learning the ropes.</div>
+        <a href="#" class="price-link" data-go="signup">Try free →</a>
+      </div>
+      <div class="price-card" style="border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset;">
+        <div class="from" style="color: var(--accent);">Most chosen</div>
+        <h3>Growth</h3>
+        <div class="price">£1,490<small>/ mo</small></div>
+        <div class="tag">A few locations, real volume.</div>
+        <a href="#" class="price-link" data-go="signup">Try free →</a>
+      </div>
+      <div class="price-card">
+        <div class="from">From</div>
+        <h3>Scale</h3>
+        <div class="price">£2,890<small>/ mo</small></div>
+        <div class="tag">Multi-region. Procurement at scale.</div>
+        <a href="#" class="price-link" data-go="signup">Try free →</a>
+      </div>
+    </div>
+    <p class="pricing-foot">Enterprise? <a href="#">Have a word with us.</a></p>
+  </section>
+
+  <section class="final-cta">
+    <h2>Open your till tomorrow morning, with Madar already running.</h2>
+    <div class="row">
+      <button class="btn-cta" data-go="signup">Start free trial</button>
+      <button class="btn-cta ghost" data-go="login">I already have an account</button>
+    </div>
+  </section>
+
+  <footer class="auth-footer">
+    <div class="auth-footer-inner">
+      <div class="brand">
+        <div class="brand-mark" style="width: 24px; height: 24px; font-size: 14px;">M</div>
+        <span style="font-family: var(--serif); font-size: 15px;">Madar</span>
+      </div>
+      <span>· © 2026 · Cairo</span>
+      <div class="links">
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+        <a href="#">Contact</a>
+        <a href="#">EN / ع</a>
+      </div>
+    </div>
+  </footer>
+</main>
+
+<!-- ════════════════════════════════════════════════════════════════
+     AUTH SCREENS — shared two-column shell
+     ════════════════════════════════════════════════════════════════ -->
+
+<!-- ── SIGNUP ─────────────────────────────────────────────────────── -->
+<div class="auth-screen auth-signup">
+  <div class="auth-shell">
+    <aside class="auth-rail">
+      <div class="auth-rail-inner">
+        <span class="hero-kicker"><span class="pulse"></span>14-day free trial</span>
+        <h2>Start running your shop in <em style="font-style: italic; color: var(--accent);">about twelve minutes</em>.</h2>
+        <p style="font-size: 15px; color: var(--ink-2); line-height: 1.55; text-wrap: pretty;">
+          Tell us a few things, add your first branch, and you can ring up your first sale today.
+          No card required. Cancel any time and your data exports cleanly.
+        </p>
+
+        <div class="quote">
+          "We were running three branches on three spreadsheets. Madar gave us back our evenings."
+          <div class="who">
+            <strong>Adam S.</strong> · Bayt Coffee Co., Cairo · 5 branches
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="auth-card-wrap">
+      <form class="auth-card" onsubmit="event.preventDefault(); demoSubmit(this, 'verify');">
+        <h1>Start your free trial</h1>
+        <p class="sub">14 days, all features, no card required.</p>
+
+        <div class="sso-row">
+          <button type="button" class="sso-btn"><span class="g"></span>Google</button>
+          <button type="button" class="sso-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.83-3.08.41-1.09-.43-2.09-.45-3.24 0-1.44.62-2.2.44-3.06-.41C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.07zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+            Apple
+          </button>
+        </div>
+        <div class="or-divider"><span>Or with email</span></div>
+
+        <div class="field">
+          <label>Business name</label>
+          <input type="text" placeholder="Your shop's name" autocomplete="organization" />
+        </div>
+        <div class="field">
+          <label>Owner full name</label>
+          <input type="text" placeholder="First and last" autocomplete="name" />
+        </div>
+        <div class="field">
+          <label>Work email</label>
+          <input type="email" placeholder="you@yourshop.com" autocomplete="email" />
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" placeholder="At least 10 characters" autocomplete="new-password"
+                 oninput="updateStrength(this)" />
+          <div class="pw-strength w-3"><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label>Country</label>
+            <select>
+              <option>Egypt 🇪🇬</option>
+              <option>United Arab Emirates 🇦🇪</option>
+              <option>Saudi Arabia 🇸🇦</option>
+              <option>Jordan 🇯🇴</option>
+              <option>Lebanon 🇱🇧</option>
+              <option>Other…</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Language</label>
+            <select>
+              <option>English</option>
+              <option>العربية</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">Create my workspace</button>
+
+        <div class="auth-foot">
+          Already have an account?<a href="#" data-go="login">Log in</a>
+        </div>
+        <p class="tiny">
+          By signing up you agree to our <a href="#">Terms</a> · <a href="#">Privacy</a> · <a href="#">Data residency</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ── LOGIN ──────────────────────────────────────────────────────── -->
+<div class="auth-screen auth-login">
+  <div class="auth-shell">
+    <aside class="auth-rail">
+      <div class="auth-rail-inner">
+        <span class="hero-kicker"><span class="pulse"></span>Welcome back</span>
+        <h2>The till has been waiting for you.</h2>
+        <p style="font-size: 15px; color: var(--ink-2); line-height: 1.55;">
+          Sign in to pick up where you left off — open shifts continue, drafts are intact, and
+          held sales are exactly where the morning shift left them.
+        </p>
+        <div style="margin-top: 36px; padding: 16px 20px; background: var(--bg-elev); border: 1px solid var(--rule); border-radius: var(--radius-lg);">
+          <div style="font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 4px;">
+            Status · all systems
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--sage); box-shadow: 0 0 0 3px color-mix(in oklab, var(--sage) 22%, transparent);"></span>
+            <span>POS · Inventory · Banking — operational</span>
+          </div>
+          <div style="font-size: 11px; color: var(--ink-4); margin-top: 6px; font-family: var(--mono);">last incident · 14 days ago</div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="auth-card-wrap">
+      <form class="auth-card" data-step="creds" onsubmit="event.preventDefault(); doLogin(this);">
+        <!-- Step 1 — credentials -->
+        <div class="login-creds">
+          <h1>Welcome back</h1>
+          <p class="sub">Sign in to your Madar workspace.</p>
+
+          <div class="sso-row">
+            <button type="button" class="sso-btn"><span class="g"></span>Google</button>
+            <button type="button" class="sso-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.83-3.08.41-1.09-.43-2.09-.45-3.24 0-1.44.62-2.2.44-3.06-.41C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.07zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+              Apple
+            </button>
+          </div>
+          <div class="or-divider"><span>Or with email</span></div>
+
+          <div class="field">
+            <label>Email</label>
+            <input type="email" placeholder="you@yourshop.com" autocomplete="email" value="adam@baytcoffee.eg" />
+          </div>
+          <div class="field">
+            <label>
+              Password
+              <a class="hint" href="#" data-go="forgot">Forgot?</a>
+            </label>
+            <input type="password" placeholder="••••••••••" autocomplete="current-password" />
+          </div>
+          <label class="checkbox-row">
+            <input type="checkbox" checked /> Keep me signed in on this device
+          </label>
+
+          <button type="submit" class="btn-submit">Sign in</button>
+
+          <div class="auth-foot">
+            New here?<a href="#" data-go="signup">Start a free trial</a>
+          </div>
+        </div>
+
+        <!-- Step 2 — MFA -->
+        <div class="login-mfa" style="display: none;">
+          <h1>Two-step verification</h1>
+          <p class="sub">
+            Enter the 6-digit code from your authenticator app.<br />
+            <span style="color: var(--ink-4); font-size: 12px;">Signed in as <strong style="color: var(--ink-2);">adam@baytcoffee.eg</strong></span>
+          </p>
+          <div class="mfa-row" data-mfa>
+            <input class="mfa-box" maxlength="1" inputmode="numeric" autocomplete="off" />
+            <input class="mfa-box" maxlength="1" inputmode="numeric" autocomplete="off" />
+            <input class="mfa-box" maxlength="1" inputmode="numeric" autocomplete="off" />
+            <input class="mfa-box" maxlength="1" inputmode="numeric" autocomplete="off" />
+            <input class="mfa-box" maxlength="1" inputmode="numeric" autocomplete="off" />
+            <input class="mfa-box" maxlength="1" inputmode="numeric" autocomplete="off" />
+          </div>
+          <button type="submit" class="btn-submit">Verify and sign in</button>
+          <div class="auth-foot" style="margin-top: 14px;">
+            <a href="#" onclick="event.preventDefault(); this.closest('form').setAttribute('data-step', 'creds'); switchMfa(this);">← Back to password</a>
+            <span style="margin: 0 8px; color: var(--ink-4);">·</span>
+            <a href="#">Use recovery code</a>
+          </div>
+          <p class="tiny">
+            Lost access to your authenticator? <a href="#">Contact your workspace owner</a>.
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ── FORGOT PASSWORD ─────────────────────────────────────────────── -->
+<div class="auth-screen auth-forgot">
+  <div class="auth-shell">
+    <aside class="auth-rail">
+      <div class="auth-rail-inner">
+        <span class="hero-kicker"><span class="pulse"></span>Account recovery</span>
+        <h2>Lost the password? Let's <em style="font-style: italic; color: var(--accent);">get you in</em>.</h2>
+        <p style="font-size: 15px; color: var(--ink-2); line-height: 1.55;">
+          We'll send a reset link to your registered email. Links expire in 30 minutes and only work once — for safety.
+        </p>
+      </div>
+    </aside>
+
+    <div class="auth-card-wrap">
+      <form class="auth-card" data-step="ask" onsubmit="event.preventDefault(); doForgot(this);">
+        <div class="forgot-ask">
+          <h1>Reset your password</h1>
+          <p class="sub">Type the email you use to sign in.</p>
+
+          <div class="field">
+            <label>Email</label>
+            <input type="email" placeholder="you@yourshop.com" autocomplete="email" />
+          </div>
+          <button type="submit" class="btn-submit">Send reset link</button>
+          <div class="auth-foot">
+            Remembered it?<a href="#" data-go="login">Sign in instead</a>
+          </div>
+        </div>
+
+        <div class="forgot-sent auth-success" style="display: none;">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 6 12 13 2 6"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>
+          </div>
+          <h1>Check your email</h1>
+          <p>
+            We sent a reset link to <strong id="forgot-email">your inbox</strong>.<br/>
+            It's good for 30 minutes. Don't see it? Check spam, or
+            <a href="#" style="color: var(--accent);" onclick="event.preventDefault(); document.querySelector('.forgot-ask').style.display=''; document.querySelector('.forgot-sent').style.display='none';">try a different email</a>.
+          </p>
+          <button type="button" class="btn-submit" data-go="reset">Continue to reset (demo)</button>
+          <p class="tiny">Didn't get it? <a href="#" onclick="event.preventDefault();">Resend in 30s</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ── RESET PASSWORD (from email link) ────────────────────────────── -->
+<div class="auth-screen auth-reset">
+  <div class="auth-shell">
+    <aside class="auth-rail">
+      <div class="auth-rail-inner">
+        <span class="hero-kicker"><span class="pulse"></span>Set a new password</span>
+        <h2>Pick something you'll actually remember.</h2>
+        <p style="font-size: 15px; color: var(--ink-2); line-height: 1.55;">
+          Ten characters minimum. Mix of letters and numbers helps. Passphrases work even better.
+        </p>
+      </div>
+    </aside>
+    <div class="auth-card-wrap">
+      <form class="auth-card" onsubmit="event.preventDefault(); demoSubmit(this, 'login');">
+        <h1>New password</h1>
+        <p class="sub">
+          For <strong style="color: var(--ink);">adam@baytcoffee.eg</strong>
+        </p>
+        <div class="field">
+          <label>New password</label>
+          <input type="password" placeholder="At least 10 characters" oninput="updateStrength(this)" />
+          <div class="pw-strength w-3"><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="field">
+          <label>Confirm password</label>
+          <input type="password" placeholder="Same again" />
+        </div>
+        <button type="submit" class="btn-submit">Reset password</button>
+        <p class="tiny">After resetting, all other sessions are signed out. You'll need to sign in again on your phone, tablet, and any back-office computers.</p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ── EMAIL VERIFICATION ──────────────────────────────────────────── -->
+<div class="auth-screen auth-verify">
+  <div class="auth-shell">
+    <aside class="auth-rail">
+      <div class="auth-rail-inner">
+        <span class="hero-kicker"><span class="pulse"></span>Final step</span>
+        <h2>One click and the till is yours.</h2>
+        <p style="font-size: 15px; color: var(--ink-2); line-height: 1.55;">
+          We sent a verification link to the email you signed up with. It expires in 24 hours — but you can request a fresh one whenever.
+        </p>
+      </div>
+    </aside>
+    <div class="auth-card-wrap">
+      <form class="auth-card" data-state="success" onsubmit="event.preventDefault();">
+        <div class="verify-success auth-success">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <h1>Email verified</h1>
+          <p>
+            Welcome aboard, <strong style="color: var(--ink);">Adam</strong>. Your workspace at
+            <strong style="color: var(--ink);">baytcoffee.madar.app</strong> is live.
+            Next, we'll help you set up your first branch and add a handful of products.
+          </p>
+          <a href="Madar.html"><button type="button" class="btn-submit">
+            Continue to onboarding
+          </button></a>
+          <p class="tiny">Or open the <a href="Madar.html">dashboard</a> directly if you'd rather poke around first.</p>
+        </div>
+
+        <div class="verify-expired auth-success" style="display: none;">
+          <div class="icon warn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <h1>This link has expired</h1>
+          <p>
+            Verification links are only good for 24 hours, for safety. Don't worry — we'll send a fresh one to the same address.
+          </p>
+          <button type="button" class="btn-submit" onclick="
+              this.setAttribute('data-loading', 'true');
+              this.innerHTML = '<span class=spin></span> Sending new link…';
+              setTimeout(() => {
+                document.querySelector('.verify-expired').style.display='none';
+                document.querySelector('.verify-success').style.display='';
+              }, 900);
+          ">Send a new link</button>
+        </div>
+
+        <p class="tiny" style="margin-top: 14px;">
+          Demo — flip to
+          <a href="#" onclick="event.preventDefault(); document.querySelector('.verify-success').style.display='none'; document.querySelector('.verify-expired').style.display='';">expired state</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ── View switcher (for designer review) ─────────────────────────── -->
+<nav class="view-switcher" aria-label="View switcher">
+  <span class="label">View</span>
+  <button data-go="landing">Landing</button>
+  <button data-go="signup">Sign up</button>
+  <button data-go="login">Login</button>
+  <button data-go="forgot">Forgot</button>
+  <button data-go="reset">Reset</button>
+  <button data-go="verify">Verify</button>
+</nav>
+
+<script>
+  // ── View switcher ────────────────────────────────────────────────
+  function setView(v) {
+    document.body.setAttribute('data-view', v);
+    document.querySelectorAll('.view-switcher button').forEach(b => {
+      b.setAttribute('aria-current', b.dataset.go === v ? 'true' : 'false');
+    });
+    window.scrollTo({ top: 0 });
+    // reset MFA / multi-step
+    document.querySelectorAll('form[data-step]').forEach(f => {
+      const init = f.classList.contains('auth-login') || f.querySelector('.login-creds') ? 'creds' : 'ask';
+      f.setAttribute('data-step', init);
+      const c = f.querySelector('.login-creds, .forgot-ask'); if (c) c.style.display = '';
+      const s = f.querySelector('.login-mfa, .forgot-sent'); if (s) s.style.display = 'none';
+    });
+  }
+
+  document.addEventListener('click', e => {
+    const t = e.target.closest('[data-go]');
+    if (!t) return;
+    e.preventDefault();
+    setView(t.dataset.go);
+  });
+
+  setView('landing');
+
+  // ── Password strength (toy heuristic) ─────────────────────────────
+  function updateStrength(input) {
+    const v = input.value;
+    const bars = input.parentElement.querySelector('.pw-strength');
+    if (!bars) return;
+    let n = 0;
+    if (v.length >= 6) n = 1;
+    if (v.length >= 10) n = 2;
+    if (v.length >= 10 && /\d/.test(v) && /[a-zA-Z]/.test(v)) n = 3;
+    if (v.length >= 14 && /\d/.test(v) && /[a-zA-Z]/.test(v) && /[^a-zA-Z0-9]/.test(v)) n = 4;
+    bars.className = 'pw-strength w-' + n;
+  }
+
+  // ── Generic submit (signup, reset etc) ───────────────────────────
+  function demoSubmit(form, nextView) {
+    const btn = form.querySelector('.btn-submit');
+    const text = btn.textContent;
+    btn.setAttribute('data-loading', 'true');
+    btn.innerHTML = '<span class="spin"></span> Creating your workspace…';
+    setTimeout(() => {
+      btn.removeAttribute('data-loading');
+      btn.innerHTML = text;
+      if (nextView) setView(nextView);
+    }, 1000);
+  }
+
+  // ── Login (creds → MFA) ──────────────────────────────────────────
+  function doLogin(form) {
+    if (form.getAttribute('data-step') === 'creds') {
+      form.setAttribute('data-step', 'mfa');
+      form.querySelector('.login-creds').style.display = 'none';
+      form.querySelector('.login-mfa').style.display = '';
+      // focus first MFA box
+      setTimeout(() => form.querySelector('.mfa-box')?.focus(), 50);
+    } else {
+      const btn = form.querySelector('.btn-submit');
+      btn.setAttribute('data-loading', 'true');
+      btn.innerHTML = '<span class="spin"></span> Signing in…';
+      setTimeout(() => { window.location.href = 'Madar.html'; }, 900);
+    }
+  }
+  function switchMfa() {
+    const f = document.querySelector('.auth-login form');
+    f.querySelector('.login-creds').style.display = '';
+    f.querySelector('.login-mfa').style.display = 'none';
+  }
+
+  // MFA box auto-advance
+  document.querySelectorAll('[data-mfa]').forEach(row => {
+    const boxes = [...row.querySelectorAll('.mfa-box')];
+    boxes.forEach((b, i) => {
+      b.addEventListener('input', () => {
+        b.value = b.value.replace(/\D/g, '').slice(0, 1);
+        if (b.value && boxes[i + 1]) boxes[i + 1].focus();
+      });
+      b.addEventListener('keydown', e => {
+        if (e.key === 'Backspace' && !b.value && boxes[i - 1]) boxes[i - 1].focus();
+      });
+    });
+  });
+
+  // ── Forgot password (ask → sent) ─────────────────────────────────
+  function doForgot(form) {
+    const email = form.querySelector('input[type=email]').value || 'your inbox';
+    document.getElementById('forgot-email').textContent = email;
+    const btn = form.querySelector('.btn-submit');
+    btn.setAttribute('data-loading', 'true');
+    btn.innerHTML = '<span class="spin"></span> Sending…';
+    setTimeout(() => {
+      btn.removeAttribute('data-loading');
+      btn.innerHTML = 'Send reset link';
+      form.querySelector('.forgot-ask').style.display = 'none';
+      form.querySelector('.forgot-sent').style.display = '';
+    }, 800);
+  }
+</script>
+
+</body>
+</html>

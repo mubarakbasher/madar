@@ -1,0 +1,215 @@
+/* Tax report — tenant app. Logical-CSS only; tokens only. */
+
+.rep-tax {
+  padding-block: 32px;
+  max-width: 1180px;
+  margin-inline: auto;
+}
+
+.rep-tax-head {
+  margin-block-end: 24px;
+}
+
+.rep-tax-title {
+  font-family: var(--serif);
+  font-size: 36px;
+  letter-spacing: -0.02em;
+  margin-block-start: 8px;
+}
+
+.rep-tax-sub {
+  color: var(--ink-3);
+  font-size: 14px;
+  margin-block-start: 4px;
+}
+
+.rep-tax-trn {
+  margin-block-start: 12px;
+  font-size: 13px;
+  color: var(--ink-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rep-tax-trn code {
+  background: var(--bg-sunk, color-mix(in oklab, var(--ink) 6%, transparent));
+  padding-inline: 8px;
+  padding-block: 2px;
+  border-radius: 6px;
+  font-family: var(--mono, monospace);
+  font-size: 12px;
+  color: var(--ink);
+}
+
+.rep-tax-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  align-items: end;
+  padding: 16px;
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  margin-block-end: 24px;
+}
+
+.rep-tax-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.rep-tax-input {
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  padding-block: 8px;
+  padding-inline: 10px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.rep-tax-input:focus {
+  outline: 2px solid color-mix(in oklab, var(--accent) 40%, transparent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+.rep-tax-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.rep-tax-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding-block: 8px;
+  padding-inline: 14px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.rep-tax-btn:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--accent) 8%, transparent);
+  border-color: var(--accent);
+}
+
+.rep-tax-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.rep-tax-error,
+.rep-tax-error-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid color-mix(in oklab, var(--rose) 40%, transparent);
+  background: color-mix(in oklab, var(--rose) 8%, transparent);
+  color: var(--rose);
+  border-radius: 12px;
+  margin-block-end: 24px;
+}
+
+.rep-tax-error-state {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.rep-tax-empty {
+  padding: 56px 24px;
+  text-align: center;
+  color: var(--ink-3);
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+}
+
+.rep-tax-empty h3 {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--ink);
+  margin-block-end: 6px;
+}
+
+.rep-tax-table-wrap {
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.rep-tax-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.rep-tax-table thead th {
+  font-weight: 500;
+  color: var(--ink-3);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding-block: 12px;
+  padding-inline: 16px;
+  border-block-end: 1px solid var(--rule);
+}
+
+.rep-tax-table tbody td {
+  padding-block: 12px;
+  padding-inline: 16px;
+  border-block-end: 1px solid color-mix(in oklab, var(--rule) 60%, transparent);
+}
+
+.rep-tax-th-start,
+.rep-tax-td-start {
+  text-align: start;
+}
+
+.rep-tax-th-end,
+.rep-tax-td-end {
+  text-align: end;
+}
+
+.rep-tax-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+.rep-tax-chip {
+  display: inline-block;
+  padding-block: 2px;
+  padding-inline: 8px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 500;
+  margin-inline-end: 8px;
+}
+
+.rep-tax-name {
+  color: var(--ink);
+}
+
+.rep-tax-totals td {
+  border-block-end: none;
+  background: color-mix(in oklab, var(--ink) 3%, transparent);
+}

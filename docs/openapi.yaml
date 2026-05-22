@@ -1,0 +1,662 @@
+openapi: 3.1.0
+info:
+  title: SaaS POS Platform API
+  version: 0.1.0
+  description: |
+    REST API for the SaaS POS platform. Serves two frontends:
+    - **Tenant app** (`apps/web`) via `/v1/*` routes with `TenantAuthGuard`
+    - **Super-admin app** (`apps/admin`) via `/admin/v1/*` routes with `AdminAuthGuard`
+
+    Routes under `/v1/*` are tenant-scoped (RLS enforced via PostgreSQL session variable `app.current_tenant_id`).
+    Routes under `/admin/v1/*` bypass RLS (set `app.is_super_admin = true`) and access cross-tenant data.
+
+    See `architecture.md`, `admin-app.md`, and `CLAUDE.md` for the full design.
+
+    **This file is a stub.** Phase 1 endpoints will be filled in as they are built.
+    Phase 4 will publish a public API for tenants — that will be a separate, versioned doc.
+  contact:
+    name: Engineering
+  license:
+    name: Proprietary
+
+servers:
+  - url: https://api.yourpos.com
+    description: Production
+  - url: https://api-staging.yourpos.com
+    description: Staging
+  - url: http://localhost:3000
+    description: Local development
+
+tags:
+  - name: auth-tenant
+    description: Tenant authentication (signup, login, MFA, password reset).
+  - name: auth-admin
+    description: Super-admin authentication. MFA mandatory.
+  - name: sales
+    description: POS sales, returns, refunds, holds. Tenant-scoped.
+  - name: inventory
+    description: Products, stock levels, movements, transfers, cycle counts. Tenant-scoped.
+  - name: branches
+    description: Branch management. Tenant-scoped.
+  - name: suppliers
+    description: Suppliers, purchase orders, goods receipts. Tenant-scoped.
+  - name: reports
+    description: Sales summary, P&L, margin analysis, custom dashboards. Tenant-scoped.
+  - name: billing-tenant
+    description: Subscription plan, invoices, payment proofs (subscription context). Tenant-scoped.
+  - name: payment-verification-tenant
+    description: Verification of customer bank-transfer payments on POS sales. Tenant-scoped.
+  - name: settings
+    description: Tenant settings (users, roles, branding, taxes, bank accounts). Tenant-scoped.
+  - name: admin-tenants
+    description: Super-admin operations on tenants (list, detail, suspend, impersonate).
+  - name: admin-verification
+    description: Super-admin verification of subscription payment proofs.
+  - name: admin-banking
+    description: Platform bank accounts management.
+  - name: admin-team
+    description: Super-admin team management.
+  - name: admin-audit
+    description: Platform audit logs.
+
+paths:
+  # ----------------------------------------------------------------------
+  # Tenant auth
+  # ----------------------------------------------------------------------
+  /v1/auth/signup:
+    post:
+      tags: [auth-tenant]
+      summary: Create new tenant and owner user
+      operationId: signupTenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '201':
+          description: Tenant created, trial started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /v1/auth/login:
+    post:
+      tags: [auth-tenant]
+      summary: Login (tenant user)
+      operationId: loginTenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful (or MFA challenge)
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/AuthResponse'
+                  - $ref: '#/components/schemas/MfaChallenge'
+
+  # ----------------------------------------------------------------------
+  # Admin auth (separate realm)
+  # ----------------------------------------------------------------------
+  /admin/v1/auth/login:
+    post:
+      tags: [auth-admin]
+      summary: Login (super-admin)
+      operationId: loginAdmin
+      description: Always returns MFA challenge first. MFA is mandatory for all super-admins.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: MFA challenge issued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MfaChallenge'
+
+  # ----------------------------------------------------------------------
+  # Sales (tenant)
+  # ----------------------------------------------------------------------
+  /v1/sales:
+    post:
+      tags: [sales]
+      summary: Create a sale (POS transaction)
+      operationId: createSale
+      security:
+        - TenantBearer: []
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSaleRequest'
+      responses:
+        '201':
+          description: Sale created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+
+    get:
+      tags: [sales]
+      summary: List sales
+      operationId: listSales
+      security:
+        - TenantBearer: []
+      parameters:
+        - in: query
+          name: branchId
+          schema: { type: string, format: uuid }
+        - in: query
+          name: from
+          schema: { type: string, format: date }
+        - in: query
+          name: to
+          schema: { type: string, format: date }
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [paid, payment_pending, disputed, refunded]
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+        - in: query
+          name: cursor
+          schema: { type: string }
+      responses:
+        '200':
+          description: List of sales (paginated)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaleList'
+
+  # ----------------------------------------------------------------------
+  # Inventory (tenant) — high-level endpoints only; full spec TBD
+  # ----------------------------------------------------------------------
+  /v1/products:
+    get:
+      tags: [inventory]
+      summary: List products
+      operationId: listProducts
+      security:
+        - TenantBearer: []
+      responses:
+        '200':
+          description: List of products
+    post:
+      tags: [inventory]
+      summary: Create product
+      operationId: createProduct
+      security:
+        - TenantBearer: []
+      responses:
+        '201':
+          description: Product created
+
+  /v1/stock-movements:
+    get:
+      tags: [inventory]
+      summary: List stock movements (ledger)
+      operationId: listStockMovements
+      security:
+        - TenantBearer: []
+      responses:
+        '200':
+          description: List of movements
+
+  # ----------------------------------------------------------------------
+  # Payment proofs (shared module, two contexts)
+  # ----------------------------------------------------------------------
+  /v1/billing/payment-proofs:
+    post:
+      tags: [billing-tenant]
+      summary: Submit subscription payment proof
+      operationId: submitSubscriptionProof
+      security:
+        - TenantBearer: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PaymentProofUpload'
+      responses:
+        '201':
+          description: Proof submitted, awaiting verification
+
+  /v1/sales/{saleId}/payment-proof:
+    post:
+      tags: [payment-verification-tenant]
+      summary: Attach bank transfer receipt to a POS sale
+      operationId: submitSaleProof
+      security:
+        - TenantBearer: []
+      parameters:
+        - in: path
+          name: saleId
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PaymentProofUpload'
+      responses:
+        '201':
+          description: Proof attached, sale → payment_pending
+
+  /v1/sales/verification:
+    get:
+      tags: [payment-verification-tenant]
+      summary: Verification queue (pending sale proofs)
+      operationId: listSaleVerificationQueue
+      security:
+        - TenantBearer: []
+      responses:
+        '200':
+          description: Pending sale payment proofs
+
+  /v1/sales/verification/{proofId}/approve:
+    post:
+      tags: [payment-verification-tenant]
+      summary: Approve a sale payment proof
+      operationId: approveSaleProof
+      security:
+        - TenantBearer: []
+      parameters:
+        - in: path
+          name: proofId
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Proof verified, sale → paid
+
+  /v1/sales/verification/{proofId}/reject:
+    post:
+      tags: [payment-verification-tenant]
+      summary: Reject a sale payment proof
+      operationId: rejectSaleProof
+      security:
+        - TenantBearer: []
+      parameters:
+        - in: path
+          name: proofId
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RejectProofRequest'
+      responses:
+        '200':
+          description: Proof rejected, sale → disputed
+
+  # ----------------------------------------------------------------------
+  # Admin: tenants
+  # ----------------------------------------------------------------------
+  /admin/v1/tenants:
+    get:
+      tags: [admin-tenants]
+      summary: List all tenants
+      operationId: adminListTenants
+      security:
+        - AdminBearer: []
+      responses:
+        '200':
+          description: All tenants
+
+  /admin/v1/tenants/{id}:
+    get:
+      tags: [admin-tenants]
+      summary: Tenant detail
+      operationId: adminGetTenant
+      security:
+        - AdminBearer: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Tenant details
+
+  /admin/v1/tenants/{id}/impersonate:
+    post:
+      tags: [admin-tenants]
+      summary: Start impersonation session
+      operationId: adminStartImpersonation
+      description: |
+        Requires Owner or Support role. Logs to platform_audit_log before token issued.
+        Token lifetime: 1 hour max. Tenant app shows banner during session.
+      security:
+        - AdminBearer: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  description: Required typed reason (audited).
+                  minLength: 10
+      responses:
+        '200':
+          description: Impersonation token issued
+
+  # ----------------------------------------------------------------------
+  # Admin: subscription verification
+  # ----------------------------------------------------------------------
+  /admin/v1/billing/verification:
+    get:
+      tags: [admin-verification]
+      summary: Subscription verification queue
+      operationId: adminListVerificationQueue
+      security:
+        - AdminBearer: []
+      responses:
+        '200':
+          description: Pending subscription proofs
+
+  /admin/v1/billing/verification/{proofId}/approve:
+    post:
+      tags: [admin-verification]
+      summary: Approve subscription payment proof
+      operationId: adminApproveProof
+      security:
+        - AdminBearer: []
+      parameters:
+        - in: path
+          name: proofId
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Approved, subscription extended
+
+  /admin/v1/billing/verification/{proofId}/reject:
+    post:
+      tags: [admin-verification]
+      summary: Reject subscription payment proof
+      operationId: adminRejectProof
+      security:
+        - AdminBearer: []
+      parameters:
+        - in: path
+          name: proofId
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RejectProofRequest'
+      responses:
+        '200':
+          description: Rejected with reason
+
+  # ----------------------------------------------------------------------
+  # Admin: platform bank accounts
+  # ----------------------------------------------------------------------
+  /admin/v1/banking/accounts:
+    get:
+      tags: [admin-banking]
+      summary: List platform bank accounts
+      operationId: adminListBankAccounts
+      security:
+        - AdminBearer: []
+      responses:
+        '200':
+          description: List of accounts
+    post:
+      tags: [admin-banking]
+      summary: Add platform bank account
+      operationId: adminCreateBankAccount
+      security:
+        - AdminBearer: []
+      responses:
+        '201':
+          description: Account created
+
+  # ----------------------------------------------------------------------
+  # Admin: audit
+  # ----------------------------------------------------------------------
+  /admin/v1/audit/platform:
+    get:
+      tags: [admin-audit]
+      summary: Platform audit log
+      operationId: adminListPlatformAudit
+      security:
+        - AdminBearer: []
+      responses:
+        '200':
+          description: Audit entries
+
+  /admin/v1/audit/login-as:
+    get:
+      tags: [admin-audit]
+      summary: Login-as (impersonation) audit log
+      operationId: adminListLoginAsAudit
+      security:
+        - AdminBearer: []
+      responses:
+        '200':
+          description: Impersonation sessions
+
+components:
+  securitySchemes:
+    TenantBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Tenant user JWT. Validated by TenantAuthGuard.
+        Sets PostgreSQL session var `app.current_tenant_id`.
+    AdminBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Super-admin JWT. Validated by AdminAuthGuard.
+        Sets PostgreSQL session var `app.is_super_admin = true`.
+        Different signing secret from tenant JWTs.
+
+  parameters:
+    IdempotencyKey:
+      in: header
+      name: Idempotency-Key
+      schema: { type: string, format: uuid }
+      description: |
+        UUID provided by client to deduplicate retries.
+        Required on POST /v1/sales and other money-affecting writes.
+        Cached server-side for 24 hours.
+
+  schemas:
+    # Auth
+    SignupRequest:
+      type: object
+      required: [businessName, ownerName, email, password, country, locale]
+      properties:
+        businessName: { type: string }
+        ownerName: { type: string }
+        email: { type: string, format: email }
+        password: { type: string, minLength: 12 }
+        country: { type: string, description: ISO 3166-1 alpha-2 }
+        locale: { type: string, enum: [en, ar] }
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string }
+
+    AuthResponse:
+      type: object
+      properties:
+        token: { type: string }
+        refreshToken: { type: string }
+        user:
+          type: object
+          properties:
+            id: { type: string, format: uuid }
+            email: { type: string }
+            role: { type: string }
+            locale: { type: string }
+
+    MfaChallenge:
+      type: object
+      properties:
+        challengeToken: { type: string }
+        method: { type: string, enum: [totp] }
+
+    # Money
+    Money:
+      type: object
+      required: [amount, currency]
+      properties:
+        amount:
+          type: integer
+          description: Amount in minor units (cents). E.g., 1500 = 15.00 of currency.
+          format: int64
+        currency:
+          type: string
+          description: ISO 4217 currency code.
+          minLength: 3
+          maxLength: 3
+
+    # Translatable text
+    TranslatableText:
+      type: object
+      required: [en]
+      properties:
+        en: { type: string }
+        ar: { type: string }
+
+    # Sales
+    CreateSaleRequest:
+      type: object
+      required: [branchId, lines, payments]
+      properties:
+        branchId: { type: string, format: uuid }
+        customerId: { type: string, format: uuid, nullable: true }
+        clientUuid:
+          type: string
+          format: uuid
+          description: Client-generated UUID for offline-safe idempotency.
+        lines:
+          type: array
+          items: { $ref: '#/components/schemas/SaleLine' }
+        payments:
+          type: array
+          items: { $ref: '#/components/schemas/Payment' }
+        discountTotal:
+          $ref: '#/components/schemas/Money'
+
+    SaleLine:
+      type: object
+      required: [productId, quantity, unitPrice]
+      properties:
+        productId: { type: string, format: uuid }
+        variantId: { type: string, format: uuid, nullable: true }
+        quantity: { type: number }
+        unitPrice: { $ref: '#/components/schemas/Money' }
+        lineDiscount: { $ref: '#/components/schemas/Money' }
+        taxClassId: { type: string, format: uuid }
+        note: { type: string }
+
+    Payment:
+      type: object
+      required: [method, amount]
+      properties:
+        method:
+          type: string
+          enum: [cash, bank_transfer, manual_card, store_credit]
+        amount: { $ref: '#/components/schemas/Money' }
+        bankReference: { type: string, description: For bank_transfer only. }
+        cardApprovalCode: { type: string, description: For manual_card only. }
+
+    Sale:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        receiptNumber: { type: string }
+        status:
+          type: string
+          enum: [paid, payment_pending, disputed, refunded]
+        # ... abbreviated; full schema TBD per module
+
+    SaleList:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Sale' }
+        nextCursor: { type: string, nullable: true }
+
+    # Payment proofs
+    PaymentProofUpload:
+      type: object
+      required: [receipt, payerName, transferDate, bankReference]
+      properties:
+        receipt:
+          type: string
+          format: binary
+          description: JPG, PNG, or PDF. Max 5 MB. Virus-scanned by ClamAV.
+        payerName: { type: string }
+        transferDate: { type: string, format: date }
+        bankReference: { type: string }
+        bankAccountId:
+          type: string
+          format: uuid
+          description: Which platform/tenant bank account the transfer went to.
+        notes: { type: string }
+
+    RejectProofRequest:
+      type: object
+      required: [reasonCode]
+      properties:
+        reasonCode:
+          type: string
+          enum: [wrong_amount, unreadable, wrong_account, duplicate, other]
+        message:
+          type: string
+          description: Optional message to the payer (shown in their notification).
+
+    # Errors
+    Error:
+      type: object
+      properties:
+        code: { type: string }
+        message: { type: string }
+        details: { type: object, additionalProperties: true }

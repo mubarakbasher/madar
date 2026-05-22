@@ -1,0 +1,268 @@
+/* profile — settings → profile / account.
+   All tokens from packages/ui/tokens.css; logical CSS only. */
+
+.prof-shell {
+  max-width: 720px;
+  display: grid;
+  gap: 20px;
+}
+
+.prof-header {
+  margin-block-end: 4px;
+}
+
+.prof-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 11px;
+  color: var(--ink-3);
+  margin-block-end: 6px;
+}
+
+.prof-title {
+  font-family: var(--font-display, Fraunces, serif);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--ink-1);
+  margin: 0;
+}
+
+.prof-subtitle {
+  color: var(--ink-3);
+  font-size: 14px;
+  margin-block-start: 6px;
+}
+
+.prof-card {
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px 22px;
+}
+
+.prof-card-title {
+  font-family: var(--font-display, Fraunces, serif);
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 0 4px;
+  color: var(--ink-1);
+}
+
+.prof-card-sub {
+  color: var(--ink-3);
+  font-size: 13px;
+  margin-block-end: 16px;
+}
+
+.prof-identity-grid {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.prof-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--accent), color-mix(in oklab, var(--accent) 60%, var(--ink-1)));
+  color: var(--accent-on);
+  font-family: var(--font-display, Fraunces, serif);
+  font-size: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+}
+
+.prof-field {
+  display: grid;
+  gap: 6px;
+  margin-block-end: 14px;
+}
+
+.prof-field:last-child {
+  margin-block-end: 0;
+}
+
+.prof-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.prof-input {
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-1);
+  font-size: 14px;
+  color: var(--ink-1);
+  width: 100%;
+}
+
+.prof-input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.prof-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.prof-input-row .prof-input {
+  flex: 1;
+}
+
+.prof-readonly {
+  padding: 9px 12px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
+  font-size: 14px;
+  color: var(--ink-2);
+  flex: 1;
+}
+
+.prof-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.prof-pill-sage {
+  background: color-mix(in oklab, var(--sage, #6e9b7f) 16%, var(--surface-1));
+  color: var(--sage, #4d7359);
+}
+
+.prof-pill-amber {
+  background: color-mix(in oklab, var(--amber, #c08a2f) 16%, var(--surface-1));
+  color: var(--amber, #8a6418);
+}
+
+.prof-radio-row {
+  display: flex;
+  gap: 8px;
+}
+
+.prof-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-1);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.prof-radio:hover {
+  background: var(--surface-2);
+}
+
+.prof-radio input[type="radio"] {
+  accent-color: var(--accent);
+}
+
+.prof-radio-active {
+  border-color: var(--accent);
+  background: color-mix(in oklab, var(--accent) 8%, var(--surface-1));
+  color: var(--accent);
+}
+
+.prof-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  color: var(--ink-1);
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.prof-btn:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+
+.prof-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.prof-btn-primary {
+  background: var(--accent);
+  color: var(--accent-on);
+  border-color: var(--accent);
+}
+
+.prof-btn-primary:hover:not(:disabled) {
+  background: var(--accent-strong, var(--accent));
+}
+
+.prof-saved {
+  font-size: 12px;
+  color: var(--sage, #4d7359);
+}
+
+.prof-field-error {
+  font-size: 12px;
+  color: var(--rose);
+}
+
+.prof-error {
+  padding: 10px 14px;
+  background: color-mix(in oklab, var(--rose) 10%, var(--surface-1));
+  border: 1px solid color-mix(in oklab, var(--rose) 30%, var(--line));
+  border-radius: 8px;
+  color: var(--rose);
+  font-size: 13px;
+  margin-block-end: 12px;
+}
+
+.prof-modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 16, 12, 0.5);
+  display: grid;
+  place-items: center;
+  z-index: 50;
+  padding: 16px;
+}
+
+.prof-modal {
+  background: var(--surface-1);
+  border-radius: 14px;
+  padding: 22px 24px;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.32);
+}
+
+.prof-modal h3 {
+  font-family: var(--font-display, Fraunces, serif);
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0 0 14px;
+}
+
+.prof-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-block-start: 18px;
+}

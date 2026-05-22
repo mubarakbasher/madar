@@ -1,0 +1,26 @@
+{
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "@madar/db",
+            "message": "The super-admin app must not import @madar/db. Frontend code talks to the API over HTTP; data-layer code lives in apps/api."
+          },
+          {
+            "name": "@prisma/client",
+            "message": "The super-admin app must not import @prisma/client. Frontend code talks to the API over HTTP; data-layer code lives in apps/api."
+          }
+        ],
+        "patterns": [
+          {
+            "group": ["@madar/db/*"],
+            "message": "The super-admin app must not import @madar/db. Frontend code talks to the API over HTTP."
+          }
+        ]
+      }
+    ]
+  }
+}

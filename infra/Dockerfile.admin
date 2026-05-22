@@ -1,0 +1,41 @@
+# Multi-stage build for the Madar admin (Next.js 14, English-only).
+
+FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat
+WORKDIR /repo
+RUN corepack enable && corepack prepare pnpm@9.12.0 --activate
+
+FROM base AS deps
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY apps/admin/package.json ./apps/admin/
+COPY packages/ui/package.json ./packages/ui/
+RUN pnpm install --frozen-lockfile
+
+FROM base AS build
+COPY --from=deps /repo/node_modules ./node_modules
+COPY --from=deps /repo/apps/admin/node_modules ./apps/admin/node_modules
+COPY . .
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+RUN pnpm --filter @madar/admin build
+
+FROM node:20-alpine AS runtime
+RUN apk add --no-cache libc6-compat tini
+WORKDIR /app
+ENV NODE_ENV=production \
+    PORT=3001
+
+RUN corepack enable && corepack prepare pnpm@9.12.0 --activate
+
+COPY --from=build /repo/apps/admin/.next ./apps/admin/.next
+COPY --from=build /repo/apps/admin/public ./apps/admin/public
+COPY --from=build /repo/apps/admin/package.json ./apps/admin/package.json
+COPY --from=build /repo/apps/admin/next.config.mjs ./apps/admin/next.config.mjs
+COPY --from=build /repo/node_modules ./node_modules
+COPY --from=build /repo/packages ./packages
+COPY --from=build /repo/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --from=build /repo/package.json ./package.json
+
+EXPOSE 3001
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["pnpm", "--filter", "@madar/admin", "start"]

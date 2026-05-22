@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-accent="terracotta" data-typeface="fraunces">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280">
+<title>Madar — Multi-branch POS</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=DM+Serif+Display&family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="design-tokens.css">
+
+<style>
+  /* small global animation utilities */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideInEnd { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  [dir="rtl"] @keyframes slideInEnd { from { transform: translateX(-40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .dot-anim {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--ink-3);
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .dot-anim:nth-child(2) { animation-delay: .2s; }
+  .dot-anim:nth-child(3) { animation-delay: .4s; }
+  .delta em { font-style: normal; }
+
+  /* scrollbar */
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-track { background: transparent; }
+  *::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 5px; border: 2px solid transparent; background-clip: content-box; }
+  *::-webkit-scrollbar-thumb:hover { background: var(--ink-4); border: 2px solid transparent; background-clip: content-box; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script src="data.js"></script>
+
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="icons.jsx"></script>
+<script type="text/babel" src="components.jsx"></script>
+<script type="text/babel" src="screen-dashboard.jsx"></script>
+<script type="text/babel" src="screen-checkout.jsx"></script>
+<script type="text/babel" src="screen-inventory.jsx"></script>
+<script type="text/babel" src="screen-suppliers-branches.jsx"></script>
+<script type="text/babel" src="screen-analysis.jsx"></script>
+<script type="text/babel" src="screen-extras.jsx"></script>
+<script type="text/babel" src="screen-billing.jsx"></script>
+<script type="text/babel" src="app.jsx"></script>
+<script src="i18n-ar.js"></script>
+</body>
+</html>

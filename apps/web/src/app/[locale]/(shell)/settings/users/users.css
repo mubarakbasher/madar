@@ -1,0 +1,506 @@
+/* Settings → Users — list, modals, confirm dialogs.
+   All colors via design tokens. Logical CSS only (no left/right). The single
+   sanctioned hardcoded value is the modal backdrop rgba(26, 23, 20, 0.45),
+   which matches the convention used elsewhere (suppliers.css). */
+
+.usr {
+  max-width: 1080px;
+  margin-inline: auto;
+}
+
+.usr-header {
+  margin-block-end: 20px;
+}
+
+.usr-kicker {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+}
+
+.usr-title {
+  font-family: var(--serif, Fraunces, serif);
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink, var(--ink-1));
+  margin: 4px 0 0;
+}
+
+.usr-subtitle {
+  font-size: 14px;
+  color: var(--ink-3);
+  margin-block-start: 6px;
+}
+
+/* ─── Toolbar ─────────────────────────────────────────────────────── */
+
+.usr-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-block-end: 14px;
+  flex-wrap: wrap;
+}
+
+.usr-search {
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  border-radius: var(--radius-sm, 8px);
+  font-size: 13px;
+  width: 280px;
+  color: var(--ink, var(--ink-1));
+  font-family: inherit;
+}
+
+.usr-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.usr-toolbar-spacer {
+  flex: 1;
+}
+
+/* ─── Buttons ─────────────────────────────────────────────────────── */
+
+.usr-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  font-size: 13px;
+  color: var(--ink, var(--ink-1));
+  cursor: pointer;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.usr-btn:hover {
+  border-color: color-mix(in oklab, var(--accent) 30%, var(--rule));
+}
+
+.usr-btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink, #fff);
+  border-color: var(--accent);
+}
+
+.usr-btn-primary:hover {
+  filter: brightness(1.05);
+  border-color: var(--accent);
+}
+
+.usr-btn-primary:disabled {
+  background: var(--rule);
+  color: var(--ink-3);
+  border-color: var(--rule);
+  cursor: not-allowed;
+}
+
+.usr-btn-ghost {
+  background: transparent;
+}
+
+.usr-btn-danger {
+  border-color: color-mix(in oklab, var(--rose, #c45a5a) 30%, var(--rule));
+  color: var(--rose, #c45a5a);
+  background: transparent;
+}
+
+.usr-btn-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+/* ─── Table ───────────────────────────────────────────────────────── */
+
+.usr-table-wrap {
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  border-radius: var(--radius, 12px);
+  overflow: hidden;
+}
+
+.usr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.usr-table th,
+.usr-table td {
+  text-align: start;
+  padding: 12px 14px;
+  border-block-end: 1px solid var(--rule);
+  vertical-align: middle;
+}
+
+.usr-table tbody tr:last-child td {
+  border-block-end: none;
+}
+
+.usr-table th {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+  font-weight: 500;
+  background: var(--bg-sunk, transparent);
+}
+
+.usr-cell-name {
+  font-weight: 500;
+  color: var(--ink, var(--ink-1));
+}
+
+.usr-cell-email {
+  color: var(--ink-2);
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 12.5px;
+}
+
+.usr-cell-branch {
+  color: var(--ink-2);
+}
+
+.usr-cell-branch-empty {
+  color: var(--ink-3);
+  font-style: italic;
+}
+
+.usr-row-actions {
+  display: inline-flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+/* ─── Pills ───────────────────────────────────────────────────────── */
+
+.usr-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10.5px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full, 100px);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--rule);
+}
+
+/* Role chips — each role gets a distinct tonal accent. */
+.usr-role-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full, 100px);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--rule);
+}
+
+.usr-role-owner {
+  background: color-mix(in oklab, var(--accent) 14%, transparent);
+  color: var(--accent);
+  border-color: color-mix(in oklab, var(--accent) 30%, var(--rule));
+}
+
+.usr-role-manager {
+  background: color-mix(in oklab, var(--sage, #6e9b7f) 14%, transparent);
+  color: var(--sage, #4d7359);
+  border-color: color-mix(in oklab, var(--sage, #6e9b7f) 30%, var(--rule));
+}
+
+.usr-role-cashier {
+  background: color-mix(in oklab, var(--amber, #b88438) 14%, transparent);
+  color: var(--amber, #b88438);
+  border-color: color-mix(in oklab, var(--amber, #b88438) 30%, var(--rule));
+}
+
+.usr-role-accountant {
+  background: color-mix(in oklab, var(--ink-2) 10%, transparent);
+  color: var(--ink-2);
+}
+
+.usr-role-auditor {
+  background: color-mix(in oklab, var(--ink-3) 12%, transparent);
+  color: var(--ink-2);
+}
+
+/* Status pills */
+.usr-status-active {
+  background: color-mix(in oklab, var(--sage, #6e9b7f) 18%, transparent);
+  color: var(--sage, #4d7359);
+  border-color: color-mix(in oklab, var(--sage, #6e9b7f) 30%, var(--rule));
+}
+
+.usr-status-inactive {
+  background: color-mix(in oklab, var(--rose, #c45a5a) 14%, transparent);
+  color: var(--rose, #c45a5a);
+  border-color: color-mix(in oklab, var(--rose, #c45a5a) 30%, var(--rule));
+}
+
+.usr-status-pending {
+  background: color-mix(in oklab, var(--amber, #b88438) 16%, transparent);
+  color: var(--amber, #b88438);
+  border-color: color-mix(in oklab, var(--amber, #b88438) 30%, var(--rule));
+}
+
+.usr-you-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10.5px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full, 100px);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--bg-sunk, color-mix(in oklab, var(--ink-3) 8%, transparent));
+  color: var(--ink-3);
+}
+
+/* ─── Empty / loading / error ─────────────────────────────────────── */
+
+.usr-empty {
+  margin-block-start: 12px;
+  border: 1px dashed var(--rule);
+  border-radius: var(--radius, 12px);
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.usr-empty-title {
+  font-family: var(--serif, Fraunces, serif);
+  font-size: 22px;
+  margin-block-end: 6px;
+  color: var(--ink, var(--ink-1));
+}
+
+.usr-empty-body {
+  font-size: 14px;
+  color: var(--ink-3);
+  margin-block-end: 16px;
+}
+
+.usr-skeleton {
+  padding: 48px 0;
+  text-align: center;
+  color: var(--ink-3);
+}
+
+.usr-error {
+  margin-block-start: 24px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius, 12px);
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.usr-error h2 {
+  font-family: var(--serif, Fraunces, serif);
+  font-size: 20px;
+  margin: 0 0 6px;
+  color: var(--ink, var(--ink-1));
+}
+
+.usr-error p {
+  font-size: 13px;
+  color: var(--ink-3);
+  margin: 0 0 14px;
+}
+
+/* Owner-only surface */
+.usr-denied {
+  margin-block-start: 24px;
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  border-radius: var(--radius, 12px);
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.usr-denied h1 {
+  font-family: var(--serif, Fraunces, serif);
+  font-size: 22px;
+  margin: 0 0 8px;
+  color: var(--ink, var(--ink-1));
+}
+
+.usr-denied p {
+  font-size: 13.5px;
+  color: var(--ink-3);
+  margin: 0 0 16px;
+}
+
+/* ─── Modal ───────────────────────────────────────────────────────── */
+
+.usr-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 23, 20, 0.45);
+  display: grid;
+  place-items: center;
+  z-index: 60;
+  padding: 16px;
+}
+
+.usr-modal {
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius, 12px);
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--shadow-lg, 0 24px 60px -20px rgba(0, 0, 0, 0.25));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+.usr-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border-block-end: 1px solid var(--rule);
+}
+
+.usr-modal-title {
+  font-family: var(--serif, Fraunces, serif);
+  font-size: 18px;
+  margin: 0;
+  color: var(--ink, var(--ink-1));
+}
+
+.usr-modal-close {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--ink-2);
+  display: inline-flex;
+  padding: 4px;
+}
+
+.usr-modal-body {
+  padding: 18px;
+  overflow-y: auto;
+}
+
+.usr-modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 18px;
+  border-block-start: 1px solid var(--rule);
+  background: var(--bg, transparent);
+}
+
+.usr-modal-note {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+/* ─── Fields ──────────────────────────────────────────────────────── */
+
+.usr-field {
+  display: block;
+  margin-block-end: 12px;
+}
+
+.usr-field-label {
+  font-size: 12px;
+  color: var(--ink-2);
+  margin-block-end: 4px;
+  display: block;
+}
+
+.usr-field input,
+.usr-field select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--rule);
+  background: var(--bg, var(--bg-elev));
+  border-radius: var(--radius-sm, 8px);
+  font-size: 13px;
+  color: var(--ink, var(--ink-1));
+  font-family: inherit;
+}
+
+.usr-field input:disabled,
+.usr-field select:disabled {
+  background: var(--bg-sunk, color-mix(in oklab, var(--ink-3) 6%, transparent));
+  color: var(--ink-3);
+}
+
+.usr-field-hint {
+  margin-block-start: 4px;
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.usr-field-error {
+  margin-block-start: 4px;
+  font-size: 12px;
+  color: var(--rose, #c45a5a);
+}
+
+.usr-general-error {
+  margin-block-end: 12px;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in oklab, var(--rose, #c45a5a) 30%, var(--rule));
+  background: color-mix(in oklab, var(--rose, #c45a5a) 10%, transparent);
+  border-radius: var(--radius-sm, 8px);
+  font-size: 12.5px;
+  color: var(--rose, #c45a5a);
+}
+
+.usr-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ink, var(--ink-1));
+  cursor: pointer;
+}
+
+/* ─── Toast (same family as verification queue) ───────────────────── */
+
+.usr-toast {
+  position: fixed;
+  inset-block-end: 24px;
+  inset-inline: 0;
+  margin-inline: auto;
+  max-width: 480px;
+  padding: 12px 18px;
+  background: var(--ink, var(--ink-1));
+  color: var(--bg-elev);
+  border-radius: var(--radius, 10px);
+  font-family: var(--sans, inherit);
+  font-size: 13px;
+  box-shadow: var(--shadow-lg, 0 24px 60px -20px rgba(0, 0, 0, 0.25));
+  z-index: 110;
+  text-align: center;
+}
+
+.usr-toast--ok {
+  background: var(--sage, #4d7359);
+  color: #fff;
+}
+
+.usr-toast--bad {
+  background: var(--rose, #c45a5a);
+  color: #fff;
+}

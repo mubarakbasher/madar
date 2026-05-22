@@ -1,0 +1,171 @@
+/*
+ * Trend analysis report — PAGES §41.
+ *
+ * Calm, editorial layout: title row → filter strip → hero chart → KPI strip.
+ * All colors, radii, type via design tokens; logical CSS only so the tenant
+ * app flips cleanly under [dir="rtl"].
+ */
+
+.trends-page {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-block: 32px;
+  padding-inline: 24px;
+}
+
+.trends-header {
+  margin-block-end: 24px;
+}
+
+.trends-title {
+  font-family: var(--serif);
+  font-size: 36px;
+  letter-spacing: -0.02em;
+  margin-block: 8px 4px;
+  color: var(--ink-1);
+}
+
+.trends-subtitle {
+  color: var(--ink-3);
+  font-size: 14px;
+  margin: 0;
+}
+
+.trends-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-block-end: 20px;
+  padding-block: 12px;
+  border-block: 1px solid var(--rule);
+}
+
+.trends-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-inline-size: 160px;
+}
+
+.trends-filter-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+}
+
+.trends-filter select {
+  font-family: var(--sans);
+  font-size: 13px;
+  padding-block: 8px;
+  padding-inline: 12px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--bg-elev);
+  color: var(--ink-1);
+}
+
+.trends-filter select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.trends-chart-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+  padding: 24px;
+  margin-block-end: 20px;
+  min-block-size: 280px;
+}
+
+.trends-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-block-size: 240px;
+  color: var(--ink-3);
+  text-align: center;
+}
+
+.trends-state-error {
+  color: var(--rose);
+}
+
+.trends-state-error button {
+  margin-block-start: 12px;
+  padding-block: 8px;
+  padding-inline: 16px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 13px;
+}
+
+.trends-state-error button:hover {
+  background: color-mix(in oklab, var(--accent) 8%, transparent);
+}
+
+.trends-empty strong {
+  font-family: var(--serif);
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  color: var(--ink-1);
+}
+
+.trends-empty p {
+  font-size: 13px;
+  color: var(--ink-3);
+  max-inline-size: 36ch;
+}
+
+.trends-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.trends-kpi {
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.trends-kpi-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+  margin-block-end: 6px;
+}
+
+.trends-kpi-value {
+  font-family: var(--serif);
+  font-size: 24px;
+  letter-spacing: -0.01em;
+  color: var(--ink-1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.trends-kpi-trend {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 2px;
+}
+
+.trends-kpi-trend.up {
+  color: var(--sage);
+}
+
+.trends-kpi-trend.dn {
+  color: var(--rose);
+}

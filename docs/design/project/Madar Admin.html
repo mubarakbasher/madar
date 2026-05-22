@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-accent="slate" data-typeface="fraunces">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280">
+<title>Madar Admin — Platform operations</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="design-tokens.css">
+
+<style>
+  /* Slate teal accent override + admin-specific colors */
+  [data-accent="slate"] {
+    --accent:      #4A6B7A;
+    --accent-soft: #DEE6EB;
+    --accent-ink:  #233742;
+    --admin:       #4A6B7A;
+    --admin-soft:  #DEE6EB;
+    --admin-ink:   #233742;
+  }
+  [data-theme="dark"][data-accent="slate"] {
+    --accent:      #87A8B9;
+    --accent-soft: #1F2D34;
+    --accent-ink:  #B5CDDA;
+    --admin:       #87A8B9;
+    --admin-soft:  #1F2D34;
+    --admin-ink:   #B5CDDA;
+  }
+
+  /* Admin shell — same grid as tenant app but with optional banner row */
+  .admin-app {
+    display: grid;
+    grid-template-columns: var(--sidebar-w) 1fr;
+    grid-template-rows: var(--topbar-h) 1fr;
+    grid-template-areas: "sidebar topbar" "sidebar content";
+    min-height: 100vh;
+  }
+  .admin-app:has(.impersonation-banner) {
+    grid-template-rows: 44px var(--topbar-h) 1fr;
+    grid-template-areas:
+      "banner banner"
+      "sidebar topbar"
+      "sidebar content";
+  }
+  .impersonation-banner {
+    grid-area: banner;
+    background: linear-gradient(90deg, var(--rose), #8E2A2A);
+    color: #fff;
+    height: 44px;
+    display: flex; align-items: center;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.18);
+    position: sticky; top: 0; z-index: 30;
+    font-family: var(--sans);
+  }
+  .impersonation-banner code {
+    font-family: var(--mono); font-size: 11.5px;
+    background: rgba(255,255,255,0.14); padding: 1px 5px; border-radius: 3px;
+  }
+
+  .admin-content {
+    grid-area: content;
+    overflow-x: hidden;
+  }
+  .admin-content-inner {
+    max-width: 1440px;
+    padding: 28px 32px 80px;
+    margin: 0 auto;
+  }
+
+  /* Row hover shared with tenant app */
+  .inv-row:hover { background: var(--paper); }
+  [data-theme="dark"] .inv-row:hover { background: var(--bg-sunk); }
+
+  /* Inputs (reused token) */
+  .madar-input {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    background: var(--bg);
+    font-family: var(--sans);
+    font-size: 13.5px;
+    outline: none;
+    color: var(--ink);
+  }
+  .madar-input:focus {
+    border-color: var(--admin);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--admin) 22%, transparent);
+  }
+
+  /* kbd hint pills inside buttons */
+  kbd {
+    font-family: var(--mono); font-size: 10px;
+    background: var(--bg-sunk); padding: 0px 5px; border-radius: 3px;
+    border: 1px solid var(--rule); color: var(--ink-3);
+    margin-inline-start: 6px;
+  }
+
+  /* ─── Verification queue specific ─── */
+  .vq {
+    display: flex; flex-direction: column;
+    height: calc(100vh - var(--topbar-h));
+  }
+  .admin-app:has(.impersonation-banner) .vq { height: calc(100vh - var(--topbar-h) - 44px); }
+
+  .vq-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    flex: 1;
+    min-height: 0;
+  }
+  .vq-list {
+    border-inline-end: 1px solid var(--rule);
+    overflow-y: auto;
+    background: var(--bg-elev);
+  }
+  .vq-row {
+    display: block; width: 100%;
+    text-align: start;
+    background: transparent; border: 0; cursor: pointer;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--rule);
+    font-family: inherit; color: inherit;
+  }
+  .vq-row:hover { background: var(--paper); }
+  [data-theme="dark"] .vq-row:hover { background: var(--bg-sunk); }
+  .vq-row[aria-current="true"] {
+    background: var(--admin-soft);
+    position: relative;
+  }
+  .vq-row[aria-current="true"]::before {
+    content: ""; position: absolute;
+    inset-inline-start: 0; top: 0; bottom: 0;
+    width: 3px; background: var(--admin);
+  }
+
+  .vq-detail {
+    overflow-y: auto;
+    background: var(--bg);
+  }
+  .vq-detail-inner {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    height: 100%;
+    min-height: 0;
+  }
+
+  /* Modal shell shared in admin */
+  .vq-modal-bg {
+    position: fixed; inset: 0;
+    background: rgba(26,23,20,0.5);
+    z-index: 90;
+    display: grid; place-items: center;
+    animation: fade .15s ease-out;
+  }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  .vq-modal {
+    background: var(--bg-elev);
+    border-radius: var(--radius-lg);
+    width: 560px; max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 32px);
+    overflow: auto;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp .2s ease-out;
+  }
+
+  /* slideUp keyframe used by toast as well */
+  @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script src="admin-data.js"></script>
+
+<script type="text/babel" src="icons.jsx"></script>
+<script type="text/babel" src="admin-verification.jsx"></script>
+<script type="text/babel" src="admin-screens.jsx"></script>
+<script type="text/babel" src="admin-app.jsx"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: madar_postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: madar
+      POSTGRES_PASSWORD: madar
+      POSTGRES_DB: madar
+    volumes:
+      - madar_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U madar -d madar"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: madar_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--save", "60", "1", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    container_name: madar_minio
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: madar
+      MINIO_ROOT_PASSWORD: madar-dev-only
+    volumes:
+      - madar_minio:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9000/minio/health/live || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Nightly Postgres backup → S3/MinIO. Not in the default stack — opt-in via
+  # `docker compose --profile backup up -d backup`. Manual one-off backup:
+  # `docker compose run --rm backup backup`. Manual restore:
+  # `docker compose run --rm backup restore latest`.
+  # Reads connection + bucket creds from .env (see .env.example).
+  backup:
+    profiles: ["backup"]
+    build:
+      context: ./infra/backup
+      dockerfile: Dockerfile
+    container_name: madar_backup
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment:
+      # Point at the in-network postgres + minio. Uses the `madar` superuser
+      # because the backup needs full SELECT regardless of RLS.
+      DATABASE_URL: postgres://madar:madar@postgres:5432/madar
+      BACKUP_S3_ENDPOINT: http://minio:9000
+      BACKUP_S3_BUCKET: ${BACKUP_S3_BUCKET:-madar-backups}
+      BACKUP_S3_ACCESS_KEY: ${BACKUP_S3_ACCESS_KEY:-madar}
+      BACKUP_S3_SECRET_KEY: ${BACKUP_S3_SECRET_KEY:-madar-dev-only}
+      BACKUP_S3_REGION: ${BACKUP_S3_REGION:-us-east-1}
+      BACKUP_CRON: ${BACKUP_CRON:-0 2 * * *}
+      BACKUP_RETAIN_DAYS: ${BACKUP_RETAIN_DAYS:-30}
+
+volumes:
+  madar_pgdata:
+  madar_minio:

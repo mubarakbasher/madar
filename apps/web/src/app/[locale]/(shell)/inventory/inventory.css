@@ -1,0 +1,389 @@
+/* Inventory page — colocated styles. All values via design tokens. */
+
+.inv {
+  max-width: var(--content-max);
+  padding: 28px 32px 80px;
+  margin: 0 auto;
+}
+
+/* Header */
+.inv-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.inv-head-title {
+  margin: 6px 0 0;
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+html[lang="ar"] .inv-head-title { font-family: var(--font-arabic); }
+
+.inv-head-sub {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--ink-3);
+  display: inline-flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.inv-head-sub strong { font-weight: 600; color: var(--ink-2); }
+
+.inv-head-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* AI nudge card */
+.inv-ai {
+  background: color-mix(in oklab, var(--accent-soft) 30%, var(--bg-elev));
+  border: 1px solid color-mix(in oklab, var(--accent) 30%, var(--rule));
+  border-radius: var(--radius-lg);
+  margin-bottom: 16px;
+  padding: 14px 18px;
+}
+.inv-ai-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.inv-ai-text {
+  flex: 1;
+  min-width: 200px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.inv-ai-text b { font-weight: 600; }
+
+/* Filter bar */
+.inv-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.inv-filters-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--rule);
+  margin: 0 4px;
+}
+.inv-low-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--rose);
+  display: inline-block;
+}
+.inv-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  width: 280px;
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+.inv-search:focus-within {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-focus);
+}
+.inv-search input {
+  background: transparent;
+  border: 0;
+  outline: 0;
+  flex: 1;
+  font-size: 13px;
+  color: var(--ink);
+  font-family: inherit;
+}
+.inv-search input::placeholder { color: var(--ink-4); }
+
+/* Bulk action bar */
+.inv-bulk {
+  margin-bottom: 10px;
+  padding: 8px 14px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+.inv-bulk-count {
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+/* Table shell */
+.inv-table-wrap {
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.inv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.inv-table thead tr {
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+}
+.inv-th {
+  padding: 12px 14px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: start;
+  user-select: none;
+}
+.inv-th-end { text-align: end; }
+.inv-th-center { text-align: center; }
+.inv-th-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.inv-th button {
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  font-size: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Body rows */
+.inv-row {
+  position: relative;
+  transition: background 120ms;
+  border-bottom: 1px solid var(--rule);
+}
+.inv-row:last-child { border-bottom: 0; }
+.inv-row:hover {
+  background: color-mix(in oklab, var(--accent-soft) 22%, var(--bg-elev));
+}
+.inv-row::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background: var(--accent);
+  transition: width 120ms;
+}
+.inv-row:hover::before { width: 2px; }
+.inv-row[data-low="true"]::before { width: 2px; background: var(--rose); }
+.inv-row[data-sel="true"] {
+  background: color-mix(in oklab, var(--accent-soft) 40%, var(--bg-elev));
+}
+.inv-row[data-sel="true"]::before { width: 2px; background: var(--accent); }
+
+.inv-td {
+  padding: 14px;
+  color: var(--ink-2);
+  vertical-align: middle;
+}
+.inv-td-end { text-align: end; }
+.inv-td-center { text-align: center; }
+
+.inv-cell-product {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.inv-swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.inv-cell-product-name {
+  font-weight: 500;
+  color: var(--ink);
+}
+.inv-cell-product-cat {
+  font-size: 11px;
+  color: var(--ink-4);
+}
+
+.inv-cell-sku {
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 11.5px;
+}
+.inv-cell-cost { color: var(--ink-3); }
+.inv-cell-margin { color: var(--sage); }
+.inv-cell-vel { color: var(--ink-2); }
+
+.inv-stock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.inv-stock-qty {
+  min-width: 36px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.inv-stock-qty[data-low="true"] { color: var(--rose); }
+.inv-stock-bar {
+  flex: 1;
+  max-width: 100px;
+  height: 4px;
+  background: var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.inv-stock-bar-fill {
+  height: 100%;
+  background: var(--sage);
+}
+.inv-stock-bar-fill[data-low="true"] { background: var(--rose); }
+.inv-low-badge {
+  font-size: 10.5px;
+  color: var(--rose);
+  font-weight: 500;
+}
+
+.inv-row-action {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1px solid transparent;
+  display: inline-grid;
+  place-items: center;
+  color: var(--ink-3);
+  cursor: pointer;
+}
+.inv-row-action:hover {
+  background: var(--bg-elev);
+  border-color: var(--rule);
+  color: var(--ink);
+}
+
+/* Footer + pagination */
+.inv-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--ink-3);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.inv-pager {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+/* Empty state */
+.inv-empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--ink-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.inv-empty p {
+  font-size: 17px;
+  color: var(--ink);
+  font-family: var(--serif);
+  margin: 0;
+}
+html[lang="ar"] .inv-empty p { font-family: var(--font-arabic); }
+
+/* Shared button + chip styles (mirror dashboard's so we don't depend on dashboard.css). */
+.inv-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  color: var(--ink-2);
+  cursor: pointer;
+  font-family: inherit;
+}
+.inv-btn:hover {
+  background: var(--paper);
+  border-color: var(--ink-4);
+  color: var(--ink);
+}
+.inv-btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.inv-btn-primary:hover {
+  background: var(--accent-ink);
+  border-color: var(--accent-ink);
+}
+.inv-btn-ghost {
+  background: transparent;
+  border-color: transparent;
+}
+.inv-btn-ghost:hover {
+  background: var(--bg-elev);
+  border-color: var(--rule);
+}
+
+.inv-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  color: var(--ink-2);
+  cursor: pointer;
+  font-family: inherit;
+}
+.inv-chip[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  background: color-mix(in oklab, var(--accent-soft) 60%, var(--bg-elev));
+}
+.inv-chip-count {
+  color: var(--ink-4);
+  margin-inline-start: 4px;
+  font-variant-numeric: tabular-nums;
+}

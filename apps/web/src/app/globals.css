@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@import "@madar/ui/tokens.css";
+@import "@madar/ui/theme.css";
+
+/* Tailwind v4 dark mode trigger — driven by [data-theme="dark"] on <html> */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* App-level resets and global styles live in tokens.css. Nothing more here. */

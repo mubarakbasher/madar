@@ -1,0 +1,76 @@
+/* Shell-specific overrides on top of packages/ui/src/tokens.css.
+   Most of the chrome styling already lives in tokens.css under
+   .app / .sidebar / .topbar / .sb-* / .tb-*. Add only what's missing.
+*/
+
+/* Disabled nav item — "Soon" badge */
+.sb-item[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.sb-soon {
+  margin-inline-start: auto;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  background: var(--bg-sunk);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* Sidebar nav link — match the prototype button styling but as an <a>. */
+a.sb-item {
+  text-decoration: none;
+  color: var(--ink-2);
+}
+
+/* RTL flip for chevrons in shell where Lucide doesn't auto-flip */
+[dir="rtl"] .shell-rtl-flip {
+  transform: scaleX(-1);
+}
+
+/* Branch switcher dropdown */
+.bs-dropdown {
+  position: absolute;
+  inset-inline-end: 0;
+  top: calc(100% + 6px);
+  z-index: 31;
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  min-width: 240px;
+  padding: 6px;
+  box-shadow: var(--shadow-lg);
+}
+.bs-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 8px;
+  background: transparent;
+  border: 0;
+  text-align: start;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.bs-item:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+.bs-item[aria-current="true"] {
+  background: var(--bg-elev);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+}
+.bs-item .bs-amount {
+  font-size: 11px;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}

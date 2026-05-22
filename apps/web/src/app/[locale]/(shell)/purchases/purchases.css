@@ -1,0 +1,1093 @@
+/* Purchase Orders — list, detail, wizard, receive. All tokens. Logical CSS only. */
+
+.po {
+  padding-block: 24px;
+  padding-inline: 24px;
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.po-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-block-end: 20px;
+}
+
+.po-head-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.po-kicker {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+  margin-block-end: 4px;
+}
+
+.po-title {
+  font-family: var(--serif);
+  font-size: 32px;
+  line-height: 1.1;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0;
+}
+
+.po-subtitle {
+  font-size: 14px;
+  color: var(--ink-3);
+  margin-block-start: 6px;
+}
+
+/* ─── Hero strip ──────────────────────────────────────────────────── */
+
+.po-hero {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-block-end: 20px;
+}
+
+.po-hero-cell {
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+
+.po-hero-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+}
+
+.po-hero-value {
+  margin-block-start: 6px;
+  font-family: var(--serif);
+  font-size: 26px;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Tabs + toolbar ──────────────────────────────────────────────── */
+
+.po-tabs {
+  display: flex;
+  gap: 4px;
+  margin-block-end: 14px;
+  border-block-end: 1px solid var(--rule);
+  overflow-x: auto;
+}
+
+.po-tab {
+  padding: 8px 14px;
+  font-size: 13px;
+  color: var(--ink-3);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-block-end: 2px solid transparent;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.po-tab-active {
+  color: var(--ink);
+  border-block-end-color: var(--accent);
+}
+
+.po-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-block-end: 14px;
+  flex-wrap: wrap;
+}
+
+.po-toolbar select,
+.po-toolbar input {
+  padding: 7px 10px;
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--ink);
+  font-family: inherit;
+  min-width: 180px;
+}
+
+.po-branch-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--ink-2);
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-sunk);
+  border: 1px solid var(--rule);
+}
+
+/* ─── Buttons ─────────────────────────────────────────────────────── */
+
+.po-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.po-btn:hover {
+  border-color: color-mix(in oklab, var(--accent) 30%, var(--rule));
+}
+
+.po-btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.po-btn-primary:hover {
+  filter: brightness(1.05);
+  border-color: var(--accent);
+}
+
+.po-btn-primary:disabled,
+.po-btn:disabled {
+  background: var(--rule);
+  color: var(--ink-3);
+  border-color: var(--rule);
+  cursor: not-allowed;
+}
+
+.po-btn-ghost {
+  background: transparent;
+}
+
+.po-btn-danger {
+  border-color: color-mix(in oklab, var(--rose) 30%, var(--rule));
+  color: var(--rose);
+  background: transparent;
+}
+
+.po-btn-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+/* ─── Empty / loading / error ─────────────────────────────────────── */
+
+.po-empty {
+  margin-block-start: 24px;
+  border: 1px dashed var(--rule);
+  border-radius: var(--radius);
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.po-empty-title {
+  font-family: var(--serif);
+  font-size: 22px;
+  margin-block-end: 6px;
+  color: var(--ink);
+}
+
+.po-empty-body {
+  font-size: 14px;
+  color: var(--ink-3);
+  margin-block-end: 16px;
+}
+
+.po-skeleton {
+  padding: 48px 0;
+  text-align: center;
+  color: var(--ink-3);
+}
+
+.po-error {
+  margin-block-start: 24px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.po-error-banner {
+  border: 1px solid color-mix(in oklab, var(--rose) 28%, var(--rule));
+  background: color-mix(in oklab, var(--rose-soft) 40%, var(--bg-elev));
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--ink-2);
+  margin-block-end: 14px;
+}
+
+/* ─── Table ────────────────────────────────────────────────────────── */
+
+.po-table-wrap {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg-elev);
+}
+
+.po-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.po-table th,
+.po-table td {
+  text-align: start;
+  padding: 12px 14px;
+  border-block-end: 1px solid var(--rule);
+}
+
+.po-table thead {
+  background: var(--paper);
+}
+
+.po-table th {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+.po-table tbody tr:last-child td {
+  border-block-end: none;
+}
+
+.po-table tbody tr {
+  cursor: pointer;
+}
+
+.po-table tbody tr:hover {
+  background: color-mix(in oklab, var(--accent) 4%, transparent);
+}
+
+.po-table-code {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.po-table-num {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.po-table-num-th {
+  text-align: end;
+}
+
+.po-table-sub {
+  font-size: 11px;
+  color: var(--ink-3);
+  margin-block-start: 2px;
+  font-family: var(--mono);
+}
+
+.po-discrepancy-icon {
+  color: var(--amber);
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: 6px;
+}
+
+/* ─── Status pill ─────────────────────────────────────────────────── */
+
+.po-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10.5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+}
+
+.po-pill-draft {
+  background: var(--bg-sunk);
+  color: var(--ink-3);
+  border-color: var(--rule);
+}
+
+.po-pill-ordered {
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+  color: var(--accent);
+  border-color: color-mix(in oklab, var(--accent) 28%, var(--rule));
+}
+
+.po-pill-received {
+  background: color-mix(in oklab, var(--sage) 16%, transparent);
+  color: var(--sage);
+  border-color: color-mix(in oklab, var(--sage) 30%, var(--rule));
+}
+
+.po-pill-cancelled {
+  background: color-mix(in oklab, var(--rose) 14%, transparent);
+  color: var(--rose);
+  border-color: color-mix(in oklab, var(--rose) 30%, var(--rule));
+}
+
+/* ─── Wizard ──────────────────────────────────────────────────────── */
+
+.po-wizard {
+  max-width: 880px;
+  margin-inline: auto;
+}
+
+.po-steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-block-end: 20px;
+}
+
+.po-step {
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.po-step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bg-sunk);
+  display: inline-grid;
+  place-items: center;
+  font-family: var(--serif);
+  font-size: 12px;
+  color: var(--ink-2);
+  flex-shrink: 0;
+}
+
+.po-step-active {
+  border-color: var(--accent);
+  color: var(--ink);
+}
+
+.po-step-active .po-step-num {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.po-step-done {
+  color: var(--ink-2);
+}
+
+.po-step-done .po-step-num {
+  background: color-mix(in oklab, var(--sage) 30%, var(--bg-sunk));
+  color: var(--ink);
+}
+
+.po-step-label {
+  font-size: 12px;
+}
+
+.po-card {
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-block-end: 14px;
+}
+
+.po-card-title {
+  font-family: var(--serif);
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0 0 12px 0;
+}
+
+.po-field {
+  display: block;
+  margin-block-end: 12px;
+}
+
+.po-field-label {
+  font-size: 12px;
+  color: var(--ink-2);
+  margin-block-end: 4px;
+  display: block;
+}
+
+.po-field input,
+.po-field select,
+.po-field textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--ink);
+  font-family: inherit;
+}
+
+.po-field textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.po-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.po-field-hint {
+  margin-block-start: 4px;
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.po-field-error {
+  margin-block-start: 4px;
+  font-size: 12px;
+  color: var(--rose);
+}
+
+.po-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-block-start: 18px;
+  padding-block-start: 16px;
+  border-block-start: 1px solid var(--rule);
+}
+
+.po-foot-right {
+  display: flex;
+  gap: 8px;
+}
+
+/* ─── Line editor (wizard step 2) ─────────────────────────────────── */
+
+.po-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.po-line-row {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr 1.2fr 1.2fr auto;
+  gap: 10px;
+  align-items: start;
+  padding: 10px 12px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+
+.po-line-product {
+  min-width: 0;
+}
+
+.po-line-name {
+  font-size: 13px;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.po-line-sku {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  margin-block-start: 2px;
+}
+
+.po-line-input {
+  padding: 6px 8px;
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--ink);
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  width: 100%;
+}
+
+.po-line-total {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  text-align: end;
+  padding-block-start: 7px;
+}
+
+.po-line-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  margin-block-start: 4px;
+}
+
+.po-line-chip-info {
+  background: color-mix(in oklab, var(--sage) 14%, transparent);
+  color: var(--sage);
+}
+
+.po-line-chip-warn {
+  background: color-mix(in oklab, var(--amber) 14%, transparent);
+  color: var(--amber);
+}
+
+.po-line-add {
+  margin-block-start: 8px;
+}
+
+.po-typeahead {
+  position: relative;
+}
+
+.po-typeahead input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--ink);
+  font-family: inherit;
+}
+
+.po-typeahead-list {
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  z-index: 10;
+  max-height: 240px;
+  overflow-y: auto;
+  margin-block-start: 4px;
+}
+
+.po-typeahead-item {
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 13px;
+  border-block-end: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.po-typeahead-item:last-child {
+  border-block-end: none;
+}
+
+.po-typeahead-item:hover,
+.po-typeahead-item.is-active {
+  background: color-mix(in oklab, var(--accent) 8%, transparent);
+}
+
+.po-typeahead-sku {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.po-icon-btn {
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  padding: 6px 8px;
+  color: var(--ink-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.po-icon-btn:hover {
+  color: var(--rose);
+  border-color: color-mix(in oklab, var(--rose) 30%, var(--rule));
+}
+
+/* ─── More-row collapse ───────────────────────────────────────────── */
+
+.po-more-toggle {
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 4px 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ─── Totals box (right rail of step 3) ───────────────────────────── */
+
+.po-totals {
+  border: 1px solid var(--rule);
+  background: var(--bg-sunk);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+
+.po-totals-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-block: 4px;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.po-totals-row-label {
+  color: var(--ink-3);
+}
+
+.po-totals-grand {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-block-start: 8px;
+  padding-block-start: 10px;
+  border-block-start: 1px solid var(--rule);
+}
+
+.po-totals-grand-value {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.po-step3-grid {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 20px;
+}
+
+@media (max-width: 760px) {
+  .po-step3-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Subtotal mini box (step 2 footer) ──────────────────────────── */
+
+.po-subtotal-box {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 8px;
+  margin-block-start: 14px;
+}
+
+.po-subtotal-label {
+  font-size: 12px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.po-subtotal-value {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+/* ─── Detail page ─────────────────────────────────────────────────── */
+
+.po-detail-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  margin-block-end: 18px;
+  padding-block-end: 18px;
+  border-block-end: 1px solid var(--rule);
+}
+
+.po-detail-head-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.po-detail-meta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-block-start: 6px;
+  flex-wrap: wrap;
+}
+
+.po-detail-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.po-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-block-end: 18px;
+}
+
+.po-kpi-cell {
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+}
+
+.po-kpi-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+}
+
+.po-kpi-value {
+  margin-block-start: 4px;
+  font-family: var(--serif);
+  font-size: 24px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.po-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 18px;
+}
+
+@media (max-width: 760px) {
+  .po-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Timeline ────────────────────────────────────────────────────── */
+
+.po-timeline {
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+
+.po-timeline-title {
+  font-family: var(--serif);
+  font-size: 16px;
+  margin: 0 0 12px 0;
+  color: var(--ink);
+}
+
+.po-timeline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.po-timeline-item {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 10px;
+  padding-block: 8px;
+  position: relative;
+}
+
+.po-timeline-item + .po-timeline-item::before {
+  content: "";
+  position: absolute;
+  inset-block-start: -8px;
+  inset-inline-start: 11px;
+  width: 2px;
+  height: 16px;
+  background: var(--rule);
+}
+
+.po-timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--rule);
+  background: var(--bg-elev);
+  margin-block-start: 3px;
+}
+
+.po-timeline-dot-on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.po-timeline-dot-cancelled {
+  background: var(--rose);
+  border-color: var(--rose);
+}
+
+.po-timeline-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.po-timeline-label {
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.po-timeline-label-muted {
+  color: var(--ink-3);
+}
+
+.po-timeline-meta {
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+/* ─── Receive screen ──────────────────────────────────────────────── */
+
+.po-receive-row {
+  display: grid;
+  grid-template-columns: 2fr 120px 120px 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 12px 14px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  margin-block-end: 10px;
+}
+
+.po-receive-info-label {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+  margin-block-end: 2px;
+}
+
+.po-receive-expected {
+  font-size: 14px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.po-receive-chip-short {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: color-mix(in oklab, var(--rose) 14%, transparent);
+  color: var(--rose);
+  margin-block-start: 6px;
+}
+
+.po-receive-chip-over {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: color-mix(in oklab, var(--amber) 14%, transparent);
+  color: var(--amber);
+  margin-block-start: 6px;
+}
+
+.po-receive-note-toggle {
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 4px 0;
+  margin-block-start: 4px;
+}
+
+.po-receive-note-input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--ink);
+  font-family: inherit;
+  margin-block-start: 6px;
+  min-height: 40px;
+  resize: vertical;
+}
+
+/* ─── Modal dialog (send to supplier) ─────────────────────────────── */
+
+.po-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 23, 20, 0.45);
+  display: grid;
+  place-items: center;
+  z-index: 50;
+}
+
+.po-modal {
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 22px;
+  max-width: 480px;
+  width: 92%;
+  box-shadow: var(--shadow-lg);
+}
+
+.po-modal-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  margin: 0 0 8px 0;
+  color: var(--ink);
+}
+
+.po-modal-body {
+  font-size: 13px;
+  color: var(--ink-2);
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+}
+
+.po-modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-block-start: 14px;
+}
+
+.po-modal-section {
+  margin-block-end: 10px;
+}
+
+.po-modal-recipient {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--bg-sunk);
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.po-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.po-banner-warning {
+  background: color-mix(in oklab, var(--amber) 14%, transparent);
+  border: 1px solid color-mix(in oklab, var(--amber) 30%, var(--rule));
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 12.5px;
+  color: var(--ink-2);
+  margin-block-end: 10px;
+}
+
+/* ─── Toast (lightweight) ─────────────────────────────────────────── */
+
+.po-toast {
+  position: fixed;
+  inset-block-end: 24px;
+  inset-inline-end: 24px;
+  background: var(--ink);
+  color: var(--bg);
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  z-index: 60;
+  box-shadow: var(--shadow-lg);
+}
+
+/* ─── Lines read-only table (detail) ──────────────────────────────── */
+
+.po-lines-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.po-lines-table th,
+.po-lines-table td {
+  text-align: start;
+  padding: 10px 12px;
+  border-block-end: 1px solid var(--rule);
+}
+
+.po-lines-table th {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+.po-lines-table .po-num {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.po-lines-table tbody tr:last-child td {
+  border-block-end: none;
+}

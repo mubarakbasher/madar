@@ -1,0 +1,240 @@
+/* Movers / margin report — colocated styles. Tokens only, logical CSS. */
+
+.mvr {
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-block: 28px 80px;
+  padding-inline: 32px;
+}
+
+/* Header */
+.mvr-head {
+  margin-block-end: 24px;
+}
+.mvr-kicker {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.mvr-title {
+  margin: 4px 0 0;
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+html[lang="ar"] .mvr-title { font-family: var(--font-arabic); }
+.mvr-sub {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: var(--ink-3);
+}
+
+/* Filters */
+.mvr-filters {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-block-end: 18px;
+  padding-block: 14px;
+  border-block-end: 1px solid var(--rule);
+}
+.mvr-filter {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.mvr-filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.mvr-input {
+  padding-block: 8px;
+  padding-inline: 12px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-md);
+  background: var(--bg-elev);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+}
+.mvr-input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.mvr-currency {
+  display: inline-flex;
+  align-items: center;
+  padding-block: 8px;
+  padding-inline: 12px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-md);
+  background: color-mix(in oklab, var(--accent-soft) 35%, var(--bg-elev));
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* Tabs */
+.mvr-tabs {
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-soft);
+  margin-block-end: 18px;
+}
+.mvr-tab {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--ink-2);
+  padding-block: 8px;
+  padding-inline: 16px;
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+.mvr-tab:hover { color: var(--ink); }
+.mvr-tab.is-active {
+  background: var(--bg-elev);
+  color: var(--ink);
+  box-shadow: 0 1px 2px color-mix(in oklab, var(--ink) 10%, transparent);
+}
+
+/* List + rows */
+.mvr-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+.mvr-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 18px;
+  align-items: center;
+  padding-block: 14px;
+  padding-inline: 16px;
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+}
+.mvr-row.is-slow {
+  background: color-mix(in oklab, var(--bg-soft) 60%, var(--bg-elev));
+}
+.mvr-row-main { min-width: 0; }
+.mvr-row-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mvr-row-meta {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--ink-3);
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+}
+.mvr-sku {
+  font-family: var(--mono, ui-monospace, SFMono-Regular, monospace);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+.mvr-cat {
+  display: inline-flex;
+  align-items: center;
+  padding-block: 1px;
+  padding-inline: 6px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-soft);
+  color: var(--ink-2);
+  font-size: 11px;
+}
+.mvr-row-spark { --accent: var(--accent); }
+.mvr-row-value { text-align: end; }
+.mvr-value {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+html[lang="ar"] .mvr-value { font-family: var(--font-arabic); }
+.mvr-margin {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+/* Slow movers */
+.mvr-slow {
+  margin-block-start: 36px;
+  padding-block-start: 24px;
+  border-block-start: 1px solid var(--rule);
+}
+.mvr-slow-head { margin-block-end: 14px; }
+.mvr-slow-title {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--ink);
+}
+html[lang="ar"] .mvr-slow-title { font-family: var(--font-arabic); }
+.mvr-slow-body {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+/* States */
+.mvr-state {
+  padding: 32px;
+  border: 1px dashed var(--rule);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  color: var(--ink-3);
+}
+.mvr-state-title {
+  margin: 0 0 4px;
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink);
+}
+html[lang="ar"] .mvr-state-title { font-family: var(--font-arabic); }
+.mvr-error { color: var(--danger, var(--ink)); }
+.mvr-btn {
+  margin-block-start: 12px;
+  appearance: none;
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  color: var(--ink);
+  padding-block: 8px;
+  padding-inline: 16px;
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.mvr-btn:hover { background: var(--bg-soft); }

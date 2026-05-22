@@ -1,0 +1,51 @@
+{
+  "root": false,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "ignorePatterns": [
+    "dist",
+    "node_modules",
+    "var",
+    "*.config.ts",
+    "vitest.config.ts"
+  ],
+  "overrides": [
+    {
+      "files": ["src/tenant/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "@madar/db",
+                "importNames": ["adminPrisma", "basePrisma"],
+                "message": "Tenant-realm code must use tenantScoped(tenantId) only. adminPrisma bypasses RLS and basePrisma sets no session vars; both are cross-realm leaks here. Shared cross-realm work lives in apps/api/src/payment-proofs-shared."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/admin/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "@madar/db",
+                "importNames": ["tenantScoped", "basePrisma"],
+                "message": "Admin-realm code must use adminPrisma only. Cross-realm calls are forbidden (CLAUDE.md). Shared cross-realm work lives in apps/api/src/payment-proofs-shared."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

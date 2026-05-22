@@ -1,0 +1,52 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build output
+.next/
+out/
+dist/
+build/
+.turbo/
+
+# env
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# editor / OS
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# coverage
+coverage/
+*.lcov
+
+# test artifacts
+playwright-report/
+test-results/
+.playwright-mcp/
+
+# Next.js
+next-env.d.ts
+
+# Claude Code internal (keep settings + skills + agents + hooks)
+.claude/settings.local.json
+.claude/settings.proposed.json
+.claude/hooks/_test-*
+
+# misc
+*.tsbuildinfo
+
+# Local payment-proof storage (1.11a, until 1.11d wires MinIO)
+apps/api/var/

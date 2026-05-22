@@ -1,0 +1,513 @@
+/* Scheduled reports — list + modal. All tokens. Logical CSS only. */
+
+.sch {
+  padding-block: 24px;
+  padding-inline: 24px;
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.sch-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-block-end: 20px;
+}
+
+.sch-head-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.sch-kicker {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+  margin-block-end: 4px;
+}
+
+.sch-title {
+  font-family: var(--serif);
+  font-size: 32px;
+  line-height: 1.1;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0;
+}
+
+.sch-subtitle {
+  font-size: 14px;
+  color: var(--ink-3);
+  margin-block-start: 6px;
+}
+
+.sch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink);
+  transition: background 120ms ease;
+}
+
+.sch-btn:hover {
+  background: var(--bg-elev);
+}
+
+.sch-btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.sch-btn-primary:hover {
+  background: var(--accent-strong);
+}
+
+.sch-btn-ghost {
+  border-color: var(--rule);
+}
+
+.sch-btn-danger {
+  color: var(--danger);
+}
+
+/* ─── Table ──────────────────────────────────────────────────────── */
+
+.sch-table-wrap {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg-elev);
+}
+
+.sch-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.sch-table thead {
+  background: var(--bg);
+}
+
+.sch-table th {
+  font-weight: 500;
+  text-align: start;
+  padding: 10px 14px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+  border-block-end: 1px solid var(--rule);
+}
+
+.sch-table td {
+  padding: 14px;
+  border-block-end: 1px solid var(--rule);
+  vertical-align: top;
+  color: var(--ink);
+}
+
+.sch-table tbody tr:last-child td {
+  border-block-end: none;
+}
+
+.sch-name {
+  font-weight: 500;
+}
+
+.sch-name-sub {
+  color: var(--ink-3);
+  font-size: 12px;
+  margin-block-start: 2px;
+}
+
+/* ─── Chips + pills ──────────────────────────────────────────────── */
+
+.sch-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--bg);
+  color: var(--ink-2);
+  border: 1px solid var(--rule);
+  text-transform: capitalize;
+}
+
+.sch-chip-kind {
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+  color: var(--accent-strong);
+  border-color: color-mix(in oklab, var(--accent) 30%, transparent);
+}
+
+.sch-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.sch-pill-sent {
+  background: color-mix(in oklab, var(--success, #4a7a4d) 14%, transparent);
+  color: var(--success, #4a7a4d);
+}
+
+.sch-pill-failed {
+  background: color-mix(in oklab, var(--danger) 14%, transparent);
+  color: var(--danger);
+}
+
+.sch-pill-pending {
+  background: color-mix(in oklab, var(--ink-3) 14%, transparent);
+  color: var(--ink-3);
+}
+
+.sch-pill-never {
+  color: var(--ink-3);
+  font-style: italic;
+}
+
+/* ─── Toggle ─────────────────────────────────────────────────────── */
+
+.sch-toggle {
+  position: relative;
+  display: inline-block;
+  width: 32px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.sch-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.sch-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--rule);
+  border-radius: 999px;
+  transition: background 160ms ease;
+}
+
+.sch-toggle-slider::before {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  inset-inline-start: 2px;
+  top: 2px;
+  background: var(--bg-elev);
+  border-radius: 50%;
+  transition: transform 160ms ease;
+}
+
+.sch-toggle input:checked + .sch-toggle-slider {
+  background: var(--accent);
+}
+
+.sch-toggle input:checked + .sch-toggle-slider::before {
+  transform: translateX(14px);
+}
+
+[dir="rtl"] .sch-toggle input:checked + .sch-toggle-slider::before {
+  transform: translateX(-14px);
+}
+
+/* ─── Kebab menu ─────────────────────────────────────────────────── */
+
+.sch-kebab-wrap {
+  position: relative;
+}
+
+.sch-kebab-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  color: var(--ink-3);
+}
+
+.sch-kebab-btn:hover {
+  background: var(--bg);
+}
+
+.sch-kebab-menu {
+  position: absolute;
+  inset-inline-end: 0;
+  margin-block-start: 4px;
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  min-width: 160px;
+  z-index: 10;
+  padding: 4px;
+}
+
+.sch-kebab-item {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  text-align: start;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+}
+
+.sch-kebab-item:hover {
+  background: var(--bg);
+}
+
+.sch-kebab-item.is-danger {
+  color: var(--danger);
+}
+
+/* ─── States ─────────────────────────────────────────────────────── */
+
+.sch-skeleton {
+  padding: 60px 16px;
+  text-align: center;
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.sch-error {
+  padding: 32px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  text-align: center;
+}
+
+.sch-error h2 {
+  font-family: var(--serif);
+  font-size: 20px;
+  color: var(--ink);
+  margin: 0 0 8px;
+}
+
+.sch-error p {
+  color: var(--ink-3);
+  margin: 0 0 16px;
+}
+
+.sch-empty {
+  padding: 60px 24px;
+  text-align: center;
+  border: 1px dashed var(--rule);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+}
+
+.sch-empty h2 {
+  font-family: var(--serif);
+  font-size: 22px;
+  margin: 0 0 8px;
+  color: var(--ink);
+}
+
+.sch-empty p {
+  color: var(--ink-3);
+  margin: 0 0 20px;
+}
+
+/* ─── Modal ──────────────────────────────────────────────────────── */
+
+.sch-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 100;
+}
+
+.sch-modal {
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  max-width: 560px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.sch-modal-head {
+  padding: 20px 24px;
+  border-block-end: 1px solid var(--rule);
+}
+
+.sch-modal-title {
+  font-family: var(--serif);
+  font-size: 22px;
+  margin: 0;
+  color: var(--ink);
+}
+
+.sch-modal-body {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sch-modal-foot {
+  padding: 16px 24px;
+  border-block-start: 1px solid var(--rule);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.sch-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sch-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.sch-input,
+.sch-select {
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--ink);
+  font-family: inherit;
+}
+
+.sch-input:focus,
+.sch-select:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 0;
+}
+
+.sch-radio-row {
+  display: flex;
+  gap: 12px;
+}
+
+.sch-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--ink-2);
+}
+
+.sch-hint {
+  font-size: 11px;
+  color: var(--ink-3);
+}
+
+.sch-chip-input {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  min-height: 38px;
+}
+
+.sch-chip-input input {
+  flex: 1;
+  min-width: 120px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  outline: none;
+  color: var(--ink);
+  font-family: inherit;
+}
+
+.sch-recipient-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 12px;
+  color: var(--ink);
+}
+
+.sch-recipient-chip button {
+  background: transparent;
+  border: none;
+  color: var(--ink-3);
+  cursor: pointer;
+  padding: 0;
+  margin-inline-start: 2px;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.sch-form-error {
+  font-size: 12px;
+  color: var(--danger);
+}
+
+/* ─── Confirm dialog ─────────────────────────────────────────────── */
+
+.sch-confirm {
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  max-width: 420px;
+  width: 100%;
+  padding: 24px;
+}
+
+.sch-confirm h3 {
+  font-family: var(--serif);
+  font-size: 20px;
+  margin: 0 0 8px;
+  color: var(--ink);
+}
+
+.sch-confirm p {
+  font-size: 13px;
+  color: var(--ink-3);
+  margin: 0 0 16px;
+}
+
+.sch-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

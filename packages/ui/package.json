@@ -1,0 +1,28 @@
+{
+  "name": "@madar/ui",
+  "version": "0.0.0",
+  "private": true,
+  "sideEffects": ["./src/tokens.css", "./src/theme.css", "./src/fonts.css"],
+  "exports": {
+    "./tokens.css": "./src/tokens.css",
+    "./theme.css": "./src/theme.css",
+    "./fonts.css": "./src/fonts.css",
+    "./fonts": "./src/fonts.ts",
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "lucide-react": "^0.453.0"
+  },
+  "peerDependencies": {
+    "next": "^14.2.0",
+    "react": "^18.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "typescript": "^5.6.2"
+  }
+}

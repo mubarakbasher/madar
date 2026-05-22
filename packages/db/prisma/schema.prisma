@@ -1,0 +1,1140 @@
+// Madar — multi-tenant SaaS POS schema
+//
+// Conventions:
+//   * Every tenant-scoped table has tenant_id + soft-delete + audit fields.
+//   * Money: BigInt cents + sibling currency_code (ISO 4217).
+//   * Translatable strings: Json with shape { en, ar }.
+//   * RLS policies are added in the hand-edited migration, not here.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+// ──────────────────────────────────────────────────────────────────
+// Enums
+// ──────────────────────────────────────────────────────────────────
+
+enum TenantStatus {
+  trialing
+  active
+  grace_period
+  suspended
+  cancelled
+}
+
+enum TenantUserRole {
+  owner
+  manager
+  cashier
+  accountant
+  auditor
+}
+
+enum PlatformUserRole {
+  owner
+  finance
+  support
+  developer
+  readonly
+}
+
+enum StockMovementKind {
+  sale
+  return_in
+  transfer_in
+  transfer_out
+  adjustment
+  receive
+  waste
+}
+
+enum PaymentMethod {
+  cash
+  card
+  bank_transfer
+  store_credit
+  split
+}
+
+enum SalePaymentStatus {
+  paid
+  payment_pending
+  disputed
+  refunded
+}
+
+enum CashierShiftStatus {
+  open
+  closed
+}
+
+enum SaleRefundStatus {
+  completed
+  voided
+}
+
+enum PaymentProofContext {
+  subscription
+  sale
+}
+
+enum PaymentProofBankKind {
+  platform
+  tenant
+}
+
+enum PaymentProofStatus {
+  pending
+  verified
+  rejected
+  cancelled
+}
+
+enum SubscriptionInvoiceStatus {
+  draft
+  awaiting_payment
+  in_review
+  paid
+  overdue
+  cancelled
+}
+
+enum StockTransferStatus {
+  draft
+  in_transit
+  received
+  cancelled
+}
+
+enum PurchaseOrderStatus {
+  draft
+  ordered
+  received
+  cancelled
+}
+
+enum SupplierReturnStatus {
+  draft
+  sent
+  refunded
+  cancelled
+}
+
+enum DocumentKind {
+  contract
+  tax_certificate
+  bank_letter
+  other
+}
+
+enum StoreCreditReference {
+  sale
+  refund
+  manual_adjust
+  expiration
+  cancel
+}
+
+enum SyncConflictKind {
+  negative_stock
+  duplicate_uuid
+  product_unknown
+  price_drift
+}
+
+enum SyncConflictStatus {
+  open
+  acknowledged
+  resolved
+  ignored
+}
+
+enum ScheduledReportKind {
+  pnl
+  tax
+  trends
+}
+
+enum ScheduledReportCadence {
+  daily
+  weekly
+  monthly
+}
+
+enum ScheduledReportRunStatus {
+  pending
+  sent
+  failed
+}
+
+enum ScheduledReportFormat {
+  csv
+  pdf
+}
+
+// ──────────────────────────────────────────────────────────────────
+// Platform tables (no tenant_id, no RLS)
+// ──────────────────────────────────────────────────────────────────
+
+model Plan {
+  id                  String   @id @default(uuid()) @db.Uuid
+  code                String   @unique
+  name_i18n           Json
+  monthly_price_cents BigInt
+  currency_code       String   @db.Char(3)
+  limits              Json
+  is_active           Boolean  @default(true)
+  created_at          DateTime @default(now()) @db.Timestamptz
+  updated_at          DateTime @default(now()) @db.Timestamptz
+
+  tenants               Tenant[]
+  subscription_invoices SubscriptionInvoice[]
+
+  @@map("plans")
+}
+
+model Tenant {
+  id                       String         @id @default(uuid()) @db.Uuid
+  slug                     String         @unique
+  name                     String
+  name_i18n                Json
+  country_code             String         @db.Char(2)
+  default_currency_code    String         @db.Char(3)
+  default_locale           String         @db.VarChar(8)
+  plan_id                  String         @db.Uuid
+  status                   TenantStatus   @default(trialing)
+  trial_ends_at            DateTime?      @db.Timestamptz
+  default_tax_class_id     String?        @db.Uuid
+  tax_inclusive_default    Boolean        @default(false)
+  tax_registration_number  String?
+  legal_name               String?
+  business_type            BusinessType?
+  timezone                 String         @default("Africa/Cairo")
+  fiscal_year_start_month  Int            @default(1) @db.SmallInt
+  logo_url                 String?
+  trial_reminder_sent_at   DateTime?      @db.Timestamptz
+  created_at               DateTime       @default(now()) @db.Timestamptz
+  updated_at               DateTime       @default(now()) @db.Timestamptz
+
+  plan Plan @relation(fields: [plan_id], references: [id])
+
+  @@map("tenants")
+}
+
+enum BusinessType {
+  retail
+  wholesale
+  restaurant
+  pharmacy
+  services
+  other
+}
+
+enum NotificationEventType {
+  low_stock
+  trial_ending
+  invoice_issued
+  invoice_overdue
+  payment_received
+  payment_verified
+  refund_completed
+  shift_variance
+  sync_failure
+}
+
+enum NotificationChannel {
+  email
+  in_app
+}
+
+model NotificationPreference {
+  id         String                @id @default(uuid()) @db.Uuid
+  tenant_id  String                @db.Uuid
+  event_type NotificationEventType
+  channel    NotificationChannel
+  enabled    Boolean               @default(true)
+  created_at DateTime              @default(now()) @db.Timestamptz
+  updated_at DateTime              @default(now()) @db.Timestamptz
+
+  @@unique([tenant_id, event_type, channel])
+  @@index([tenant_id])
+  @@map("notification_preferences")
+}
+
+model PlatformUser {
+  id            String           @id @default(uuid()) @db.Uuid
+  email         String           @unique
+  password_hash String
+  name          String
+  role          PlatformUserRole @default(readonly)
+  mfa_secret    String?
+  mfa_enabled   Boolean          @default(false)
+  last_login_at DateTime?        @db.Timestamptz
+  created_at    DateTime         @default(now()) @db.Timestamptz
+  updated_at    DateTime         @default(now()) @db.Timestamptz
+
+  @@map("platform_users")
+}
+
+model PlatformAuditLog {
+  id               String   @id @default(uuid()) @db.Uuid
+  platform_user_id String   @db.Uuid
+  action           String
+  target_tenant_id String?  @db.Uuid
+  target_entity    String?
+  target_id        String?  @db.Uuid
+  reason           String?
+  ip               String?  @db.Inet
+  user_agent       String?
+  metadata         Json     @default("{}")
+  created_at       DateTime @default(now()) @db.Timestamptz
+
+  @@index([platform_user_id, created_at(sort: Desc)])
+  @@index([target_tenant_id, created_at(sort: Desc)])
+  @@map("platform_audit_log")
+}
+
+model PlatformBankAccount {
+  id                       String   @id @default(uuid()) @db.Uuid
+  name_i18n                Json
+  bank_name                String
+  account_holder           String
+  account_number_last4     String   @db.VarChar(4)
+  account_number_encrypted String
+  iban_last4               String?  @db.VarChar(4)
+  swift                    String?
+  currency_code            String   @db.Char(3)
+  country_code             String   @db.Char(2)
+  is_active                Boolean  @default(true)
+  notes_i18n               Json     @default("{}")
+  created_at               DateTime @default(now()) @db.Timestamptz
+  updated_at               DateTime @default(now()) @db.Timestamptz
+
+  @@index([currency_code, country_code, is_active])
+  @@map("platform_bank_accounts")
+}
+
+// ──────────────────────────────────────────────────────────────────
+// Tenant-scoped tables (RLS enforced via migration)
+// ──────────────────────────────────────────────────────────────────
+
+model User {
+  id                            String         @id @default(uuid()) @db.Uuid
+  tenant_id                     String         @db.Uuid
+  email                         String
+  email_verified                Boolean        @default(false)
+  email_verification_token_hash String?
+  email_verification_expires_at DateTime?      @db.Timestamptz
+  password_hash                 String
+  password_reset_token_hash     String?
+  password_reset_expires_at     DateTime?      @db.Timestamptz
+  name                          String
+  role                          TenantUserRole @default(cashier)
+  branch_id                     String?        @db.Uuid
+  locale                        String         @default("en") @db.VarChar(8)
+  mfa_secret                    String?
+  mfa_enabled                   Boolean        @default(false)
+  mfa_recovery_codes_hash       String[]       @default([])
+  is_active                     Boolean        @default(true)
+  created_at                    DateTime       @default(now()) @db.Timestamptz
+  updated_at                    DateTime       @default(now()) @db.Timestamptz
+  created_by                    String?        @db.Uuid
+  deleted_at                    DateTime?      @db.Timestamptz
+
+  @@unique([tenant_id, email])
+  @@index([tenant_id, deleted_at])
+  @@map("users")
+}
+
+model Branch {
+  id              String    @id @default(uuid()) @db.Uuid
+  tenant_id       String    @db.Uuid
+  code            String
+  name_i18n       Json
+  address_i18n    Json?
+  currency_code   String    @db.Char(3)
+  timezone        String    @default("Africa/Cairo")
+  is_active       Boolean   @default(true)
+  opened_at       DateTime? @db.Date
+  operating_hours Json?
+  holidays        Json?
+  geo_lat         Decimal?  @db.Decimal(10, 7)
+  geo_lng         Decimal?  @db.Decimal(10, 7)
+  created_at      DateTime  @default(now()) @db.Timestamptz
+  updated_at      DateTime  @default(now()) @db.Timestamptz
+  created_by      String?   @db.Uuid
+  deleted_at      DateTime? @db.Timestamptz
+
+  @@unique([tenant_id, code])
+  @@index([tenant_id, deleted_at])
+  @@map("branches")
+}
+
+model Category {
+  id         String    @id @default(uuid()) @db.Uuid
+  tenant_id  String    @db.Uuid
+  code       String
+  name_i18n  Json
+  sort_order Int       @default(0)
+  parent_id  String?   @db.Uuid
+  created_at DateTime  @default(now()) @db.Timestamptz
+  updated_at DateTime  @default(now()) @db.Timestamptz
+  created_by String?   @db.Uuid
+  deleted_at DateTime? @db.Timestamptz
+
+  @@unique([tenant_id, code])
+  @@index([tenant_id, deleted_at])
+  @@map("categories")
+}
+
+model Product {
+  id               String    @id @default(uuid()) @db.Uuid
+  tenant_id        String    @db.Uuid
+  sku              String
+  name_i18n        Json
+  description_i18n Json?
+  category_id      String?   @db.Uuid
+  price_cents      BigInt
+  cost_cents       BigInt
+  currency_code    String    @db.Char(3)
+  barcode          String?
+  is_active        Boolean   @default(true)
+  image_url        String?
+  tax_class_id     String?   @db.Uuid
+  created_at       DateTime  @default(now()) @db.Timestamptz
+  updated_at       DateTime  @default(now()) @db.Timestamptz
+  created_by       String?   @db.Uuid
+  deleted_at       DateTime? @db.Timestamptz
+
+  @@unique([tenant_id, sku])
+  @@index([tenant_id, deleted_at])
+  @@index([tenant_id, category_id])
+  @@index([tenant_id, tax_class_id])
+  @@map("products")
+}
+
+model Customer {
+  id                          String    @id @default(uuid()) @db.Uuid
+  tenant_id                   String    @db.Uuid
+  code                        String?
+  name                        String
+  phone                       String?
+  email                       String?
+  notes                       String?
+  store_credit_balance_minor  BigInt    @default(0)
+  store_credit_currency_code  String?   @db.Char(3)
+  created_at                  DateTime  @default(now()) @db.Timestamptz
+  updated_at                  DateTime  @default(now()) @db.Timestamptz
+  created_by                  String?   @db.Uuid
+  deleted_at                  DateTime? @db.Timestamptz
+
+  store_credit_ledger StoreCreditLedger[]
+
+  @@unique([tenant_id, phone])
+  @@unique([tenant_id, email])
+  @@index([tenant_id, deleted_at])
+  @@map("customers")
+}
+
+model TenantBankAccount {
+  id                       String    @id @default(uuid()) @db.Uuid
+  tenant_id                String    @db.Uuid
+  name_i18n                Json
+  bank_name                String
+  account_holder           String
+  account_number_last4     String    @db.VarChar(4)
+  account_number_encrypted String
+  iban_last4               String?   @db.VarChar(4)
+  swift                    String?
+  currency_code            String    @db.Char(3)
+  branch_id                String?   @db.Uuid
+  is_default               Boolean   @default(false)
+  is_active                Boolean   @default(true)
+  created_at               DateTime  @default(now()) @db.Timestamptz
+  updated_at               DateTime  @default(now()) @db.Timestamptz
+  created_by               String?   @db.Uuid
+  deleted_at               DateTime? @db.Timestamptz
+
+  @@index([tenant_id, deleted_at])
+  @@index([tenant_id, currency_code])
+  @@index([tenant_id, branch_id])
+  @@map("tenant_bank_accounts")
+}
+
+model BranchStock {
+  id                       String    @id @default(uuid()) @db.Uuid
+  tenant_id                String    @db.Uuid
+  branch_id                String    @db.Uuid
+  product_id               String    @db.Uuid
+  qty_on_hand              Int       @default(0)
+  reorder_point            Int?
+  reorder_qty              Int?
+  last_movement_at         DateTime? @db.Timestamptz
+  last_low_stock_alert_at  DateTime? @db.Timestamptz
+  created_at               DateTime  @default(now()) @db.Timestamptz
+  updated_at               DateTime  @default(now()) @db.Timestamptz
+  created_by               String?   @db.Uuid
+  deleted_at               DateTime? @db.Timestamptz
+
+  @@unique([tenant_id, branch_id, product_id])
+  @@index([tenant_id, deleted_at])
+  @@map("branch_stock")
+}
+
+model StockMovement {
+  id              String            @id @default(uuid()) @db.Uuid
+  tenant_id       String            @db.Uuid
+  branch_id       String            @db.Uuid
+  product_id      String            @db.Uuid
+  kind            StockMovementKind
+  qty_delta       Int
+  unit_cost_cents BigInt?
+  reference_table String?
+  reference_id    String?           @db.Uuid
+  note            String?
+  occurred_at     DateTime          @default(now()) @db.Timestamptz
+  created_at      DateTime          @default(now()) @db.Timestamptz
+  created_by      String?           @db.Uuid
+
+  @@index([tenant_id, occurred_at(sort: Desc)])
+  @@index([tenant_id, branch_id, product_id, occurred_at(sort: Desc)])
+  @@map("stock_movements")
+}
+
+model SaleRefund {
+  id                    String             @id @default(uuid()) @db.Uuid
+  tenant_id             String             @db.Uuid
+  sale_id               String             @db.Uuid
+  branch_id             String             @db.Uuid
+  cashier_id            String             @db.Uuid
+  shift_id              String?            @db.Uuid
+  customer_id           String?            @db.Uuid
+  code                  String
+  currency_code         String             @db.Char(3)
+  subtotal_cents        BigInt
+  tax_cents             BigInt             @default(0)
+  total_cents           BigInt
+  notes                 String?
+  requires_manager      Boolean            @default(false)
+  approved_by_user_id   String?            @db.Uuid
+  status                SaleRefundStatus   @default(completed)
+  occurred_at           DateTime           @default(now()) @db.Timestamptz
+  created_at            DateTime           @default(now()) @db.Timestamptz
+  updated_at            DateTime           @default(now()) @db.Timestamptz
+  created_by            String?            @db.Uuid
+  deleted_at            DateTime?          @db.Timestamptz
+
+  lines    SaleRefundLine[]
+  payments SaleRefundPayment[]
+
+  @@index([tenant_id, sale_id])
+  @@index([tenant_id, branch_id, occurred_at(sort: Desc)])
+  @@index([tenant_id, deleted_at])
+  @@map("sale_refunds")
+}
+
+model SaleRefundLine {
+  id                        String      @id @default(uuid()) @db.Uuid
+  tenant_id                 String      @db.Uuid
+  refund_id                 String      @db.Uuid
+  sale_line_id              String      @db.Uuid
+  qty                       Int
+  unit_price_snapshot_cents BigInt
+  tax_snapshot_cents        BigInt      @default(0)
+  line_total_cents          BigInt
+  restock                   Boolean     @default(true)
+  created_at                DateTime    @default(now()) @db.Timestamptz
+
+  refund SaleRefund @relation(fields: [refund_id], references: [id], onDelete: Cascade)
+
+  @@index([tenant_id, refund_id])
+  @@index([tenant_id, sale_line_id])
+  @@map("sale_refund_lines")
+}
+
+model SaleRefundPayment {
+  id                     String        @id @default(uuid()) @db.Uuid
+  tenant_id              String        @db.Uuid
+  refund_id              String        @db.Uuid
+  method                 PaymentMethod
+  amount_cents           BigInt
+  approval_code          String?
+  store_credit_ledger_id String?       @db.Uuid
+  created_at             DateTime      @default(now()) @db.Timestamptz
+
+  refund SaleRefund @relation(fields: [refund_id], references: [id], onDelete: Cascade)
+
+  @@index([tenant_id, refund_id])
+  @@map("sale_refund_payments")
+}
+
+model CashierShift {
+  id                          String              @id @default(uuid()) @db.Uuid
+  tenant_id                   String              @db.Uuid
+  branch_id                   String              @db.Uuid
+  cashier_id                  String              @db.Uuid
+  opened_at                   DateTime            @default(now()) @db.Timestamptz
+  opened_by                   String              @db.Uuid
+  closed_at                   DateTime?           @db.Timestamptz
+  closed_by                   String?             @db.Uuid
+  opening_float_cents         BigInt
+  declared_closing_cash_cents BigInt?
+  expected_closing_cash_cents BigInt?
+  variance_cents              BigInt?
+  currency_code               String              @db.Char(3)
+  notes                       String?
+  status                      CashierShiftStatus  @default(open)
+  created_at                  DateTime            @default(now()) @db.Timestamptz
+  updated_at                  DateTime            @default(now()) @db.Timestamptz
+  deleted_at                  DateTime?           @db.Timestamptz
+
+  @@index([tenant_id, branch_id, status, opened_at(sort: Desc)])
+  @@index([tenant_id, cashier_id, status])
+  @@index([tenant_id, deleted_at])
+  @@map("cashier_shifts")
+}
+
+model Sale {
+  id                  String            @id @default(uuid()) @db.Uuid
+  tenant_id           String            @db.Uuid
+  branch_id           String            @db.Uuid
+  code                String
+  cashier_id          String            @db.Uuid
+  customer_id         String?           @db.Uuid
+  shift_id            String?           @db.Uuid
+  subtotal_cents      BigInt
+  discount_cents      BigInt            @default(0)
+  tax_cents           BigInt            @default(0)
+  total_cents         BigInt
+  currency_code       String            @db.Char(3)
+  payment_method      PaymentMethod
+  payment_status      SalePaymentStatus @default(paid)
+  approval_code       String?
+  client_uuid         String            @db.Uuid
+  client_sequence     Int?
+  client_occurred_at  DateTime?         @db.Timestamptz
+  has_negative_stock  Boolean           @default(false)
+  offline_completed   Boolean           @default(false)
+  refunded_amount_cents BigInt          @default(0)
+  occurred_at         DateTime          @default(now()) @db.Timestamptz
+  created_at          DateTime          @default(now()) @db.Timestamptz
+  updated_at          DateTime          @default(now()) @db.Timestamptz
+  created_by          String?           @db.Uuid
+  deleted_at          DateTime?         @db.Timestamptz
+
+  lines    SaleLine[]
+  payments SalePayment[]
+
+  @@unique([tenant_id, client_uuid])
+  @@unique([tenant_id, code])
+  @@index([tenant_id, occurred_at(sort: Desc)])
+  @@index([tenant_id, branch_id, occurred_at(sort: Desc)])
+  @@index([tenant_id, payment_status])
+  @@map("sales")
+}
+
+model SaleLine {
+  id                  String    @id @default(uuid()) @db.Uuid
+  tenant_id           String    @db.Uuid
+  sale_id             String    @db.Uuid
+  product_id          String    @db.Uuid
+  qty                 Int
+  unit_price_cents    BigInt
+  discount_cents      BigInt    @default(0)
+  tax_cents           BigInt    @default(0)
+  line_total_cents    BigInt
+  cogs_snapshot_cents BigInt
+  note_i18n           Json?
+  created_at          DateTime  @default(now()) @db.Timestamptz
+  updated_at          DateTime  @default(now()) @db.Timestamptz
+  deleted_at          DateTime? @db.Timestamptz
+
+  sale Sale @relation(fields: [sale_id], references: [id], onDelete: Cascade)
+
+  @@index([tenant_id, sale_id])
+  @@index([tenant_id, product_id])
+  @@map("sale_lines")
+}
+
+model PaymentProof {
+  id                 String               @id @default(uuid()) @db.Uuid
+  tenant_id          String               @db.Uuid
+  context            PaymentProofContext
+  reference_id       String               @db.Uuid
+  amount_cents       BigInt
+  currency_code      String               @db.Char(3)
+  bank_account_kind  PaymentProofBankKind
+  bank_account_id    String               @db.Uuid
+  payer_name         String
+  payer_bank         String?
+  transfer_date      DateTime             @db.Date
+  transfer_reference String?
+  receipt_image_url  String
+  status             PaymentProofStatus   @default(pending)
+  verified_by        String?              @db.Uuid
+  verified_at        DateTime?            @db.Timestamptz
+  rejection_reason   String?
+  notes              String?
+  created_at         DateTime             @default(now()) @db.Timestamptz
+  updated_at         DateTime             @default(now()) @db.Timestamptz
+  created_by         String?              @db.Uuid
+  deleted_at         DateTime?            @db.Timestamptz
+
+  @@index([tenant_id, status, created_at(sort: Desc)])
+  @@index([tenant_id, context, reference_id])
+  @@map("payment_proofs")
+}
+
+model SubscriptionInvoice {
+  id             String                    @id @default(uuid()) @db.Uuid
+  tenant_id      String                    @db.Uuid
+  plan_id        String                    @db.Uuid
+  period_start   DateTime                  @db.Date
+  period_end     DateTime                  @db.Date
+  due_date       DateTime                  @db.Date
+  amount_cents   BigInt
+  currency_code  String                    @db.Char(3)
+  status         SubscriptionInvoiceStatus @default(draft)
+  reference_code String
+  paid_at        DateTime?                 @db.Timestamptz
+  created_at     DateTime                  @default(now()) @db.Timestamptz
+  updated_at     DateTime                  @default(now()) @db.Timestamptz
+  created_by     String?                   @db.Uuid
+  deleted_at     DateTime?                 @db.Timestamptz
+
+  plan Plan @relation(fields: [plan_id], references: [id])
+
+  @@unique([tenant_id, reference_code])
+  @@index([tenant_id, status, due_date])
+  @@map("subscription_invoices")
+}
+
+model StockTransfer {
+  id             String              @id @default(uuid()) @db.Uuid
+  tenant_id      String              @db.Uuid
+  code           String
+  from_branch_id String              @db.Uuid
+  to_branch_id   String              @db.Uuid
+  status         StockTransferStatus @default(draft)
+  notes          String?
+  sent_at        DateTime?           @db.Timestamptz
+  sent_by        String?             @db.Uuid
+  received_at    DateTime?           @db.Timestamptz
+  received_by    String?             @db.Uuid
+  cancelled_at   DateTime?           @db.Timestamptz
+  cancelled_by   String?             @db.Uuid
+  created_at     DateTime            @default(now()) @db.Timestamptz
+  updated_at     DateTime            @default(now()) @db.Timestamptz
+  created_by     String?             @db.Uuid
+  deleted_at     DateTime?           @db.Timestamptz
+
+  lines StockTransferLine[]
+
+  @@unique([tenant_id, code])
+  @@index([tenant_id, status, created_at(sort: Desc)])
+  @@index([tenant_id, from_branch_id])
+  @@index([tenant_id, to_branch_id])
+  @@index([tenant_id, deleted_at])
+  @@map("stock_transfers")
+}
+
+model StockTransferLine {
+  id               String    @id @default(uuid()) @db.Uuid
+  tenant_id        String    @db.Uuid
+  transfer_id      String    @db.Uuid
+  product_id       String    @db.Uuid
+  qty_sent         Int
+  qty_received     Int?
+  discrepancy_note String?
+  created_at       DateTime  @default(now()) @db.Timestamptz
+  updated_at       DateTime  @default(now()) @db.Timestamptz
+  deleted_at       DateTime? @db.Timestamptz
+
+  transfer StockTransfer @relation(fields: [transfer_id], references: [id], onDelete: Cascade)
+
+  @@unique([transfer_id, product_id])
+  @@index([tenant_id, transfer_id])
+  @@index([tenant_id, product_id])
+  @@map("stock_transfer_lines")
+}
+
+model AuditLog {
+  id              String   @id @default(uuid()) @db.Uuid
+  tenant_id       String   @db.Uuid
+  user_id         String?  @db.Uuid
+  impersonator_id String?  @db.Uuid
+  action          String
+  entity          String
+  entity_id       String   @db.Uuid
+  before          Json?
+  after           Json?
+  ip              String?  @db.Inet
+  user_agent      String?
+  created_at      DateTime @default(now()) @db.Timestamptz
+
+  @@index([tenant_id, created_at(sort: Desc)])
+  @@index([tenant_id, entity, entity_id])
+  @@map("audit_log")
+}
+
+// ──────────────────────────────────────────────────────────────────
+// Suppliers, purchase orders, RMAs, supplier documents (Phase 2.3)
+// ──────────────────────────────────────────────────────────────────
+
+model Supplier {
+  id              String    @id @default(uuid()) @db.Uuid
+  tenant_id       String    @db.Uuid
+  code            String
+  name_i18n       Json
+  country_code    String?   @db.Char(2)
+  currency_code   String    @db.Char(3)
+  lead_time_days  Int?
+  payment_terms   String?
+  contact_email   String?
+  contact_phone   String?
+  address_i18n    Json?
+  tax_id          String?
+  notes           String?
+  is_active       Boolean   @default(true)
+  created_at      DateTime  @default(now()) @db.Timestamptz
+  updated_at      DateTime  @default(now()) @db.Timestamptz
+  created_by      String?   @db.Uuid
+  deleted_at      DateTime? @db.Timestamptz
+
+  products         SupplierProduct[]
+  purchase_orders  PurchaseOrder[]
+  returns          SupplierReturn[]
+  documents        SupplierDocument[]
+
+  @@unique([tenant_id, code])
+  @@index([tenant_id, deleted_at])
+  @@index([tenant_id, is_active])
+  @@map("suppliers")
+}
+
+model SupplierProduct {
+  id              String    @id @default(uuid()) @db.Uuid
+  tenant_id       String    @db.Uuid
+  supplier_id     String    @db.Uuid
+  product_id      String    @db.Uuid
+  supplier_sku    String?
+  unit_cost_cents BigInt
+  currency_code   String    @db.Char(3)
+  is_preferred    Boolean   @default(false)
+  effective_from  DateTime? @db.Date
+  created_at      DateTime  @default(now()) @db.Timestamptz
+  updated_at      DateTime  @default(now()) @db.Timestamptz
+  created_by      String?   @db.Uuid
+  deleted_at      DateTime? @db.Timestamptz
+
+  supplier Supplier @relation(fields: [supplier_id], references: [id], onDelete: Cascade)
+
+  @@unique([tenant_id, supplier_id, product_id])
+  @@index([tenant_id, supplier_id])
+  @@index([tenant_id, deleted_at])
+  @@map("supplier_products")
+}
+
+model PurchaseOrder {
+  id               String              @id @default(uuid()) @db.Uuid
+  tenant_id        String              @db.Uuid
+  code             String
+  supplier_id      String              @db.Uuid
+  branch_id        String              @db.Uuid
+  status           PurchaseOrderStatus @default(draft)
+  currency_code    String              @db.Char(3)
+  expected_at      DateTime?           @db.Date
+  subtotal_cents   BigInt              @default(0)
+  tax_cents        BigInt              @default(0)
+  shipping_cents   BigInt              @default(0)
+  total_cents      BigInt              @default(0)
+  notes            String?
+  ordered_at       DateTime?           @db.Timestamptz
+  ordered_by       String?             @db.Uuid
+  received_at      DateTime?           @db.Timestamptz
+  received_by      String?             @db.Uuid
+  cancelled_at     DateTime?           @db.Timestamptz
+  cancelled_by     String?             @db.Uuid
+  created_at       DateTime            @default(now()) @db.Timestamptz
+  updated_at       DateTime            @default(now()) @db.Timestamptz
+  created_by       String?             @db.Uuid
+  deleted_at       DateTime?           @db.Timestamptz
+
+  supplier Supplier            @relation(fields: [supplier_id], references: [id])
+  lines    PurchaseOrderLine[]
+
+  @@unique([tenant_id, code])
+  @@index([tenant_id, status, created_at(sort: Desc)])
+  @@index([tenant_id, supplier_id])
+  @@index([tenant_id, branch_id])
+  @@index([tenant_id, deleted_at])
+  @@map("purchase_orders")
+}
+
+model PurchaseOrderLine {
+  id               String    @id @default(uuid()) @db.Uuid
+  tenant_id        String    @db.Uuid
+  po_id            String    @db.Uuid
+  product_id       String    @db.Uuid
+  qty_ordered      Int
+  qty_received     Int?
+  unit_cost_cents  BigInt
+  line_total_cents BigInt
+  discrepancy_note String?
+  created_at       DateTime  @default(now()) @db.Timestamptz
+  updated_at       DateTime  @default(now()) @db.Timestamptz
+  created_by       String?   @db.Uuid
+  deleted_at       DateTime? @db.Timestamptz
+
+  po PurchaseOrder @relation(fields: [po_id], references: [id], onDelete: Cascade)
+
+  @@unique([tenant_id, po_id, product_id])
+  @@index([tenant_id, po_id])
+  @@map("purchase_order_lines")
+}
+
+model SupplierReturn {
+  id            String               @id @default(uuid()) @db.Uuid
+  tenant_id     String               @db.Uuid
+  code          String
+  supplier_id   String               @db.Uuid
+  branch_id     String               @db.Uuid
+  status        SupplierReturnStatus @default(draft)
+  currency_code String               @db.Char(3)
+  total_cents   BigInt               @default(0)
+  reason        String
+  notes         String?
+  sent_at       DateTime?            @db.Timestamptz
+  sent_by       String?              @db.Uuid
+  refunded_at   DateTime?            @db.Timestamptz
+  refunded_by   String?              @db.Uuid
+  cancelled_at  DateTime?            @db.Timestamptz
+  cancelled_by  String?              @db.Uuid
+  created_at    DateTime             @default(now()) @db.Timestamptz
+  updated_at    DateTime             @default(now()) @db.Timestamptz
+  created_by    String?              @db.Uuid
+  deleted_at    DateTime?            @db.Timestamptz
+
+  supplier Supplier             @relation(fields: [supplier_id], references: [id])
+  lines    SupplierReturnLine[]
+
+  @@unique([tenant_id, code])
+  @@index([tenant_id, status, created_at(sort: Desc)])
+  @@index([tenant_id, supplier_id])
+  @@index([tenant_id, branch_id])
+  @@index([tenant_id, deleted_at])
+  @@map("supplier_returns")
+}
+
+model SupplierReturnLine {
+  id               String    @id @default(uuid()) @db.Uuid
+  tenant_id        String    @db.Uuid
+  return_id        String    @db.Uuid
+  product_id       String    @db.Uuid
+  qty              Int
+  unit_cost_cents  BigInt
+  line_total_cents BigInt
+  reason_code      String?
+  created_at       DateTime  @default(now()) @db.Timestamptz
+  updated_at       DateTime  @default(now()) @db.Timestamptz
+  created_by       String?   @db.Uuid
+  deleted_at       DateTime? @db.Timestamptz
+
+  return SupplierReturn @relation(fields: [return_id], references: [id], onDelete: Cascade)
+
+  @@unique([tenant_id, return_id, product_id])
+  @@index([tenant_id, return_id])
+  @@map("supplier_return_lines")
+}
+
+model SupplierDocument {
+  id                String       @id @default(uuid()) @db.Uuid
+  tenant_id         String       @db.Uuid
+  supplier_id       String       @db.Uuid
+  kind              DocumentKind
+  file_path         String
+  original_filename String
+  mime_type         String
+  size_bytes        Int
+  uploaded_by       String?      @db.Uuid
+  notes             String?
+  created_at        DateTime     @default(now()) @db.Timestamptz
+  updated_at        DateTime     @default(now()) @db.Timestamptz
+  created_by        String?      @db.Uuid
+  deleted_at        DateTime?    @db.Timestamptz
+
+  supplier Supplier @relation(fields: [supplier_id], references: [id], onDelete: Cascade)
+
+  @@index([tenant_id, supplier_id, deleted_at])
+  @@index([tenant_id, kind])
+  @@map("supplier_documents")
+}
+
+// ──────────────────────────────────────────────────────────────────
+// POS completeness (Phase 1.10c/d/e)
+// Tax classes, held sales, store credit, sale_payments (split tender).
+// ──────────────────────────────────────────────────────────────────
+
+model TaxClass {
+  id         String    @id @default(uuid()) @db.Uuid
+  tenant_id  String    @db.Uuid
+  code       String
+  name_i18n  Json
+  rate_bps   Int
+  is_active  Boolean   @default(true)
+  created_at DateTime  @default(now()) @db.Timestamptz
+  updated_at DateTime  @default(now()) @db.Timestamptz
+  created_by String?   @db.Uuid
+  deleted_at DateTime? @db.Timestamptz
+
+  @@unique([tenant_id, code])
+  @@index([tenant_id, deleted_at])
+  @@index([tenant_id, is_active])
+  @@map("tax_classes")
+}
+
+model HeldSale {
+  id                   String    @id @default(uuid()) @db.Uuid
+  tenant_id            String    @db.Uuid
+  branch_id            String    @db.Uuid
+  cashier_id           String    @db.Uuid
+  customer_id          String?   @db.Uuid
+  name                 String
+  note                 String?
+  subtotal_cents       BigInt    @default(0)
+  discount_cents       BigInt    @default(0)
+  tax_cents            BigInt    @default(0)
+  total_cents          BigInt    @default(0)
+  currency_code        String    @db.Char(3)
+  held_at              DateTime  @default(now()) @db.Timestamptz
+  resumed_at           DateTime? @db.Timestamptz
+  resumed_into_sale_id String?   @db.Uuid
+  discarded_at         DateTime? @db.Timestamptz
+  created_at           DateTime  @default(now()) @db.Timestamptz
+  updated_at           DateTime  @default(now()) @db.Timestamptz
+  created_by           String?   @db.Uuid
+  deleted_at           DateTime? @db.Timestamptz
+
+  lines HeldSaleLine[]
+
+  @@index([tenant_id, branch_id, cashier_id, held_at(sort: Desc)])
+  @@index([tenant_id, branch_id, held_at(sort: Desc)])
+  @@index([tenant_id, deleted_at])
+  @@map("held_sales")
+}
+
+model HeldSaleLine {
+  id               String    @id @default(uuid()) @db.Uuid
+  tenant_id        String    @db.Uuid
+  held_sale_id     String    @db.Uuid
+  product_id       String    @db.Uuid
+  qty              Int
+  unit_price_cents BigInt
+  discount_cents   BigInt    @default(0)
+  note             String?
+  created_at       DateTime  @default(now()) @db.Timestamptz
+
+  held_sale HeldSale @relation(fields: [held_sale_id], references: [id], onDelete: Cascade)
+
+  @@index([tenant_id, held_sale_id])
+  @@map("held_sale_lines")
+}
+
+model StoreCreditLedger {
+  id                  String               @id @default(uuid()) @db.Uuid
+  tenant_id           String               @db.Uuid
+  customer_id         String               @db.Uuid
+  amount_minor        BigInt
+  balance_after_minor BigInt
+  currency_code       String               @db.Char(3)
+  reference_table     StoreCreditReference
+  reference_id        String?              @db.Uuid
+  note_i18n           Json?
+  created_by          String?              @db.Uuid
+  created_at          DateTime             @default(now()) @db.Timestamptz
+
+  customer Customer @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+
+  @@index([tenant_id, customer_id, created_at(sort: Desc)])
+  @@index([tenant_id, reference_table, reference_id])
+  @@map("store_credit_ledger")
+}
+
+model SalePayment {
+  id                     String        @id @default(uuid()) @db.Uuid
+  tenant_id              String        @db.Uuid
+  sale_id                String        @db.Uuid
+  method                 PaymentMethod
+  amount_cents           BigInt
+  approval_code          String?
+  cash_tendered_cents    BigInt?
+  change_due_cents       BigInt?
+  payment_proof_id       String?       @db.Uuid
+  store_credit_ledger_id String?       @db.Uuid
+  created_at             DateTime      @default(now()) @db.Timestamptz
+
+  sale Sale @relation(fields: [sale_id], references: [id], onDelete: Cascade)
+
+  @@index([tenant_id, sale_id, created_at])
+  @@index([tenant_id, method])
+  @@map("sale_payments")
+}
+
+// ──────────────────────────────────────────────────────────────────
+// Offline POS (Phase 2.3) — sync conflicts surfaced from offline-completed sales.
+// ──────────────────────────────────────────────────────────────────
+
+model SyncConflict {
+  id                String              @id @default(uuid()) @db.Uuid
+  tenant_id         String              @db.Uuid
+  conflict_kind     SyncConflictKind
+  reference_table   String
+  reference_id      String              @db.Uuid
+  details           Json
+  resolution_status SyncConflictStatus  @default(open)
+  reviewed_by       String?             @db.Uuid
+  reviewed_at       DateTime?           @db.Timestamptz
+  review_notes      String?
+  occurred_at       DateTime            @db.Timestamptz
+  created_at        DateTime            @default(now()) @db.Timestamptz
+
+  @@index([tenant_id, resolution_status, created_at(sort: Desc)])
+  @@index([tenant_id, reference_table, reference_id])
+  @@map("sync_conflicts")
+}
+
+// ──────────────────────────────────────────────────────────────────
+// Phase 3 — Scheduled report email delivery
+// ──────────────────────────────────────────────────────────────────
+
+model ScheduledReport {
+  id              String                     @id @default(uuid()) @db.Uuid
+  tenant_id       String                     @db.Uuid
+  name            String
+  report_kind     ScheduledReportKind
+  cadence         ScheduledReportCadence
+  cron_pattern    String
+  params          Json                       @default("{}")
+  recipients      Json
+  format          ScheduledReportFormat
+  timezone        String                     @default("Africa/Cairo")
+  last_run_at     DateTime?                  @db.Timestamptz
+  last_status     ScheduledReportRunStatus?
+  last_error      String?
+  is_active       Boolean                    @default(true)
+  created_at      DateTime                   @default(now()) @db.Timestamptz
+  updated_at      DateTime                   @default(now()) @db.Timestamptz
+  created_by      String?                    @db.Uuid
+  deleted_at      DateTime?                  @db.Timestamptz
+
+  @@index([tenant_id, deleted_at])
+  @@index([tenant_id, is_active])
+  @@index([tenant_id, report_kind])
+  @@map("scheduled_reports")
+}

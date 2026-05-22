@@ -1,0 +1,35 @@
+// Runtime re-export — needed for Prisma.DbNull / Prisma.JsonNull when writing
+// nullable JSONB columns through the typed client.
+export { Prisma } from "@prisma/client";
+
+export type {
+  PrismaClient,
+  Plan,
+  Tenant,
+  PlatformUser,
+  PlatformAuditLog,
+  PlatformBankAccount,
+  User,
+  Branch,
+  Category,
+  Product,
+  Customer,
+  TenantBankAccount,
+  BranchStock,
+  StockMovement,
+  Sale,
+  SaleLine,
+  PaymentProof,
+  SubscriptionInvoice,
+  AuditLog,
+  TenantStatus,
+  TenantUserRole,
+  PlatformUserRole,
+  StockMovementKind,
+  PaymentMethod,
+  SalePaymentStatus,
+  PaymentProofContext,
+  PaymentProofBankKind,
+  PaymentProofStatus,
+  SubscriptionInvoiceStatus,
+} from "@prisma/client";

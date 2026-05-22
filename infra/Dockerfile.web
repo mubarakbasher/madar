@@ -1,0 +1,45 @@
+# Multi-stage build for the Madar tenant web (Next.js 14).
+
+FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat
+WORKDIR /repo
+RUN corepack enable && corepack prepare pnpm@9.12.0 --activate
+
+FROM base AS deps
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY apps/web/package.json ./apps/web/
+COPY packages/ui/package.json ./packages/ui/
+RUN pnpm install --frozen-lockfile
+
+FROM base AS build
+COPY --from=deps /repo/node_modules ./node_modules
+COPY --from=deps /repo/apps/web/node_modules ./apps/web/node_modules
+COPY . .
+# Pass NEXT_PUBLIC_API_URL through at build time — Next inlines it into the bundle.
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+RUN pnpm --filter @madar/web build
+
+FROM node:20-alpine AS runtime
+RUN apk add --no-cache libc6-compat tini
+WORKDIR /app
+ENV NODE_ENV=production \
+    PORT=3000
+
+RUN corepack enable && corepack prepare pnpm@9.12.0 --activate
+
+# Next.js standalone-friendly copy.
+COPY --from=build /repo/apps/web/.next ./apps/web/.next
+COPY --from=build /repo/apps/web/public ./apps/web/public
+COPY --from=build /repo/apps/web/package.json ./apps/web/package.json
+COPY --from=build /repo/apps/web/next.config.mjs ./apps/web/next.config.mjs
+COPY --from=build /repo/apps/web/i18n ./apps/web/i18n
+COPY --from=build /repo/apps/web/messages ./apps/web/messages
+COPY --from=build /repo/node_modules ./node_modules
+COPY --from=build /repo/packages ./packages
+COPY --from=build /repo/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --from=build /repo/package.json ./package.json
+
+EXPOSE 3000
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["pnpm", "--filter", "@madar/web", "start"]
