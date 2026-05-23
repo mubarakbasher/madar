@@ -9,6 +9,7 @@ import { CustomersModule } from "./customers/customers.module";
 import { DashboardModule } from "./dashboard/dashboard.module";
 import { HeldSalesModule } from "./held-sales/held-sales.module";
 import { NotificationsModule } from "./notifications/notifications.module";
+import { OnboardingModule } from "./onboarding/onboarding.module";
 import { TenantImpersonationModule } from "./impersonation/impersonation.module";
 import { SaleRefundsModule } from "./sale-refunds/sale-refunds.module";
 import { SalesModule } from "./sales/sales.module";
@@ -52,6 +53,7 @@ import { UsersModule } from "./users/users.module";
     TaxClassesModule,
     HeldSalesModule,
     NotificationsModule,
+    OnboardingModule,
     ShiftsModule,
     UsersModule,
   ],

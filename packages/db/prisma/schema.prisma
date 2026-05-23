@@ -207,7 +207,7 @@ model Tenant {
   country_code             String         @db.Char(2)
   default_currency_code    String         @db.Char(3)
   default_locale           String         @db.VarChar(8)
-  plan_id                  String         @db.Uuid
+  plan_id                  String?        @db.Uuid
   status                   TenantStatus   @default(trialing)
   trial_ends_at            DateTime?      @db.Timestamptz
   default_tax_class_id     String?        @db.Uuid
@@ -222,7 +222,7 @@ model Tenant {
   created_at               DateTime       @default(now()) @db.Timestamptz
   updated_at               DateTime       @default(now()) @db.Timestamptz
 
-  plan Plan @relation(fields: [plan_id], references: [id])
+  plan Plan? @relation(fields: [plan_id], references: [id])
 
   @@map("tenants")
 }

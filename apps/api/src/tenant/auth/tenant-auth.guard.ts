@@ -4,7 +4,7 @@ import type { Request } from "express";
 import { TokenService } from "./token.service";
 import { IS_PUBLIC_KEY } from "./public.decorator";
 import { RedisService } from "../../common/redis.service";
-import { getTenantStatus } from "./tenant-status.cache";
+import { getTenantHasPlan, getTenantStatus } from "./tenant-status.cache";
 
 const WRITE_METHODS = new Set(["POST", "PATCH", "PUT", "DELETE"]);
 
@@ -18,6 +18,22 @@ const STATUS_ALLOWED_WRITE_PREFIXES = [
   "/v1/auth/refresh",
   "/v1/payment-proofs",
   "/v1/impersonation/exit",
+];
+
+/**
+ * Paths reachable when a tenant has no plan yet (post-signup, pre-select).
+ * Login/refresh/signup-related routes are already `@Public()` so they skip
+ * this guard entirely. The list below is *authenticated* routes the locked
+ * tenant still needs: logging out, reading their own profile + tenant
+ * shape (so the UI can render the picker), reading the subscription view
+ * (which now returns plan:null), and the one endpoint that unlocks them.
+ */
+const PLAN_ALLOWED_PATH_PREFIXES = [
+  "/v1/auth/logout",
+  "/v1/auth/me",
+  "/v1/auth/refresh",
+  "/v1/subscription",
+  "/v1/onboarding/",
 ];
 
 @Injectable()
@@ -73,6 +89,24 @@ export class TenantAuthGuard implements CanActivate {
       ...(claims.impersonator_email ? { impersonatorEmail: claims.impersonator_email } : {}),
     };
 
+    // Plan-required gate: tenant signed up but hasn't picked a plan yet.
+    // Every feature endpoint returns 423 plan_required so the web app keeps
+    // the user on /onboarding/select-plan. Allowlist covers logout, profile
+    // read, subscription view (plan:null), and the select-plan endpoint
+    // itself.
+    if (!this.isAllowedWithoutPlan(req.path)) {
+      const hasPlan = await getTenantHasPlan(claims.tenant_id, this.redis);
+      if (!hasPlan) {
+        throw new HttpException(
+          {
+            code: "plan_required",
+            message: "Pick a subscription plan before using this feature.",
+          },
+          423,
+        );
+      }
+    }
+
     // Subscription-status gate: suspended/cancelled tenants are read-only.
     // Reads stay open so the tenant can export data + pay. Mutations are
     // blocked except for the small allowlist (logout, refresh, payment-proof
@@ -99,5 +133,9 @@ export class TenantAuthGuard implements CanActivate {
 
   private isAllowedWritePath(path: string): boolean {
     return STATUS_ALLOWED_WRITE_PREFIXES.some((prefix) => path.startsWith(prefix));
+  }
+
+  private isAllowedWithoutPlan(path: string): boolean {
+    return PLAN_ALLOWED_PATH_PREFIXES.some((prefix) => path.startsWith(prefix));
   }
 }

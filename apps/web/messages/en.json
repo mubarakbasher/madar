@@ -3,6 +3,31 @@
     "name": "Madar",
     "tagline": "Run your shop the way it should run."
   },
+  "onboarding": {
+    "selectPlan": {
+      "kicker": "Welcome to Madar",
+      "title": "Pick a plan to start",
+      "subtitle": "Your shop is created. Choose the plan that fits your business — you can change it later.",
+      "chooseCta": "Choose this plan",
+      "perMonth": "/ month",
+      "unlimited": "Unlimited",
+      "retry": "Retry",
+      "emptyTitle": "Sign-ups aren't open yet",
+      "emptyBody": "Your platform administrator hasn't published any plans yet. Please contact them — once a plan is available you'll be able to continue here.",
+      "limit": {
+        "txns": "transactions / month",
+        "users": "users",
+        "branches": "branches",
+        "storage": "GB storage"
+      },
+      "errors": {
+        "network": "Something went wrong saving your choice. Please try again.",
+        "planNotFound": "That plan no longer exists. Please pick another.",
+        "planInactive": "That plan isn't available. Please pick another.",
+        "planAlreadyAssigned": "Your shop already has a plan. Reloading…"
+      }
+    }
+  },
   "offline": {
     "title": "You're offline",
     "body": "We can't reach the server right now. You can still ring up sales from the POS — they'll sync when you're back online.",

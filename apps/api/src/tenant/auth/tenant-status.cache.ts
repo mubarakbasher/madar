@@ -61,3 +61,39 @@ export async function invalidateTenantStatus(
 ): Promise<void> {
   await redis.del(key(tenantId));
 }
+
+// ── plan_id presence cache ────────────────────────────────────────────
+// Used by TenantAuthGuard to gate feature endpoints behind "has the tenant
+// picked a plan?". Tenant flips from no-plan to has-plan exactly once
+// (via /v1/onboarding/select-plan), at which point the onboarding service
+// calls invalidateTenantHasPlan to drop the negative cache entry.
+
+const PLAN_TTL_SECONDS = 30;
+
+function planKey(tenantId: string): string {
+  return `tenant-has-plan:${tenantId}`;
+}
+
+export async function getTenantHasPlan(
+  tenantId: string,
+  redis: RedisService,
+): Promise<boolean> {
+  const cached = await redis.get(planKey(tenantId));
+  if (cached === "1") return true;
+  if (cached === "0") return false;
+
+  const row = await adminPrisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: { plan_id: true },
+  });
+  const hasPlan = !!row?.plan_id;
+  await redis.setEx(planKey(tenantId), hasPlan ? "1" : "0", PLAN_TTL_SECONDS);
+  return hasPlan;
+}
+
+export async function invalidateTenantHasPlan(
+  tenantId: string,
+  redis: RedisService,
+): Promise<void> {
+  await redis.del(planKey(tenantId));
+}

@@ -7,7 +7,7 @@ export interface TenantListItem {
   slug: string;
   name: string;
   country_code: string;
-  plan: { id: string; code: string; name: string };
+  plan: { id: string; code: string; name: string } | null;
   status: TenantStatus;
   branch_count: number;
   user_count: number;

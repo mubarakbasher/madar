@@ -7,7 +7,8 @@ export interface TenantListItem {
   slug: string;
   name: string;
   country_code: string;
-  plan: { id: string; code: string; name: string };
+  // null when the tenant hasn't picked a plan yet (post-signup, pre-select).
+  plan: { id: string; code: string; name: string } | null;
   status: "trialing" | "active" | "grace_period" | "suspended" | "cancelled";
   branch_count: number;
   user_count: number;
@@ -96,17 +97,21 @@ export class TenantsService {
       slug: t.slug,
       name: t.name,
       country_code: t.country_code,
-      plan: {
-        id: t.plan.id,
-        code: t.plan.code,
-        name: pickName(t.plan.name_i18n),
-      },
+      plan: t.plan
+        ? {
+            id: t.plan.id,
+            code: t.plan.code,
+            name: pickName(t.plan.name_i18n),
+          }
+        : null,
       status: t.status as TenantListItem["status"],
       branch_count: branchByTenant.get(t.id) ?? 0,
       user_count: userByTenant.get(t.id) ?? 0,
-      mrr_cents: MRR_STATUSES.has(t.status)
-        ? t.plan.monthly_price_cents.toString()
-        : "0",
+      // No-plan tenants contribute 0 MRR regardless of status.
+      mrr_cents:
+        t.plan && MRR_STATUSES.has(t.status)
+          ? t.plan.monthly_price_cents.toString()
+          : "0",
       currency_code: t.default_currency_code,
       created_at: t.created_at.toISOString(),
       trial_ends_at: t.trial_ends_at?.toISOString() ?? null,
@@ -215,13 +220,15 @@ export class TenantsService {
       status: tenant.status as TenantListItem["status"],
       trial_ends_at: tenant.trial_ends_at?.toISOString() ?? null,
       created_at: tenant.created_at.toISOString(),
-      plan: {
-        id: tenant.plan.id,
-        code: tenant.plan.code,
-        name: pickName(tenant.plan.name_i18n),
-        monthly_price_cents: tenant.plan.monthly_price_cents.toString(),
-        currency_code: tenant.plan.currency_code,
-      },
+      plan: tenant.plan
+        ? {
+            id: tenant.plan.id,
+            code: tenant.plan.code,
+            name: pickName(tenant.plan.name_i18n),
+            monthly_price_cents: tenant.plan.monthly_price_cents.toString(),
+            currency_code: tenant.plan.currency_code,
+          }
+        : null,
       kpis: {
         last_30d_revenue_cents: (revenueAgg._sum.total_cents ?? 0n).toString(),
         last_30d_sale_count: saleCountAgg,
@@ -277,7 +284,7 @@ export interface TenantDetailResponse {
     name: string;
     monthly_price_cents: string;
     currency_code: string;
-  };
+  } | null;
   kpis: {
     last_30d_revenue_cents: string;
     last_30d_sale_count: number;

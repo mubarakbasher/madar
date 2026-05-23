@@ -198,7 +198,9 @@ export function TenantsClient() {
                     <span style={{ marginInlineEnd: 6 }}>{countryFlag(t.country_code)}</span>
                     {countryName(t.country_code)}
                   </td>
-                  <td style={{ textTransform: "capitalize" }}>{t.plan.code}</td>
+                  <td style={{ textTransform: "capitalize" }}>
+                    {t.plan ? t.plan.code : <span style={{ color: "var(--ink-4)" }}>No plan</span>}
+                  </td>
                   <td>{t.branch_count}</td>
                   <td>{t.user_count}</td>
                   <td className="right">{formatCents(t.mrr_cents, t.currency_code)}</td>

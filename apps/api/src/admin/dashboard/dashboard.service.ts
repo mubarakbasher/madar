@@ -65,6 +65,9 @@ export class DashboardService {
     let mrrCents = 0n;
     const currencyCounts = new Map<string, number>();
     for (const t of mrrTenants) {
+      // Tenants without a plan contribute 0 to MRR and aren't counted in
+      // the dominant-currency tally either (no commercial signal yet).
+      if (!t.plan) continue;
       mrrCents += t.plan.monthly_price_cents;
       currencyCounts.set(
         t.default_currency_code,

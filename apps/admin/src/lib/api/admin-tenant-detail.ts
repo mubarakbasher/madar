@@ -42,13 +42,14 @@ export interface TenantDetail {
   status: TenantStatus;
   trial_ends_at: string | null;
   created_at: string;
+  // null when the tenant signed up but hasn't picked a plan yet.
   plan: {
     id: string;
     code: string;
     name: string;
     monthly_price_cents: string;
     currency_code: string;
-  };
+  } | null;
   kpis: {
     last_30d_revenue_cents: string;
     last_30d_sale_count: number;

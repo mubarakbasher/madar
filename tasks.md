@@ -811,6 +811,7 @@ Cross-phase slice driven by the user's request to trial Madar in a real shop. Pl
 - [ ] Native mobile apps (iOS, Android)
 - [ ] Super-admin Phase 4: webhook logs, compliance reports, API key management, ~~plan editor~~ (pulled forward — see below), discount codes
 - [x] **A31 + A32 (plan editor)** pulled forward from Phase 4 — needed at install time so VPS deploys can create plans through the admin UI instead of running the demo seed. `apps/admin/src/app/(shell)/plans/` (list + `[id]` editor, owner-gated), `apps/api/src/admin/plans/` (controller + service + zod DTOs + audit writes), sidebar nav in "Pricing" section. Also adds `pnpm db:bootstrap-admin` for first-run super-admin (no demo data).
+- [x] **Self-pick plan onboarding flow** — `tenants.plan_id` made nullable (migration `20260530000000_nullable_plan_id`). Tenant signup no longer needs a `starter` plan to exist; tenant lands on `/onboarding/select-plan` after signup, picks from the public plans list, and only then unlocks the rest of the app. `TenantAuthGuard` returns `423 plan_required` for any feature endpoint until a plan is picked. New API: `GET /v1/public/plans` (public), `POST /v1/onboarding/select-plan` (auth, idempotent-by-state). New web route group `(onboarding)/select-plan` with its own minimal layout. Admin tenant detail + list render "No plan selected" when null.
 
 ---
 

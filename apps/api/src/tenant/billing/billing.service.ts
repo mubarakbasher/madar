@@ -49,7 +49,8 @@ export interface ApiSubscriptionView {
     trial_ends_at: string | null;
     default_currency_code: string;
   };
-  plan: ApiPlan;
+  // null when the tenant hasn't picked a plan yet (post-signup, pre-select).
+  plan: ApiPlan | null;
   usage: {
     transactions_this_period: number;
     users: number;
@@ -111,7 +112,7 @@ export class BillingService {
         trial_ends_at: tenant.trial_ends_at?.toISOString() ?? null,
         default_currency_code: tenant.default_currency_code,
       },
-      plan: toApiPlan(tenant.plan),
+      plan: tenant.plan ? toApiPlan(tenant.plan) : null,
       usage: {
         transactions_this_period: salesCount,
         users: userCount,

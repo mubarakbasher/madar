@@ -92,7 +92,7 @@ export function TenantDetailClient({ tenantId }: { tenantId: string }) {
           />
           <div style={{ flex: 1 }}>
             <span className="admin-kpi-kicker">
-              {t.plan.name} plan · {t.country_code}
+              {t.plan ? `${t.plan.name} plan` : "No plan selected"} · {t.country_code}
             </span>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 6 }}>
               <h1 className="admin-page-title">{t.name}</h1>

@@ -4,7 +4,6 @@ import {
   ForbiddenException,
   GoneException,
   Injectable,
-  InternalServerErrorException,
   Logger,
   NotFoundException,
   UnauthorizedException,
@@ -45,7 +44,6 @@ const ARGON2_PARAMS = {
 } as const;
 
 const TRIAL_DAYS = 14;
-const DEFAULT_PLAN_CODE = "starter";
 const ENROLL_REDIS_TTL_SECONDS = 600; // 10min to scan + verify the QR
 
 interface UserDto {
@@ -139,17 +137,6 @@ export class AuthService {
       });
     }
 
-    const plan = await adminPrisma.plan.findUnique({ where: { code: DEFAULT_PLAN_CODE } });
-    if (!plan) {
-      this.logger.error(
-        `Signup blocked: default plan '${DEFAULT_PLAN_CODE}' missing from plans table — run \`pnpm db:seed\`.`,
-      );
-      throw new InternalServerErrorException({
-        code: "server_misconfigured",
-        message: "Signup is temporarily unavailable. Please try again shortly.",
-      });
-    }
-
     const password_hash = await argon2.hash(input.password, ARGON2_PARAMS);
     const trial_ends_at = new Date(Date.now() + TRIAL_DAYS * 86400 * 1000);
     const env = loadEnv();
@@ -167,7 +154,9 @@ export class AuthService {
           country_code: input.country_code,
           default_currency_code: input.default_currency_code ?? "USD",
           default_locale: input.default_locale,
-          plan_id: plan.id,
+          // plan_id intentionally omitted — tenant picks their plan post-signup
+          // via /v1/onboarding/select-plan. Until they pick, TenantAuthGuard
+          // returns plan_required for every feature endpoint.
           status: "trialing",
           trial_ends_at,
         },
@@ -196,7 +185,7 @@ export class AuthService {
           entity_id: user.id,
           ip: ctx.ip,
           user_agent: ctx.userAgent,
-          after: { slug, plan_code: DEFAULT_PLAN_CODE, country_code: input.country_code },
+          after: { slug, plan_code: null, country_code: input.country_code },
         },
       });
 
@@ -240,7 +229,7 @@ export class AuthService {
       })
       .catch((e) => this.logger.warn(`verification email send failed: ${(e as Error).message}`));
 
-    return this.toAuthResult(created.user, created.tenant, plan, tokens);
+    return this.toAuthResult(created.user, created.tenant, null, tokens);
   }
 
   // ─── login ─────────────────────────────────────────────────────────

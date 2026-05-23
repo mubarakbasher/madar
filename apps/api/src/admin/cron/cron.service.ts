@@ -77,14 +77,19 @@ export class AdminCronService {
       plan: { code: string };
     }>;
     try {
-      candidates = await adminPrisma.tenant.findMany({
+      const rows = await adminPrisma.tenant.findMany({
         where: {
           status: "trialing",
           trial_ends_at: { gte: windowStart, lt: windowEnd },
           trial_reminder_sent_at: null,
+          // No reminder for tenants who never picked a plan — they're not
+          // mid-trial in any commercial sense; the trial timer is just a
+          // dormant clock until they self-select via /v1/onboarding/select-plan.
+          plan_id: { not: null },
         },
         include: { plan: { select: { code: true } } },
       });
+      candidates = rows.filter((r): r is typeof r & { plan: { code: string } } => r.plan !== null);
     } catch (err) {
       report.errors.push(`scan:${(err as Error).message}`);
       return report;

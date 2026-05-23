@@ -70,16 +70,26 @@ export class BillingTrackerService {
 
     // ─── 1. Trial bootstrap ──────────────────────────────────────────
     try {
+      // Skip tenants without a plan — they signed up but never picked one,
+      // so there's nothing to invoice. A future "abandon orphan signups"
+      // job can sweep them. For now they stay in trialing forever, locked
+      // out by TenantAuthGuard until they pick.
       const trialEnded = await adminPrisma.tenant.findMany({
         where: {
           status: "trialing",
           trial_ends_at: { lte: now },
+          plan_id: { not: null },
         },
         include: { plan: true },
       });
       for (const tenant of trialEnded) {
+        // Type narrowing: the where filtered by plan_id != null, but Prisma's
+        // generated types don't reflect that, so tenant.plan / plan_id remain
+        // nullable here. Skip belt-and-suspenders if either is unexpectedly null.
+        if (!tenant.plan || !tenant.plan_id) continue;
+        const tenantForInvoice = { ...tenant, plan_id: tenant.plan_id, plan: tenant.plan };
         try {
-          await this.bootstrapTrialInvoice(tenant, now);
+          await this.bootstrapTrialInvoice(tenantForInvoice, now);
           report.trial_invoices_created += 1;
           if (ctx) {
             await this.audit.write(ctx, {

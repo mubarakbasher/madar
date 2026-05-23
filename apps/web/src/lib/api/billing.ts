@@ -46,7 +46,8 @@ export interface ApiSubscription {
     trial_ends_at: string | null;
     default_currency_code: string;
   };
-  plan: ApiPlan;
+  // null when the tenant hasn't picked a plan yet (post-signup, pre-select).
+  plan: ApiPlan | null;
   usage: {
     transactions_this_period: number;
     users: number;

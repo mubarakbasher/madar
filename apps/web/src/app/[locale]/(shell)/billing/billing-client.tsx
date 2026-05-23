@@ -140,6 +140,11 @@ function PlanTab({
   locale: "en" | "ar";
 }) {
   const t = useTranslations("billing");
+  // The (shell) layout redirects no-plan tenants to /onboarding/select-plan,
+  // so by the time PlanTab renders, sub.plan is guaranteed to be set. The
+  // null check is a TypeScript narrowing — render nothing during the brief
+  // flash before the redirect fires, rather than crashing.
+  if (!sub.plan) return null;
   const usageLimits = (sub.plan.limits ?? {}) as Record<string, number | string>;
   const trialDaysLeft = sub.tenant.trial_ends_at
     ? Math.max(0, Math.ceil((new Date(sub.tenant.trial_ends_at).getTime() - Date.now()) / 86_400_000))
@@ -295,7 +300,7 @@ function PlanTab({
       <h2 className="billing-section-title">{t("plans.title")}</h2>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
         {plans.map((p) => {
-          const isCurrent = p.id === sub.plan.id;
+          const isCurrent = p.id === sub.plan?.id;
           return (
             <div
               key={p.id}
