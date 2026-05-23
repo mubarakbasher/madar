@@ -12,6 +12,16 @@
 	# Force HTTPS — Caddy redirects http → https by default. Keep on prod.
 }
 
+# Apex / "naked" domain → tenant shop. Optional: only active when ROOT_HOST is
+# set in env. Add an A record for the apex (e.g. `madarpos.com`) pointing at the
+# VPS before reloading Caddy, otherwise Let's Encrypt can't validate it.
+# When ROOT_HOST is unset the block falls back to `localhost`, which Caddy serves
+# internally only and never requests a cert for, so the block is effectively a
+# no-op until the operator sets ROOT_HOST.
+{$ROOT_HOST:localhost} {
+	redir https://{$TENANT_HOST}{uri} permanent
+}
+
 {$TENANT_HOST} {
 	encode zstd gzip
 	# Long-lived static assets — Next.js fingerprints them.

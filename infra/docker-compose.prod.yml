@@ -95,6 +95,8 @@ services:
       TENANT_HOST: ${TENANT_HOST:?TENANT_HOST is required}
       ADMIN_HOST: ${ADMIN_HOST:?ADMIN_HOST is required}
       API_HOST: ${API_HOST:?API_HOST is required}
+      # Optional: apex / "naked" domain that 301s to TENANT_HOST. Unset by default.
+      ROOT_HOST: ${ROOT_HOST:-}
       CADDY_ACME_EMAIL: ${CADDY_ACME_EMAIL:?CADDY_ACME_EMAIL is required}
     depends_on:
       - api
