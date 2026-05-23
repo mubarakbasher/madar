@@ -18,6 +18,7 @@ import { ZodValidationPipe } from "../../common/zod-validation.pipe";
 import { getClientIp, getUserAgent } from "../../common/request-context";
 import { Idempotent, IdempotencyInterceptor } from "../../common/idempotency.interceptor";
 import { RateLimit, RateLimitGuard } from "../../common/rate-limit.guard";
+import { clearCookieOptions, refreshCookieOptions } from "../../common/cookie-options";
 import { AuthService } from "./auth.service";
 import { TokenService } from "./token.service";
 import { CurrentUser, type TenantPrincipal } from "./current-user.decorator";
@@ -49,17 +50,11 @@ const REFRESH_COOKIE = "madar_refresh";
 // API routes (refresh + logout) AND to the Next.js server-side requireAuth()
 // check on /[locale]/* pages. Cookie stays HttpOnly + SameSite=Lax.
 function setRefreshCookie(res: Response, token: string, maxAgeSec: number): void {
-  res.cookie(REFRESH_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: maxAgeSec * 1000,
-  });
+  res.cookie(REFRESH_COOKIE, token, refreshCookieOptions(maxAgeSec));
 }
 
 function clearRefreshCookie(res: Response): void {
-  res.clearCookie(REFRESH_COOKIE, { path: "/" });
+  res.clearCookie(REFRESH_COOKIE, clearCookieOptions());
 }
 
 @Controller("v1/auth")
@@ -114,12 +109,7 @@ export class AuthController {
     if (maxAge > 0) {
       setRefreshCookie(res, result.refresh_token, maxAge);
     } else {
-      res.cookie(REFRESH_COOKIE, result.refresh_token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-      });
+      res.cookie(REFRESH_COOKIE, result.refresh_token, refreshCookieOptions());
     }
     return this.toResponse(result);
   }

@@ -14,6 +14,7 @@ import type { Request, Response } from "express";
 import { ZodValidationPipe } from "../../common/zod-validation.pipe";
 import { RateLimit, RateLimitGuard } from "../../common/rate-limit.guard";
 import { getClientIp, getUserAgent } from "../../common/request-context";
+import { clearCookieOptions, refreshCookieOptions } from "../../common/cookie-options";
 import { AdminAuthService } from "./admin-auth.service";
 import { AdminTokenService } from "./admin-token.service";
 import { AdminAuthGuard } from "./admin-auth.guard";
@@ -30,17 +31,11 @@ import { MfaVerifySchema, type MfaVerifyInput } from "./dto/mfa-verify.dto";
 const ADMIN_REFRESH_COOKIE = "madar_admin_refresh";
 
 function setAdminRefreshCookie(res: Response, token: string, maxAgeSec: number): void {
-  res.cookie(ADMIN_REFRESH_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: maxAgeSec * 1000,
-  });
+  res.cookie(ADMIN_REFRESH_COOKIE, token, refreshCookieOptions(maxAgeSec));
 }
 
 function clearAdminRefreshCookie(res: Response): void {
-  res.clearCookie(ADMIN_REFRESH_COOKIE, { path: "/" });
+  res.clearCookie(ADMIN_REFRESH_COOKIE, clearCookieOptions());
 }
 
 @Controller("v1/admin/auth")
