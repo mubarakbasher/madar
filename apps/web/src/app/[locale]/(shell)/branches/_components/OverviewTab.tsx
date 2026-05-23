@@ -15,7 +15,15 @@ function relTime(iso: string, locale: string): string {
   return fmt.format(-days, "day");
 }
 
-export function OverviewTab({ branch, locale }: { branch: ApiBranchDetail; locale: string }) {
+export function OverviewTab({
+  branch,
+  locale,
+  onViewStaff,
+}: {
+  branch: ApiBranchDetail;
+  locale: string;
+  onViewStaff: () => void;
+}) {
   const t = useTranslations("branches.detail.overview");
   const topName = branch.kpis.top_product_name
     ? locale === "ar"
@@ -63,19 +71,13 @@ export function OverviewTab({ branch, locale }: { branch: ApiBranchDetail; local
       </section>
 
       <section className="br-section">
-        <h3 className="br-section-title">{t("users")}</h3>
-        {branch.users.length === 0 ? (
-          <p style={{ color: "var(--ink-3)", fontSize: 13, margin: 0 }}>{t("usersEmpty")}</p>
-        ) : (
-          <ul className="br-list">
-            {branch.users.map((u) => (
-              <li key={u.id} className="br-list-item">
-                <span>{u.name}</span>
-                <span className="br-list-meta">{u.role}</span>
-              </li>
-            ))}
-          </ul>
-        )}
+        <h3 className="br-section-title">{t("staffSummaryTitle")}</h3>
+        <div className="br-overview-staff-link">
+          <span>{t("staffSummaryCount", { count: branch.users.length })}</span>
+          <button type="button" className="br-link" onClick={onViewStaff}>
+            {t("viewStaffLink")}
+          </button>
+        </div>
       </section>
 
       <section className="br-section">

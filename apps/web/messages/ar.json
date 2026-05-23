@@ -1776,6 +1776,7 @@
       "back": "الفروع",
       "tabs": {
         "overview": "نظرة عامة",
+        "staff": "الفريق",
         "stock": "المخزون",
         "settings": "الإعدادات",
         "banking": "الحسابات البنكية",
@@ -1790,9 +1791,48 @@
         "topProductEmpty": "لا مبيعات بعد اليوم.",
         "recentActivity": "النشاط الأخير",
         "recentEmpty": "لا شيء لعرضه بعد.",
-        "users": "الفريق المُعيَّن",
-        "usersEmpty": "لم يُعيَّن فريق لهذا الفرع.",
+        "staffSummaryTitle": "الفريق",
+        "staffSummaryCount": "{count, plural, =0 {لم يُعيَّن أحد بعد} one {شخص واحد مُعيَّن} two {شخصان مُعيَّنان} few {# أشخاص مُعيَّنين} many {# شخصًا مُعيَّنًا} other {# شخص مُعيَّن}}",
+        "viewStaffLink": "عرض الفريق ←",
         "saleRef": "بيع {code}"
+      },
+      "staff": {
+        "title": "فريق {branch}",
+        "countChip": "{count, plural, =0 {لا أحد مُعيَّن بعد} one {شخص واحد} two {شخصان} few {# أشخاص} many {# شخصًا} other {# شخص}}",
+        "assignCta": "تعيين موظف",
+        "onShift": "في الوردية",
+        "onShiftHint": "يعمل حاليًا في وردية مفتوحة بهذا الفرع",
+        "youBadge": "أنت",
+        "removeCta": "إزالة من هذا الفرع",
+        "removeConfirmTitle": "إزالة من الفرع؟",
+        "removeConfirmBody": "سيتمّ إزالة {name} من {branch}. سيظلّ حسابه قائمًا، ويمكن للمالك إعادة تعيينه لاحقًا.",
+        "removeConfirmCta": "إزالة",
+        "removeConfirmCancel": "إلغاء",
+        "removingLabel": "جاري الإزالة…",
+        "rowActionsLabel": "إجراءات لهذا الشخص",
+        "emptyTitle": "لم يُعيَّن فريق بعد",
+        "emptyBody": "عيّن الملّاك والمديرين وأمناء الصندوق والمراجعين على هذا الفرع ليظهروا هنا وفي تقارير الورديات.",
+        "assignModal": {
+          "title": "تعيين شخص إلى {branch}",
+          "closeLabel": "إغلاق",
+          "searchPlaceholder": "ابحث بالاسم أو البريد…",
+          "loading": "جاري تحميل الفريق…",
+          "loadFailed": "تعذّر تحميل قائمة الفريق.",
+          "retry": "إعادة المحاولة",
+          "emptyResults": "لا يوجد أشخاص مطابقون. ادعُ موظفين جدد من الإعدادات ← المستخدمون.",
+          "currentlyAt": "حاليًا في {branch}",
+          "unassigned": "لم يُعيَّن لأي فرع بعد",
+          "assignCta": "تعيين",
+          "assigning": "جاري التعيين…"
+        },
+        "errors": {
+          "cannotEditSelf": "لا يمكنك تغيير فرعك من هنا.",
+          "lastOwnerLock": "لا يمكن إزالة آخر مالك نشط.",
+          "managerRequiresBranch": "يجب تعيين المدير على فرع.",
+          "forbiddenRole": "يمكن للمالك فقط تغيير تعيينات الفروع.",
+          "impersonation": "غير مسموح أثناء انتحال الهوية.",
+          "network": "تعذّر الحفظ. حاول مرة أخرى."
+        }
       },
       "stock": {
         "title": "المخزون في هذا الفرع",

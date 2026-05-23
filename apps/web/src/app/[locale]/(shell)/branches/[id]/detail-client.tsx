@@ -7,12 +7,13 @@ import { Pencil, TrendingUp } from "lucide-react";
 import { branchGetRequest, type ApiBranchDetail } from "@/lib/api/branches";
 import { formatCurrency } from "@/lib/currency";
 import { OverviewTab } from "../_components/OverviewTab";
+import { StaffTab } from "../_components/StaffTab";
 import { StockTab } from "../_components/StockTab";
 import { SettingsTab } from "../_components/SettingsTab";
 import { HoursTab } from "../_components/HoursTab";
 import { BankingTab } from "../_components/BankingTab";
 
-type Tab = "overview" | "stock" | "hours" | "banking" | "settings";
+type Tab = "overview" | "staff" | "stock" | "hours" | "banking" | "settings";
 
 export function BranchDetailClient({ locale, id }: { locale: "en" | "ar"; id: string }) {
   const t = useTranslations("branches");
@@ -98,6 +99,13 @@ export function BranchDetailClient({ locale, id }: { locale: "en" | "ar"; id: st
         </button>
         <button
           type="button"
+          className={`br-tab ${tab === "staff" ? "br-tab-active" : ""}`}
+          onClick={() => setTab("staff")}
+        >
+          {tD("tabs.staff")}
+        </button>
+        <button
+          type="button"
           className={`br-tab ${tab === "stock" ? "br-tab-active" : ""}`}
           onClick={() => setTab("stock")}
         >
@@ -126,7 +134,10 @@ export function BranchDetailClient({ locale, id }: { locale: "en" | "ar"; id: st
         </button>
       </div>
 
-      {tab === "overview" && <OverviewTab branch={branch} locale={locale} />}
+      {tab === "overview" && (
+        <OverviewTab branch={branch} locale={locale} onViewStaff={() => setTab("staff")} />
+      )}
+      {tab === "staff" && <StaffTab branch={branch} locale={locale} />}
       {tab === "stock" && <StockTab branchId={branch.id} locale={locale} />}
       {tab === "hours" && <HoursTab branch={branch} />}
       {tab === "banking" && <BankingTab branch={branch} locale={locale} />}

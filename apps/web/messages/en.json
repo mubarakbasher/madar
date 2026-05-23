@@ -1776,6 +1776,7 @@
       "back": "Branches",
       "tabs": {
         "overview": "Overview",
+        "staff": "Staff",
         "stock": "Stock",
         "settings": "Settings",
         "banking": "Banking",
@@ -1790,9 +1791,48 @@
         "topProductEmpty": "No sales today.",
         "recentActivity": "Recent activity",
         "recentEmpty": "Nothing to show yet.",
-        "users": "Staff assigned",
-        "usersEmpty": "No staff assigned to this branch.",
+        "staffSummaryTitle": "Staff",
+        "staffSummaryCount": "{count, plural, =0 {No staff assigned yet} one {1 person assigned} other {# people assigned}}",
+        "viewStaffLink": "View staff →",
         "saleRef": "Sale {code}"
+      },
+      "staff": {
+        "title": "Staff at {branch}",
+        "countChip": "{count, plural, =0 {No one assigned yet} one {1 person} other {# people}}",
+        "assignCta": "Assign user",
+        "onShift": "On shift",
+        "onShiftHint": "Currently working an open shift at this branch",
+        "youBadge": "You",
+        "removeCta": "Remove from this branch",
+        "removeConfirmTitle": "Remove from branch?",
+        "removeConfirmBody": "Remove {name} from {branch}. They keep their account; an owner can reassign them later.",
+        "removeConfirmCta": "Remove",
+        "removeConfirmCancel": "Cancel",
+        "removingLabel": "Removing…",
+        "rowActionsLabel": "Actions for this person",
+        "emptyTitle": "No staff assigned yet",
+        "emptyBody": "Assign owners, managers, cashiers, and auditors to this branch so they show up here and on shift reports.",
+        "assignModal": {
+          "title": "Assign someone to {branch}",
+          "closeLabel": "Close",
+          "searchPlaceholder": "Search by name or email…",
+          "loading": "Loading staff…",
+          "loadFailed": "Couldn't load the staff list.",
+          "retry": "Retry",
+          "emptyResults": "No matching people. Invite new staff from Settings → Users.",
+          "currentlyAt": "Currently at {branch}",
+          "unassigned": "Not yet assigned to a branch",
+          "assignCta": "Assign",
+          "assigning": "Assigning…"
+        },
+        "errors": {
+          "cannotEditSelf": "You can't change your own branch assignment here.",
+          "lastOwnerLock": "Can't remove the last active owner.",
+          "managerRequiresBranch": "Managers need a branch assignment.",
+          "forbiddenRole": "Only owners can change branch assignments.",
+          "impersonation": "Not allowed while impersonating.",
+          "network": "Couldn't save. Please try again."
+        }
       },
       "stock": {
         "title": "Stock at this branch",

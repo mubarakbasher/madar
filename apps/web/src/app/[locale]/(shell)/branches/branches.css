@@ -851,8 +851,450 @@
 .br-link {
   color: var(--accent);
   text-decoration: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
 }
 
 .br-link:hover {
   text-decoration: underline;
+}
+
+/* ─── Staff tab ─────────────────────────────────────────────────── */
+
+.br-staff-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-block-end: 16px;
+}
+
+.br-staff-sub {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+.br-staff-empty {
+  border: 1px dashed var(--rule);
+  border-radius: var(--radius, 12px);
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--ink-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.br-staff-empty-title {
+  font-family: var(--font-display, "Fraunces", serif);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink-1);
+  margin: 0;
+}
+
+.br-staff-empty-body {
+  margin: 0;
+  font-size: 13px;
+  max-width: 360px;
+}
+
+.br-staff-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.br-staff-row {
+  display: grid;
+  grid-template-columns: 40px 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--bg-elev);
+  position: relative;
+}
+
+.br-staff-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display, "Fraunces", serif);
+  font-size: 15px;
+  font-weight: 500;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent), color-mix(in oklab, var(--accent) 60%, #1a1714));
+}
+
+.br-staff-meta {
+  min-width: 0;
+}
+
+.br-staff-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--ink-1);
+  font-weight: 500;
+}
+
+.br-staff-email {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-block-start: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.br-staff-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.br-you-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10.5px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full, 100px);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--bg-sunk, color-mix(in oklab, var(--ink-3) 8%, transparent));
+  color: var(--ink-3);
+}
+
+.br-overview-staff-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+/* ─── Role chips (ported from settings/users) ──────────────────── */
+
+.br-role-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full, 100px);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--rule);
+  white-space: nowrap;
+}
+
+.br-role-owner {
+  background: color-mix(in oklab, var(--accent) 14%, transparent);
+  color: var(--accent);
+  border-color: color-mix(in oklab, var(--accent) 30%, var(--rule));
+}
+
+.br-role-manager {
+  background: color-mix(in oklab, var(--sage, #6e9b7f) 14%, transparent);
+  color: var(--sage, #4d7359);
+  border-color: color-mix(in oklab, var(--sage, #6e9b7f) 30%, var(--rule));
+}
+
+.br-role-cashier {
+  background: color-mix(in oklab, var(--amber, #b88438) 14%, transparent);
+  color: var(--amber, #b88438);
+  border-color: color-mix(in oklab, var(--amber, #b88438) 30%, var(--rule));
+}
+
+.br-role-accountant {
+  background: color-mix(in oklab, var(--ink-2) 10%, transparent);
+  color: var(--ink-2);
+}
+
+.br-role-auditor {
+  background: color-mix(in oklab, var(--ink-3) 12%, transparent);
+  color: var(--ink-2);
+}
+
+/* ─── On-shift badge ───────────────────────────────────────────── */
+
+.br-on-shift {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full, 100px);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  background: color-mix(in oklab, var(--sage, #6e9b7f) 16%, transparent);
+  color: var(--sage, #4d7359);
+  border: 1px solid color-mix(in oklab, var(--sage, #6e9b7f) 30%, var(--rule));
+}
+
+.br-on-shift-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ─── Row kebab menu ───────────────────────────────────────────── */
+
+.br-staff-kebab-wrap {
+  position: relative;
+}
+
+.br-staff-kebab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm, 8px);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+}
+
+.br-staff-kebab:hover {
+  background: var(--bg-sunk, color-mix(in oklab, var(--ink-3) 6%, transparent));
+  border-color: var(--rule);
+  color: var(--ink-1);
+}
+
+.br-staff-menu-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 9;
+}
+
+.br-staff-menu {
+  position: absolute;
+  inset-block-start: calc(100% + 4px);
+  inset-inline-end: 0;
+  z-index: 10;
+  min-width: 200px;
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm, 8px);
+  box-shadow: 0 8px 24px color-mix(in oklab, #000 12%, transparent);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.br-staff-menu-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--ink-1);
+  text-align: start;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.br-staff-menu-item:hover {
+  background: var(--bg-sunk, color-mix(in oklab, var(--ink-3) 6%, transparent));
+}
+
+.br-staff-menu-danger {
+  color: var(--rose, #c45a5a);
+}
+
+/* ─── Modal (assign + confirm) ─────────────────────────────────── */
+
+.br-modal-scrim {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in oklab, #000 36%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 50;
+}
+
+.br-modal {
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius, 12px);
+  padding: 22px;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: 0 16px 48px color-mix(in oklab, #000 18%, transparent);
+}
+
+.br-modal-wide {
+  max-width: 560px;
+}
+
+.br-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-block-end: 14px;
+}
+
+.br-modal-title {
+  font-family: var(--font-display, "Fraunces", serif);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink-1);
+  margin: 0;
+}
+
+.br-modal-body {
+  font-size: 14px;
+  color: var(--ink-2);
+  margin-block: 0 16px;
+}
+
+.br-modal-error {
+  font-size: 13px;
+  color: var(--rose, #c45a5a);
+  margin-block: 0 12px;
+}
+
+.br-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.br-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 6px;
+  color: var(--ink-3);
+  cursor: pointer;
+}
+
+.br-modal-close:hover {
+  border-color: var(--rule);
+  background: var(--bg-sunk, color-mix(in oklab, var(--ink-3) 6%, transparent));
+  color: var(--ink-1);
+}
+
+.br-modal-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--bg-elev);
+  margin-block-end: 12px;
+  color: var(--ink-3);
+}
+
+.br-modal-search input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: none;
+  font: inherit;
+  color: var(--ink-1);
+}
+
+.br-modal-status {
+  margin: 12px 0;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+.br-modal-status.br-modal-error {
+  color: var(--rose, #c45a5a);
+}
+
+/* ─── Assign-modal candidate list ──────────────────────────────── */
+
+.br-assign-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 360px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.br-assign-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.br-assign-pick {
+  display: grid;
+  grid-template-columns: 36px 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--bg-elev);
+  cursor: pointer;
+  text-align: start;
+  font: inherit;
+  color: inherit;
+}
+
+.br-assign-pick:hover:not([disabled]) {
+  border-color: var(--accent);
+}
+
+.br-assign-pick[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.br-assign-meta {
+  min-width: 0;
+}
+
+.br-assign-where {
+  font-size: 11.5px;
+  color: var(--ink-3);
+  margin-block-start: 2px;
+}
+
+.br-assign-action {
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.br-assign-error {
+  margin: 0;
+  padding-inline-start: 12px;
+  font-size: 12px;
+  color: var(--rose, #c45a5a);
 }
