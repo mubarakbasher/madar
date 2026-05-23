@@ -8,6 +8,7 @@ import {
   Inbox,
   FileText,
   Landmark,
+  Package,
   Shield,
   History,
   ScrollText,
@@ -25,7 +26,10 @@ type NavItem = {
   badge?: number;
 };
 
-function buildSections(pendingVerifications: number): Array<{ kicker: string; items: NavItem[] }> {
+function buildSections(
+  pendingVerifications: number,
+  isOwner: boolean,
+): Array<{ kicker: string; items: NavItem[] }> {
   return [
     {
       kicker: "Operations",
@@ -47,6 +51,14 @@ function buildSections(pendingVerifications: number): Array<{ kicker: string; it
         { label: "Bank accounts", href: "/banking", Icon: Landmark, disabled: true },
       ],
     },
+    ...(isOwner
+      ? [
+          {
+            kicker: "Pricing",
+            items: [{ label: "Plans", href: "/plans", Icon: Package } as NavItem],
+          },
+        ]
+      : []),
     {
       kicker: "Security",
       items: [
@@ -71,7 +83,7 @@ export function AdminSidebar() {
     queryFn: adminFetchKpi,
     staleTime: 60_000,
   });
-  const SECTIONS = buildSections(kpiQuery.data?.pending_verifications.count ?? 0);
+  const SECTIONS = buildSections(kpiQuery.data?.pending_verifications.count ?? 0, user?.role === "owner");
 
   return (
     <aside className="admin-sidebar">

@@ -7,6 +7,7 @@ import { DashboardModule } from "./dashboard/dashboard.module";
 import { AdminImpersonationModule } from "./impersonation/impersonation.module";
 import { AdminInvoicesModule } from "./invoices/invoices.module";
 import { AdminPaymentProofsModule } from "./payment-proofs/payment-proofs.module";
+import { PlansModule } from "./plans/plans.module";
 import { TenantsModule } from "./tenants/tenants.module";
 
 @Module({
@@ -14,6 +15,7 @@ import { TenantsModule } from "./tenants/tenants.module";
     AdminAuthModule,
     DashboardModule,
     TenantsModule,
+    PlansModule,
     AdminPaymentProofsModule,
     AdminImpersonationModule,
     AdminInvoicesModule,

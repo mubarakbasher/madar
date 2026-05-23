@@ -809,7 +809,8 @@ Cross-phase slice driven by the user's request to trial Madar in a real shop. Pl
 - [ ] QuickBooks / Xero connectors
 - [ ] Loyalty & customer segmentation
 - [ ] Native mobile apps (iOS, Android)
-- [ ] Super-admin Phase 4: webhook logs, compliance reports, API key management, plan editor, discount codes
+- [ ] Super-admin Phase 4: webhook logs, compliance reports, API key management, ~~plan editor~~ (pulled forward — see below), discount codes
+- [x] **A31 + A32 (plan editor)** pulled forward from Phase 4 — needed at install time so VPS deploys can create plans through the admin UI instead of running the demo seed. `apps/admin/src/app/(shell)/plans/` (list + `[id]` editor, owner-gated), `apps/api/src/admin/plans/` (controller + service + zod DTOs + audit writes), sidebar nav in "Pricing" section. Also adds `pnpm db:bootstrap-admin` for first-run super-admin (no demo data).
 
 ---
 

@@ -16,6 +16,7 @@
     "db:reset": "prisma migrate reset --force",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
+    "db:bootstrap-admin": "tsx prisma/bootstrap-admin.ts",
     "test:rls": "vitest run",
     "typecheck": "tsc --noEmit"
   },
