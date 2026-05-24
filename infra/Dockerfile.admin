@@ -14,6 +14,7 @@ RUN pnpm install --frozen-lockfile
 FROM base AS build
 COPY --from=deps /repo/node_modules ./node_modules
 COPY --from=deps /repo/apps/admin/node_modules ./apps/admin/node_modules
+COPY --from=deps /repo/packages/ui/node_modules ./packages/ui/node_modules
 COPY . .
 # Pass NEXT_PUBLIC_* through at build time — Next inlines them into the bundle.
 ARG NEXT_PUBLIC_API_URL
