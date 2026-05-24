@@ -28,6 +28,9 @@ export interface ProofItem {
   verified_at: string | null;
   rejection_reason: string | null;
   notes: string | null;
+  previous_proof_id: string | null;
+  info_requested_message: string | null;
+  info_requested_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -64,6 +67,16 @@ export function adminGetProof(id: string): Promise<ProofItem> {
 
 export function adminApproveProof(id: string): Promise<ProofItem> {
   return adminApiFetch<ProofItem>(`/v1/admin/payment-proofs/${id}/verify`, { method: "POST" });
+}
+
+export function adminRequestProofInfo(
+  id: string,
+  message: string,
+): Promise<ProofItem> {
+  return adminApiFetch<ProofItem>(`/v1/admin/payment-proofs/${id}/request-info`, {
+    method: "POST",
+    body: { message },
+  });
 }
 
 export function adminRejectProof(

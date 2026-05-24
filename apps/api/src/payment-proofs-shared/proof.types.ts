@@ -21,6 +21,9 @@ export interface ProofResponse {
   verified_at: string | null;
   rejection_reason: string | null;
   notes: string | null;
+  previous_proof_id: string | null;
+  info_requested_message: string | null;
+  info_requested_at: string | null;
   created_at: string;
   updated_at: string;
 }

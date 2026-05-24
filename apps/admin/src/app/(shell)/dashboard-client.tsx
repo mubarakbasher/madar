@@ -5,10 +5,13 @@ import { useAdminAuthStore } from "@/lib/auth/store";
 import {
   adminFetchActivity,
   adminFetchKpi,
+  adminFetchTrends,
   type ActivityItem,
 } from "@/lib/api/admin-dashboard";
 import { KpiCard } from "./_components/KpiCard";
 import { DashboardSkeleton } from "./_components/DashboardSkeleton";
+import { TenantGrowthChart } from "./_components/TenantGrowthChart";
+import { MrrTrendChart } from "./_components/MrrTrendChart";
 
 const ACTIVITY_DOT_COLOR: Record<ActivityItem["kind"], string> = {
   tenant_signup: "var(--accent)",
@@ -51,6 +54,11 @@ export function DashboardClient() {
     queryKey: ["admin", "dashboard", "kpi"],
     queryFn: adminFetchKpi,
     staleTime: 60_000,
+  });
+  const trendsQ = useQuery({
+    queryKey: ["admin", "dashboard", "trends"],
+    queryFn: adminFetchTrends,
+    staleTime: 300_000,
   });
   const activityQ = useQuery({
     queryKey: ["admin", "dashboard", "activity"],
@@ -132,6 +140,13 @@ export function DashboardClient() {
           note={`${kpi.system_health.uptime_30d_pct.toFixed(2)}% · 30d`}
         />
       </div>
+
+      {trendsQ.data && (
+        <div className="admin-chart-grid">
+          <TenantGrowthChart data={trendsQ.data.tenant_growth} />
+          <MrrTrendChart data={trendsQ.data.mrr_trend} />
+        </div>
+      )}
 
       <div className="admin-activity-grid">
         <div className="admin-panel">

@@ -286,7 +286,7 @@ export class ShiftsService {
   ): Promise<ApiShiftDetail> {
     const scoped = tenantScoped(tenantId);
     const existing = await scoped.cashierShift.findUnique({ where: { id: shiftId } });
-    if (!existing || existing.deleted_at) {
+    if (!existing || existing.deleted_at || existing.tenant_id !== tenantId) {
       throw new NotFoundException({ code: "shift_not_found", message: "Shift not found" });
     }
     if (existing.status === "closed") {

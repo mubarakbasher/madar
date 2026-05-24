@@ -562,7 +562,7 @@ export class CatalogService {
     const scoped = tenantScoped(tenantId);
 
     const existing = await scoped.product.findUnique({ where: { id: productId } });
-    if (!existing || existing.deleted_at) {
+    if (!existing || existing.deleted_at || existing.tenant_id !== tenantId) {
       throw new NotFoundException({ code: "product_not_found", message: "Product not found" });
     }
 
@@ -627,7 +627,7 @@ export class CatalogService {
   ): Promise<{ id: string; deleted_at: string }> {
     const scoped = tenantScoped(tenantId);
     const existing = await scoped.product.findUnique({ where: { id: productId } });
-    if (!existing) {
+    if (!existing || existing.tenant_id !== tenantId) {
       throw new NotFoundException({ code: "product_not_found", message: "Product not found" });
     }
     if (existing.deleted_at) {
@@ -719,7 +719,7 @@ export class CatalogService {
   ): Promise<ApiCategory> {
     const scoped = tenantScoped(tenantId);
     const existing = await scoped.category.findUnique({ where: { id: categoryId } });
-    if (!existing || existing.deleted_at) {
+    if (!existing || existing.deleted_at || existing.tenant_id !== tenantId) {
       throw new NotFoundException({ code: "category_not_found", message: "Category not found" });
     }
 
@@ -790,7 +790,7 @@ export class CatalogService {
   ): Promise<{ id: string; deleted_at: string }> {
     const scoped = tenantScoped(tenantId);
     const existing = await scoped.category.findUnique({ where: { id: categoryId } });
-    if (!existing) {
+    if (!existing || existing.tenant_id !== tenantId) {
       throw new NotFoundException({ code: "category_not_found", message: "Category not found" });
     }
     if (existing.deleted_at) {

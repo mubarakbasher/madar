@@ -9,6 +9,7 @@ import {
   adminGetProof,
   adminListProofs,
   adminRejectProof,
+  adminRequestProofInfo,
   type ProofItem,
   type ProofStatus,
 } from "@/lib/api/admin-proofs";
@@ -17,6 +18,7 @@ import { MatchIndicators } from "../_components/MatchIndicators";
 import { ProofActionBar } from "../_components/ProofActionBar";
 import { ReceiptViewer } from "../_components/ReceiptViewer";
 import { RejectModal, type RejectSubmit } from "../_components/RejectModal";
+import { RequestInfoModal, type RequestInfoSubmit } from "../_components/RequestInfoModal";
 
 const STATUSES: Array<{ value: ProofStatus | "all"; label: string }> = [
   { value: "pending", label: "Pending" },
@@ -55,6 +57,7 @@ export function VerificationClient() {
   const selectedId = searchParams.get("selected") ?? "";
   const [toast, setToast] = useState<{ text: string; tone: "ok" | "bad" } | null>(null);
   const [rejecting, setRejecting] = useState(false);
+  const [requestingInfo, setRequestingInfo] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -146,12 +149,30 @@ export function VerificationClient() {
     }
   }
 
+  async function handleRequestInfoSubmit(payload: RequestInfoSubmit) {
+    if (!detailQuery.data) return;
+    setActionBusy(true);
+    try {
+      await adminRequestProofInfo(detailQuery.data.id, payload.message);
+      await queryClient.invalidateQueries({ queryKey: ["admin", "proofs"] });
+      setRequestingInfo(false);
+      setToast({ text: "Info requested from tenant", tone: "ok" });
+    } catch (err) {
+      setToast({
+        text: err instanceof ApiError ? `${err.code}: ${err.message}` : (err as Error).message,
+        tone: "bad",
+      });
+    } finally {
+      setActionBusy(false);
+    }
+  }
+
   // Keyboard shortcuts (J/K/A/R per docs/0002-bank-transfer-payments.md §43).
   // Skip when focus is in a form field — typing a rejection note should not
   // trigger Approve. The reject modal owns its own keydown handling.
   useEffect(() => {
     function handleKey(e: KeyboardEvent): void {
-      if (rejecting || actionBusy) return;
+      if (rejecting || requestingInfo || actionBusy) return;
       const target = e.target as HTMLElement | null;
       if (target) {
         const tag = target.tagName;
@@ -188,7 +209,7 @@ export function VerificationClient() {
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, selectedId, detailQuery.data, rejecting, actionBusy]);
+  }, [items, selectedId, detailQuery.data, rejecting, requestingInfo, actionBusy]);
 
   return (
     <>
@@ -321,6 +342,7 @@ export function VerificationClient() {
                 busy={actionBusy}
                 onApprove={handleApprove}
                 onReject={() => setRejecting(true)}
+                onRequestInfo={() => setRequestingInfo(true)}
               />
             </>
           )}
@@ -329,6 +351,10 @@ export function VerificationClient() {
 
       {rejecting && (
         <RejectModal onCancel={() => setRejecting(false)} onSubmit={handleRejectSubmit} />
+      )}
+
+      {requestingInfo && (
+        <RequestInfoModal onCancel={() => setRequestingInfo(false)} onSubmit={handleRequestInfoSubmit} />
       )}
 
       {toast && (

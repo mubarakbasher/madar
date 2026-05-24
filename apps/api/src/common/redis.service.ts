@@ -15,8 +15,13 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   private memory = new Map<string, { value: string; expiresAt: number | null }>();
 
   async onModuleInit(): Promise<void> {
-    const url = loadEnv().REDIS_URL;
+    const { REDIS_URL: url, NODE_ENV } = loadEnv();
     if (!url) {
+      if (NODE_ENV === "production") {
+        throw new Error(
+          "REDIS_URL is required in production — in-memory fallback is not safe for multi-instance deployments.",
+        );
+      }
       this.logger.warn(
         "REDIS_URL not set — using in-memory fallback (single-process only).",
       );

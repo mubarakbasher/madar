@@ -115,6 +115,13 @@ export class AuthService {
 
   // ─── signup ────────────────────────────────────────────────────────
   async signup(input: SignupInput, ctx: { ip: string; userAgent: string }): Promise<AuthResult> {
+    if (!loadEnv().SIGNUP_ENABLED) {
+      throw new ForbiddenException({
+        code: "signup_disabled",
+        message: "Registration is currently closed",
+      });
+    }
+
     const slug = input.slug.toLowerCase();
 
     if (RESERVED_SLUGS.has(slug)) {

@@ -16,6 +16,7 @@ import { AdminAuditService } from "../admin/auth/admin-audit.service";
 import { EmailService } from "../common/email/email.service";
 import { getTenantPrimaryRecipient } from "../common/email/recipient.helper";
 import { adminPrisma as platformPrisma } from "@madar/db";
+import { loadEnv } from "../env";
 import type {
   ListProofsQuery,
   ListProofsResponse,
@@ -50,6 +51,9 @@ interface ProofRow {
   verified_at: Date | null;
   rejection_reason: string | null;
   notes: string | null;
+  previous_proof_id: string | null;
+  info_requested_message: string | null;
+  info_requested_at: Date | null;
   created_at: Date;
   updated_at: Date;
 }
@@ -265,6 +269,11 @@ export class PaymentProofsService {
           },
         )
         .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));
+
+      // Fire-and-forget sale-verified email to tenant owner.
+      void this.sendSaleVerifiedEmail(proof.tenant_id, proof, now).catch((e) =>
+        this.logger.warn(`sale payment_received email failed: ${(e as Error).message}`),
+      );
     } else {
       // Subscription — admin verifier. Update via adminPrisma + invoice sync.
       updatedRow = (await adminPrisma.$transaction(async (tx) => {
@@ -339,6 +348,110 @@ export class PaymentProofsService {
         referenceCode: invoice.reference_code,
         amountFormatted,
         paidAt: paidAt.toISOString().slice(0, 10),
+      },
+    });
+  }
+
+  private async sendSaleVerifiedEmail(
+    tenantId: string,
+    proof: ProofRow,
+    paidAt: Date,
+  ): Promise<void> {
+    const [recipient, tenant] = await Promise.all([
+      getTenantPrimaryRecipient(tenantId),
+      platformPrisma.tenant.findUnique({
+        where: { id: tenantId },
+        select: { name: true, default_locale: true },
+      }),
+    ]);
+    if (!recipient || !tenant) return;
+    const locale = tenant.default_locale === "ar" ? "ar" : "en";
+    const major = Number(proof.amount_cents) / 100;
+    const amountFormatted = new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
+      style: "currency",
+      currency: proof.currency_code,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(major);
+    await this.email.send({
+      template: "payment_received",
+      to: recipient.email,
+      locale,
+      vars: {
+        tenantName: tenant.name,
+        referenceCode: proof.reference_id.slice(0, 8),
+        amountFormatted,
+        paidAt: paidAt.toISOString().slice(0, 10),
+      },
+    });
+  }
+
+  private async sendPaymentRejectedEmail(
+    tenantId: string,
+    proof: ProofRow,
+    reason: string,
+  ): Promise<void> {
+    const [recipient, tenant] = await Promise.all([
+      getTenantPrimaryRecipient(tenantId),
+      platformPrisma.tenant.findUnique({
+        where: { id: tenantId },
+        select: { name: true, default_locale: true },
+      }),
+    ]);
+    if (!recipient || !tenant) return;
+    const locale = tenant.default_locale === "ar" ? "ar" : "en";
+    const major = Number(proof.amount_cents) / 100;
+    const amountFormatted = new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
+      style: "currency",
+      currency: proof.currency_code,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(major);
+    const env = loadEnv();
+    await this.email.send({
+      template: "payment_proof_rejected",
+      to: recipient.email,
+      locale,
+      vars: {
+        tenantName: tenant.name,
+        amountFormatted,
+        rejectionReason: reason,
+        resubmitUrl: `${env.TENANT_WEB_ORIGIN}/${locale}/billing`,
+      },
+    });
+  }
+
+  private async sendInfoRequestedEmail(
+    tenantId: string,
+    proof: ProofRow,
+    message: string,
+  ): Promise<void> {
+    const [recipient, tenant] = await Promise.all([
+      getTenantPrimaryRecipient(tenantId),
+      platformPrisma.tenant.findUnique({
+        where: { id: tenantId },
+        select: { name: true, default_locale: true },
+      }),
+    ]);
+    if (!recipient || !tenant) return;
+    const locale = tenant.default_locale === "ar" ? "ar" : "en";
+    const major = Number(proof.amount_cents) / 100;
+    const amountFormatted = new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
+      style: "currency",
+      currency: proof.currency_code,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(major);
+    const env = loadEnv();
+    await this.email.send({
+      template: "payment_proof_info_requested",
+      to: recipient.email,
+      locale,
+      vars: {
+        tenantName: tenant.name,
+        amountFormatted,
+        message,
+        proofUrl: `${env.TENANT_WEB_ORIGIN}/${locale}/billing`,
       },
     });
   }
@@ -441,7 +554,208 @@ export class PaymentProofsService {
         .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));
     }
 
+    // Fire-and-forget rejection email to tenant owner.
+    void this.sendPaymentRejectedEmail(proof.tenant_id, proof, reason).catch((e) =>
+      this.logger.warn(`payment_rejected email failed: ${(e as Error).message}`),
+    );
+
     return this.toResponse(updatedRow);
+  }
+
+  // ─── resubmit ─────────────────────────────────────────────────────
+  async resubmit(
+    actor: VerifierActor,
+    originalProofId: string,
+    file: { buffer: Buffer; declaredMime: string; originalName: string },
+    ctx: SubmitProofCtx,
+  ): Promise<ProofResponse> {
+    const original = await this.fetchRow(actor, originalProofId);
+    if (original.status !== "rejected") {
+      throw new UnprocessableEntityException({
+        code: "proof_not_resubmittable",
+        message: `Only rejected proofs can be resubmitted (current: ${original.status})`,
+      });
+    }
+
+    // Size check (defense in depth).
+    if (file.buffer.length > MAX_RECEIPT_BYTES) {
+      throw new BadRequestException({
+        code: "file_too_large",
+        message: "Receipt must be 5MB or smaller",
+      });
+    }
+
+    // MIME detection via magic bytes.
+    const detected = await fileTypeFromBuffer(file.buffer);
+    const detectedMime = detected?.mime ?? "";
+    if (!ALLOWED_MIMES.includes(detectedMime as AllowedMime)) {
+      throw new BadRequestException({
+        code: "file_mime_unsupported",
+        message: "Receipt must be JPG, PNG, or PDF",
+      });
+    }
+    const mime = detectedMime as SupportedMime;
+
+    // Process (resize + EXIF strip for images, pass-through PDF).
+    const processed = await this.imageProcessor.process(file.buffer, mime);
+
+    // Mint new proof id and store the receipt.
+    const proofId = randomUUID();
+    const { key: relPath } = await this.tenantStorage.putTenantObject(
+      {
+        tenantId: original.tenant_id,
+        prefix: "payment-proofs",
+        fileId: proofId,
+        ext: processed.ext,
+        contentType: processed.mime,
+        buffer: processed.buffer,
+      },
+      {
+        allowedMimes: ALLOWED_MIMES,
+        maxBytes: MAX_RECEIPT_BYTES,
+      },
+    );
+
+    // Transaction: cancel original + create new proof linked to original.
+    const client = original.context === "sale"
+      ? tenantScoped(original.tenant_id)
+      : adminPrisma;
+
+    const created = await client.$transaction(async (tx) => {
+      // Cancel the original proof.
+      await tx.paymentProof.update({
+        where: { id: originalProofId },
+        data: { status: "cancelled", updated_at: new Date() },
+      });
+
+      // Create replacement proof copying key fields from the original.
+      return tx.paymentProof.create({
+        data: {
+          id: proofId,
+          tenant_id: original.tenant_id,
+          context: original.context as "sale" | "subscription",
+          reference_id: original.reference_id,
+          amount_cents: original.amount_cents,
+          currency_code: original.currency_code,
+          bank_account_kind: original.bank_account_kind as "tenant" | "platform",
+          bank_account_id: original.bank_account_id,
+          payer_name: original.payer_name,
+          payer_bank: original.payer_bank,
+          transfer_date: original.transfer_date,
+          transfer_reference: original.transfer_reference,
+          receipt_image_url: relPath,
+          status: "pending",
+          previous_proof_id: originalProofId,
+          created_by: ctx.userId,
+        },
+      });
+    });
+
+    // Audit: resubmission.
+    if (actor.realm === "tenant") {
+      await this.tenantAudit
+        .writeTenantScoped(
+          {
+            tenantId: ctx.tenantId,
+            userId: ctx.userId,
+            ip: ctx.ip,
+            userAgent: ctx.userAgent,
+            ...(ctx.impersonatorId ? { impersonatorId: ctx.impersonatorId } : {}),
+          },
+          {
+            action: "payment_proof_resubmitted",
+            entity: "payment_proof",
+            entityId: proofId,
+            after: { original_id: originalProofId, new_id: proofId },
+          },
+        )
+        .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));
+    } else {
+      await this.adminAudit
+        .write(
+          { platformUserId: actor.userId, ip: actor.ip, userAgent: actor.userAgent },
+          {
+            action: "admin_proof_resubmitted",
+            targetTenantId: original.tenant_id,
+            targetEntity: "payment_proof",
+            targetId: proofId,
+            metadata: { original_id: originalProofId, new_id: proofId },
+          },
+        )
+        .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));
+    }
+
+    return this.toResponse(created as unknown as ProofRow);
+  }
+
+  // ─── requestMoreInfo ──────────────────────────────────────────────
+  async requestMoreInfo(
+    actor: VerifierActor,
+    proofId: string,
+    message: string,
+  ): Promise<ProofResponse> {
+    const proof = await this.fetchRow(actor, proofId);
+    if (proof.status !== "pending") {
+      throw new UnprocessableEntityException({
+        code: "proof_not_pending",
+        message: `Only pending proofs can have info requested (current: ${proof.status})`,
+      });
+    }
+
+    const now = new Date();
+    const client = actor.realm === "tenant" ? tenantScoped(proof.tenant_id) : adminPrisma;
+    const updated = await client.paymentProof.update({
+      where: { id: proofId },
+      data: {
+        info_requested_message: message,
+        info_requested_at: now,
+        updated_at: now,
+      },
+    });
+
+    // Audit.
+    const auditAction = actor.realm === "tenant"
+      ? "payment_proof_info_requested"
+      : "admin_proof_info_requested";
+    if (actor.realm === "tenant") {
+      await this.tenantAudit
+        .writeTenantScoped(
+          {
+            tenantId: proof.tenant_id,
+            userId: actor.userId,
+            ip: actor.ip,
+            userAgent: actor.userAgent,
+            ...(actor.impersonatorId ? { impersonatorId: actor.impersonatorId } : {}),
+          },
+          {
+            action: auditAction,
+            entity: "payment_proof",
+            entityId: proofId,
+            after: { message },
+          },
+        )
+        .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));
+    } else {
+      await this.adminAudit
+        .write(
+          { platformUserId: actor.userId, ip: actor.ip, userAgent: actor.userAgent },
+          {
+            action: auditAction,
+            targetTenantId: proof.tenant_id,
+            targetEntity: "payment_proof",
+            targetId: proofId,
+            metadata: { message },
+          },
+        )
+        .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));
+    }
+
+    // Fire-and-forget info-requested email to tenant owner.
+    void this.sendInfoRequestedEmail(proof.tenant_id, proof, message).catch((e) =>
+      this.logger.warn(`info_requested email failed: ${(e as Error).message}`),
+    );
+
+    return this.toResponse(updated as unknown as ProofRow);
   }
 
   // ─── streamReceipt ─────────────────────────────────────────────────
@@ -454,6 +768,16 @@ export class PaymentProofsService {
     const mime = mimeFromExtension(proof.receipt_image_url);
     const filename = proof.receipt_image_url.split("/").pop() ?? `${proofId}.bin`;
     return { buffer, mime, filename };
+  }
+
+  // ─── signedReceiptUrl ─────────────────────────────────────────────
+  async signedReceiptUrl(
+    actor: VerifierActor,
+    proofId: string,
+    ttlSeconds: number,
+  ): Promise<string> {
+    const proof = await this.fetchRow(actor, proofId);
+    return this.tenantStorage.signedUrl(proof.receipt_image_url, ttlSeconds);
   }
 
   // ─── helpers ───────────────────────────────────────────────────────
@@ -543,6 +867,9 @@ export class PaymentProofsService {
       verified_at: row.verified_at?.toISOString() ?? null,
       rejection_reason: row.rejection_reason,
       notes: row.notes,
+      previous_proof_id: row.previous_proof_id,
+      info_requested_message: row.info_requested_message,
+      info_requested_at: row.info_requested_at?.toISOString() ?? null,
       created_at: row.created_at.toISOString(),
       updated_at: row.updated_at.toISOString(),
     };

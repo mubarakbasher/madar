@@ -33,6 +33,9 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:?MINIO_ROOT_USER is required}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD is required}
 
+  clamav:
+    restart: always
+
   api:
     build:
       context: ..
@@ -46,22 +49,39 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
+      clamav:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:4000/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     env_file:
       - .env.production
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgres://${POSTGRES_USER:-madar}@postgres:5432/madar
+      DATABASE_URL: postgres://madar_app:${MADAR_APP_PASSWORD:?MADAR_APP_PASSWORD is required}@postgres:5432/madar
+      DIRECT_DATABASE_URL: postgres://${POSTGRES_USER:-madar}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@postgres:5432/madar
       REDIS_URL: redis://redis:6379
       S3_ENDPOINT: http://minio:9000
+      VIRUS_SCANNER: clamav
+      CLAMAV_HOST: clamav
+      CLAMAV_PORT: "3310"
 
   web:
     build:
       context: ..
       dockerfile: infra/Dockerfile.web
+      args:
+        NEXT_PUBLIC_API_URL: https://${API_HOST}
+        NEXT_PUBLIC_ADMIN_WEB_ORIGIN: https://${ADMIN_HOST}
+        NEXT_PUBLIC_SENTRY_DSN_TENANT: ${NEXT_PUBLIC_SENTRY_DSN_TENANT:-}
     container_name: madar_web
     restart: always
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     env_file:
       - .env.production
     environment:
@@ -71,10 +91,15 @@ services:
     build:
       context: ..
       dockerfile: infra/Dockerfile.admin
+      args:
+        NEXT_PUBLIC_API_URL: https://${API_HOST}
+        NEXT_PUBLIC_TENANT_WEB_ORIGIN: https://${TENANT_HOST}
+        NEXT_PUBLIC_SENTRY_DSN_ADMIN: ${NEXT_PUBLIC_SENTRY_DSN_ADMIN:-}
     container_name: madar_admin
     restart: always
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     env_file:
       - .env.production
     environment:

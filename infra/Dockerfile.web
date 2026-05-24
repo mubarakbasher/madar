@@ -15,9 +15,13 @@ FROM base AS build
 COPY --from=deps /repo/node_modules ./node_modules
 COPY --from=deps /repo/apps/web/node_modules ./apps/web/node_modules
 COPY . .
-# Pass NEXT_PUBLIC_API_URL through at build time — Next inlines it into the bundle.
+# Pass NEXT_PUBLIC_* through at build time — Next inlines them into the bundle.
 ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_ADMIN_WEB_ORIGIN
+ARG NEXT_PUBLIC_SENTRY_DSN_TENANT
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXT_PUBLIC_ADMIN_WEB_ORIGIN=${NEXT_PUBLIC_ADMIN_WEB_ORIGIN}
+ENV NEXT_PUBLIC_SENTRY_DSN_TENANT=${NEXT_PUBLIC_SENTRY_DSN_TENANT}
 RUN pnpm --filter @madar/web build
 
 FROM node:20-alpine AS runtime

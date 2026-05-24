@@ -49,6 +49,21 @@ services:
       timeout: 5s
       retries: 5
 
+  clamav:
+    image: clamav/clamav:latest
+    container_name: madar_clamav
+    restart: unless-stopped
+    ports:
+      - "3310:3310"
+    healthcheck:
+      test: ["CMD-SHELL", "clamdscan --ping || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+    volumes:
+      - madar_clamav:/var/lib/clamav
+
   # Nightly Postgres backup → S3/MinIO. Not in the default stack — opt-in via
   # `docker compose --profile backup up -d backup`. Manual one-off backup:
   # `docker compose run --rm backup backup`. Manual restore:
@@ -81,3 +96,4 @@ services:
 volumes:
   madar_pgdata:
   madar_minio:
+  madar_clamav:

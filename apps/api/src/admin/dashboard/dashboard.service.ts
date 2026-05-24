@@ -25,6 +25,11 @@ export interface ActivityResponse {
   items: ActivityItem[];
 }
 
+export interface TrendsResponse {
+  tenant_growth: Array<{ date: string; count: number }>;
+  mrr_trend: Array<{ date: string; amount_cents: string; currency_code: string }>;
+}
+
 const TRIALS_WINDOW_DAYS = 7;
 const ACTIVE_STATUSES = ["active", "trialing"] as const;
 const MRR_STATUSES = ["active", "trialing", "grace_period"] as const;
@@ -101,6 +106,78 @@ export class DashboardService {
         last_incident_at: null,
       },
     };
+  }
+
+  async computeTrends(): Promise<TrendsResponse> {
+    // ── Dominant currency (same logic as computeKpi) ──────────────
+    const mrrTenants = await adminPrisma.tenant.findMany({
+      where: { status: { in: [...MRR_STATUSES] } },
+      select: {
+        default_currency_code: true,
+        plan: { select: { monthly_price_cents: true } },
+      },
+    });
+    const currencyCounts = new Map<string, number>();
+    for (const t of mrrTenants) {
+      if (!t.plan) continue;
+      currencyCounts.set(
+        t.default_currency_code,
+        (currencyCounts.get(t.default_currency_code) ?? 0) + 1,
+      );
+    }
+    const dominantCurrency =
+      [...currencyCounts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? "USD";
+
+    // ── Tenant growth (90 days) ──────────────────────────────────
+    const growthRows = await adminPrisma.$queryRaw<
+      Array<{ d: Date; count: bigint }>
+    >`
+      WITH dates AS (
+        SELECT generate_series(
+          (CURRENT_DATE - INTERVAL '89 days')::date,
+          CURRENT_DATE,
+          '1 day'::interval
+        )::date AS d
+      )
+      SELECT d, (
+        SELECT COUNT(*)::int FROM tenants
+        WHERE created_at::date <= d
+          AND status NOT IN ('cancelled')
+      )::bigint AS count
+      FROM dates ORDER BY d
+    `;
+
+    const tenantGrowth = growthRows.map((r) => ({
+      date: r.d.toISOString().slice(0, 10),
+      count: Number(r.count),
+    }));
+
+    // ── MRR trend (90 days) ──────────────────────────────────────
+    const mrrRows = await adminPrisma.$queryRaw<
+      Array<{ d: Date; amount_cents: bigint }>
+    >`
+      WITH dates AS (
+        SELECT generate_series(
+          (CURRENT_DATE - INTERVAL '89 days')::date,
+          CURRENT_DATE,
+          '1 day'::interval
+        )::date AS d
+      )
+      SELECT d, COALESCE(SUM(p.monthly_price_cents), 0)::bigint AS amount_cents
+      FROM dates
+      LEFT JOIN tenants t ON t.created_at::date <= d
+        AND t.status IN ('active', 'trialing', 'grace_period')
+      LEFT JOIN plans p ON p.id = t.plan_id
+      GROUP BY d ORDER BY d
+    `;
+
+    const mrrTrend = mrrRows.map((r) => ({
+      date: r.d.toISOString().slice(0, 10),
+      amount_cents: r.amount_cents.toString(),
+      currency_code: dominantCurrency,
+    }));
+
+    return { tenant_growth: tenantGrowth, mrr_trend: mrrTrend };
   }
 
   async listActivity(limit: number): Promise<ActivityResponse> {

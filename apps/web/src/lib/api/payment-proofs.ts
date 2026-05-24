@@ -29,6 +29,9 @@ export interface ProofItem {
   verified_at: string | null;
   rejection_reason: string | null;
   notes: string | null;
+  previous_proof_id: string | null;
+  info_requested_message: string | null;
+  info_requested_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -91,6 +94,29 @@ export function getPaymentProof(id: string): Promise<ProofItem> {
 
 export function approvePaymentProof(id: string): Promise<ProofItem> {
   return apiFetch<ProofItem>(`/v1/payment-proofs/${id}/verify`, { method: "POST" });
+}
+
+export async function resubmitPaymentProof(
+  proofId: string,
+  receiptFile: File,
+): Promise<ProofItem> {
+  const formData = new FormData();
+  formData.append("receipt", receiptFile);
+  return apiFetch(`/v1/payment-proofs/${proofId}/resubmit`, {
+    method: "POST",
+    body: formData,
+    headers: {},  // let browser set content-type with boundary
+  });
+}
+
+export async function requestPaymentProofInfo(
+  proofId: string,
+  message: string,
+): Promise<ProofItem> {
+  return apiFetch(`/v1/payment-proofs/${proofId}/request-info`, {
+    method: "POST",
+    body: { message },
+  });
 }
 
 export function rejectPaymentProof(

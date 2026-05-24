@@ -73,6 +73,19 @@ export class AdminAuthService {
       });
     }
 
+    if (!user.is_active) {
+      await this.audit
+        .write(
+          { platformUserId: user.id, ip: ctx.ip, userAgent: ctx.userAgent },
+          { action: "admin_login_blocked_deactivated", metadata: { reason: "account_deactivated" } },
+        )
+        .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));
+      throw new ForbiddenException({
+        code: "account_deactivated",
+        message: "Your account has been deactivated. Contact the platform owner.",
+      });
+    }
+
     if (!user.mfa_enabled || !user.mfa_secret) {
       // Enrollment lands in a later slice — until then, MFA is the gate.
       throw new ForbiddenException({
@@ -166,6 +179,14 @@ export class AdminAuthService {
       throw new UnauthorizedException({
         code: "admin_refresh_user_gone",
         message: "Admin account no longer exists",
+      });
+    }
+
+    if (!user.is_active) {
+      await this.tokens.revokeRefresh(user.id, claims.jti);
+      throw new ForbiddenException({
+        code: "account_deactivated",
+        message: "Your account has been deactivated. Contact the platform owner.",
       });
     }
 

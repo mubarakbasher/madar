@@ -9,7 +9,7 @@ const envSchema = z.object({
     .transform((s) => s.split(",").map((o) => o.trim()).filter(Boolean))
     .pipe(z.array(z.string().url()).min(1)),
   DATABASE_URL: z.string().min(1),
-  DIRECT_DATABASE_URL: z.string().min(1),
+  DIRECT_DATABASE_URL: z.string().min(1).optional(),
   REDIS_URL: z.string().min(1).optional(),
   JWT_TENANT_SECRET: z.string().min(32),
   JWT_TENANT_ACCESS_TTL: z.string().default("15m"),
@@ -41,6 +41,15 @@ const envSchema = z.object({
   ADMIN_CRON_PATTERN: z.string().optional(),
   SENTRY_DSN_API: z.string().optional(),
   SENTRY_ENVIRONMENT: z.string().optional(),
+  VIRUS_SCANNER: z.enum(["noop", "clamav"]).default("noop"),
+  CLAMAV_HOST: z.string().default("localhost"),
+  CLAMAV_PORT: z.coerce.number().int().positive().default(3310),
+  PLATFORM_BANK_ENCRYPTION_KEY: z.string().length(64).regex(/^[0-9a-f]+$/i).optional(),
+  ADMIN_WEB_ORIGIN: z.string().default("http://localhost:3001"),
+  SIGNUP_ENABLED: z
+    .union([z.string(), z.boolean()])
+    .default("true")
+    .transform((v) => v === true || v === "true"),
 });
 
 export type Env = z.infer<typeof envSchema>;

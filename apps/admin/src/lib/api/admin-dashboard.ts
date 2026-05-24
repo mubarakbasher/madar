@@ -28,6 +28,15 @@ export function adminFetchKpi(): Promise<KpiResponse> {
   return adminApiFetch<KpiResponse>("/v1/admin/dashboard/kpi");
 }
 
+export interface TrendsResponse {
+  tenant_growth: Array<{ date: string; count: number }>;
+  mrr_trend: Array<{ date: string; amount_cents: string; currency_code: string }>;
+}
+
+export function adminFetchTrends(): Promise<TrendsResponse> {
+  return adminApiFetch<TrendsResponse>("/v1/admin/dashboard/trends");
+}
+
 export function adminFetchActivity(limit = 50): Promise<ActivityResponse> {
   return adminApiFetch<ActivityResponse>(`/v1/admin/dashboard/activity?limit=${limit}`);
 }

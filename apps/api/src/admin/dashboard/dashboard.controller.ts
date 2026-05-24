@@ -14,6 +14,12 @@ export class DashboardController {
     return this.dashboard.computeKpi();
   }
 
+  @Get("trends")
+  @RateLimit({ max: 60, windowMs: 60_000 })
+  async trends() {
+    return this.dashboard.computeTrends();
+  }
+
   @Get("activity")
   @RateLimit({ max: 60, windowMs: 60_000 })
   async activity(@Query("limit", new DefaultValuePipe(50), ParseIntPipe) limit: number) {

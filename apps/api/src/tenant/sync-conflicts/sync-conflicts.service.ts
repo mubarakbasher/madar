@@ -139,7 +139,7 @@ export class SyncConflictsService {
   ): Promise<ApiSyncConflict> {
     const scoped = tenantScoped(tenantId);
     const existing = await scoped.syncConflict.findUnique({ where: { id: conflictId } });
-    if (!existing) {
+    if (!existing || existing.tenant_id !== tenantId) {
       throw new NotFoundException({
         code: "sync_conflict_not_found",
         message: "Conflict not found",

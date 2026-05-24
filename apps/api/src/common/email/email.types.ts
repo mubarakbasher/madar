@@ -8,6 +8,8 @@ export type EmailTemplate =
   | "password_reset"
   | "email_verification"
   | "low_stock_alert"
+  | "payment_proof_rejected"
+  | "payment_proof_info_requested"
   /**
    * Sentinel value used by `EmailService.sendRaw()` — these emails carry a
    * fully-rendered body (no template lookup) plus optional attachments, and
@@ -153,6 +155,20 @@ export interface LowStockAlertVars {
   inventoryUrl: string;
 }
 
+export interface PaymentProofRejectedVars {
+  tenantName: string;
+  amountFormatted: string;
+  rejectionReason: string;
+  resubmitUrl: string;
+}
+
+export interface PaymentProofInfoRequestedVars {
+  tenantName: string;
+  amountFormatted: string;
+  message: string;
+  proofUrl: string;
+}
+
 export type SendInput =
   | { template: "welcome"; to: string; locale: EmailLocale; vars: WelcomeVars }
   | { template: "trial_ending"; to: string; locale: EmailLocale; vars: TrialEndingVars }
@@ -162,4 +178,6 @@ export type SendInput =
   | { template: "staff_invite"; to: string; locale: EmailLocale; vars: StaffInviteVars }
   | { template: "password_reset"; to: string; locale: EmailLocale; vars: PasswordResetVars }
   | { template: "email_verification"; to: string; locale: EmailLocale; vars: EmailVerificationVars }
-  | { template: "low_stock_alert"; to: string; locale: EmailLocale; vars: LowStockAlertVars };
+  | { template: "low_stock_alert"; to: string; locale: EmailLocale; vars: LowStockAlertVars }
+  | { template: "payment_proof_rejected"; to: string; locale: EmailLocale; vars: PaymentProofRejectedVars }
+  | { template: "payment_proof_info_requested"; to: string; locale: EmailLocale; vars: PaymentProofInfoRequestedVars };

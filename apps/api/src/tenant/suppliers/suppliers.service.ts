@@ -167,7 +167,7 @@ export class SuppliersService {
 
   async loadSupplierOr404(tenantId: string, id: string) {
     const row = await tenantScoped(tenantId).supplier.findUnique({ where: { id } });
-    if (!row || row.deleted_at) {
+    if (!row || row.deleted_at || row.tenant_id !== tenantId) {
       throw new NotFoundException({ code: "supplier_not_found", message: "Supplier not found" });
     }
     return row;
@@ -582,7 +582,7 @@ export class SuppliersService {
   ): Promise<{ id: string; deleted_at: string }> {
     const scoped = tenantScoped(tenantId);
     const existing = await scoped.supplier.findUnique({ where: { id } });
-    if (!existing) {
+    if (!existing || existing.tenant_id !== tenantId) {
       throw new NotFoundException({ code: "supplier_not_found", message: "Supplier not found" });
     }
     if (existing.deleted_at) {

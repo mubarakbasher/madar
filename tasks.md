@@ -25,8 +25,8 @@ Goal: a working bilingual POS that decrements inventory on sale and accepts bank
 - [x] `apps/admin/` scaffold landed in 1.6b (Next.js 14 on :3001, English-only, slate-teal). `apps/api/` landed in 1.5a (NestJS 10 on :4000).
 - [x] `packages/ui/` scaffold (tokens + fonts + Tailwind theme)
 - [x] `packages/db/` scaffold. `packages/shared/` and `packages/config/` remain deferred — Dockerfiles no longer reference them, so deployment is unblocked.
-- [ ] `docker-compose.yml` — deferred (no backend this slice)
-- [ ] GitHub Actions CI skeleton — deferred
+- [x] `docker-compose.yml` — postgres, redis, minio, clamav services; backup (opt-in profile)
+- [x] GitHub Actions CI skeleton — `.github/workflows/ci.yml`: lint, typecheck, RLS tests, API tests, realm tests, i18n check, build both apps
 
 ### 1.2 i18n + RTL infrastructure (build BEFORE any UI)
 - [x] `next-intl` set up in `apps/web` with `[locale]/...` routing
@@ -341,11 +341,11 @@ Goal: a working bilingual POS that decrements inventory on sale and accepts bank
 - [x] Receipt streaming endpoint (`GET /v1/payment-proofs/:id/receipt`) works identically against both backends — service is storage-agnostic.
 
 #### 1.11e — hardening (deferred — infra + schema)
-- [ ] Real ClamAV daemon + `ClamAVScanner` impl (replace NoopScanner). **Infra:** needs ClamAV container in `docker-compose.yml` + `CLAMAV_HOST/PORT` env.
-- [ ] HMAC-signed S3 URLs surfaced as `receipt_url` for direct `<img src>` from S3 (skip server roundtrip). **Infra:** needs real S3/MinIO with credentials.
-- [ ] Resubmit linkage (`previous_proof_id` FK) so rejected proofs can be chained. **Schema:** Prisma migration on `payment_proofs` (self-FK, index). Migrations need Docker Desktop online to apply.
-- [ ] Email notifications (submitted / verified / rejected) — Resend wiring (1.15).
-- [ ] "Request more info" action (paired with email infra).
+- [x] Real ClamAV daemon + `ClamAVScanner` impl (replace NoopScanner). ClamAV container in `docker-compose.yml`, env-driven provider swap (`VIRUS_SCANNER=clamav`), INSTREAM TCP protocol, unit tests with mock server.
+- [x] S3 signed URLs via `@aws-sdk/s3-request-presigner` + `?redirect=true` on receipt endpoints for 302 redirect. `S3Storage.signedUrl()` auto-detected by `TenantStorageService` duck-typing.
+- [x] Resubmit linkage (`previous_proof_id` FK) so rejected proofs can be chained. Schema columns already in place; `POST /v1/payment-proofs/:id/resubmit` tenant endpoint wired. Creates new pending proof linked via `previous_proof_id`, cancels original, audits `payment_proof_resubmitted`. Frontend `resubmitPaymentProof()` API client added.
+- [x] Email notifications (submitted / verified / rejected). `payment_proof_rejected` and `payment_received` (sale-verified) emails fire-and-forget from the shared service. Disk provider used in tests; templates already existed. Integration tests confirm `.eml` files contain `X-Madar-Template` headers.
+- [x] "Request more info" action. `POST /v1/admin/payment-proofs/:id/request-info` (admin) + `POST /v1/payment-proofs/:id/request-info` (tenant). Sets `info_requested_message` + `info_requested_at` on the proof (status stays pending). Fires `payment_proof_info_requested` email. Admin UI: "Request info" button + modal in ProofActionBar on verification queue + detail pages.
 - [ ] 7-year retention policy enforcement + receipt PDF generation on verify (1.15 cross-cutting).
 
 ### 1.12 Basic reports
@@ -423,7 +423,7 @@ Goal: a working bilingual POS that decrements inventory on sale and accepts bank
 - [x] **A4** Subscription verification queue — `apps/admin/src/app/(shell)/verification/{page.tsx,verification-client.tsx}`. Two-pane layout: status-filter chips (Pending/Verified/Rejected/All, default = pending sorted oldest-first), left list (payer name + amount + bank ref + days-since chip with fresh/warn/stale tone), right detail pane (`ReceiptViewer`, `MatchIndicators` pills, transfer dl, `ProofActionBar`). Calls `adminListProofs({ context: 'subscription' })` + `adminGetProof` + `adminApproveProof` + `adminRejectProof` against `/v1/admin/payment-proofs/*` (shipped in 1.11a). Toast on success/failure, invalidates dashboard KPI on action.
 - [x] **A5** Payment proof detail — `apps/admin/src/app/(shell)/verification/[id]/{page.tsx,proof-detail-client.tsx}`. Linked from the queue ("Open detail →"). Full-page proof viewer with receipt, match indicators, transfer info table, approve/reject action bar, reject-reason modal.
 - [x] **Keyboard shortcuts** — global `keydown` listener in `verification-client.tsx`: `J` selects next, `K` selects previous, `A` approves the focused pending proof, `R` opens the reject modal. Suppressed when focus is in a form field or when the reject modal is open. Hint chip in the header sub.
-- [ ] "Request more info" action — deferred to 1.11e (paired with Resend email infra).
+- [x] "Request more info" action — implemented in admin + tenant controllers + frontend (ProofActionBar "Request info" button + RequestInfoModal). Fires `payment_proof_info_requested` email.
 
 #### 1.14d — Remaining MVP pages + dark-mode toggle (A6/A9/A10 + dark mode DONE)
 - [x] **A6** Cross-tenant invoices list at `/invoices` (admin). Backend: `GET /v1/admin/invoices?[status,currency,search,page,limit]` in new `apps/api/src/admin/invoices/` module. Schema has no `SubscriptionInvoice → Tenant` relation, so search filter pre-resolves matching tenant IDs and then runs the main query with `tenant_id: { in: [...] }`. Status filter chips (`All / awaiting_payment / in_review / paid / overdue`); `overdue` enriches the filter with `due_date < now()`. Computes `days_overdue` server-side. Frontend: filter chips + debounced 300ms search + dense table (invoice ref / tenant / plan / amount / issued+due / status chip / days_overdue with color tone — green 0d, amber 1-7d, rose ≥8d) + pagination. Tenant column links to `/tenants/:id`.
@@ -436,9 +436,9 @@ Goal: a working bilingual POS that decrements inventory on sale and accepts bank
 - [x] Verification: `pnpm test:api` **186/186** (was 176 + 10 new), `pnpm test:rls` 43/43, `pnpm --filter @madar/admin typecheck` + `build` clean (`/invoices` 2.8 kB / 109 kB First Load, `/login-audit` 2.64 kB / 109 kB, `/platform-audit` 3.35 kB / 110 kB), `pnpm --filter @madar/api typecheck` clean.
 
 #### 1.14e — Remaining admin pages (deferred)
-- [ ] **A7** Platform bank accounts CRUD with AES-256-GCM encryption for full account numbers + `reveal` endpoint gated to Platform Owner. Needs new `PLATFORM_BANK_ENCRYPTION_KEY` prod secret.
-- [ ] **A8** Super-admin team CRUD with MFA dots + role chips + invitation tokens (needs Resend wiring from 1.15).
-- [ ] Growth charts on Dashboard (tenant growth + MRR trend over 90 days, Recharts).
+- [x] **A7** Platform bank accounts CRUD with AES-256-GCM encryption for full account numbers + `reveal` endpoint gated to Platform Owner. Needs new `PLATFORM_BANK_ENCRYPTION_KEY` prod secret. Backend module `apps/api/src/admin/bank-accounts/` + CryptoService + frontend page `apps/admin/src/app/(shell)/banking/` + integration tests.
+- [x] **A8** Super-admin team CRUD with MFA dots + role chips + invitation tokens. Backend: `apps/api/src/admin/team/` (TeamModule, invite flow with SHA-256 token hash, accept-invite public endpoint, role update, deactivate/reactivate). Login guard blocks deactivated users. Frontend: `apps/admin/src/app/(shell)/team/` (Members table + Roles cards) + `apps/admin/src/app/(auth)/accept-invite/` (password set form). Migration: `20260531000000_platform_user_invite`. Tests: `apps/api/test/admin-team/team.spec.ts`.
+- [x] Growth charts on Dashboard — `GET /v1/admin/dashboard/trends` returns 90-day tenant growth + MRR trend (raw SQL `generate_series`). Recharts line/area charts in `_components/{TenantGrowthChart,MrrTrendChart}.tsx`. Integrated below KPI strip in `dashboard-client.tsx`.
 - [ ] Export tenants to CSV + Send announcement (broadcast email to all tenants).
 - [ ] Internal notes textarea on tenant detail page (A3 schema gap — needs `Tenant.internal_notes` migration).
 - [ ] Design reference: `docs/design/project/admin-screens.jsx`, `admin-verification.jsx`, `admin-app.jsx`

@@ -25,6 +25,10 @@ import {
   type ListAdminProofsQuery,
 } from "./dto/list-admin-proofs.dto";
 import { AdminRejectProofSchema, type AdminRejectProofBody } from "./dto/reject-proof.dto";
+import {
+  RequestInfoSchema,
+  type RequestInfoInput,
+} from "../../payment-proofs-shared/dto/request-info.dto";
 
 const VERIFIER_ROLES = new Set(["owner", "finance"]);
 
@@ -76,19 +80,27 @@ export class AdminPaymentProofsController {
   async receipt(
     @CurrentAdmin() admin: AdminPrincipal,
     @Param("id", new ParseUUIDPipe()) id: string,
+    @Query("redirect") redirect: string | undefined,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const { buffer, mime, filename } = await this.proofs.streamReceipt(
-      {
-        realm: "admin",
-        userId: admin.platformUserId,
-        tenantId: null,
-        ip: getClientIp(req),
-        userAgent: getUserAgent(req),
-      },
-      id,
-    );
+    const actor = {
+      realm: "admin" as const,
+      userId: admin.platformUserId,
+      tenantId: null,
+      ip: getClientIp(req),
+      userAgent: getUserAgent(req),
+    };
+
+    if (redirect === "true") {
+      const url = await this.proofs.signedReceiptUrl(actor, id, 300);
+      if (url.startsWith("http")) {
+        res.redirect(302, url);
+        return;
+      }
+    }
+
+    const { buffer, mime, filename } = await this.proofs.streamReceipt(actor, id);
     res.setHeader("Content-Type", mime);
     res.setHeader("Content-Disposition", `inline; filename="${filename}"`);
     res.setHeader("Cache-Control", "private, max-age=300");
@@ -149,6 +161,34 @@ export class AdminPaymentProofsController {
       ["subscription"],
       body.rejection_reason,
       body.notes,
+    );
+  }
+
+  @Post(":id/request-info")
+  @HttpCode(HttpStatus.OK)
+  @RateLimit({ max: 30, windowMs: 60_000 })
+  async requestInfo(
+    @CurrentAdmin() admin: AdminPrincipal,
+    @Param("id", new ParseUUIDPipe()) id: string,
+    @Body(new ZodValidationPipe(RequestInfoSchema)) body: RequestInfoInput,
+    @Req() req: Request,
+  ) {
+    if (!VERIFIER_ROLES.has(admin.role)) {
+      throw new ForbiddenException({
+        code: "forbidden_role",
+        message: "Only Platform Owner and Finance roles can request more info",
+      });
+    }
+    return this.proofs.requestMoreInfo(
+      {
+        realm: "admin",
+        userId: admin.platformUserId,
+        tenantId: null,
+        ip: getClientIp(req),
+        userAgent: getUserAgent(req),
+      },
+      id,
+      body.message,
     );
   }
 }

@@ -460,7 +460,7 @@ export class BranchesService {
   ): Promise<ApiBranchDetail> {
     const scoped = tenantScoped(tenantId);
     const existing = await scoped.branch.findUnique({ where: { id: branchId } });
-    if (!existing || existing.deleted_at) {
+    if (!existing || existing.deleted_at || existing.tenant_id !== tenantId) {
       throw new NotFoundException({ code: "branch_not_found", message: "Branch not found" });
     }
 
@@ -533,7 +533,7 @@ export class BranchesService {
   ): Promise<{ id: string; deleted_at: string }> {
     const scoped = tenantScoped(tenantId);
     const existing = await scoped.branch.findUnique({ where: { id: branchId } });
-    if (!existing) {
+    if (!existing || existing.tenant_id !== tenantId) {
       throw new NotFoundException({ code: "branch_not_found", message: "Branch not found" });
     }
     if (existing.deleted_at) {

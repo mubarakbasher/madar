@@ -343,6 +343,80 @@ Open inventory: {{inventoryUrl}}`,
     },
   },
 
+  payment_proof_rejected: {
+    subject: {
+      en: "Payment proof for {{amountFormatted}} was not accepted",
+      ar: "لم يتم قبول إثبات الدفع بمبلغ {{amountFormatted}}",
+    },
+    html: {
+      en: htmlShell(
+        "en",
+        `<h1 style="font-family: Fraunces, Georgia, serif; font-size: 26px;">Payment proof not accepted</h1>
+<p>Your payment proof for <strong>{{amountFormatted}}</strong> at <strong>{{tenantName}}</strong> was not accepted.</p>
+<p><strong>Reason:</strong> {{rejectionReason}}</p>
+<p>You can resubmit a new proof with a corrected receipt:</p>
+<p><a href="{{resubmitUrl}}" style="display: inline-block; padding: 12px 20px; background: #C96442; color: white; border-radius: 8px; text-decoration: none;">Resubmit proof</a></p>`,
+      ),
+      ar: htmlShell(
+        "ar",
+        `<h1 style="font-family: 'IBM Plex Serif Arabic', Georgia, serif; font-size: 26px;">لم يتم قبول إثبات الدفع</h1>
+<p>لم يتم قبول إثبات الدفع الخاص بك بمبلغ <strong>{{amountFormatted}}</strong> في <strong>{{tenantName}}</strong>.</p>
+<p><strong>السبب:</strong> {{rejectionReason}}</p>
+<p>يمكنك إعادة تقديم إثبات جديد بإيصال صحيح:</p>
+<p><a href="{{resubmitUrl}}" style="display: inline-block; padding: 12px 20px; background: #C96442; color: white; border-radius: 8px; text-decoration: none;">إعادة تقديم الإثبات</a></p>`,
+      ),
+    },
+    text: {
+      en: `Payment proof for {{amountFormatted}} at {{tenantName}} was not accepted.
+
+Reason: {{rejectionReason}}
+
+Resubmit a new proof: {{resubmitUrl}}`,
+      ar: `لم يتم قبول إثبات الدفع بمبلغ {{amountFormatted}} في {{tenantName}}.
+
+السبب: {{rejectionReason}}
+
+إعادة تقديم إثبات جديد: {{resubmitUrl}}`,
+    },
+  },
+
+  payment_proof_info_requested: {
+    subject: {
+      en: "More information needed for your payment of {{amountFormatted}}",
+      ar: "مطلوب مزيد من المعلومات بخصوص دفعتك بمبلغ {{amountFormatted}}",
+    },
+    html: {
+      en: htmlShell(
+        "en",
+        `<h1 style="font-family: Fraunces, Georgia, serif; font-size: 26px;">More information needed</h1>
+<p>We need more information about your payment of <strong>{{amountFormatted}}</strong> at <strong>{{tenantName}}</strong>.</p>
+<p><strong>Message from verifier:</strong> {{message}}</p>
+<p>View your proof to respond:</p>
+<p><a href="{{proofUrl}}" style="display: inline-block; padding: 12px 20px; background: #C96442; color: white; border-radius: 8px; text-decoration: none;">View proof</a></p>`,
+      ),
+      ar: htmlShell(
+        "ar",
+        `<h1 style="font-family: 'IBM Plex Serif Arabic', Georgia, serif; font-size: 26px;">مطلوب مزيد من المعلومات</h1>
+<p>نحتاج مزيداً من المعلومات حول دفعتك بمبلغ <strong>{{amountFormatted}}</strong> في <strong>{{tenantName}}</strong>.</p>
+<p><strong>رسالة من المراجع:</strong> {{message}}</p>
+<p>اعرض إثبات الدفع للرد:</p>
+<p><a href="{{proofUrl}}" style="display: inline-block; padding: 12px 20px; background: #C96442; color: white; border-radius: 8px; text-decoration: none;">عرض الإثبات</a></p>`,
+      ),
+    },
+    text: {
+      en: `More information is needed about your payment of {{amountFormatted}} at {{tenantName}}.
+
+Message from verifier: {{message}}
+
+View your proof: {{proofUrl}}`,
+      ar: `مطلوب مزيد من المعلومات حول دفعتك بمبلغ {{amountFormatted}} في {{tenantName}}.
+
+رسالة من المراجع: {{message}}
+
+عرض الإثبات: {{proofUrl}}`,
+    },
+  },
+
   // ─── raw ────────────────────────────────────────────────────────────
   // Sentinel bundle for `EmailService.sendRaw()` — these emails carry an
   // already-rendered subject/html/text supplied by the caller, so the

@@ -280,7 +280,7 @@ export class CustomersService {
   ): Promise<ApiCustomerDetail> {
     const scoped = tenantScoped(tenantId);
     const existing = await scoped.customer.findUnique({ where: { id: customerId } });
-    if (!existing || existing.deleted_at) {
+    if (!existing || existing.deleted_at || existing.tenant_id !== tenantId) {
       throw new NotFoundException({
         code: "customer_not_found",
         message: "Customer not found",
@@ -339,7 +339,7 @@ export class CustomersService {
   ): Promise<{ id: string; deleted: true }> {
     const scoped = tenantScoped(tenantId);
     const existing = await scoped.customer.findUnique({ where: { id: customerId } });
-    if (!existing) {
+    if (!existing || existing.tenant_id !== tenantId) {
       throw new NotFoundException({
         code: "customer_not_found",
         message: "Customer not found",

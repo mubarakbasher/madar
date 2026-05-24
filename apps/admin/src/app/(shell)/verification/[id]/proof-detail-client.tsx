@@ -8,12 +8,14 @@ import {
   adminApproveProof,
   adminGetProof,
   adminRejectProof,
+  adminRequestProofInfo,
 } from "@/lib/api/admin-proofs";
 import { ApiError } from "@/lib/api/client";
 import { MatchIndicators } from "../../_components/MatchIndicators";
 import { ProofActionBar } from "../../_components/ProofActionBar";
 import { ReceiptViewer } from "../../_components/ReceiptViewer";
 import { RejectModal, type RejectSubmit } from "../../_components/RejectModal";
+import { RequestInfoModal, type RequestInfoSubmit } from "../../_components/RequestInfoModal";
 
 function formatMoney(cents: string, currency: string): string {
   const major = Number(BigInt(cents)) / 100;
@@ -31,6 +33,7 @@ function formatMoney(cents: string, currency: string): string {
 export function ProofDetailClient({ proofId }: { proofId: string }) {
   const queryClient = useQueryClient();
   const [rejecting, setRejecting] = useState(false);
+  const [requestingInfo, setRequestingInfo] = useState(false);
   const [actionBusy, setActionBusy] = useState(false);
   const [toast, setToast] = useState<{ text: string; tone: "ok" | "bad" } | null>(null);
 
@@ -75,6 +78,23 @@ export function ProofDetailClient({ proofId }: { proofId: string }) {
       await queryClient.invalidateQueries({ queryKey: ["admin", "dashboard", "kpi"] });
       setRejecting(false);
       setToast({ text: `Proof rejected · ${payload.rejection_reason}`, tone: "bad" });
+    } finally {
+      setActionBusy(false);
+    }
+  }
+
+  async function handleRequestInfoSubmit(payload: RequestInfoSubmit) {
+    setActionBusy(true);
+    try {
+      await adminRequestProofInfo(proofId, payload.message);
+      await queryClient.invalidateQueries({ queryKey: ["admin", "proofs"] });
+      setRequestingInfo(false);
+      setToast({ text: "Info requested from tenant", tone: "ok" });
+    } catch (err) {
+      setToast({
+        text: err instanceof ApiError ? `${err.code}: ${err.message}` : (err as Error).message,
+        tone: "bad",
+      });
     } finally {
       setActionBusy(false);
     }
@@ -154,11 +174,16 @@ export function ProofDetailClient({ proofId }: { proofId: string }) {
           busy={actionBusy}
           onApprove={handleApprove}
           onReject={() => setRejecting(true)}
+          onRequestInfo={() => setRequestingInfo(true)}
         />
       </div>
 
       {rejecting && (
         <RejectModal onCancel={() => setRejecting(false)} onSubmit={handleRejectSubmit} />
+      )}
+
+      {requestingInfo && (
+        <RequestInfoModal onCancel={() => setRequestingInfo(false)} onSubmit={handleRequestInfoSubmit} />
       )}
 
       {toast && (

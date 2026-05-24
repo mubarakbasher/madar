@@ -31,6 +31,10 @@ import {
 } from "./dto/submit-proof.dto";
 import { ListProofsQuerySchema, type ListProofsQuery } from "./dto/list-proofs.dto";
 import { RejectProofSchema, type RejectProofBody } from "./dto/reject-proof.dto";
+import {
+  RequestInfoSchema,
+  type RequestInfoInput,
+} from "../../payment-proofs-shared/dto/request-info.dto";
 
 const MAX_RECEIPT_BYTES = 5 * 1024 * 1024;
 const VERIFIER_ROLES = new Set(["owner", "manager"]);
@@ -116,19 +120,27 @@ export class PaymentProofsController {
   async receipt(
     @CurrentUser() user: TenantPrincipal,
     @Param("id", new ParseUUIDPipe()) id: string,
+    @Query("redirect") redirect: string | undefined,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const { buffer, mime, filename } = await this.proofs.streamReceipt(
-      {
-        realm: "tenant",
-        userId: user.userId,
-        tenantId: user.tenantId,
-        ip: getClientIp(req),
-        userAgent: getUserAgent(req),
-      },
-      id,
-    );
+    const actor = {
+      realm: "tenant" as const,
+      userId: user.userId,
+      tenantId: user.tenantId,
+      ip: getClientIp(req),
+      userAgent: getUserAgent(req),
+    };
+
+    if (redirect === "true") {
+      const url = await this.proofs.signedReceiptUrl(actor, id, 300);
+      if (url.startsWith("http")) {
+        res.redirect(302, url);
+        return;
+      }
+    }
+
+    const { buffer, mime, filename } = await this.proofs.streamReceipt(actor, id);
     res.setHeader("Content-Type", mime);
     res.setHeader("Content-Disposition", `inline; filename="${filename}"`);
     res.setHeader("Cache-Control", "private, max-age=300");
@@ -192,6 +204,74 @@ export class PaymentProofsController {
       ["sale"],
       body.rejection_reason,
       body.notes,
+    );
+  }
+
+  @Post(":id/resubmit")
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(
+    FileInterceptor("receipt", { limits: { fileSize: MAX_RECEIPT_BYTES } }),
+  )
+  @RateLimit({ max: 30, windowMs: 60_000 })
+  async resubmit(
+    @Param("id", new ParseUUIDPipe()) id: string,
+    @CurrentUser() user: TenantPrincipal,
+    @UploadedFile() file: Express.Multer.File | undefined,
+    @Req() req: Request,
+  ) {
+    if (!file) {
+      throw new BadRequestException({
+        code: "receipt_required",
+        message: "Multipart field 'receipt' is required",
+      });
+    }
+    return this.proofs.resubmit(
+      {
+        realm: "tenant",
+        userId: user.userId,
+        tenantId: user.tenantId,
+        ip: getClientIp(req),
+        userAgent: getUserAgent(req),
+        ...(user.impersonatorId ? { impersonatorId: user.impersonatorId } : {}),
+      },
+      id,
+      { buffer: file.buffer, declaredMime: file.mimetype, originalName: file.originalname },
+      {
+        tenantId: user.tenantId,
+        userId: user.userId,
+        ip: getClientIp(req),
+        userAgent: getUserAgent(req),
+        ...(user.impersonatorId ? { impersonatorId: user.impersonatorId } : {}),
+      },
+    );
+  }
+
+  @Post(":id/request-info")
+  @HttpCode(HttpStatus.OK)
+  @RateLimit({ max: 30, windowMs: 60_000 })
+  async requestInfo(
+    @Param("id", new ParseUUIDPipe()) id: string,
+    @CurrentUser() user: TenantPrincipal,
+    @Body(new ZodValidationPipe(RequestInfoSchema)) body: RequestInfoInput,
+    @Req() req: Request,
+  ) {
+    if (!VERIFIER_ROLES.has(user.role)) {
+      throw new ForbiddenException({
+        code: "forbidden_role",
+        message: "Only owners and managers can request more info on proofs",
+      });
+    }
+    return this.proofs.requestMoreInfo(
+      {
+        realm: "tenant",
+        userId: user.userId,
+        tenantId: user.tenantId,
+        ip: getClientIp(req),
+        userAgent: getUserAgent(req),
+        ...(user.impersonatorId ? { impersonatorId: user.impersonatorId } : {}),
+      },
+      id,
+      body.message,
     );
   }
 }

@@ -8,6 +8,7 @@ import {
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { loadEnv } from "../../env";
 import type { StorageService } from "./storage.service";
 
@@ -70,6 +71,12 @@ export class S3Storage implements StorageService {
 
   async delete(key: string): Promise<void> {
     await this.client.send(new DeleteObjectCommand({ Bucket: this.bucket, Key: key }));
+  }
+
+  async signedUrl(key: string, ttlSeconds: number): Promise<string> {
+    await this.ensureBucket();
+    const command = new GetObjectCommand({ Bucket: this.bucket, Key: key });
+    return getSignedUrl(this.client, command, { expiresIn: ttlSeconds });
   }
 
   private async ensureBucket(): Promise<void> {

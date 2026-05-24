@@ -1,17 +1,19 @@
 "use client";
 
-import { Check, X } from "lucide-react";
+import { Check, X, MessageSquare } from "lucide-react";
 import type { ProofItem } from "@/lib/api/admin-proofs";
 
 export function ProofActionBar({
   proof,
   onApprove,
   onReject,
+  onRequestInfo,
   busy,
 }: {
   proof: ProofItem;
   onApprove: () => void;
   onReject: () => void;
+  onRequestInfo?: () => void;
   busy: boolean;
 }) {
   if (proof.status === "verified") {
@@ -58,6 +60,12 @@ export function ProofActionBar({
 
   return (
     <div className="admin-proof-actions">
+      {onRequestInfo && (
+        <button type="button" className="admin-tb-action" onClick={onRequestInfo} disabled={busy}>
+          <MessageSquare size={14} strokeWidth={1.5} />
+          Request info
+        </button>
+      )}
       <button type="button" className="admin-btn-danger" onClick={onReject} disabled={busy}>
         Reject
       </button>
@@ -67,7 +75,7 @@ export function ProofActionBar({
         onClick={onApprove}
         disabled={busy}
       >
-        {busy ? "Approving…" : "Approve"}
+        {busy ? "Approving..." : "Approve"}
       </button>
     </div>
   );

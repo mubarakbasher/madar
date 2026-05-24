@@ -299,7 +299,7 @@ export class UsersService {
     const existing = await scoped.user.findUnique({
       where: { id: targetId },
     });
-    if (!existing || existing.deleted_at) {
+    if (!existing || existing.deleted_at || existing.tenant_id !== tenantId) {
       throw new UnprocessableEntityException({
         code: "unknown_user",
         message: "User not found",
@@ -426,7 +426,7 @@ export class UsersService {
     const target = await scoped.user.findUnique({
       where: { id: targetId },
     });
-    if (!target || target.deleted_at) {
+    if (!target || target.deleted_at || target.tenant_id !== tenantId) {
       throw new UnprocessableEntityException({
         code: "unknown_user",
         message: "User not found",
@@ -503,7 +503,7 @@ export class UsersService {
 
     const scoped = tenantScoped(tenantId);
     const target = await scoped.user.findUnique({ where: { id: targetId } });
-    if (!target || target.deleted_at) {
+    if (!target || target.deleted_at || target.tenant_id !== tenantId) {
       throw new UnprocessableEntityException({
         code: "unknown_user",
         message: "User not found",

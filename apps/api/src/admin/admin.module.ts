@@ -7,7 +7,9 @@ import { DashboardModule } from "./dashboard/dashboard.module";
 import { AdminImpersonationModule } from "./impersonation/impersonation.module";
 import { AdminInvoicesModule } from "./invoices/invoices.module";
 import { AdminPaymentProofsModule } from "./payment-proofs/payment-proofs.module";
+import { BankAccountsModule } from "./bank-accounts/bank-accounts.module";
 import { PlansModule } from "./plans/plans.module";
+import { TeamModule } from "./team/team.module";
 import { TenantsModule } from "./tenants/tenants.module";
 
 @Module({
@@ -21,6 +23,8 @@ import { TenantsModule } from "./tenants/tenants.module";
     AdminInvoicesModule,
     AdminAuditModule,
     BillingTrackerModule,
+    BankAccountsModule,
+    TeamModule,
     AdminCronModule.forRoot(),
   ],
 })

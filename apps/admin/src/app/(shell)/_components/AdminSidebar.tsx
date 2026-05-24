@@ -48,7 +48,7 @@ function buildSections(
           badge: pendingVerifications > 0 ? pendingVerifications : undefined,
         },
         { label: "Invoices", href: "/invoices", Icon: FileText },
-        { label: "Bank accounts", href: "/banking", Icon: Landmark, disabled: true },
+        { label: "Bank accounts", href: "/banking", Icon: Landmark },
       ],
     },
     ...(isOwner
@@ -62,7 +62,7 @@ function buildSections(
     {
       kicker: "Security",
       items: [
-        { label: "Super-admin team", href: "/team", Icon: Shield, disabled: true },
+        { label: "Super-admin team", href: "/team", Icon: Shield },
         { label: "Login-as audit", href: "/login-audit", Icon: History },
         { label: "Platform audit", href: "/platform-audit", Icon: ScrollText },
       ],

@@ -275,9 +275,12 @@ model PlatformUser {
   role          PlatformUserRole @default(readonly)
   mfa_secret    String?
   mfa_enabled   Boolean          @default(false)
-  last_login_at DateTime?        @db.Timestamptz
-  created_at    DateTime         @default(now()) @db.Timestamptz
-  updated_at    DateTime         @default(now()) @db.Timestamptz
+  last_login_at     DateTime?        @db.Timestamptz
+  invite_token_hash String?
+  invite_expires_at DateTime?        @db.Timestamptz
+  is_active         Boolean          @default(true)
+  created_at        DateTime         @default(now()) @db.Timestamptz
+  updated_at        DateTime         @default(now()) @db.Timestamptz
 
   @@map("platform_users")
 }
@@ -675,19 +678,23 @@ model PaymentProof {
   payer_bank         String?
   transfer_date      DateTime             @db.Date
   transfer_reference String?
-  receipt_image_url  String
-  status             PaymentProofStatus   @default(pending)
-  verified_by        String?              @db.Uuid
-  verified_at        DateTime?            @db.Timestamptz
-  rejection_reason   String?
-  notes              String?
-  created_at         DateTime             @default(now()) @db.Timestamptz
-  updated_at         DateTime             @default(now()) @db.Timestamptz
-  created_by         String?              @db.Uuid
-  deleted_at         DateTime?            @db.Timestamptz
+  receipt_image_url      String
+  status                 PaymentProofStatus   @default(pending)
+  verified_by            String?              @db.Uuid
+  verified_at            DateTime?            @db.Timestamptz
+  rejection_reason       String?
+  notes                  String?
+  previous_proof_id      String?              @db.Uuid
+  info_requested_message String?
+  info_requested_at      DateTime?            @db.Timestamptz
+  created_at             DateTime             @default(now()) @db.Timestamptz
+  updated_at             DateTime             @default(now()) @db.Timestamptz
+  created_by             String?              @db.Uuid
+  deleted_at             DateTime?            @db.Timestamptz
 
   @@index([tenant_id, status, created_at(sort: Desc)])
   @@index([tenant_id, context, reference_id])
+  @@index([previous_proof_id])
   @@map("payment_proofs")
 }
 

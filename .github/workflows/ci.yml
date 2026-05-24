@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: madar
+          POSTGRES_PASSWORD: madar
+          POSTGRES_DB: madar
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U madar -d madar"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://madar_app:madar_app@localhost:5432/madar?schema=public
+      DIRECT_DATABASE_URL: postgresql://madar:madar@localhost:5432/madar?schema=public
+      REDIS_URL: redis://localhost:6379
+      JWT_TENANT_SECRET: ci-test-tenant-secret-must-be-32-chars-long-xxx
+      JWT_ADMIN_SECRET: ci-test-admin-secret-must-be-32-chars-long-yyy
+      STORAGE_PROVIDER: local
+      STORAGE_ROOT: ./var/storage
+      EMAIL_PROVIDER: disk
+      EMAIL_LOG_DIR: ./var/sent-emails
+      TENANT_WEB_ORIGIN: http://localhost:3000
+      NODE_ENV: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm db:generate
+
+      - name: Apply database migrations
+        run: pnpm db:migrate:deploy
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: RLS isolation tests
+        run: pnpm test:rls
+
+      - name: API tests
+        run: pnpm test:api
+
+      - name: Auth realm tests
+        run: pnpm test:realm
+
+      - name: i18n parity check
+        run: pnpm i18n:check
+
+      - name: Build tenant app
+        run: pnpm --filter @madar/web build
+
+      - name: Build admin app
+        run: pnpm --filter @madar/admin build
