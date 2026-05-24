@@ -3,13 +3,27 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
-    ".": "./src/index.ts",
-    "./tenant": "./src/tenant.ts",
-    "./admin": "./src/admin.ts",
-    "./types": "./src/types.ts"
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/src/index.js"
+    },
+    "./tenant": {
+      "types": "./src/tenant.ts",
+      "default": "./dist/src/tenant.js"
+    },
+    "./admin": {
+      "types": "./src/admin.ts",
+      "default": "./dist/src/admin.js"
+    },
+    "./types": {
+      "types": "./src/types.ts",
+      "default": "./dist/src/types.js"
+    }
   },
   "types": "./src/index.ts",
+  "main": "./dist/src/index.js",
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",

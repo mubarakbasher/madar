@@ -22,6 +22,7 @@ COPY --from=deps /repo/apps/api/node_modules ./apps/api/node_modules
 COPY --from=deps /repo/packages/db/node_modules ./packages/db/node_modules
 COPY . .
 RUN pnpm --filter=@madar/db exec prisma generate
+RUN pnpm --filter=@madar/db run build
 RUN pnpm --filter @madar/api build
 
 # ─── Step 3: runtime ───────────────────────────────────────────────────
