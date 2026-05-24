@@ -35,6 +35,7 @@ RUN corepack enable && corepack prepare pnpm@9.12.0 --activate
 # Only copy what runtime needs: built dist, node_modules, prisma artifacts.
 COPY --from=build /repo/apps/api/dist ./apps/api/dist
 COPY --from=build /repo/apps/api/package.json ./apps/api/package.json
+COPY --from=build /repo/apps/api/node_modules ./apps/api/node_modules
 COPY --from=build /repo/node_modules ./node_modules
 COPY --from=build /repo/packages ./packages
 COPY --from=build /repo/pnpm-workspace.yaml ./pnpm-workspace.yaml
