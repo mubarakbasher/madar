@@ -8,6 +8,7 @@ vi.mock("@aws-sdk/s3-request-presigner", () => ({
 // Must import AFTER vi.mock so the mock is in place when the module loads.
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { S3Storage } from "../../src/common/storage/s3.storage";
+import { resetEnvCache } from "../../src/env";
 
 describe("S3Storage.signedUrl", () => {
   let storage: S3Storage;
@@ -19,6 +20,7 @@ describe("S3Storage.signedUrl", () => {
     process.env.S3_SECRET_KEY = "test";
     process.env.S3_FORCE_PATH_STYLE = "true";
     process.env.STORAGE_PROVIDER = "s3";
+    resetEnvCache();
 
     storage = new S3Storage();
   });
