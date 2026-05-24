@@ -23,6 +23,7 @@ describe("S3Storage.signedUrl", () => {
     resetEnvCache();
 
     storage = new S3Storage();
+    (storage as any)["bucketEnsured"] = true;
   });
 
   it("calls getSignedUrl with the correct GetObjectCommand and returns the presigned URL", async () => {
