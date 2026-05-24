@@ -58,7 +58,7 @@ describe("POST /v1/auth/signup", () => {
       default_currency_code: "EGP",
       country_code: "EG",
     });
-    expect(res.body.tenant.plan).toMatchObject({ code: "starter" });
+    expect(res.body.tenant.plan).toBeNull();
 
     const cookie = parseSetCookie(res, REFRESH_COOKIE_NAME);
     expect(cookie).not.toBeNull();
