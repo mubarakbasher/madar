@@ -112,7 +112,6 @@ describe("send-po-email inline fallback", () => {
     };
 
     await enqueueSendPoEmailJob(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       { email, queue: throwingQueue as any },
       payload,
     );

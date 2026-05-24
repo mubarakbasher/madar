@@ -20,6 +20,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Processor, WorkerHost } from "@nestjs/bullmq";
 import type { Job } from "bullmq";
+// eslint-disable-next-line no-restricted-imports -- background job loads PO + supplier + tenant for email rendering; runs outside request context so tenantScoped is unavailable
 import { adminPrisma } from "@madar/db";
 import { EmailService } from "../../../common/email/email.service";
 import {

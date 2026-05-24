@@ -50,9 +50,6 @@ export class BootstrapCronService implements OnApplicationBootstrap {
     }
   }
 
-  // Inject Inject token to silence the unused-import warning that some lint
-  // configs raise; the decorator import is needed for DI metadata.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private static _keepInject = Inject;
 
   private async registerRepeat(
