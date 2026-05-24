@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import request from "supertest";
 import { bootTestApp, type BootedTestApp } from "../helpers/app";
+import { resetEnvCache } from "../../src/env";
 
 describe("Welcome email on signup", () => {
   let booted: BootedTestApp;
@@ -12,6 +13,7 @@ describe("Welcome email on signup", () => {
   beforeAll(async () => {
     await fs.rm(dir, { recursive: true, force: true });
     process.env.EMAIL_LOG_DIR = dir;
+    resetEnvCache();
     booted = await bootTestApp();
   });
   afterAll(async () => {

@@ -8,18 +8,19 @@ import { bootTestApp, type BootedTestApp } from "../helpers/app";
 import { AdminTokenService } from "../../src/admin/auth/admin-token.service";
 import { makePlatformUser } from "../helpers/admin-fixtures";
 import { makeTenant, seedStarterPlan } from "../helpers/fixtures";
+import { resetEnvCache } from "../../src/env";
 
-const EMAIL_DIR =
-  process.env.EMAIL_LOG_DIR && path.isAbsolute(process.env.EMAIL_LOG_DIR)
-    ? process.env.EMAIL_LOG_DIR
-    : path.resolve(__dirname, "..", "var", "test-emails");
+const EMAIL_DIR = path.resolve(__dirname, "..", "var", "test-emails-billing-tick");
 
 describe("Billing tick email side-effects", () => {
   let booted: BootedTestApp;
   let adminToken: string;
 
   beforeAll(async () => {
+    await fs.rm(EMAIL_DIR, { recursive: true, force: true });
     await fs.mkdir(EMAIL_DIR, { recursive: true });
+    process.env.EMAIL_LOG_DIR = EMAIL_DIR;
+    resetEnvCache();
     booted = await bootTestApp();
     const tokens = booted.app.get(AdminTokenService);
     await seedStarterPlan();
@@ -77,7 +78,7 @@ describe("Billing tick email side-effects", () => {
       emailPrefix: "tick-suspend-rcpt",
       status: "active",
     });
-    const pastDue = new Date(Date.now() - 35 * 86_400_000);
+    const pastDue = new Date(Date.now() - 10 * 86_400_000);
     await adminPrisma.subscriptionInvoice.create({
       data: {
         tenant_id: tenant.tenantId,

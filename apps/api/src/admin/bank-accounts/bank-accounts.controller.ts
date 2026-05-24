@@ -3,6 +3,8 @@ import {
   Controller,
   ForbiddenException,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -70,6 +72,7 @@ export class BankAccountsController {
   }
 
   @Post(":id/disable")
+  @HttpCode(HttpStatus.OK)
   @RateLimit({ max: 30, windowMs: 60_000 })
   async disable(
     @CurrentAdmin() admin: AdminPrincipal,
@@ -81,6 +84,7 @@ export class BankAccountsController {
   }
 
   @Post(":id/enable")
+  @HttpCode(HttpStatus.OK)
   @RateLimit({ max: 30, windowMs: 60_000 })
   async enable(
     @CurrentAdmin() admin: AdminPrincipal,
@@ -92,6 +96,7 @@ export class BankAccountsController {
   }
 
   @Post(":id/reveal")
+  @HttpCode(HttpStatus.OK)
   @RateLimit({ max: 10, windowMs: 60_000 })
   async reveal(
     @CurrentAdmin() admin: AdminPrincipal,

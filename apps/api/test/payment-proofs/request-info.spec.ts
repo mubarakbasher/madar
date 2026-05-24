@@ -16,6 +16,7 @@ import {
 } from "../helpers/fixtures";
 import { makePlatformUser, readPlatformAudit } from "../helpers/admin-fixtures";
 import { makeStorageRoot, removeStorageRoot, tinyJpegBuffer } from "../helpers/uploads";
+import { resetEnvCache } from "../../src/env";
 
 const EMAIL_DIR = path.resolve(__dirname, "..", "var", "test-emails-request-info");
 
@@ -26,6 +27,7 @@ describe("POST /v1/admin/payment-proofs/:id/request-info", () => {
   beforeAll(async () => {
     storageRoot = await makeStorageRoot();
     process.env.EMAIL_LOG_DIR = EMAIL_DIR;
+    resetEnvCache();
     await fs.rm(EMAIL_DIR, { recursive: true, force: true });
     await fs.mkdir(EMAIL_DIR, { recursive: true });
     booted = await bootTestApp();
