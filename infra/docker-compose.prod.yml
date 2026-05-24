@@ -38,7 +38,7 @@ services:
 
   api:
     build:
-      context: ..
+      context: .
       dockerfile: infra/Dockerfile.api
     container_name: madar_api
     restart: always
@@ -71,7 +71,7 @@ services:
 
   web:
     build:
-      context: ..
+      context: .
       dockerfile: infra/Dockerfile.web
       args:
         NEXT_PUBLIC_API_URL: https://${API_HOST}
@@ -89,7 +89,7 @@ services:
 
   admin:
     build:
-      context: ..
+      context: .
       dockerfile: infra/Dockerfile.admin
       args:
         NEXT_PUBLIC_API_URL: https://${API_HOST}
@@ -113,7 +113,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - madar_caddy_data:/data
       - madar_caddy_config:/config
     environment:
