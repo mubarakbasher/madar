@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
+import { t } from "@/lib/i18n";
 
 export interface RejectSubmit {
   rejection_reason: string;
@@ -9,13 +10,13 @@ export interface RejectSubmit {
 }
 
 const REJECT_REASONS = [
-  { id: "amount", label: "Wrong amount transferred" },
-  { id: "unread", label: "Unreadable / blurry receipt" },
-  { id: "account", label: "Sent to wrong account" },
-  { id: "dup", label: "Duplicate of an earlier proof" },
-  { id: "fraud", label: "Suspected fraud / mismatch" },
-  { id: "other", label: "Other (explain below)" },
-] as const;
+  { id: "amount", label: t("proofs.reject.reasons.amount") },
+  { id: "unread", label: t("proofs.reject.reasons.unread") },
+  { id: "account", label: t("proofs.reject.reasons.account") },
+  { id: "dup", label: t("proofs.reject.reasons.dup") },
+  { id: "fraud", label: t("proofs.reject.reasons.fraud") },
+  { id: "other", label: t("proofs.reject.reasons.other") },
+];
 
 export function RejectModal({
   onCancel,
@@ -42,7 +43,7 @@ export function RejectModal({
         notes: notes.trim() || undefined,
       });
     } catch (e) {
-      setError((e as Error).message || "Reject failed. Please try again.");
+      setError((e as Error).message || t("proofs.reject.fallbackError"));
       setSubmitting(false);
     }
   }
@@ -52,21 +53,21 @@ export function RejectModal({
       <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
         <header className="admin-modal-head">
           <h2 id="reject-modal-title" className="admin-modal-title">
-            Reject this proof
+            {t("proofs.reject.title")}
           </h2>
           <button
             type="button"
             className="admin-icon-btn"
             onClick={onCancel}
             disabled={submitting}
-            aria-label="Cancel"
+            aria-label={t("proofs.reject.cancel")}
           >
             <X size={16} strokeWidth={1.5} />
           </button>
         </header>
 
         <p className="admin-modal-body-text">
-          Pick a reason. The tenant will be notified and can resubmit a new proof.
+          {t("proofs.reject.body")}
         </p>
 
         <div className="admin-reject-reasons">
@@ -87,14 +88,14 @@ export function RejectModal({
 
         <label className="admin-modal-field">
           <span className="admin-modal-label">
-            Notes <span className="admin-modal-label-hint">(internal — visible to your teammates)</span>
+            {t("proofs.reject.notesLabel")} <span className="admin-modal-label-hint">{t("proofs.reject.notesHint")}</span>
           </span>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             disabled={submitting}
             rows={3}
-            placeholder="Optional context for the audit log"
+            placeholder={t("proofs.reject.notesPlaceholder")}
             className="admin-modal-textarea"
             maxLength={1000}
           />
@@ -108,7 +109,7 @@ export function RejectModal({
 
         <div className="admin-modal-actions">
           <button type="button" className="admin-tb-action" onClick={onCancel} disabled={submitting}>
-            Cancel
+            {t("proofs.reject.cancel")}
           </button>
           <button
             type="button"
@@ -116,7 +117,7 @@ export function RejectModal({
             onClick={handleSubmit}
             disabled={!canSubmit}
           >
-            {submitting ? "Rejecting…" : "Reject and notify tenant"}
+            {submitting ? t("proofs.reject.submitting") : t("proofs.reject.submit")}
           </button>
         </div>
       </div>

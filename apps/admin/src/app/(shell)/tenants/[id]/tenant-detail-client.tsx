@@ -7,6 +7,7 @@ import { ArrowLeft, LogIn, ShieldAlert } from "lucide-react";
 import { adminGetTenant, type TenantDetail } from "@/lib/api/admin-tenant-detail";
 import { StatusChip } from "../../_components/StatusChip";
 import { LoginAsModal } from "./_components/LoginAsModal";
+import { t } from "@/lib/i18n";
 
 function formatCents(cents: string, currency: string): string {
   const major = Number(BigInt(cents)) / 100;
@@ -46,18 +47,18 @@ export function TenantDetailClient({ tenantId }: { tenantId: string }) {
 
   if (query.isPending) {
     return (
-      <div style={{ padding: 40, color: "var(--ink-3)" }}>Loading tenant…</div>
+      <div style={{ padding: 40, color: "var(--ink-3)" }}>{t("tenants.detail.loading")}</div>
     );
   }
   if (query.isError) {
     return (
       <div style={{ padding: 40, color: "var(--rose)" }}>
-        Could not load this tenant.
+        {t("tenants.detail.errorLoad")}
       </div>
     );
   }
 
-  const t = query.data;
+  const tenant = query.data;
 
   return (
     <>
@@ -74,7 +75,7 @@ export function TenantDetailClient({ tenantId }: { tenantId: string }) {
         }}
       >
         <ArrowLeft size={14} strokeWidth={1.5} />
-        All tenants
+        {t("tenants.detail.allTenants")}
       </Link>
 
       <header className="admin-page-header" style={{ alignItems: "flex-start" }}>
@@ -92,19 +93,19 @@ export function TenantDetailClient({ tenantId }: { tenantId: string }) {
           />
           <div style={{ flex: 1 }}>
             <span className="admin-kpi-kicker">
-              {t.plan ? `${t.plan.name} plan` : "No plan selected"} · {t.country_code}
+              {tenant.plan ? t("tenants.detail.planSuffix", { plan: tenant.plan.name }) : t("tenants.detail.noPlanSelected")} · {tenant.country_code}
             </span>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 6 }}>
-              <h1 className="admin-page-title">{t.name}</h1>
-              <StatusChip status={t.status} />
+              <h1 className="admin-page-title">{tenant.name}</h1>
+              <StatusChip status={tenant.status} />
             </div>
             <p className="admin-page-sub" style={{ marginTop: 6 }}>
-              Joined {shortDate(t.created_at)} · Slug{" "}
+              {t("tenants.detail.joined", { date: shortDate(tenant.created_at) })} · {t("tenants.detail.slug")}{" "}
               <code style={{ fontFamily: "var(--mono)", color: "var(--ink-2)" }}>
-                {t.slug}
+                {tenant.slug}
               </code>
-              {t.kpis.last_activity_at && (
-                <> · Last activity {shortDate(t.kpis.last_activity_at)}</>
+              {tenant.kpis.last_activity_at && (
+                <> · {t("tenants.detail.lastActivity", { date: shortDate(tenant.kpis.last_activity_at) })}</>
               )}
             </p>
           </div>
@@ -117,7 +118,7 @@ export function TenantDetailClient({ tenantId }: { tenantId: string }) {
             style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
           >
             <LogIn size={14} strokeWidth={1.5} />
-            Log in as
+            {t("tenants.detail.loginAs")}
           </button>
         </div>
       </header>
@@ -131,12 +132,12 @@ export function TenantDetailClient({ tenantId }: { tenantId: string }) {
         }}
       >
         <KpiBlock
-          label="Last 30d revenue"
-          value={formatCents(t.kpis.last_30d_revenue_cents, t.default_currency_code)}
+          label={t("tenants.detail.kpi.last30dRevenue")}
+          value={formatCents(tenant.kpis.last_30d_revenue_cents, tenant.default_currency_code)}
         />
-        <KpiBlock label="Last 30d sales" value={String(t.kpis.last_30d_sale_count)} />
-        <KpiBlock label="Active branches" value={String(t.kpis.branch_count)} />
-        <KpiBlock label="Active users" value={String(t.kpis.user_count)} />
+        <KpiBlock label={t("tenants.detail.kpi.last30dSales")} value={String(tenant.kpis.last_30d_sale_count)} />
+        <KpiBlock label={t("tenants.detail.kpi.activeBranches")} value={String(tenant.kpis.branch_count)} />
+        <KpiBlock label={t("tenants.detail.kpi.activeUsers")} value={String(tenant.kpis.user_count)} />
       </section>
 
       <section
@@ -148,23 +149,23 @@ export function TenantDetailClient({ tenantId }: { tenantId: string }) {
         }}
       >
         <div>
-          <h2 className="admin-section-title">Recent invoices</h2>
-          {t.recent_invoices.length === 0 && (
-            <p style={{ color: "var(--ink-3)", fontSize: 13 }}>No invoices yet.</p>
+          <h2 className="admin-section-title">{t("tenants.detail.recentInvoices")}</h2>
+          {tenant.recent_invoices.length === 0 && (
+            <p style={{ color: "var(--ink-3)", fontSize: 13 }}>{t("tenants.detail.noInvoicesYet")}</p>
           )}
-          {t.recent_invoices.length > 0 && (
+          {tenant.recent_invoices.length > 0 && (
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Ref</th>
-                  <th>Period</th>
-                  <th>Due</th>
-                  <th style={{ textAlign: "end" }}>Amount</th>
-                  <th>Status</th>
+                  <th>{t("tenants.detail.invoiceTable.ref")}</th>
+                  <th>{t("tenants.detail.invoiceTable.period")}</th>
+                  <th>{t("tenants.detail.invoiceTable.due")}</th>
+                  <th style={{ textAlign: "end" }}>{t("tenants.detail.invoiceTable.amount")}</th>
+                  <th>{t("tenants.detail.invoiceTable.status")}</th>
                 </tr>
               </thead>
               <tbody>
-                {t.recent_invoices.map((inv) => (
+                {tenant.recent_invoices.map((inv) => (
                   <tr key={inv.id}>
                     <td style={{ fontFamily: "var(--mono)", fontSize: 12 }}>
                       {inv.reference_code}
@@ -192,29 +193,29 @@ export function TenantDetailClient({ tenantId }: { tenantId: string }) {
           )}
 
           <h2 className="admin-section-title" style={{ marginTop: 32 }}>
-            Branches ({t.branches.length})
+            {t("tenants.detail.branches", { count: tenant.branches.length })}
           </h2>
-          {t.branches.length === 0 && (
-            <p style={{ color: "var(--ink-3)", fontSize: 13 }}>No branches yet.</p>
+          {tenant.branches.length === 0 && (
+            <p style={{ color: "var(--ink-3)", fontSize: 13 }}>{t("tenants.detail.noBranchesYet")}</p>
           )}
-          {t.branches.length > 0 && (
+          {tenant.branches.length > 0 && (
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Code</th>
-                  <th>Name</th>
-                  <th>Currency</th>
-                  <th>Status</th>
+                  <th>{t("tenants.detail.branchTable.code")}</th>
+                  <th>{t("tenants.detail.branchTable.name")}</th>
+                  <th>{t("tenants.detail.branchTable.currency")}</th>
+                  <th>{t("tenants.detail.branchTable.status")}</th>
                 </tr>
               </thead>
               <tbody>
-                {t.branches.map((b) => (
+                {tenant.branches.map((b) => (
                   <tr key={b.id}>
                     <td style={{ fontFamily: "var(--mono)", fontSize: 12 }}>{b.code}</td>
                     <td>{b.name_i18n.en}</td>
                     <td>{b.currency_code}</td>
                     <td style={{ color: b.is_active ? "var(--sage)" : "var(--ink-3)" }}>
-                      {b.is_active ? "Active" : "Inactive"}
+                      {b.is_active ? t("tenants.detail.branchActive") : t("tenants.detail.branchInactive")}
                     </td>
                   </tr>
                 ))}
@@ -224,9 +225,9 @@ export function TenantDetailClient({ tenantId }: { tenantId: string }) {
         </div>
 
         <aside>
-          <h2 className="admin-section-title">Users ({t.users.length})</h2>
+          <h2 className="admin-section-title">{t("tenants.detail.users", { count: tenant.users.length })}</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {t.users.map((u) => (
+            {tenant.users.map((u) => (
               <div
                 key={u.id}
                 style={{
@@ -287,9 +288,7 @@ export function TenantDetailClient({ tenantId }: { tenantId: string }) {
               style={{ color: "var(--amber)", flexShrink: 0 }}
             />
             <span>
-              Logging in as a tenant user is double-logged to both the platform audit
-              and tenant audit. Destructive operations (deletes, bulk ops) are blocked
-              during impersonation.
+              {t("tenants.detail.impersonationWarning")}
             </span>
           </div>
         </aside>
@@ -297,7 +296,7 @@ export function TenantDetailClient({ tenantId }: { tenantId: string }) {
 
       {loginAsOpen && (
         <LoginAsModal
-          tenant={t}
+          tenant={tenant}
           onClose={() => setLoginAsOpen(false)}
         />
       )}

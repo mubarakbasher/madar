@@ -17,6 +17,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useAdminAuthStore } from "@/lib/auth/store";
 import { adminFetchKpi } from "@/lib/api/admin-dashboard";
+import { t } from "@/lib/i18n";
 
 type NavItem = {
   label: string;
@@ -32,39 +33,39 @@ function buildSections(
 ): Array<{ kicker: string; items: NavItem[] }> {
   return [
     {
-      kicker: "Operations",
+      kicker: t("sidebar.operations"),
       items: [
-        { label: "Dashboard", href: "/", Icon: LayoutDashboard },
-        { label: "Tenants", href: "/tenants", Icon: Users },
+        { label: t("sidebar.dashboard"), href: "/", Icon: LayoutDashboard },
+        { label: t("sidebar.tenants"), href: "/tenants", Icon: Users },
       ],
     },
     {
-      kicker: "Billing",
+      kicker: t("sidebar.billing"),
       items: [
         {
-          label: "Verification queue",
+          label: t("sidebar.verificationQueue"),
           href: "/verification",
           Icon: Inbox,
           badge: pendingVerifications > 0 ? pendingVerifications : undefined,
         },
-        { label: "Invoices", href: "/invoices", Icon: FileText },
-        { label: "Bank accounts", href: "/banking", Icon: Landmark },
+        { label: t("sidebar.invoices"), href: "/invoices", Icon: FileText },
+        { label: t("sidebar.bankAccounts"), href: "/banking", Icon: Landmark },
       ],
     },
     ...(isOwner
       ? [
           {
-            kicker: "Pricing",
-            items: [{ label: "Plans", href: "/plans", Icon: Package } as NavItem],
+            kicker: t("sidebar.pricing"),
+            items: [{ label: t("sidebar.plans"), href: "/plans", Icon: Package } as NavItem],
           },
         ]
       : []),
     {
-      kicker: "Security",
+      kicker: t("sidebar.security"),
       items: [
-        { label: "Super-admin team", href: "/team", Icon: Shield },
-        { label: "Login-as audit", href: "/login-audit", Icon: History },
-        { label: "Platform audit", href: "/platform-audit", Icon: ScrollText },
+        { label: t("sidebar.superAdminTeam"), href: "/team", Icon: Shield },
+        { label: t("sidebar.loginAsAudit"), href: "/login-audit", Icon: History },
+        { label: t("sidebar.platformAudit"), href: "/platform-audit", Icon: ScrollText },
       ],
     },
   ];
@@ -90,8 +91,8 @@ export function AdminSidebar() {
       <div className="admin-brand">
         <div className="admin-brand-mark">M</div>
         <div className="admin-brand-text">
-          <span className="admin-brand-name">Madar</span>
-          <span className="admin-brand-tag">Admin</span>
+          <span className="admin-brand-name">{t("brand.name")}</span>
+          <span className="admin-brand-tag">{t("brand.tag")}</span>
         </div>
       </div>
 
@@ -104,7 +105,7 @@ export function AdminSidebar() {
               <>
                 <item.Icon className="admin-nav-ico" strokeWidth={1.5} />
                 <span className="admin-nav-label">{item.label}</span>
-                {item.disabled ? <span className="admin-soon-pill">Soon</span> : null}
+                {item.disabled ? <span className="admin-soon-pill">{t("sidebar.soon")}</span> : null}
                 {item.badge != null ? <span className="admin-nav-badge">{item.badge}</span> : null}
               </>
             );
@@ -114,7 +115,7 @@ export function AdminSidebar() {
                   key={item.href}
                   className="admin-nav-item"
                   aria-disabled="true"
-                  title="Coming soon"
+                  title={t("sidebar.comingSoon")}
                 >
                   {inner}
                 </span>
@@ -139,10 +140,10 @@ export function AdminSidebar() {
           {(user?.name ?? "A").slice(0, 1).toUpperCase()}
         </div>
         <div className="admin-sidebar-who">
-          {user?.name ?? "Admin"}
+          {user?.name ?? t("sidebar.admin")}
           <small>{user?.role ?? ""}</small>
         </div>
-        <span className="admin-soon-pill" aria-disabled="true" title="Settings · soon">
+        <span className="admin-soon-pill" aria-disabled="true" title={t("sidebar.settingsSoon")}>
           <Settings size={12} strokeWidth={1.5} />
         </span>
       </div>

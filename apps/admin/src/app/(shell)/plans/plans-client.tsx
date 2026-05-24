@@ -10,6 +10,7 @@ import {
   type PlanResponse,
 } from "@/lib/api/admin-plans";
 import { useAdminAuthStore } from "@/lib/auth/store";
+import { t } from "@/lib/i18n";
 
 function formatCents(cents: string, currency: string): string {
   const major = Number(BigInt(cents)) / 100;
@@ -50,19 +51,18 @@ export function PlansClient() {
     <>
       <header className="admin-page-header">
         <div>
-          <span className="admin-kpi-kicker">Pricing · plans</span>
+          <span className="admin-kpi-kicker">{t("plans.kicker")}</span>
           <h1 className="admin-page-title" style={{ marginTop: 6 }}>
-            Plans
+            {t("plans.title")}
           </h1>
           <p className="admin-page-sub">
-            Subscription tiers offered to tenants. Tenant signup currently uses code <code>starter</code>;
-            create at least one plan with that code before opening signups.
+            {t("plans.subtitle")}
           </p>
         </div>
         {isOwner ? (
           <Link href="/plans/new" className="admin-btn admin-btn-primary">
             <Plus size={16} strokeWidth={1.75} />
-            <span>New plan</span>
+            <span>{t("plans.newPlan")}</span>
           </Link>
         ) : null}
       </header>
@@ -74,19 +74,19 @@ export function PlansClient() {
             checked={includeInactive}
             onChange={(e) => setIncludeInactive(e.target.checked)}
           />
-          <span>Include inactive plans</span>
+          <span>{t("plans.includeInactive")}</span>
         </label>
       </div>
 
       {query.isPending ? (
         <div className="admin-skeleton-block" aria-busy="true">
-          Loading plans…
+          {t("plans.loading")}
         </div>
       ) : query.isError ? (
         <div className="admin-error-block">
-          Couldn’t load plans.{" "}
+          {t("plans.errorLoad")}{" "}
           <button type="button" className="admin-link" onClick={() => void query.refetch()}>
-            Retry
+            {t("plans.retry")}
           </button>
         </div>
       ) : query.data.length === 0 ? (
@@ -95,13 +95,13 @@ export function PlansClient() {
         <table className="admin-table">
           <thead>
             <tr>
-              <th style={{ width: 44 }} aria-label="Icon" />
-              <th>Code</th>
-              <th>Name</th>
-              <th className="right">Price / mo</th>
-              <th>Limits (txn · user · branch · GB)</th>
-              <th>Tenants</th>
-              <th>Status</th>
+              <th style={{ width: 44 }} aria-label={t("plans.table.icon")} />
+              <th>{t("plans.table.code")}</th>
+              <th>{t("plans.table.name")}</th>
+              <th className="right">{t("plans.table.pricePerMonth")}</th>
+              <th>{t("plans.table.limits")}</th>
+              <th>{t("plans.table.tenants")}</th>
+              <th>{t("plans.table.status")}</th>
               <th style={{ width: 140 }} />
             </tr>
           </thead>
@@ -132,7 +132,7 @@ export function PlansClient() {
                 <td>{p.tenant_count}</td>
                 <td>
                   <span className={p.is_active ? "admin-chip-active" : "admin-chip-inactive"}>
-                    {p.is_active ? "Active" : "Inactive"}
+                    {p.is_active ? t("plans.table.active") : t("plans.table.inactive")}
                   </span>
                 </td>
                 <td>
@@ -143,7 +143,7 @@ export function PlansClient() {
                       disabled={toggleActive.isPending}
                       onClick={() => toggleActive.mutate({ id: p.id, active: !p.is_active })}
                     >
-                      {p.is_active ? "Deactivate" : "Activate"}
+                      {p.is_active ? t("plans.table.deactivate") : t("plans.table.activate")}
                     </button>
                   ) : null}
                 </td>
@@ -160,17 +160,16 @@ function EmptyPlans({ isOwner }: { isOwner: boolean }) {
   return (
     <div className="admin-empty-block">
       <Package size={32} strokeWidth={1.25} />
-      <h2>No plans yet</h2>
+      <h2>{t("plans.empty.title")}</h2>
       <p>
-        Plans define the subscription tiers tenants pay for. Tenant signup needs at least one plan
-        with code <code>starter</code> before it will succeed.
+        {t("plans.empty.body")}
       </p>
       {isOwner ? (
         <Link href="/plans/new" className="admin-btn admin-btn-primary">
-          Create the first plan
+          {t("plans.empty.createFirst")}
         </Link>
       ) : (
-        <p className="admin-muted">Ask the Platform Owner to create plans.</p>
+        <p className="admin-muted">{t("plans.empty.ownerOnly")}</p>
       )}
     </div>
   );

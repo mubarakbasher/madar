@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Maximize2, X } from "lucide-react";
 import { adminFetchReceiptBlob } from "@/lib/api/admin-proofs";
+import { t } from "@/lib/i18n";
 
 interface BlobState {
   url: string | null;
@@ -57,15 +58,15 @@ export function ReceiptViewer({ proofId }: { proofId: string | null }) {
   const [fullscreen, setFullscreen] = useState(false);
 
   if (!proofId) {
-    return <div className="admin-receipt-frame admin-receipt-frame--empty">Select a proof.</div>;
+    return <div className="admin-receipt-frame admin-receipt-frame--empty">{t("proofs.receipt.selectProof")}</div>;
   }
   if (isLoading) {
-    return <div className="admin-receipt-frame admin-receipt-frame--loading">Loading receipt…</div>;
+    return <div className="admin-receipt-frame admin-receipt-frame--loading">{t("proofs.receipt.loading")}</div>;
   }
   if (error || !url) {
     return (
       <div className="admin-receipt-frame admin-receipt-frame--error" role="alert">
-        Couldn&apos;t load receipt {error ? `(${error})` : ""}
+        {t("proofs.receipt.error")} {error ? `(${error})` : ""}
       </div>
     );
   }
@@ -76,15 +77,15 @@ export function ReceiptViewer({ proofId }: { proofId: string | null }) {
     <>
       <div className="admin-receipt-frame">
         {isPdf ? (
-          <iframe src={url} className="admin-receipt-pdf" title="Receipt PDF" />
+          <iframe src={url} className="admin-receipt-pdf" title={t("proofs.receipt.pdfTitle")} />
         ) : (
           <button
             type="button"
             className="admin-receipt-img-button"
             onClick={() => setFullscreen(true)}
-            aria-label="Open receipt fullscreen"
+            aria-label={t("proofs.receipt.openFullscreen")}
           >
-            <img src={url} alt="Receipt" className="admin-receipt-img" />
+            <img src={url} alt={t("proofs.receipt.altReceipt")} className="admin-receipt-img" />
             <span className="admin-receipt-fullscreen-hint">
               <Maximize2 size={14} strokeWidth={1.5} />
             </span>
@@ -97,18 +98,18 @@ export function ReceiptViewer({ proofId }: { proofId: string | null }) {
           className="admin-modal-backdrop"
           role="dialog"
           aria-modal="true"
-          aria-label="Receipt fullscreen"
+          aria-label={t("proofs.receipt.fullscreenLabel")}
           onClick={() => setFullscreen(false)}
         >
           <button
             type="button"
             className="admin-modal-close"
             onClick={() => setFullscreen(false)}
-            aria-label="Close fullscreen"
+            aria-label={t("proofs.receipt.closeFullscreen")}
           >
             <X size={20} strokeWidth={1.5} />
           </button>
-          <img src={url} alt="Receipt fullscreen" className="admin-receipt-fullscreen-img" />
+          <img src={url} alt={t("proofs.receipt.altFullscreen")} className="admin-receipt-fullscreen-img" />
         </div>
       )}
     </>

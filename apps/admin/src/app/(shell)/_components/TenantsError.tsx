@@ -1,12 +1,14 @@
+import { t } from "@/lib/i18n";
+
 export function TenantsError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="admin-error" role="alert">
-      <p className="admin-error-title">Couldn&apos;t load tenants</p>
+      <p className="admin-error-title">{t("tenants.error.title")}</p>
       <p className="admin-error-body" style={{ marginBottom: 14 }}>
-        The platform API didn&apos;t respond. Try again — if it persists, check the API service.
+        {t("tenants.error.body")}
       </p>
       <button type="button" className="admin-tb-action" onClick={onRetry}>
-        Retry
+        {t("tenants.error.retry")}
       </button>
     </div>
   );

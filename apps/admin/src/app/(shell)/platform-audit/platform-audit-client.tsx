@@ -5,6 +5,7 @@ import Link from "next/link";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { ShieldAlert } from "lucide-react";
 import { adminListPlatformAudit } from "@/lib/api/admin-audit";
+import { t } from "@/lib/i18n";
 
 function shortDateTime(iso: string): string {
   return new Date(iso).toLocaleString("en-US", {
@@ -45,10 +46,10 @@ export function PlatformAuditClient() {
   });
 
   if (query.isPending) {
-    return <div style={{ padding: 40, color: "var(--ink-3)" }}>Loading audit log…</div>;
+    return <div style={{ padding: 40, color: "var(--ink-3)" }}>{t("platformAudit.loading")}</div>;
   }
   if (query.isError) {
-    return <div style={{ padding: 40, color: "var(--rose)" }}>Could not load audit log.</div>;
+    return <div style={{ padding: 40, color: "var(--rose)" }}>{t("platformAudit.errorLoad")}</div>;
   }
 
   const data = query.data;
@@ -58,9 +59,9 @@ export function PlatformAuditClient() {
     <>
       <header className="admin-page-header">
         <div>
-          <span className="admin-kpi-kicker">Security · platform-wide</span>
+          <span className="admin-kpi-kicker">{t("platformAudit.kicker")}</span>
           <h1 className="admin-page-title" style={{ marginTop: 6 }}>
-            Platform audit log
+            {t("platformAudit.title")}
           </h1>
           <p className="admin-page-sub">
             Append-only record of every super-admin action. {data.total} event
@@ -85,8 +86,7 @@ export function PlatformAuditClient() {
       >
         <ShieldAlert size={16} strokeWidth={1.5} style={{ color: "var(--amber)", flexShrink: 0 }} />
         <span>
-          This log is append-only. Retention: 7 years. Rows cannot be edited or deleted, even by
-          super-admins.
+          {t("platformAudit.infoBanner")}
         </span>
       </div>
 
@@ -95,7 +95,7 @@ export function PlatformAuditClient() {
           type="search"
           value={actionInput}
           onChange={(e) => setActionInput(e.target.value)}
-          placeholder="Filter by action prefix (e.g. admin_login, impersonation)…"
+          placeholder={t("platformAudit.filterPlaceholder")}
           className="admin-search"
           style={{ minWidth: 320 }}
         />
@@ -104,12 +104,12 @@ export function PlatformAuditClient() {
       <table className="admin-table">
         <thead>
           <tr>
-            <th>Timestamp</th>
-            <th>Super-admin</th>
-            <th>Action</th>
-            <th>Target tenant</th>
-            <th>IP</th>
-            <th>Reason</th>
+            <th>{t("platformAudit.table.timestamp")}</th>
+            <th>{t("platformAudit.table.superAdmin")}</th>
+            <th>{t("platformAudit.table.action")}</th>
+            <th>{t("platformAudit.table.targetTenant")}</th>
+            <th>{t("platformAudit.table.ip")}</th>
+            <th>{t("platformAudit.table.reason")}</th>
           </tr>
         </thead>
         <tbody>
@@ -156,7 +156,7 @@ export function PlatformAuditClient() {
           {data.items.length === 0 && (
             <tr>
               <td colSpan={6} style={{ textAlign: "center", padding: 40, color: "var(--ink-3)" }}>
-                No audit events recorded yet.
+                {t("platformAudit.empty")}
               </td>
             </tr>
           )}
@@ -168,10 +168,10 @@ export function PlatformAuditClient() {
           Page {data.page} of {totalPages}
         </span>
         <button type="button" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={data.page <= 1}>
-          Previous
+          {t("platformAudit.pagination.previous")}
         </button>
         <button type="button" onClick={() => setPage((p) => p + 1)} disabled={data.page >= totalPages}>
-          Next
+          {t("platformAudit.pagination.next")}
         </button>
       </div>
     </>

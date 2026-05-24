@@ -11,6 +11,7 @@ import {
   adminRequestProofInfo,
 } from "@/lib/api/admin-proofs";
 import { ApiError } from "@/lib/api/client";
+import { t } from "@/lib/i18n";
 import { MatchIndicators } from "../../_components/MatchIndicators";
 import { ProofActionBar } from "../../_components/ProofActionBar";
 import { ReceiptViewer } from "../../_components/ReceiptViewer";
@@ -89,7 +90,7 @@ export function ProofDetailClient({ proofId }: { proofId: string }) {
       await adminRequestProofInfo(proofId, payload.message);
       await queryClient.invalidateQueries({ queryKey: ["admin", "proofs"] });
       setRequestingInfo(false);
-      setToast({ text: "Info requested from tenant", tone: "ok" });
+      setToast({ text: t("verification.toast.infoRequested"), tone: "ok" });
     } catch (err) {
       setToast({
         text: err instanceof ApiError ? `${err.code}: ${err.message}` : (err as Error).message,
@@ -101,17 +102,17 @@ export function ProofDetailClient({ proofId }: { proofId: string }) {
   }
 
   if (detailQuery.isPending) {
-    return <div className="admin-vq-pane-empty">Loading proof…</div>;
+    return <div className="admin-vq-pane-empty">{t("verification.loadingProof")}</div>;
   }
   if (detailQuery.isError || !detailQuery.data) {
     return (
       <div className="admin-error" role="alert">
-        <p className="admin-error-title">Couldn&apos;t load proof</p>
+        <p className="admin-error-title">{t("verification.detail.errorTitle")}</p>
         <p className="admin-error-body" style={{ marginBottom: 14 }}>
-          The proof may have been deleted or you may not have permission.
+          {t("verification.detail.errorBody")}
         </p>
         <Link href="/verification" className="admin-tb-action" style={{ textDecoration: "none" }}>
-          Back to queue
+          {t("verification.detail.backLink")}
         </Link>
       </div>
     );
@@ -129,7 +130,7 @@ export function ProofDetailClient({ proofId }: { proofId: string }) {
             style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}
           >
             <ArrowLeft size={12} strokeWidth={2} />
-            Verification queue
+            {t("verification.detail.backToQueue")}
           </Link>
           <h1 className="admin-page-title" style={{ marginTop: 6 }}>
             {p.payer_name}
@@ -146,26 +147,26 @@ export function ProofDetailClient({ proofId }: { proofId: string }) {
         <MatchIndicators proof={p} />
 
         <dl className="admin-vq-detail-grid">
-          <dt>Amount</dt>
+          <dt>{t("verification.dl.amount")}</dt>
           <dd>{formatMoney(p.amount_cents, p.currency_code)}</dd>
-          <dt>Context</dt>
+          <dt>{t("verification.dl.context")}</dt>
           <dd style={{ textTransform: "capitalize" }}>{p.context}</dd>
-          <dt>Transfer date</dt>
+          <dt>{t("verification.dl.transferDate")}</dt>
           <dd>{p.transfer_date}</dd>
-          <dt>Bank reference</dt>
+          <dt>{t("verification.dl.bankReference")}</dt>
           <dd>{p.transfer_reference ?? "—"}</dd>
-          <dt>Payer bank</dt>
+          <dt>{t("verification.dl.payerBank")}</dt>
           <dd>{p.payer_bank ?? "—"}</dd>
-          <dt>Account</dt>
+          <dt>{t("verification.dl.account")}</dt>
           <dd style={{ textTransform: "capitalize" }}>{p.bank_account_kind}</dd>
-          <dt>Submitted</dt>
+          <dt>{t("verification.dl.submitted")}</dt>
           <dd>
             {new Intl.DateTimeFormat("en-US", {
               dateStyle: "medium",
               timeStyle: "short",
             }).format(new Date(p.created_at))}
           </dd>
-          <dt>Tenant</dt>
+          <dt>{t("verification.dl.tenant")}</dt>
           <dd style={{ fontFamily: "var(--mono)", fontSize: 11.5 }}>{p.tenant_id}</dd>
         </dl>
 

@@ -13,14 +13,15 @@ import { StatusChip } from "../_components/StatusChip";
 import { TenantsSkeleton } from "../_components/TenantsSkeleton";
 import { TenantsEmpty } from "../_components/TenantsEmpty";
 import { TenantsError } from "../_components/TenantsError";
+import { t } from "@/lib/i18n";
 
-const STATUSES: Array<{ value: TenantStatus | "all"; label: string }> = [
-  { value: "all", label: "All" },
-  { value: "trialing", label: "Trial" },
-  { value: "active", label: "Active" },
-  { value: "grace_period", label: "In grace" },
-  { value: "suspended", label: "Suspended" },
-  { value: "cancelled", label: "Cancelled" },
+const STATUSES: Array<{ value: TenantStatus | "all"; labelKey: "all" | "trial" | "active" | "inGrace" | "suspended" | "cancelled" }> = [
+  { value: "all", labelKey: "all" },
+  { value: "trialing", labelKey: "trial" },
+  { value: "active", labelKey: "active" },
+  { value: "grace_period", labelKey: "inGrace" },
+  { value: "suspended", labelKey: "suspended" },
+  { value: "cancelled", labelKey: "cancelled" },
 ];
 
 const PAGE_SIZE = 50;
@@ -35,17 +36,17 @@ function formatCents(cents: string, currency: string): string {
 }
 
 function relativeTime(iso: string | null): string {
-  if (!iso) return "—";
+  if (!iso) return t("common.noData");
   const diffMs = Date.now() - new Date(iso).getTime();
   const minutes = Math.round(diffMs / 60000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes} min ago`;
+  if (minutes < 1) return t("common.justNow");
+  if (minutes < 60) return t("common.minAgo", { count: minutes });
   const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours} h ago`;
+  if (hours < 24) return t("common.hAgo", { count: hours });
   const days = Math.round(hours / 24);
-  if (days < 30) return `${days} d ago`;
+  if (days < 30) return t("common.dAgo", { count: days });
   const months = Math.round(days / 30);
-  return `${months} mo ago`;
+  return t("common.moAgo", { count: months });
 }
 
 function useDebounced<T>(value: T, ms: number): T {
@@ -85,7 +86,7 @@ export function TenantsClient() {
 
   const countriesInResults = useMemo(() => {
     if (!query.data) return [];
-    const set = new Set<string>(query.data.items.map((t) => t.country_code));
+    const set = new Set<string>(query.data.items.map((tn) => tn.country_code));
     return [...set].sort();
   }, [query.data]);
 
@@ -103,9 +104,9 @@ export function TenantsClient() {
     <>
       <header className="admin-page-header">
         <div>
-          <span className="admin-kpi-kicker">Tenants · all plans</span>
+          <span className="admin-kpi-kicker">{t("tenants.kicker")}</span>
           <h1 className="admin-page-title" style={{ marginTop: 6 }}>
-            All tenants
+            {t("tenants.title")}
           </h1>
           <p className="admin-page-sub">
             {data.total} matching · across {data.total_countries} countr
@@ -123,7 +124,7 @@ export function TenantsClient() {
             aria-pressed={status === s.value}
             onClick={() => setStatus(s.value)}
           >
-            {s.label}
+            {t(`tenants.statusFilter.${s.labelKey}`)}
           </button>
         ))}
         <span className="admin-filter-divider" />
@@ -131,9 +132,9 @@ export function TenantsClient() {
           className="admin-select"
           value={country}
           onChange={(e) => setCountry(e.target.value)}
-          aria-label="Filter by country"
+          aria-label={t("tenants.filterByCountry")}
         >
-          <option value="">All countries</option>
+          <option value="">{t("tenants.allCountries")}</option>
           {countriesInResults.map((c) => (
             <option key={c} value={c}>
               {countryFlag(c)} {countryName(c)}
@@ -152,7 +153,7 @@ export function TenantsClient() {
         <input
           type="search"
           className="admin-search-input"
-          placeholder="Tenant name or slug…"
+          placeholder={t("tenants.searchPlaceholder")}
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
         />
@@ -165,55 +166,55 @@ export function TenantsClient() {
           <table className="admin-table">
             <thead>
               <tr>
-                <th style={{ width: 44 }} aria-label="Avatar" />
-                <th>Tenant</th>
-                <th>Country</th>
-                <th>Plan</th>
-                <th>Branches</th>
-                <th>Users</th>
-                <th className="right">MRR</th>
-                <th>Status</th>
-                <th>Last activity</th>
-                <th>Signed up</th>
+                <th style={{ width: 44 }} aria-label={t("tenants.table.avatar")} />
+                <th>{t("tenants.table.tenant")}</th>
+                <th>{t("tenants.table.country")}</th>
+                <th>{t("tenants.table.plan")}</th>
+                <th>{t("tenants.table.branches")}</th>
+                <th>{t("tenants.table.users")}</th>
+                <th className="right">{t("tenants.table.mrr")}</th>
+                <th>{t("tenants.table.status")}</th>
+                <th>{t("tenants.table.lastActivity")}</th>
+                <th>{t("tenants.table.signedUp")}</th>
               </tr>
             </thead>
             <tbody>
-              {data.items.map((t) => (
-                <tr key={t.id} style={{ cursor: "pointer" }}>
+              {data.items.map((tenant) => (
+                <tr key={tenant.id} style={{ cursor: "pointer" }}>
                   <td>
                     <span className="admin-tenant-avatar">
-                      {t.name.slice(0, 1).toUpperCase()}
+                      {tenant.name.slice(0, 1).toUpperCase()}
                     </span>
                   </td>
                   <td>
                     <Link
-                      href={`/tenants/${t.id}`}
+                      href={`/tenants/${tenant.id}`}
                       style={{ textDecoration: "none", color: "inherit", display: "block" }}
                     >
-                      <div className="admin-tenant-name">{t.name}</div>
-                      <div className="admin-tenant-slug">{t.slug}</div>
+                      <div className="admin-tenant-name">{tenant.name}</div>
+                      <div className="admin-tenant-slug">{tenant.slug}</div>
                     </Link>
                   </td>
                   <td>
-                    <span style={{ marginInlineEnd: 6 }}>{countryFlag(t.country_code)}</span>
-                    {countryName(t.country_code)}
+                    <span style={{ marginInlineEnd: 6 }}>{countryFlag(tenant.country_code)}</span>
+                    {countryName(tenant.country_code)}
                   </td>
                   <td style={{ textTransform: "capitalize" }}>
-                    {t.plan ? t.plan.code : <span style={{ color: "var(--ink-4)" }}>No plan</span>}
+                    {tenant.plan ? tenant.plan.code : <span style={{ color: "var(--ink-4)" }}>{t("tenants.noPlan")}</span>}
                   </td>
-                  <td>{t.branch_count}</td>
-                  <td>{t.user_count}</td>
-                  <td className="right">{formatCents(t.mrr_cents, t.currency_code)}</td>
+                  <td>{tenant.branch_count}</td>
+                  <td>{tenant.user_count}</td>
+                  <td className="right">{formatCents(tenant.mrr_cents, tenant.currency_code)}</td>
                   <td>
-                    <StatusChip status={t.status} />
+                    <StatusChip status={tenant.status} />
                   </td>
-                  <td>{relativeTime(t.last_activity_at)}</td>
+                  <td>{relativeTime(tenant.last_activity_at)}</td>
                   <td>
                     {new Intl.DateTimeFormat("en-US", {
                       year: "numeric",
                       month: "short",
                       day: "numeric",
-                    }).format(new Date(t.created_at))}
+                    }).format(new Date(tenant.created_at))}
                   </td>
                 </tr>
               ))}
@@ -222,21 +223,21 @@ export function TenantsClient() {
 
           <div className="admin-pagination">
             <span>
-              Page {data.page} of {totalPages}
+              {t("tenants.pagination.page", { page: data.page, totalPages })}
             </span>
             <button
               type="button"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={data.page <= 1}
             >
-              Previous
+              {t("tenants.pagination.previous")}
             </button>
             <button
               type="button"
               onClick={() => setPage((p) => p + 1)}
               disabled={data.page >= totalPages}
             >
-              Next
+              {t("tenants.pagination.next")}
             </button>
           </div>
         </>

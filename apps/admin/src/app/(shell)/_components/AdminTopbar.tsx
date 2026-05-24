@@ -5,15 +5,16 @@ import { usePathname, useRouter } from "next/navigation";
 import { Moon, Search, Sun } from "lucide-react";
 import { useAdminAuthStore } from "@/lib/auth/store";
 import { adminLogout } from "@/lib/api/admin-auth";
+import { t } from "@/lib/i18n";
 
 function crumbFor(pathname: string): string {
-  if (pathname === "/") return "Dashboard";
-  if (pathname.startsWith("/tenants")) return "Tenants";
-  if (pathname.startsWith("/verification")) return "Verification queue";
-  if (pathname.startsWith("/invoices")) return "Invoices";
-  if (pathname.startsWith("/login-audit")) return "Login-as audit";
-  if (pathname.startsWith("/platform-audit")) return "Platform audit";
-  return "Admin";
+  if (pathname === "/") return t("topbar.crumb.dashboard");
+  if (pathname.startsWith("/tenants")) return t("topbar.crumb.tenants");
+  if (pathname.startsWith("/verification")) return t("topbar.crumb.verificationQueue");
+  if (pathname.startsWith("/invoices")) return t("topbar.crumb.invoices");
+  if (pathname.startsWith("/login-audit")) return t("topbar.crumb.loginAsAudit");
+  if (pathname.startsWith("/platform-audit")) return t("topbar.crumb.platformAudit");
+  return t("topbar.crumb.admin");
 }
 
 const THEME_KEY = "madar_admin_theme";
@@ -72,15 +73,15 @@ export function AdminTopbar() {
       <div className="admin-tb-spacer" />
       <div className="admin-tb-search">
         <Search size={13} strokeWidth={1.5} />
-        <input placeholder="Tenants, invoices, proofs, audit…" aria-label="Search (coming soon)" disabled />
+        <input placeholder={t("topbar.searchPlaceholder")} aria-label={t("topbar.searchLabel")} disabled />
       </div>
-      <span className="admin-tb-pill">System nominal</span>
+      <span className="admin-tb-pill">{t("topbar.systemNominal")}</span>
       <button
         type="button"
         className="admin-tb-action"
         onClick={toggleTheme}
-        aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-        title={theme === "dark" ? "Light mode" : "Dark mode"}
+        aria-label={theme === "dark" ? t("topbar.switchToLight") : t("topbar.switchToDark")}
+        title={theme === "dark" ? t("topbar.lightMode") : t("topbar.darkMode")}
         style={{ padding: "6px 10px" }}
       >
         {theme === "dark" ? <Sun size={14} strokeWidth={1.5} /> : <Moon size={14} strokeWidth={1.5} />}
@@ -91,7 +92,7 @@ export function AdminTopbar() {
         onClick={handleSignOut}
         disabled={signingOut}
       >
-        {signingOut ? "Signing out…" : "Sign out"}
+        {signingOut ? t("topbar.signingOut") : t("topbar.signOut")}
       </button>
     </header>
   );

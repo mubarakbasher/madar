@@ -4,9 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { adminListLoginAs } from "@/lib/api/admin-audit";
+import { t } from "@/lib/i18n";
 
 function formatDuration(seconds: number | null): string {
-  if (seconds === null) return "Active";
+  if (seconds === null) return t("loginAudit.durationActive");
   if (seconds < 60) return `${seconds}s`;
   const m = Math.floor(seconds / 60);
   if (m < 60) return `${m}m`;
@@ -34,10 +35,10 @@ export function LoginAuditClient() {
   });
 
   if (query.isPending) {
-    return <div style={{ padding: 40, color: "var(--ink-3)" }}>Loading sessions…</div>;
+    return <div style={{ padding: 40, color: "var(--ink-3)" }}>{t("loginAudit.loading")}</div>;
   }
   if (query.isError) {
-    return <div style={{ padding: 40, color: "var(--rose)" }}>Could not load login-as sessions.</div>;
+    return <div style={{ padding: 40, color: "var(--rose)" }}>{t("loginAudit.errorLoad")}</div>;
   }
 
   const data = query.data;
@@ -47,9 +48,9 @@ export function LoginAuditClient() {
     <>
       <header className="admin-page-header">
         <div>
-          <span className="admin-kpi-kicker">Security · impersonation</span>
+          <span className="admin-kpi-kicker">{t("loginAudit.kicker")}</span>
           <h1 className="admin-page-title" style={{ marginTop: 6 }}>
-            Login-as audit
+            {t("loginAudit.title")}
           </h1>
           <p className="admin-page-sub">
             Every time a super-admin signed in as a tenant user. {data.total} session
@@ -69,21 +70,19 @@ export function LoginAuditClient() {
           color: "var(--ink-2)",
         }}
       >
-        Append-only. Each session writes one row when started, one when ended. Action counts come
-        from <code style={{ fontFamily: "var(--mono)" }}>audit_log</code> rows tagged with{" "}
-        <code style={{ fontFamily: "var(--mono)" }}>impersonator_id</code>.
+        {t("loginAudit.infoBanner")}
       </div>
 
       <table className="admin-table">
         <thead>
           <tr>
-            <th>Started</th>
-            <th>Super-admin</th>
-            <th>Tenant</th>
-            <th>Duration</th>
-            <th style={{ textAlign: "end" }}>Actions</th>
-            <th>Reason</th>
-            <th>IP</th>
+            <th>{t("loginAudit.table.started")}</th>
+            <th>{t("loginAudit.table.superAdmin")}</th>
+            <th>{t("loginAudit.table.tenant")}</th>
+            <th>{t("loginAudit.table.duration")}</th>
+            <th style={{ textAlign: "end" }}>{t("loginAudit.table.actions")}</th>
+            <th>{t("loginAudit.table.reason")}</th>
+            <th>{t("loginAudit.table.ip")}</th>
           </tr>
         </thead>
         <tbody>
@@ -129,7 +128,7 @@ export function LoginAuditClient() {
           {data.items.length === 0 && (
             <tr>
               <td colSpan={7} style={{ textAlign: "center", padding: 40, color: "var(--ink-3)" }}>
-                No impersonation sessions recorded yet.
+                {t("loginAudit.empty")}
               </td>
             </tr>
           )}
@@ -141,10 +140,10 @@ export function LoginAuditClient() {
           Page {data.page} of {totalPages}
         </span>
         <button type="button" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={data.page <= 1}>
-          Previous
+          {t("loginAudit.pagination.previous")}
         </button>
         <button type="button" onClick={() => setPage((p) => p + 1)} disabled={data.page >= totalPages}>
-          Next
+          {t("loginAudit.pagination.next")}
         </button>
       </div>
     </>

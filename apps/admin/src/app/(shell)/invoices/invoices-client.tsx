@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { adminListInvoices, type AdminInvoiceItem } from "@/lib/api/admin-invoices";
+import { t } from "@/lib/i18n";
 
 const STATUSES = [
-  { value: "", label: "All" },
-  { value: "awaiting_payment", label: "Awaiting" },
-  { value: "in_review", label: "In review" },
-  { value: "paid", label: "Paid" },
-  { value: "overdue", label: "Overdue" },
+  { value: "", label: t("invoices.statuses.all") },
+  { value: "awaiting_payment", label: t("invoices.statuses.awaiting") },
+  { value: "in_review", label: t("invoices.statuses.inReview") },
+  { value: "paid", label: t("invoices.statuses.paid") },
+  { value: "overdue", label: t("invoices.statuses.overdue") },
 ] as const;
 
 const STATUS_TONE: Record<string, { color: string; bg: string }> = {
@@ -63,10 +64,10 @@ export function InvoicesClient() {
   });
 
   if (query.isPending) {
-    return <div style={{ padding: 40, color: "var(--ink-3)" }}>Loading invoices…</div>;
+    return <div style={{ padding: 40, color: "var(--ink-3)" }}>{t("invoices.loading")}</div>;
   }
   if (query.isError) {
-    return <div style={{ padding: 40, color: "var(--rose)" }}>Could not load invoices.</div>;
+    return <div style={{ padding: 40, color: "var(--rose)" }}>{t("invoices.errorLoad")}</div>;
   }
 
   const data = query.data;
@@ -76,9 +77,9 @@ export function InvoicesClient() {
     <>
       <header className="admin-page-header">
         <div>
-          <span className="admin-kpi-kicker">Billing · cross-tenant</span>
+          <span className="admin-kpi-kicker">{t("invoices.kicker")}</span>
           <h1 className="admin-page-title" style={{ marginTop: 6 }}>
-            All invoices
+            {t("invoices.title")}
           </h1>
           <p className="admin-page-sub">
             {data.total} invoice{data.total === 1 ? "" : "s"} matching your filters.
@@ -101,7 +102,7 @@ export function InvoicesClient() {
           type="search"
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
-          placeholder="Search by reference or tenant…"
+          placeholder={t("invoices.searchPlaceholder")}
           className="admin-search"
         />
       </div>
@@ -109,13 +110,13 @@ export function InvoicesClient() {
       <table className="admin-table">
         <thead>
           <tr>
-            <th>Invoice</th>
-            <th>Tenant</th>
-            <th>Plan</th>
-            <th style={{ textAlign: "end" }}>Amount</th>
-            <th>Issued / Due</th>
-            <th>Status</th>
-            <th style={{ textAlign: "end" }}>Days overdue</th>
+            <th>{t("invoices.table.invoice")}</th>
+            <th>{t("invoices.table.tenant")}</th>
+            <th>{t("invoices.table.plan")}</th>
+            <th style={{ textAlign: "end" }}>{t("invoices.table.amount")}</th>
+            <th>{t("invoices.table.issuedDue")}</th>
+            <th>{t("invoices.table.status")}</th>
+            <th style={{ textAlign: "end" }}>{t("invoices.table.daysOverdue")}</th>
           </tr>
         </thead>
         <tbody>
@@ -162,7 +163,7 @@ export function InvoicesClient() {
           {data.items.length === 0 && (
             <tr>
               <td colSpan={7} style={{ textAlign: "center", padding: 40, color: "var(--ink-3)" }}>
-                No invoices match your filters.
+                {t("invoices.empty")}
               </td>
             </tr>
           )}
@@ -174,10 +175,10 @@ export function InvoicesClient() {
           Page {data.page} of {totalPages}
         </span>
         <button type="button" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={data.page <= 1}>
-          Previous
+          {t("invoices.pagination.previous")}
         </button>
         <button type="button" onClick={() => setPage((p) => p + 1)} disabled={data.page >= totalPages}>
-          Next
+          {t("invoices.pagination.next")}
         </button>
       </div>
     </>

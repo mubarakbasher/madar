@@ -16,6 +16,7 @@ import {
 } from "@/lib/api/admin-plans";
 import { ApiError } from "@/lib/api/client";
 import { useAdminAuthStore } from "@/lib/auth/store";
+import { t } from "@/lib/i18n";
 
 const CURRENCIES = ["USD", "EUR", "GBP", "EGP", "SAR", "AED", "KWD", "JOD", "QAR", "BHD", "OMR", "SDG"] as const;
 
@@ -137,9 +138,9 @@ export function PlanEditorClient({ id }: { id: string }) {
   if (!isOwner) {
     return (
       <div className="admin-error-block">
-        Only the Platform Owner can edit plans.{" "}
+        {t("plans.editor.ownerOnly")}{" "}
         <Link href="/plans" className="admin-link">
-          Back to list
+          {t("plans.editor.backToList")}
         </Link>
       </div>
     );
@@ -148,7 +149,7 @@ export function PlanEditorClient({ id }: { id: string }) {
   if (!isNew && query.isPending) {
     return (
       <div className="admin-skeleton-block" aria-busy="true">
-        Loading plan…
+        {t("plans.editor.loading")}
       </div>
     );
   }
@@ -156,9 +157,9 @@ export function PlanEditorClient({ id }: { id: string }) {
   if (!isNew && query.isError) {
     return (
       <div className="admin-error-block">
-        Couldn’t load this plan.{" "}
+        {t("plans.editor.errorLoad")}{" "}
         <Link href="/plans" className="admin-link">
-          Back to list
+          {t("plans.editor.backToList")}
         </Link>
       </div>
     );
@@ -173,10 +174,10 @@ export function PlanEditorClient({ id }: { id: string }) {
         <div>
           <Link href="/plans" className="admin-link" style={{ display: "inline-flex", gap: 4, alignItems: "center" }}>
             <ArrowLeft size={14} strokeWidth={1.5} />
-            <span>All plans</span>
+            <span>{t("plans.editor.allPlans")}</span>
           </Link>
           <h1 className="admin-page-title" style={{ marginTop: 8 }}>
-            {isNew ? "New plan" : `Edit ${query.data?.code ?? "plan"}`}
+            {isNew ? t("plans.editor.newPlan") : t("plans.editor.editPlan", { code: query.data?.code ?? "plan" })}
           </h1>
         </div>
       </header>
@@ -187,9 +188,9 @@ export function PlanEditorClient({ id }: { id: string }) {
         noValidate
       >
         <section className="admin-form-section">
-          <h2 className="admin-form-section-title">Identity</h2>
+          <h2 className="admin-form-section-title">{t("plans.editor.identity")}</h2>
 
-          <Field label="Plan code" hint={isNew ? "Lowercase, no spaces. Examples: starter, growth, business." : "Plan code is immutable. Create a new plan if you need a different code."} error={form.formState.errors.code?.message}>
+          <Field label={t("plans.editor.planCode")} hint={isNew ? t("plans.editor.planCodeHintNew") : t("plans.editor.planCodeHintEdit")} error={form.formState.errors.code?.message}>
             <input
               type="text"
               className="admin-input admin-input-mono"
@@ -200,20 +201,20 @@ export function PlanEditorClient({ id }: { id: string }) {
             />
           </Field>
 
-          <Field label="English name" error={form.formState.errors.name_en?.message}>
+          <Field label={t("plans.editor.englishName")} error={form.formState.errors.name_en?.message}>
             <input type="text" className="admin-input" {...form.register("name_en")} placeholder="Starter" />
           </Field>
 
-          <Field label="Arabic name" hint="Shown to tenants who use the Arabic interface." error={form.formState.errors.name_ar?.message}>
+          <Field label={t("plans.editor.arabicName")} hint={t("plans.editor.arabicNameHint")} error={form.formState.errors.name_ar?.message}>
             <input type="text" className="admin-input" {...form.register("name_ar")} placeholder="البداية" dir="rtl" />
           </Field>
         </section>
 
         <section className="admin-form-section">
-          <h2 className="admin-form-section-title">Price</h2>
+          <h2 className="admin-form-section-title">{t("plans.editor.price")}</h2>
 
           <div className="admin-form-row">
-            <Field label="Monthly price" error={form.formState.errors.monthly_price_major?.message} style={{ flex: 2 }}>
+            <Field label={t("plans.editor.monthlyPrice")} error={form.formState.errors.monthly_price_major?.message} style={{ flex: 2 }}>
               <input
                 type="number"
                 step="0.01"
@@ -223,7 +224,7 @@ export function PlanEditorClient({ id }: { id: string }) {
               />
             </Field>
 
-            <Field label="Currency" error={form.formState.errors.currency_code?.message} style={{ flex: 1 }}>
+            <Field label={t("plans.editor.currency")} error={form.formState.errors.currency_code?.message} style={{ flex: 1 }}>
               <select className="admin-input" {...form.register("currency_code")}>
                 {CURRENCIES.map((c) => (
                   <option key={c} value={c}>
@@ -236,24 +237,24 @@ export function PlanEditorClient({ id }: { id: string }) {
         </section>
 
         <section className="admin-form-section">
-          <h2 className="admin-form-section-title">Limits</h2>
+          <h2 className="admin-form-section-title">{t("plans.editor.limitsTitle")}</h2>
           <p className="admin-form-section-sub">
-            Enter <code>-1</code> for unlimited. These caps are enforced on the tenant app at usage time.
+            {t("plans.editor.limitsHint")}
           </p>
 
           <div className="admin-form-row">
-            <Field label="Transactions / month" error={form.formState.errors.limit_txns?.message}>
+            <Field label={t("plans.editor.txnsPerMonth")} error={form.formState.errors.limit_txns?.message}>
               <input type="number" step="1" className="admin-input" {...form.register("limit_txns", { valueAsNumber: true })} />
             </Field>
-            <Field label="Users" error={form.formState.errors.limit_users?.message}>
+            <Field label={t("plans.editor.users")} error={form.formState.errors.limit_users?.message}>
               <input type="number" step="1" className="admin-input" {...form.register("limit_users", { valueAsNumber: true })} />
             </Field>
           </div>
           <div className="admin-form-row">
-            <Field label="Branches" error={form.formState.errors.limit_branches?.message}>
+            <Field label={t("plans.editor.branches")} error={form.formState.errors.limit_branches?.message}>
               <input type="number" step="1" className="admin-input" {...form.register("limit_branches", { valueAsNumber: true })} />
             </Field>
-            <Field label="Storage (GB)" error={form.formState.errors.limit_storage_gb?.message}>
+            <Field label={t("plans.editor.storageGb")} error={form.formState.errors.limit_storage_gb?.message}>
               <input type="number" step="1" className="admin-input" {...form.register("limit_storage_gb", { valueAsNumber: true })} />
             </Field>
           </div>
@@ -263,11 +264,11 @@ export function PlanEditorClient({ id }: { id: string }) {
 
         <div className="admin-form-actions">
           <Link href="/plans" className="admin-btn">
-            Cancel
+            {t("plans.editor.cancel")}
           </Link>
           <button type="submit" className="admin-btn admin-btn-primary" disabled={mutation.isPending}>
             <Save size={16} strokeWidth={1.75} />
-            <span>{mutation.isPending ? "Saving…" : isNew ? "Create plan" : "Save changes"}</span>
+            <span>{mutation.isPending ? t("plans.editor.saving") : isNew ? t("plans.editor.createPlan") : t("plans.editor.saveChanges")}</span>
           </button>
         </div>
       </form>

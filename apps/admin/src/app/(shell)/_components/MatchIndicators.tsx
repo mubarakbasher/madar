@@ -1,5 +1,6 @@
 import { Check, X, Minus } from "lucide-react";
 import type { ProofItem } from "@/lib/api/admin-proofs";
+import { t } from "@/lib/i18n";
 
 type Tone = "ok" | "bad" | "neutral";
 
@@ -23,22 +24,22 @@ function compute(proof: ProofItem): Pill[] {
   return [
     // Amount needs the linked invoice/sale to compare against — defer to a
     // server-computed match flag in a later slice. Show as neutral for now.
-    { label: "Amount", value: formatMoney(proof.amount_cents, proof.currency_code), tone: "neutral" },
+    { label: t("proofs.match.amount"), value: formatMoney(proof.amount_cents, proof.currency_code), tone: "neutral" },
     {
-      label: "Date",
+      label: t("proofs.match.date"),
       value: new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(
         transferMs ? new Date(transferMs) : new Date(),
       ),
       tone: dateOk ? "ok" : "bad",
     },
     {
-      label: "Reference",
-      value: referenceOk ? (proof.transfer_reference as string) : "missing",
+      label: t("proofs.match.reference"),
+      value: referenceOk ? (proof.transfer_reference as string) : t("proofs.match.referenceMissing"),
       tone: referenceOk ? "ok" : "bad",
     },
     {
-      label: "Account",
-      value: proof.bank_account_kind === "platform" ? "Platform" : "Tenant",
+      label: t("proofs.match.account"),
+      value: proof.bank_account_kind === "platform" ? t("proofs.match.platform") : t("proofs.match.tenant"),
       tone: accountOk ? "ok" : "bad",
     },
   ];
@@ -60,7 +61,7 @@ function formatMoney(cents: string, currency: string): string {
 export function MatchIndicators({ proof }: { proof: ProofItem }) {
   const pills = compute(proof);
   return (
-    <div className="admin-match-row" role="list" aria-label="Verification match indicators">
+    <div className="admin-match-row" role="list" aria-label={t("proofs.match.matchLabel")}>
       {pills.map((p) => (
         <span
           key={p.label}

@@ -1,0 +1,653 @@
+{
+  "brand": {
+    "name": "Madar",
+    "panel": "Admin Panel",
+    "mark": "M",
+    "tag": "Admin"
+  },
+  "auth": {
+    "login": {
+      "heading": "Welcome back",
+      "subtitle": "Sign in to your Madar admin workspace.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "admin@platform.test",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Your password",
+      "remember": "Keep me signed in on this device",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "submit": "Sign in",
+      "submitting": "Signing in…",
+      "footHint": "Need access?",
+      "footAction": "Contact your platform owner",
+      "errors": {
+        "invalidCredentials": "Email or password is incorrect.",
+        "mfaNotEnrolled": "Multi-factor authentication is required but not yet enrolled. Contact the platform owner.",
+        "rateLimited": "Too many attempts — wait a minute, then try again.",
+        "network": "Network error — please try again.",
+        "unknown": "Something went wrong. Please try again."
+      }
+    },
+    "mfa": {
+      "heading": "Two-step verification",
+      "subtitle": "Enter the 6-digit code from your authenticator app.",
+      "signedInAs": "Signed in as",
+      "submit": "Verify and sign in",
+      "submitting": "Verifying…",
+      "back": "← Back to password",
+      "recoveryComingSoon": "Use recovery code",
+      "recoveryHint": "Coming soon",
+      "lostAccessPrompt": "Lost access to your authenticator?",
+      "lostAccessAction": "Contact your workspace owner",
+      "digitLabel": "Digit {index}",
+      "errors": {
+        "invalid": "Verification code is incorrect — try again.",
+        "pendingInvalid": "Your verification session expired — sign in again.",
+        "rateLimited": "Too many attempts — wait a minute, then try again.",
+        "unknown": "Something went wrong. Please try again."
+      }
+    },
+    "acceptInvite": {
+      "invalidTitle": "Invalid invite link",
+      "invalidBody": "This invitation link is missing required parameters. Please check your email for the correct link.",
+      "successTitle": "Account activated",
+      "successBody": "Your password has been set. You can now sign in with your credentials. MFA setup will be required on first login.",
+      "goToSignIn": "Go to sign in",
+      "heading": "Set your password",
+      "subtitle": "Create a secure password (min 12 characters) to activate your admin account.",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Minimum 12 characters",
+      "confirmLabel": "Confirm password",
+      "confirmPlaceholder": "Re-enter your password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "submit": "Activate account",
+      "submitting": "Activating...",
+      "mfaNote": "After activation you will need to set up two-factor authentication on first sign-in.",
+      "errors": {
+        "tooShort": "Password must be at least 12 characters.",
+        "mismatch": "Passwords do not match.",
+        "inviteInvalid": "This invite link is invalid or has expired. Please request a new invitation.",
+        "unknown": "Something went wrong. Please try again.",
+        "network": "Network error. Please try again."
+      }
+    }
+  },
+  "sidebar": {
+    "operations": "Operations",
+    "dashboard": "Dashboard",
+    "tenants": "Tenants",
+    "billing": "Billing",
+    "verificationQueue": "Verification queue",
+    "invoices": "Invoices",
+    "bankAccounts": "Bank accounts",
+    "pricing": "Pricing",
+    "plans": "Plans",
+    "security": "Security",
+    "superAdminTeam": "Super-admin team",
+    "loginAsAudit": "Login-as audit",
+    "platformAudit": "Platform audit",
+    "soon": "Soon",
+    "comingSoon": "Coming soon",
+    "settingsSoon": "Settings · soon",
+    "admin": "Admin"
+  },
+  "topbar": {
+    "searchPlaceholder": "Tenants, invoices, proofs, audit…",
+    "searchLabel": "Search (coming soon)",
+    "systemNominal": "System nominal",
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "signOut": "Sign out",
+    "signingOut": "Signing out…",
+    "crumb": {
+      "dashboard": "Dashboard",
+      "tenants": "Tenants",
+      "verificationQueue": "Verification queue",
+      "invoices": "Invoices",
+      "loginAsAudit": "Login-as audit",
+      "platformAudit": "Platform audit",
+      "admin": "Admin"
+    }
+  },
+  "home": {
+    "welcome": "Welcome, {name}.",
+    "placeholder": "The admin dashboard ships in task 1.14. This page just proves the auth round-trip works end-to-end.",
+    "signOut": "Sign out",
+    "signingOut": "Signing out…"
+  },
+  "status": {
+    "trial": "Trial",
+    "active": "Active",
+    "inGrace": "In grace",
+    "suspended": "Suspended",
+    "cancelled": "Cancelled"
+  },
+  "dashboard": {
+    "errorTitle": "Couldn't load dashboard",
+    "errorBody": "The platform API didn't respond. Try again — if it persists, check the API service.",
+    "retry": "Retry",
+    "loadingSr": "Loading dashboard…",
+    "noPendingVerifications": "No pending verifications.",
+    "pendingVerifications": "{count} payment proof{count, plural, one {} other {s}} awaiting verification.",
+    "kpi": {
+      "monthlyRecurring": "Monthly recurring",
+      "acrossPayingTenants": "across paying tenants",
+      "activeTenants": "Active tenants",
+      "activeTrialingNote": "active + trialing · last 7 days",
+      "trialsEndingSoon": "Trials ending soon",
+      "withinDays": "within {days} days",
+      "pendingVerifications": "Pending verifications",
+      "oldestDays": "oldest · {days} d",
+      "queueClear": "queue clear",
+      "system": "System",
+      "healthy": "Healthy",
+      "uptimeNote": "{pct}% · 30d"
+    },
+    "verificationPanel": "Verification queue",
+    "openQueue": "Open queue →",
+    "verificationEmpty": "No payment proofs are awaiting verification. When tenants submit bank-transfer receipts, they'll appear here.",
+    "verificationPending": "{count} proof{count, plural, one {} other {s}} pending · oldest {days} days.",
+    "recentActivity": "Recent activity",
+    "noActivityYet": "No activity yet.",
+    "charts": {
+      "tenantGrowth": "Tenant growth · 90 days",
+      "tenantRange": "{first} → {last} tenants",
+      "mrrTrend": "MRR trend · 90 days",
+      "mrrLabel": "MRR"
+    }
+  },
+  "tenants": {
+    "kicker": "Tenants · all plans",
+    "title": "All tenants",
+    "matchingCount": "{total} matching · across {countries} countr{countries, plural, one {y} other {ies}}",
+    "allCountries": "All countries",
+    "filterByCountry": "Filter by country",
+    "searchPlaceholder": "Tenant name or slug…",
+    "noPlan": "No plan",
+    "table": {
+      "avatar": "Avatar",
+      "tenant": "Tenant",
+      "country": "Country",
+      "plan": "Plan",
+      "branches": "Branches",
+      "users": "Users",
+      "mrr": "MRR",
+      "status": "Status",
+      "lastActivity": "Last activity",
+      "signedUp": "Signed up"
+    },
+    "pagination": {
+      "page": "Page {page} of {totalPages}",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "empty": {
+      "filteredTitle": "No tenants match those filters",
+      "filteredBody": "Try widening the filters or clearing the search.",
+      "defaultTitle": "No tenants yet",
+      "defaultBody": "Tenants appear here as they sign up."
+    },
+    "error": {
+      "title": "Couldn't load tenants",
+      "body": "The platform API didn't respond. Try again — if it persists, check the API service.",
+      "retry": "Retry"
+    },
+    "skeleton": {
+      "sr": "Loading tenants…"
+    },
+    "statusFilter": {
+      "all": "All",
+      "trial": "Trial",
+      "active": "Active",
+      "inGrace": "In grace",
+      "suspended": "Suspended",
+      "cancelled": "Cancelled"
+    },
+    "detail": {
+      "allTenants": "All tenants",
+      "planSuffix": "{plan} plan",
+      "noPlanSelected": "No plan selected",
+      "joined": "Joined {date}",
+      "slug": "Slug",
+      "lastActivity": "Last activity {date}",
+      "loginAs": "Log in as",
+      "kpi": {
+        "last30dRevenue": "Last 30d revenue",
+        "last30dSales": "Last 30d sales",
+        "activeBranches": "Active branches",
+        "activeUsers": "Active users"
+      },
+      "recentInvoices": "Recent invoices",
+      "noInvoicesYet": "No invoices yet.",
+      "invoiceTable": {
+        "ref": "Ref",
+        "period": "Period",
+        "due": "Due",
+        "amount": "Amount",
+        "status": "Status"
+      },
+      "branches": "Branches ({count})",
+      "noBranchesYet": "No branches yet.",
+      "branchTable": {
+        "code": "Code",
+        "name": "Name",
+        "currency": "Currency",
+        "status": "Status"
+      },
+      "branchActive": "Active",
+      "branchInactive": "Inactive",
+      "users": "Users ({count})",
+      "impersonationWarning": "Logging in as a tenant user is double-logged to both the platform audit and tenant audit. Destructive operations (deletes, bulk ops) are blocked during impersonation.",
+      "loading": "Loading tenant…",
+      "errorLoad": "Could not load this tenant."
+    }
+  },
+  "loginAs": {
+    "title": "Log in as a tenant user",
+    "description": "You will be signed in as the selected user for up to one hour. Every action you take will be double-logged to both the platform audit and the {tenantName} tenant audit.",
+    "signInAs": "Sign in as",
+    "reasonLabel": "Reason (required, audited)",
+    "reasonPlaceholder": "e.g. Investigating sync issue reported by owner",
+    "reasonCount": "{count} / 280",
+    "close": "Close",
+    "cancel": "Cancel",
+    "submit": "Start impersonation",
+    "submitting": "Starting…",
+    "validationError": "Pick a target user and provide a reason (at least 3 characters).",
+    "genericError": "Could not start impersonation."
+  },
+  "verification": {
+    "kicker": "Finance · oldest first",
+    "title": "Verification queue",
+    "subCount": "{total} {status} · subscription proofs only",
+    "loading": "Loading…",
+    "keyboard": "Keyboard:",
+    "keyboardHint": "J/K navigate · A approve · R reject",
+    "statuses": {
+      "pending": "Pending",
+      "verified": "Verified",
+      "rejected": "Rejected",
+      "all": "All"
+    },
+    "loadingQueue": "Loading queue…",
+    "errorQueue": "Couldn't load the queue. Refresh to retry.",
+    "emptyPending": "Queue is clear. 🎉",
+    "emptyFiltered": "No proofs match this filter.",
+    "noRef": "no ref",
+    "today": "today",
+    "daysPending": "{days}d pending",
+    "selectProof": "Select a proof from the list.",
+    "loadingProof": "Loading proof…",
+    "errorProof": "Couldn't load this proof.",
+    "openDetail": "Open detail →",
+    "dl": {
+      "amount": "Amount",
+      "transferDate": "Transfer date",
+      "bankReference": "Bank reference",
+      "payerBank": "Payer bank",
+      "submitted": "Submitted",
+      "account": "Account",
+      "context": "Context",
+      "tenant": "Tenant"
+    },
+    "detail": {
+      "backToQueue": "Verification queue",
+      "errorTitle": "Couldn't load proof",
+      "errorBody": "The proof may have been deleted or you may not have permission.",
+      "backLink": "Back to queue"
+    },
+    "toast": {
+      "verified": "Proof verified · {amount}",
+      "rejected": "Proof rejected · {reason}",
+      "infoRequested": "Info requested from tenant"
+    }
+  },
+  "proofs": {
+    "action": {
+      "requestInfo": "Request info",
+      "reject": "Reject",
+      "approve": "Approve",
+      "approving": "Approving..."
+    },
+    "resolved": {
+      "verified": "Verified",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled by submitter."
+    },
+    "match": {
+      "amount": "Amount",
+      "date": "Date",
+      "reference": "Reference",
+      "referenceMissing": "missing",
+      "account": "Account",
+      "platform": "Platform",
+      "tenant": "Tenant",
+      "matchLabel": "Verification match indicators"
+    },
+    "receipt": {
+      "selectProof": "Select a proof.",
+      "loading": "Loading receipt…",
+      "error": "Couldn't load receipt",
+      "pdfTitle": "Receipt PDF",
+      "openFullscreen": "Open receipt fullscreen",
+      "altReceipt": "Receipt",
+      "closeFullscreen": "Close fullscreen",
+      "fullscreenLabel": "Receipt fullscreen",
+      "altFullscreen": "Receipt fullscreen"
+    },
+    "reject": {
+      "title": "Reject this proof",
+      "cancel": "Cancel",
+      "body": "Pick a reason. The tenant will be notified and can resubmit a new proof.",
+      "notesLabel": "Notes",
+      "notesHint": "(internal — visible to your teammates)",
+      "notesPlaceholder": "Optional context for the audit log",
+      "submit": "Reject and notify tenant",
+      "submitting": "Rejecting…",
+      "fallbackError": "Reject failed. Please try again.",
+      "reasons": {
+        "amount": "Wrong amount transferred",
+        "unread": "Unreadable / blurry receipt",
+        "account": "Sent to wrong account",
+        "dup": "Duplicate of an earlier proof",
+        "fraud": "Suspected fraud / mismatch",
+        "other": "Other (explain below)"
+      }
+    },
+    "requestInfo": {
+      "title": "Request more information",
+      "cancel": "Cancel",
+      "body": "Send a message to the tenant asking for clarification. The proof will stay pending.",
+      "messageLabel": "Message to tenant",
+      "messagePlaceholder": "e.g. The transfer reference is not visible in the receipt. Could you upload a clearer image?",
+      "submit": "Send request",
+      "submitting": "Sending...",
+      "fallbackError": "Request failed. Please try again."
+    }
+  },
+  "invoices": {
+    "kicker": "Billing · cross-tenant",
+    "title": "All invoices",
+    "matchingCount": "{total} invoice{total, plural, one {} other {s}} matching your filters.",
+    "searchPlaceholder": "Search by reference or tenant…",
+    "statuses": {
+      "all": "All",
+      "awaiting": "Awaiting",
+      "inReview": "In review",
+      "paid": "Paid",
+      "overdue": "Overdue"
+    },
+    "table": {
+      "invoice": "Invoice",
+      "tenant": "Tenant",
+      "plan": "Plan",
+      "amount": "Amount",
+      "issuedDue": "Issued / Due",
+      "status": "Status",
+      "daysOverdue": "Days overdue",
+      "due": "Due {date}"
+    },
+    "empty": "No invoices match your filters.",
+    "loading": "Loading invoices…",
+    "errorLoad": "Could not load invoices.",
+    "pagination": {
+      "page": "Page {page} of {totalPages}",
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
+  "plans": {
+    "kicker": "Pricing · plans",
+    "title": "Plans",
+    "subtitle": "Subscription tiers offered to tenants. Tenant signup currently uses code starter; create at least one plan with that code before opening signups.",
+    "newPlan": "New plan",
+    "includeInactive": "Include inactive plans",
+    "loading": "Loading plans…",
+    "errorLoad": "Couldn't load plans.",
+    "retry": "Retry",
+    "table": {
+      "icon": "Icon",
+      "code": "Code",
+      "name": "Name",
+      "pricePerMonth": "Price / mo",
+      "limits": "Limits (txn · user · branch · GB)",
+      "tenants": "Tenants",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "deactivate": "Deactivate",
+      "activate": "Activate"
+    },
+    "empty": {
+      "title": "No plans yet",
+      "body": "Plans define the subscription tiers tenants pay for. Tenant signup needs at least one plan with code starter before it will succeed.",
+      "createFirst": "Create the first plan",
+      "ownerOnly": "Ask the Platform Owner to create plans."
+    },
+    "editor": {
+      "allPlans": "All plans",
+      "newPlan": "New plan",
+      "editPlan": "Edit {code}",
+      "ownerOnly": "Only the Platform Owner can edit plans.",
+      "backToList": "Back to list",
+      "loading": "Loading plan…",
+      "errorLoad": "Couldn't load this plan.",
+      "identity": "Identity",
+      "planCode": "Plan code",
+      "planCodeHintNew": "Lowercase, no spaces. Examples: starter, growth, business.",
+      "planCodeHintEdit": "Plan code is immutable. Create a new plan if you need a different code.",
+      "englishName": "English name",
+      "arabicName": "Arabic name",
+      "arabicNameHint": "Shown to tenants who use the Arabic interface.",
+      "price": "Price",
+      "monthlyPrice": "Monthly price",
+      "currency": "Currency",
+      "limitsTitle": "Limits",
+      "limitsHint": "Enter -1 for unlimited. These caps are enforced on the tenant app at usage time.",
+      "txnsPerMonth": "Transactions / month",
+      "users": "Users",
+      "branches": "Branches",
+      "storageGb": "Storage (GB)",
+      "cancel": "Cancel",
+      "saving": "Saving…",
+      "createPlan": "Create plan",
+      "saveChanges": "Save changes"
+    }
+  },
+  "banking": {
+    "kicker": "Finance · banking",
+    "title": "Platform Bank Accounts",
+    "subtitle": "Bank accounts displayed to tenants for subscription payment transfers. Keep details accurate and disable accounts no longer in use.",
+    "addAccount": "Add account",
+    "includeDisabled": "Include disabled accounts",
+    "loading": "Loading bank accounts...",
+    "errorLoad": "Could not load bank accounts.",
+    "retry": "Retry",
+    "disabled": "Disabled",
+    "confirmReveal": "Confirm reveal",
+    "cancel": "Cancel",
+    "reveal": "Reveal",
+    "hide": "Hide",
+    "edit": "Edit",
+    "disable": "Disable",
+    "enable": "Enable",
+    "ibanPrefix": "IBAN:",
+    "swiftPrefix": "SWIFT:",
+    "empty": {
+      "title": "No bank accounts yet",
+      "body": "Platform bank accounts are shown to tenants when they need to transfer subscription payments. Add at least one account to enable bank-transfer billing.",
+      "createFirst": "Add the first account",
+      "ownerOnly": "Ask the Platform Owner to add bank accounts."
+    },
+    "modal": {
+      "editTitle": "Edit bank account",
+      "addTitle": "Add bank account",
+      "bankName": "Bank name *",
+      "accountHolder": "Account holder *",
+      "accountNumberNew": "Account number *",
+      "accountNumberEdit": "Account number (leave blank to keep)",
+      "iban": "IBAN (optional)",
+      "swift": "SWIFT (optional)",
+      "currencyCode": "Currency code *",
+      "countryCode": "Country code *",
+      "displayName": "Display name (English)",
+      "displayNamePlaceholder": "e.g. Primary USD account",
+      "notes": "Notes (English)",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "update": "Update",
+      "create": "Create",
+      "fallbackError": "Failed to save"
+    }
+  },
+  "team": {
+    "kicker": "Settings",
+    "title": "Team",
+    "subtitle": "Manage super-admin team members, roles, and invitations.",
+    "tabs": {
+      "members": "Members",
+      "roles": "Roles"
+    },
+    "inviteMember": "Invite member",
+    "loading": "Loading team members...",
+    "errorLoad": "Could not load team.",
+    "retry": "Retry",
+    "table": {
+      "avatar": "Avatar",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "mfa": "MFA",
+      "mfaEnabled": "MFA enabled",
+      "mfaNotEnabled": "MFA not enabled",
+      "lastLogin": "Last login",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "memberStatus": {
+      "pending": "Pending",
+      "deactivated": "Deactivated",
+      "active": "Active"
+    },
+    "menu": {
+      "changeRole": "Change role",
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate",
+      "confirmDeactivate": "Deactivate {name}? They will lose access."
+    },
+    "empty": {
+      "title": "No team members yet",
+      "body": "Invite people to help manage the platform — finance, support, or developer roles.",
+      "inviteFirst": "Invite first member",
+      "ownerOnly": "Only the Platform Owner can invite team members."
+    },
+    "invite": {
+      "title": "Invite team member",
+      "emailLabel": "Email",
+      "emailPlaceholder": "colleague@company.com",
+      "nameLabel": "Name",
+      "namePlaceholder": "Full name",
+      "roleLabel": "Role",
+      "cancel": "Cancel",
+      "submit": "Send invite",
+      "submitting": "Sending...",
+      "fallbackError": "Failed to send invite."
+    },
+    "changeRole": {
+      "title": "Change role for {name}",
+      "newRole": "New role",
+      "cancel": "Cancel",
+      "submit": "Update role",
+      "submitting": "Updating...",
+      "fallbackError": "Failed to update role."
+    },
+    "roles": {
+      "owner": "Platform Owner",
+      "finance": "Finance / Verifier",
+      "support": "Support",
+      "developer": "Developer",
+      "readonly": "Read-only"
+    },
+    "roleDescriptions": {
+      "owner": "Full access -- manage team, billing, tenants, impersonation",
+      "finance": "Verify payments, view invoices, view tenants, view reports",
+      "support": "View tenants, impersonate for support, view audit logs",
+      "developer": "View system health, logs, feature flags",
+      "readonly": "View dashboard and reports only"
+    },
+    "rolePermissions": {
+      "owner": ["Manage team members", "Manage plans and billing", "View and edit all tenants", "Impersonate tenant users", "Access all platform settings"],
+      "finance": ["Verify payment proofs", "View invoices and billing", "View tenant list (read-only)", "View financial reports"],
+      "support": ["View tenants and their details", "Impersonate for support (logged)", "View audit logs", "Cannot modify billing or plans"],
+      "developer": ["View system health dashboard", "View application logs", "Manage feature flags", "Cannot access billing or tenant data"],
+      "readonly": ["View main dashboard KPIs", "View aggregate reports", "No write access to any resource"]
+    },
+    "memberCount": "{count} member{count, plural, one {} other {s}}"
+  },
+  "loginAudit": {
+    "kicker": "Security · impersonation",
+    "title": "Login-as audit",
+    "subtitle": "Every time a super-admin signed in as a tenant user. {total} session{total, plural, one {} other {s}}.",
+    "infoBanner": "Append-only. Each session writes one row when started, one when ended. Action counts come from audit_log rows tagged with impersonator_id.",
+    "table": {
+      "started": "Started",
+      "superAdmin": "Super-admin",
+      "tenant": "Tenant",
+      "duration": "Duration",
+      "actions": "Actions",
+      "reason": "Reason",
+      "ip": "IP"
+    },
+    "durationActive": "Active",
+    "empty": "No impersonation sessions recorded yet.",
+    "loading": "Loading sessions…",
+    "errorLoad": "Could not load login-as sessions.",
+    "pagination": {
+      "page": "Page {page} of {totalPages}",
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
+  "platformAudit": {
+    "kicker": "Security · platform-wide",
+    "title": "Platform audit log",
+    "subtitle": "Append-only record of every super-admin action. {total} event{total, plural, one {} other {s}}.",
+    "infoBanner": "This log is append-only. Retention: 7 years. Rows cannot be edited or deleted, even by super-admins.",
+    "filterPlaceholder": "Filter by action prefix (e.g. admin_login, impersonation)…",
+    "table": {
+      "timestamp": "Timestamp",
+      "superAdmin": "Super-admin",
+      "action": "Action",
+      "targetTenant": "Target tenant",
+      "ip": "IP",
+      "reason": "Reason"
+    },
+    "empty": "No audit events recorded yet.",
+    "loading": "Loading audit log…",
+    "errorLoad": "Could not load audit log.",
+    "pagination": {
+      "page": "Page {page} of {totalPages}",
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
+  "common": {
+    "cancel": "Cancel",
+    "retry": "Retry",
+    "save": "Save",
+    "close": "Close",
+    "loading": "Loading…",
+    "previous": "Previous",
+    "next": "Next",
+    "justNow": "just now",
+    "minAgo": "{count} min ago",
+    "hAgo": "{count} h ago",
+    "dAgo": "{count} d ago",
+    "moAgo": "{count} mo ago",
+    "never": "Never",
+    "noData": "—"
+  }
+}

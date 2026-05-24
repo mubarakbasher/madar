@@ -1,5 +1,5 @@
 import { ShieldCheck } from "lucide-react";
-import { labels } from "../../lib/copy";
+import { t } from "../../lib/i18n";
 
 export default function AdminAuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -9,10 +9,10 @@ export default function AdminAuthLayout({ children }: { children: React.ReactNod
           <div className="grid h-9 w-9 place-items-center rounded-lg bg-accent text-white font-serif text-xl">
             M
           </div>
-          <span className="font-serif text-xl tracking-tight">{labels.brand.name}</span>
+          <span className="font-serif text-xl tracking-tight">{t("brand.name")}</span>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft px-2.5 py-0.5 text-[10px] font-sans font-semibold uppercase tracking-wider text-accent-ink">
             <ShieldCheck className="h-3 w-3" strokeWidth={2} />
-            {labels.brand.panel}
+            {t("brand.panel")}
           </span>
         </div>
       </header>

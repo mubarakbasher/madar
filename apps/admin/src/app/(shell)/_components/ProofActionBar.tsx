@@ -2,6 +2,7 @@
 
 import { Check, X, MessageSquare } from "lucide-react";
 import type { ProofItem } from "@/lib/api/admin-proofs";
+import { t } from "@/lib/i18n";
 
 export function ProofActionBar({
   proof,
@@ -21,7 +22,7 @@ export function ProofActionBar({
       <div className="admin-proof-resolved admin-proof-resolved--ok">
         <Check size={14} strokeWidth={2} />
         <div>
-          <strong>Verified</strong>
+          <strong>{t("proofs.resolved.verified")}</strong>
           {proof.verified_at && (
             <span className="admin-proof-resolved-meta">
               {" · "}
@@ -41,7 +42,7 @@ export function ProofActionBar({
       <div className="admin-proof-resolved admin-proof-resolved--bad">
         <X size={14} strokeWidth={2} />
         <div>
-          <strong>Rejected</strong>
+          <strong>{t("proofs.resolved.rejected")}</strong>
           {proof.rejection_reason && (
             <span className="admin-proof-resolved-meta"> · {proof.rejection_reason}</span>
           )}
@@ -53,7 +54,7 @@ export function ProofActionBar({
   if (proof.status === "cancelled") {
     return (
       <div className="admin-proof-resolved admin-proof-resolved--neutral">
-        Cancelled by submitter.
+        {t("proofs.resolved.cancelled")}
       </div>
     );
   }
@@ -63,11 +64,11 @@ export function ProofActionBar({
       {onRequestInfo && (
         <button type="button" className="admin-tb-action" onClick={onRequestInfo} disabled={busy}>
           <MessageSquare size={14} strokeWidth={1.5} />
-          Request info
+          {t("proofs.action.requestInfo")}
         </button>
       )}
       <button type="button" className="admin-btn-danger" onClick={onReject} disabled={busy}>
-        Reject
+        {t("proofs.action.reject")}
       </button>
       <button
         type="button"
@@ -75,7 +76,7 @@ export function ProofActionBar({
         onClick={onApprove}
         disabled={busy}
       >
-        {busy ? "Approving..." : "Approve"}
+        {busy ? t("proofs.action.approving") : t("proofs.action.approve")}
       </button>
     </div>
   );

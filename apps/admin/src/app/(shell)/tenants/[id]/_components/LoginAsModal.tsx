@@ -4,6 +4,7 @@ import { useState } from "react";
 import { X, LogIn } from "lucide-react";
 import { adminStartImpersonation, type TenantDetail } from "@/lib/api/admin-tenant-detail";
 import { ApiError } from "@/lib/api/client";
+import { t } from "@/lib/i18n";
 
 const TENANT_ORIGIN =
   (typeof process !== "undefined" && process.env.NEXT_PUBLIC_TENANT_WEB_ORIGIN) ||
@@ -26,7 +27,7 @@ export function LoginAsModal({
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!targetUserId || reason.trim().length < 3) {
-      setError("Pick a target user and provide a reason (at least 3 characters).");
+      setError(t("loginAs.validationError"));
       return;
     }
     setSubmitting(true);
@@ -48,7 +49,7 @@ export function LoginAsModal({
       onClose();
     } catch (err) {
       if (err instanceof ApiError) setError(err.message);
-      else setError("Could not start impersonation.");
+      else setError(t("loginAs.genericError"));
     } finally {
       setSubmitting(false);
     }
@@ -88,11 +89,11 @@ export function LoginAsModal({
               letterSpacing: "-0.01em",
             }}
           >
-            Log in as a tenant user
+            {t("loginAs.title")}
           </h2>
           <button
             type="button"
-            aria-label="Close"
+            aria-label={t("loginAs.close")}
             onClick={onClose}
             style={{
               background: "transparent",
@@ -106,15 +107,13 @@ export function LoginAsModal({
         </div>
 
         <p style={{ marginTop: 8, fontSize: 13, color: "var(--ink-3)" }}>
-          You will be signed in as the selected user for up to one hour. Every action
-          you take will be double-logged to both the platform audit and the{" "}
-          <strong>{tenant.name}</strong> tenant audit.
+          {t("loginAs.description", { tenantName: tenant.name })}
         </p>
 
         <form onSubmit={onSubmit} style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 14 }}>
           <label style={{ display: "block" }}>
             <span style={{ fontSize: 12, color: "var(--ink-3)", display: "block", marginBottom: 6 }}>
-              Sign in as
+              {t("loginAs.signInAs")}
             </span>
             <select
               value={targetUserId}
@@ -131,18 +130,18 @@ export function LoginAsModal({
 
           <label style={{ display: "block" }}>
             <span style={{ fontSize: 12, color: "var(--ink-3)", display: "block", marginBottom: 6 }}>
-              Reason (required, audited)
+              {t("loginAs.reasonLabel")}
             </span>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               rows={3}
               maxLength={280}
-              placeholder="e.g. Investigating sync issue reported by owner"
+              placeholder={t("loginAs.reasonPlaceholder")}
               style={{ ...inputStyle(), height: "auto", paddingBlock: 10, resize: "vertical" }}
             />
             <span style={{ fontSize: 11, color: "var(--ink-3)", marginTop: 4, display: "block" }}>
-              {reason.length} / 280
+              {t("loginAs.reasonCount", { count: reason.length })}
             </span>
           </label>
 
@@ -175,7 +174,7 @@ export function LoginAsModal({
                 cursor: "pointer",
               }}
             >
-              Cancel
+              {t("loginAs.cancel")}
             </button>
             <button
               type="submit"
@@ -196,7 +195,7 @@ export function LoginAsModal({
               }}
             >
               <LogIn size={14} strokeWidth={1.5} />
-              {submitting ? "Starting…" : "Start impersonation"}
+              {submitting ? t("loginAs.submitting") : t("loginAs.submit")}
             </button>
           </div>
         </form>

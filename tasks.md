@@ -32,9 +32,9 @@ Goal: a working bilingual POS that decrements inventory on sale and accepts bank
 - [x] `next-intl` set up in `apps/web` with `[locale]/...` routing
 - [x] `<html lang dir>` flipped per locale; `dir="rtl"` for `ar`
 - [x] `messages/en.json` + `messages/ar.json` seeded (89 POS keys, AR sourced from `docs/design/project/i18n-ar.js`)
-- [ ] ESLint rule: no hardcoded user-facing strings — deferred
+- [x] ESLint rule: no hardcoded user-facing strings — `eslint-plugin-i18next` with `i18next/no-literal-string` (markupOnly, warn severity) added to both `apps/web` and `apps/admin` `.eslintrc.json`. Catches string literals in JSX. Severity at `warn` pending cleanup of ~20 dynamic plural/pagination template literals.
 - [x] `pnpm i18n:check` script: validates AR keys match EN, fails on drift
-- [ ] Admin app: deferred
+- [x] Admin app i18n: `apps/admin/messages/en.json` (511 keys) + typed `t()` accessor at `src/lib/i18n.ts`. All 30 component files migrated from hardcoded strings. `copy.ts` deleted. `apps/admin/scripts/i18n-check.mjs` validates JSON; wired into `pnpm i18n:check`.
 - [x] Logical-properties via Tailwind v4 (native) + per-component `ms-`/`me-`/`ps-`/`pe-` usage
 - [x] Glossary: `docs/i18n-glossary.md` exists (pre-existing)
 
@@ -386,11 +386,12 @@ Goal: a working bilingual POS that decrements inventory on sale and accepts bank
 
 #### 1.13b — automation
 - [x] **`BillingTrackerService.runDailyTick()`** — `apps/api/src/admin/billing-tracker/`. Idempotent daily tick that (1) graduates `trialing` tenants past `trial_ends_at` to `active` and inserts an `awaiting_payment` `subscription_invoices` row (period_start=now, period_end=+30d, due_date=+7d, amount = plan.monthly_price_cents, reference_code = `INV-<8 hex>`); (2) flips `awaiting_payment` invoices past `due_date` to `overdue`; (3) advances tenants through `active → grace_period (1-7d past due) → suspended (>7d) → cancelled (≥31d)` against the oldest unpaid invoice. Concurrent-safe via in-transaction status re-check on bootstrap. Returns a structured report with per-step counters + collected errors. Every transition writes `platform_audit_log`.
-- [x] **`POST /v1/admin/billing/tick`** (Platform Owner / Finance, idempotency-keyed, 4/min rate limit) — manual trigger for verification. Cron / BullMQ scheduler that calls this lands in 1.15.
-- [ ] **Trial-ending reminders (3 days before)** — needs Resend (1.15).
+- [x] **`POST /v1/admin/billing/tick`** (Platform Owner / Finance, idempotency-keyed, 4/min rate limit) — manual trigger for verification. Now also wired to daily BullMQ cron schedule via `AdminCronProcessor` (`BILLING_TICK_JOB`).
+- [x] **Trial-ending reminders (3 days before)** — wired in `AdminCronService.runTrialReminderTick()` via BullMQ cron. Uses existing `trial_ending` email template, dedup via `trial_reminder_sent_at` column. Fires 2-3 days before `trial_ends_at`.
 - [ ] **PDF receipt generation on payment_verified** — needs PDF infra (1.15). Browser print covers the human-facing case today.
-- [ ] **Email notifications** (invoice issued, payment received, suspended) — needs Resend (1.15).
-- [ ] **Suspension banners + access cutoff in tenant app** — backend status is now correct; UI gating is a separate slice. Plan upgrade/downgrade with proration → Phase 2.
+- [x] **Email notifications** — `payment_received` wired in payment-proof verify flow (1.13a). `invoice_issued` template created + wired as fire-and-forget in `bootstrapTrialInvoice()`. `suspended` template wired as fire-and-forget when billing tick transitions tenant to `suspended`. All use `getTenantPrimaryRecipient()` for locale-aware recipient lookup.
+- [x] **Suspension banners + access cutoff in tenant app** — `SubscriptionBanner` component at `apps/web/…/(shell)/_components/` shows status-specific banners (trial/grace/suspended/cancelled) with route redirects. `TenantAuthGuard` blocks writes for suspended/cancelled with HTTP 423. Allowlisted paths: logout, refresh, payment-proofs, impersonation-exit.
+- [x] **Billing tick wired to BullMQ cron** — `BILLING_TICK_JOB` added to `cron.types.ts`, routed via `AdminCronProcessor`, registered as daily repeat in `BootstrapCronService` (default `0 8 * * *` UTC). `BillingTrackerModule` imported into `AdminCronModule` in both Redis and non-Redis branches.
 
 ### 1.14 Super-admin MVP — 10 pages
 #### 1.14a — Dashboard (A1) + Tenants list (A2) + admin shell (DONE)

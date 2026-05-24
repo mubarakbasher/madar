@@ -14,6 +14,7 @@ import {
   type ProofStatus,
 } from "@/lib/api/admin-proofs";
 import { ApiError } from "@/lib/api/client";
+import { t } from "@/lib/i18n";
 import { MatchIndicators } from "../_components/MatchIndicators";
 import { ProofActionBar } from "../_components/ProofActionBar";
 import { ReceiptViewer } from "../_components/ReceiptViewer";
@@ -21,10 +22,10 @@ import { RejectModal, type RejectSubmit } from "../_components/RejectModal";
 import { RequestInfoModal, type RequestInfoSubmit } from "../_components/RequestInfoModal";
 
 const STATUSES: Array<{ value: ProofStatus | "all"; label: string }> = [
-  { value: "pending", label: "Pending" },
-  { value: "verified", label: "Verified" },
-  { value: "rejected", label: "Rejected" },
-  { value: "all", label: "All" },
+  { value: "pending", label: t("verification.statuses.pending") },
+  { value: "verified", label: t("verification.statuses.verified") },
+  { value: "rejected", label: t("verification.statuses.rejected") },
+  { value: "all", label: t("verification.statuses.all") },
 ];
 
 function daysSince(iso: string): number {
@@ -156,7 +157,7 @@ export function VerificationClient() {
       await adminRequestProofInfo(detailQuery.data.id, payload.message);
       await queryClient.invalidateQueries({ queryKey: ["admin", "proofs"] });
       setRequestingInfo(false);
-      setToast({ text: "Info requested from tenant", tone: "ok" });
+      setToast({ text: t("verification.toast.infoRequested"), tone: "ok" });
     } catch (err) {
       setToast({
         text: err instanceof ApiError ? `${err.code}: ${err.message}` : (err as Error).message,
@@ -215,16 +216,16 @@ export function VerificationClient() {
     <>
       <header className="admin-page-header">
         <div>
-          <span className="admin-kpi-kicker">Finance · oldest first</span>
+          <span className="admin-kpi-kicker">{t("verification.kicker")}</span>
           <h1 className="admin-page-title" style={{ marginTop: 6 }}>
-            Verification queue
+            {t("verification.title")}
           </h1>
           <p className="admin-page-sub">
             {listQuery.data
               ? `${listQuery.data.total} ${statusParam === "all" ? "total" : statusParam} · subscription proofs only`
-              : "Loading…"}
+              : t("common.loading")}
             <span style={{ marginInlineStart: 12, opacity: 0.65 }}>
-              Keyboard: <kbd>J</kbd>/<kbd>K</kbd> navigate · <kbd>A</kbd> approve · <kbd>R</kbd> reject
+              {t("verification.keyboard")} <kbd>J</kbd>/<kbd>K</kbd> navigate · <kbd>A</kbd> approve · <kbd>R</kbd> reject
             </span>
           </p>
         </div>
@@ -249,15 +250,15 @@ export function VerificationClient() {
 
       <div className="admin-vq-grid">
         <div className="admin-vq-list">
-          {listQuery.isPending && <div className="admin-vq-empty">Loading queue…</div>}
+          {listQuery.isPending && <div className="admin-vq-empty">{t("verification.loadingQueue")}</div>}
           {listQuery.isError && (
             <div className="admin-vq-empty" role="alert">
-              Couldn&apos;t load the queue. Refresh to retry.
+              {t("verification.errorQueue")}
             </div>
           )}
           {!listQuery.isPending && !listQuery.isError && items.length === 0 && (
             <div className="admin-vq-empty">
-              {statusParam === "pending" ? "Queue is clear. 🎉" : "No proofs match this filter."}
+              {statusParam === "pending" ? t("verification.emptyPending") : t("verification.emptyFiltered")}
             </div>
           )}
           {items.map((p) => {
@@ -275,9 +276,9 @@ export function VerificationClient() {
                   <span className="admin-vq-amount">{formatMoney(p.amount_cents, p.currency_code)}</span>
                 </div>
                 <div className="admin-vq-meta">
-                  <span>{p.transfer_reference ?? "no ref"}</span>
+                  <span>{p.transfer_reference ?? t("verification.noRef")}</span>
                   <span className={`admin-vq-days ${daysClass(days)}`}>
-                    {days === 0 ? "today" : `${days}d pending`}
+                    {days === 0 ? t("verification.today") : `${days}d pending`}
                   </span>
                 </div>
               </button>
@@ -287,14 +288,14 @@ export function VerificationClient() {
 
         <div className="admin-vq-detail">
           {!selectedId && (
-            <div className="admin-vq-pane-empty">Select a proof from the list.</div>
+            <div className="admin-vq-pane-empty">{t("verification.selectProof")}</div>
           )}
           {selectedId && detailQuery.isPending && (
-            <div className="admin-vq-pane-empty">Loading proof…</div>
+            <div className="admin-vq-pane-empty">{t("verification.loadingProof")}</div>
           )}
           {selectedId && detailQuery.isError && (
             <div className="admin-vq-pane-empty" role="alert">
-              Couldn&apos;t load this proof.
+              {t("verification.errorProof")}
             </div>
           )}
           {detailQuery.data && (
@@ -309,7 +310,7 @@ export function VerificationClient() {
                   className="admin-tb-action"
                   style={{ textDecoration: "none" }}
                 >
-                  Open detail →
+                  {t("verification.openDetail")}
                 </Link>
               </div>
 
@@ -318,22 +319,22 @@ export function VerificationClient() {
               <MatchIndicators proof={detailQuery.data} />
 
               <dl className="admin-vq-detail-grid">
-                <dt>Amount</dt>
+                <dt>{t("verification.dl.amount")}</dt>
                 <dd>{formatMoney(detailQuery.data.amount_cents, detailQuery.data.currency_code)}</dd>
-                <dt>Transfer date</dt>
+                <dt>{t("verification.dl.transferDate")}</dt>
                 <dd>{detailQuery.data.transfer_date}</dd>
-                <dt>Bank reference</dt>
+                <dt>{t("verification.dl.bankReference")}</dt>
                 <dd>{detailQuery.data.transfer_reference ?? "—"}</dd>
-                <dt>Payer bank</dt>
+                <dt>{t("verification.dl.payerBank")}</dt>
                 <dd>{detailQuery.data.payer_bank ?? "—"}</dd>
-                <dt>Submitted</dt>
+                <dt>{t("verification.dl.submitted")}</dt>
                 <dd>
                   {new Intl.DateTimeFormat("en-US", {
                     dateStyle: "medium",
                     timeStyle: "short",
                   }).format(new Date(detailQuery.data.created_at))}
                 </dd>
-                <dt>Account</dt>
+                <dt>{t("verification.dl.account")}</dt>
                 <dd style={{ textTransform: "capitalize" }}>{detailQuery.data.bank_account_kind}</dd>
               </dl>
 

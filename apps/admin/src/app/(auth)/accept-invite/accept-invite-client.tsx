@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { adminAcceptInvite } from "@/lib/api/admin-team";
 import { ApiError } from "@/lib/api/client";
+import { t } from "@/lib/i18n";
 
 export function AcceptInviteClient() {
   const router = useRouter();
@@ -21,9 +22,9 @@ export function AcceptInviteClient() {
   if (!token) {
     return (
       <div className="space-y-4">
-        <h1 className="font-serif text-3xl text-ink tracking-tight">Invalid invite link</h1>
+        <h1 className="font-serif text-3xl text-ink tracking-tight">{t("auth.acceptInvite.invalidTitle")}</h1>
         <p className="font-sans text-sm text-ink-3">
-          This invitation link is missing required parameters. Please check your email for the correct link.
+          {t("auth.acceptInvite.invalidBody")}
         </p>
       </div>
     );
@@ -34,18 +35,17 @@ export function AcceptInviteClient() {
       <div className="space-y-4">
         <div className="flex items-center gap-3">
           <ShieldCheck size={24} strokeWidth={1.5} className="text-accent" />
-          <h1 className="font-serif text-3xl text-ink tracking-tight">Account activated</h1>
+          <h1 className="font-serif text-3xl text-ink tracking-tight">{t("auth.acceptInvite.successTitle")}</h1>
         </div>
         <p className="font-sans text-sm text-ink-3">
-          Your password has been set. You can now sign in with your credentials.
-          MFA setup will be required on first login.
+          {t("auth.acceptInvite.successBody")}
         </p>
         <button
           type="button"
           className="w-full rounded-md bg-accent px-4 py-3 font-sans text-sm font-medium text-white shadow-sm hover:opacity-90 transition"
           onClick={() => router.push("/login")}
         >
-          Go to sign in
+          {t("auth.acceptInvite.goToSignIn")}
         </button>
       </div>
     );
@@ -56,11 +56,11 @@ export function AcceptInviteClient() {
     setError(null);
 
     if (password.length < 12) {
-      setError("Password must be at least 12 characters.");
+      setError(t("auth.acceptInvite.errors.tooShort"));
       return;
     }
     if (password !== confirm) {
-      setError("Passwords do not match.");
+      setError(t("auth.acceptInvite.errors.mismatch"));
       return;
     }
 
@@ -71,12 +71,12 @@ export function AcceptInviteClient() {
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.code === "invite_invalid") {
-          setError("This invite link is invalid or has expired. Please request a new invitation.");
+          setError(t("auth.acceptInvite.errors.inviteInvalid"));
         } else {
-          setError(err.message || "Something went wrong. Please try again.");
+          setError(err.message || t("auth.acceptInvite.errors.unknown"));
         }
       } else {
-        setError("Network error. Please try again.");
+        setError(t("auth.acceptInvite.errors.network"));
       }
     } finally {
       setSubmitting(false);
@@ -87,16 +87,16 @@ export function AcceptInviteClient() {
     <form onSubmit={handleSubmit} className="space-y-5">
       <header className="space-y-2">
         <h1 className="font-serif text-3xl text-ink tracking-tight">
-          Set your password
+          {t("auth.acceptInvite.heading")}
         </h1>
         <p className="font-sans text-sm text-ink-3">
-          Create a secure password (min 12 characters) to activate your admin account.
+          {t("auth.acceptInvite.subtitle")}
         </p>
       </header>
 
       <div className="space-y-1.5">
         <label htmlFor="new-password" className="block font-sans text-xs font-medium text-ink-2">
-          Password
+          {t("auth.acceptInvite.passwordLabel")}
         </label>
         <div className="relative">
           <input
@@ -109,13 +109,13 @@ export function AcceptInviteClient() {
             maxLength={128}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Minimum 12 characters"
+            placeholder={t("auth.acceptInvite.passwordPlaceholder")}
             className="w-full rounded-md border border-rule bg-bg-elev px-3 py-2.5 pe-10 font-sans text-sm text-ink placeholder:text-ink-4 outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition"
           />
           <button
             type="button"
             onClick={() => setShowPassword((v) => !v)}
-            aria-label={showPassword ? "Hide password" : "Show password"}
+            aria-label={showPassword ? t("auth.acceptInvite.hidePassword") : t("auth.acceptInvite.showPassword")}
             className="absolute end-2 top-1/2 -translate-y-1/2 p-1.5 text-ink-4 hover:text-ink-2 transition"
             tabIndex={-1}
           >
@@ -130,7 +130,7 @@ export function AcceptInviteClient() {
 
       <div className="space-y-1.5">
         <label htmlFor="confirm-password" className="block font-sans text-xs font-medium text-ink-2">
-          Confirm password
+          {t("auth.acceptInvite.confirmLabel")}
         </label>
         <input
           id="confirm-password"
@@ -141,7 +141,7 @@ export function AcceptInviteClient() {
           maxLength={128}
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
-          placeholder="Re-enter your password"
+          placeholder={t("auth.acceptInvite.confirmPlaceholder")}
           className="w-full rounded-md border border-rule bg-bg-elev px-3 py-2.5 font-sans text-sm text-ink placeholder:text-ink-4 outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition"
         />
       </div>
@@ -160,11 +160,11 @@ export function AcceptInviteClient() {
         disabled={submitting}
         className="w-full rounded-md bg-accent px-4 py-3 font-sans text-sm font-medium text-white shadow-sm hover:opacity-90 transition disabled:opacity-60"
       >
-        {submitting ? "Activating..." : "Activate account"}
+        {submitting ? t("auth.acceptInvite.submitting") : t("auth.acceptInvite.submit")}
       </button>
 
       <p className="font-sans text-[11px] text-ink-4 text-center">
-        After activation you will need to set up two-factor authentication on first sign-in.
+        {t("auth.acceptInvite.mfaNote")}
       </p>
     </form>
   );

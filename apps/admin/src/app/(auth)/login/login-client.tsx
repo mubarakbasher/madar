@@ -8,7 +8,7 @@ import { adminLogin, adminMfaVerify } from "../../../lib/api/admin-auth";
 import { ApiError } from "../../../lib/api/client";
 import { useAdminAuthStore } from "../../../lib/auth/store";
 import { AdminLoginSchema, type AdminLoginInput } from "../../../lib/validation/admin-auth-schemas";
-import { labels } from "../../../lib/copy";
+import { t } from "../../../lib/i18n";
 
 type Step = "creds" | "mfa";
 
@@ -44,13 +44,13 @@ export function LoginClient() {
       setStep("mfa");
     } catch (err) {
       if (err instanceof ApiError) {
-        if (err.status === 401) setCredsError(labels.auth.login.errors.invalidCredentials);
+        if (err.status === 401) setCredsError(t("auth.login.errors.invalidCredentials"));
         else if (err.status === 403 && err.code === "mfa_not_enrolled")
-          setCredsError(labels.auth.login.errors.mfaNotEnrolled);
-        else if (err.status === 429) setCredsError(labels.auth.login.errors.rateLimited);
-        else setCredsError(labels.auth.login.errors.unknown);
+          setCredsError(t("auth.login.errors.mfaNotEnrolled"));
+        else if (err.status === 429) setCredsError(t("auth.login.errors.rateLimited"));
+        else setCredsError(t("auth.login.errors.unknown"));
       } else {
-        setCredsError(labels.auth.login.errors.network);
+        setCredsError(t("auth.login.errors.network"));
       }
     } finally {
       setSubmittingCreds(false);
@@ -68,17 +68,17 @@ export function LoginClient() {
       router.refresh();
     } catch (err) {
       if (err instanceof ApiError) {
-        if (err.code === "mfa_invalid") setMfaError(labels.auth.mfa.errors.invalid);
+        if (err.code === "mfa_invalid") setMfaError(t("auth.mfa.errors.invalid"));
         else if (err.code === "mfa_pending_invalid" || err.code === "mfa_pending_missing") {
-          setMfaError(labels.auth.mfa.errors.pendingInvalid);
+          setMfaError(t("auth.mfa.errors.pendingInvalid"));
           setTimeout(() => {
             setStep("creds");
             setMfaPendingToken(null);
           }, 1500);
-        } else if (err.status === 429) setMfaError(labels.auth.mfa.errors.rateLimited);
-        else setMfaError(labels.auth.mfa.errors.unknown);
+        } else if (err.status === 429) setMfaError(t("auth.mfa.errors.rateLimited"));
+        else setMfaError(t("auth.mfa.errors.unknown"));
       } else {
-        setMfaError(labels.auth.login.errors.network);
+        setMfaError(t("auth.login.errors.network"));
       }
     } finally {
       setSubmittingMfa(false);
@@ -140,21 +140,21 @@ function CredsStep({
     <form onSubmit={onSubmit} className="space-y-5">
       <header className="space-y-2">
         <h1 className="font-serif text-3xl text-ink tracking-tight">
-          {labels.auth.login.heading}
+          {t("auth.login.heading")}
         </h1>
-        <p className="font-sans text-sm text-ink-3">{labels.auth.login.subtitle}</p>
+        <p className="font-sans text-sm text-ink-3">{t("auth.login.subtitle")}</p>
       </header>
 
       <div className="space-y-1.5">
         <label htmlFor="email" className="block font-sans text-xs font-medium text-ink-2">
-          {labels.auth.login.emailLabel}
+          {t("auth.login.emailLabel")}
         </label>
         <input
           id="email"
           type="email"
           autoComplete="username"
           autoFocus
-          placeholder={labels.auth.login.emailPlaceholder}
+          placeholder={t("auth.login.emailPlaceholder")}
           className="w-full rounded-md border border-rule bg-bg-elev px-3 py-2.5 font-sans text-sm text-ink placeholder:text-ink-4 outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition"
           {...register("email")}
         />
@@ -165,21 +165,21 @@ function CredsStep({
 
       <div className="space-y-1.5">
         <label htmlFor="password" className="block font-sans text-xs font-medium text-ink-2">
-          {labels.auth.login.passwordLabel}
+          {t("auth.login.passwordLabel")}
         </label>
         <div className="relative">
           <input
             id="password"
             type={showPassword ? "text" : "password"}
             autoComplete="current-password"
-            placeholder={labels.auth.login.passwordPlaceholder}
+            placeholder={t("auth.login.passwordPlaceholder")}
             className="w-full rounded-md border border-rule bg-bg-elev px-3 py-2.5 pe-10 font-sans text-sm text-ink placeholder:text-ink-4 outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition"
             {...register("password")}
           />
           <button
             type="button"
             onClick={onToggleShowPassword}
-            aria-label={showPassword ? labels.auth.login.hidePassword : labels.auth.login.showPassword}
+            aria-label={showPassword ? t("auth.login.hidePassword") : t("auth.login.showPassword")}
             className="absolute end-2 top-1/2 -translate-y-1/2 p-1.5 text-ink-4 hover:text-ink-2 transition"
             tabIndex={-1}
           >
@@ -205,12 +205,12 @@ function CredsStep({
         disabled={submitting}
         className="w-full rounded-md bg-accent px-4 py-3 font-sans text-sm font-medium text-white shadow-sm hover:opacity-90 transition disabled:opacity-60"
       >
-        {submitting ? labels.auth.login.submitting : labels.auth.login.submit}
+        {submitting ? t("auth.login.submitting") : t("auth.login.submit")}
       </button>
 
       <p className="font-sans text-xs text-ink-4 text-center">
-        {labels.auth.login.footHint}{" "}
-        <span className="text-ink-3">{labels.auth.login.footAction}</span>.
+        {t("auth.login.footHint")}{" "}
+        <span className="text-ink-3">{t("auth.login.footAction")}</span>.
       </p>
     </form>
   );
@@ -278,11 +278,11 @@ function MfaStep({ signedInAs, mfaError, submitting, onSubmit, onBack }: MfaStep
     <form onSubmit={handleSubmit} className="space-y-5">
       <header className="space-y-2">
         <h1 className="font-serif text-3xl text-ink tracking-tight">
-          {labels.auth.mfa.heading}
+          {t("auth.mfa.heading")}
         </h1>
-        <p className="font-sans text-sm text-ink-3">{labels.auth.mfa.subtitle}</p>
+        <p className="font-sans text-sm text-ink-3">{t("auth.mfa.subtitle")}</p>
         <p className="font-sans text-xs text-ink-4">
-          {labels.auth.mfa.signedInAs}{" "}
+          {t("auth.mfa.signedInAs")}{" "}
           <strong className="font-medium text-ink-2">{signedInAs}</strong>
         </p>
       </header>
@@ -322,7 +322,7 @@ function MfaStep({ signedInAs, mfaError, submitting, onSubmit, onBack }: MfaStep
         disabled={!isComplete || submitting}
         className="w-full rounded-md bg-accent px-4 py-3 font-sans text-sm font-medium text-white shadow-sm hover:opacity-90 transition disabled:opacity-60"
       >
-        {submitting ? labels.auth.mfa.submitting : labels.auth.mfa.submit}
+        {submitting ? t("auth.mfa.submitting") : t("auth.mfa.submit")}
       </button>
 
       <div className="flex items-center justify-center gap-3 font-sans text-xs">
@@ -331,21 +331,21 @@ function MfaStep({ signedInAs, mfaError, submitting, onSubmit, onBack }: MfaStep
           onClick={onBack}
           className="text-ink-3 hover:text-ink-2 transition"
         >
-          {labels.auth.mfa.back}
+          {t("auth.mfa.back")}
         </button>
         <span className="text-ink-4">·</span>
         <span
           aria-disabled="true"
-          title={labels.auth.mfa.recoveryHint}
+          title={t("auth.mfa.recoveryHint")}
           className="cursor-not-allowed text-ink-4"
         >
-          {labels.auth.mfa.recoveryComingSoon}
+          {t("auth.mfa.recoveryComingSoon")}
         </span>
       </div>
 
       <p className="font-sans text-[11px] text-ink-4 text-center">
-        {labels.auth.mfa.lostAccessPrompt}{" "}
-        <span className="text-ink-3">{labels.auth.mfa.lostAccessAction}</span>.
+        {t("auth.mfa.lostAccessPrompt")}{" "}
+        <span className="text-ink-3">{t("auth.mfa.lostAccessAction")}</span>.
       </p>
     </form>
   );

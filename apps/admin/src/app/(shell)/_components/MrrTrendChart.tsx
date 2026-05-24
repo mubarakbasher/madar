@@ -1,6 +1,7 @@
 "use client";
 
 import { AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { t } from "@/lib/i18n";
 
 interface Props {
   data: Array<{ date: string; amount_cents: string; currency_code: string }>;
@@ -33,7 +34,7 @@ export function MrrTrendChart({ data }: Props) {
   return (
     <div className="admin-panel" style={{ padding: 22 }}>
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 16 }}>
-        <span className="admin-kicker">MRR trend &middot; 90 days</span>
+        <span className="admin-kicker">{t("dashboard.charts.mrrTrend")}</span>
         <span style={{ fontSize: 11, fontFamily: "var(--sans)", color: "var(--sage)" }}>
           {deltaStr}
         </span>
@@ -70,7 +71,7 @@ export function MrrTrendChart({ data }: Props) {
             }}
             formatter={(v) => [
               formatCents(String(Math.round(Number(v ?? 0) * 100)), currency),
-              "MRR",
+              t("dashboard.charts.mrrLabel"),
             ]}
           />
           <Area

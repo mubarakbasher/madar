@@ -23,16 +23,18 @@ import {
   type TeamMemberResponse,
 } from "@/lib/api/admin-team";
 import { useAdminAuthStore } from "@/lib/auth/store";
+import { t } from "@/lib/i18n";
+import en from "../../../../messages/en.json";
 
 type Tab = "members" | "roles";
 type ModalState = { type: "none" } | { type: "invite" } | { type: "role"; member: TeamMemberResponse };
 
 const ROLE_LABELS: Record<string, string> = {
-  owner: "Platform Owner",
-  finance: "Finance / Verifier",
-  support: "Support",
-  developer: "Developer",
-  readonly: "Read-only",
+  owner: t("team.roles.owner"),
+  finance: t("team.roles.finance"),
+  support: t("team.roles.support"),
+  developer: t("team.roles.developer"),
+  readonly: t("team.roles.readonly"),
 };
 
 const ROLE_COLORS: Record<string, string> = {
@@ -48,7 +50,7 @@ function roleChipClass(role: string): string {
 }
 
 function relativeTime(iso: string | null): string {
-  if (!iso) return "Never";
+  if (!iso) return t("common.never");
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60_000);
   if (mins < 1) return "Just now";
@@ -61,9 +63,9 @@ function relativeTime(iso: string | null): string {
 }
 
 function memberStatus(m: TeamMemberResponse): { label: string; cls: string } {
-  if (m.has_pending_invite) return { label: "Pending", cls: "admin-chip-pending" };
-  if (!m.is_active) return { label: "Deactivated", cls: "admin-chip-inactive" };
-  return { label: "Active", cls: "admin-chip-active" };
+  if (m.has_pending_invite) return { label: t("team.memberStatus.pending"), cls: "admin-chip-pending" };
+  if (!m.is_active) return { label: t("team.memberStatus.deactivated"), cls: "admin-chip-inactive" };
+  return { label: t("team.memberStatus.active"), cls: "admin-chip-active" };
 }
 
 export function TeamClient() {
@@ -73,12 +75,12 @@ export function TeamClient() {
     <>
       <header className="admin-page-header">
         <div>
-          <span className="admin-kpi-kicker">Settings</span>
+          <span className="admin-kpi-kicker">{t("team.kicker")}</span>
           <h1 className="admin-page-title" style={{ marginTop: 6 }}>
-            Team
+            {t("team.title")}
           </h1>
           <p className="admin-page-sub">
-            Manage super-admin team members, roles, and invitations.
+            {t("team.subtitle")}
           </p>
         </div>
       </header>
@@ -90,7 +92,7 @@ export function TeamClient() {
           onClick={() => setTab("members")}
         >
           <Users size={14} strokeWidth={1.5} />
-          Members
+          {t("team.tabs.members")}
         </button>
         <button
           type="button"
@@ -98,7 +100,7 @@ export function TeamClient() {
           onClick={() => setTab("roles")}
         >
           <Shield size={14} strokeWidth={1.5} />
-          Roles
+          {t("team.tabs.roles")}
         </button>
       </div>
 
@@ -141,20 +143,20 @@ function MembersTab() {
             onClick={() => setModal({ type: "invite" })}
           >
             <Plus size={16} strokeWidth={1.75} />
-            <span>Invite member</span>
+            <span>{t("team.inviteMember")}</span>
           </button>
         </div>
       )}
 
       {query.isPending ? (
         <div className="admin-skeleton-block" aria-busy="true">
-          Loading team members...
+          {t("team.loading")}
         </div>
       ) : query.isError ? (
         <div className="admin-error-block">
-          Could not load team.{" "}
+          {t("team.errorLoad")}{" "}
           <button type="button" className="admin-link" onClick={() => void query.refetch()}>
-            Retry
+            {t("team.retry")}
           </button>
         </div>
       ) : query.data.length === 0 ? (
@@ -163,14 +165,14 @@ function MembersTab() {
         <table className="admin-table">
           <thead>
             <tr>
-              <th style={{ width: 44 }} aria-label="Avatar" />
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>MFA</th>
-              <th>Last login</th>
-              <th>Status</th>
-              {isOwner && <th style={{ width: 48 }} aria-label="Actions" />}
+              <th style={{ width: 44 }} aria-label={t("team.table.avatar")} />
+              <th>{t("team.table.name")}</th>
+              <th>{t("team.table.email")}</th>
+              <th>{t("team.table.role")}</th>
+              <th>{t("team.table.mfa")}</th>
+              <th>{t("team.table.lastLogin")}</th>
+              <th>{t("team.table.status")}</th>
+              {isOwner && <th style={{ width: 48 }} aria-label={t("team.table.actions")} />}
             </tr>
           </thead>
           <tbody>
@@ -193,7 +195,7 @@ function MembersTab() {
                   <td>
                     <span
                       className={m.mfa_enabled ? "admin-dot-green" : "admin-dot-red"}
-                      title={m.mfa_enabled ? "MFA enabled" : "MFA not enabled"}
+                      title={m.mfa_enabled ? t("team.table.mfaEnabled") : t("team.table.mfaNotEnabled")}
                     />
                   </td>
                   <td className="admin-muted">{relativeTime(m.last_login_at)}</td>
@@ -207,7 +209,7 @@ function MembersTab() {
                           <button
                             type="button"
                             className="admin-icon-btn"
-                            aria-label="Actions"
+                            aria-label={t("team.table.actions")}
                             onClick={() => setMenuOpen(menuOpen === m.id ? null : m.id)}
                           >
                             <MoreVertical size={16} strokeWidth={1.5} />
@@ -223,7 +225,7 @@ function MembersTab() {
                                 }}
                               >
                                 <Shield size={14} strokeWidth={1.5} />
-                                Change role
+                                {t("team.menu.changeRole")}
                               </button>
                               {m.is_active ? (
                                 <button
@@ -231,13 +233,13 @@ function MembersTab() {
                                   className="admin-dropdown-item admin-dropdown-danger"
                                   onClick={() => {
                                     setMenuOpen(null);
-                                    if (confirm(`Deactivate ${m.name}? They will lose access.`)) {
+                                    if (confirm(t("team.menu.confirmDeactivate", { name: m.name }))) {
                                       deactivate.mutate(m.id);
                                     }
                                   }}
                                 >
                                   <UserMinus size={14} strokeWidth={1.5} />
-                                  Deactivate
+                                  {t("team.menu.deactivate")}
                                 </button>
                               ) : (
                                 <button
@@ -249,7 +251,7 @@ function MembersTab() {
                                   }}
                                 >
                                   <UserCheck size={14} strokeWidth={1.5} />
-                                  Reactivate
+                                  {t("team.menu.reactivate")}
                                 </button>
                               )}
                             </div>
@@ -279,15 +281,15 @@ function EmptyTeam({ onInvite, isOwner }: { onInvite: () => void; isOwner: boole
   return (
     <div className="admin-empty-block">
       <Users size={32} strokeWidth={1.25} />
-      <h2>No team members yet</h2>
-      <p>Invite people to help manage the platform — finance, support, or developer roles.</p>
+      <h2>{t("team.empty.title")}</h2>
+      <p>{t("team.empty.body")}</p>
       {isOwner ? (
         <button type="button" className="admin-btn admin-btn-primary" onClick={onInvite}>
           <UserPlus size={16} strokeWidth={1.75} />
-          Invite first member
+          {t("team.empty.inviteFirst")}
         </button>
       ) : (
-        <p className="admin-muted">Only the Platform Owner can invite team members.</p>
+        <p className="admin-muted">{t("team.empty.ownerOnly")}</p>
       )}
     </div>
   );
@@ -307,7 +309,7 @@ function InviteMemberModal({ onClose }: { onClose: () => void }) {
       onClose();
     },
     onError: (err: Error & { code?: string; message?: string }) => {
-      setError(err.message || "Failed to send invite.");
+      setError(err.message || t("team.invite.fallbackError"));
     },
   });
 
@@ -322,49 +324,49 @@ function InviteMemberModal({ onClose }: { onClose: () => void }) {
       <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
         <header className="admin-modal-header">
           <Mail size={20} strokeWidth={1.5} />
-          <h2>Invite team member</h2>
+          <h2>{t("team.invite.title")}</h2>
         </header>
 
         <form onSubmit={handleSubmit} className="admin-modal-body">
           <div className="admin-field">
-            <label htmlFor="invite-email">Email</label>
+            <label htmlFor="invite-email">{t("team.invite.emailLabel")}</label>
             <input
               id="invite-email"
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="colleague@company.com"
+              placeholder={t("team.invite.emailPlaceholder")}
               className="admin-input"
               autoFocus
             />
           </div>
 
           <div className="admin-field">
-            <label htmlFor="invite-name">Name</label>
+            <label htmlFor="invite-name">{t("team.invite.nameLabel")}</label>
             <input
               id="invite-name"
               type="text"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Full name"
+              placeholder={t("team.invite.namePlaceholder")}
               className="admin-input"
             />
           </div>
 
           <div className="admin-field">
-            <label htmlFor="invite-role">Role</label>
+            <label htmlFor="invite-role">{t("team.invite.roleLabel")}</label>
             <select
               id="invite-role"
               value={role}
               onChange={(e) => setRole(e.target.value as InviteMemberInput["role"])}
               className="admin-input"
             >
-              <option value="finance">Finance / Verifier</option>
-              <option value="support">Support</option>
-              <option value="developer">Developer</option>
-              <option value="readonly">Read-only</option>
+              <option value="finance">{t("team.roles.finance")}</option>
+              <option value="support">{t("team.roles.support")}</option>
+              <option value="developer">{t("team.roles.developer")}</option>
+              <option value="readonly">{t("team.roles.readonly")}</option>
             </select>
           </div>
 
@@ -374,14 +376,14 @@ function InviteMemberModal({ onClose }: { onClose: () => void }) {
 
           <div className="admin-modal-actions">
             <button type="button" className="admin-btn admin-btn-ghost" onClick={onClose}>
-              Cancel
+              {t("team.invite.cancel")}
             </button>
             <button
               type="submit"
               className="admin-btn admin-btn-primary"
               disabled={invite.isPending}
             >
-              {invite.isPending ? "Sending..." : "Send invite"}
+              {invite.isPending ? t("team.invite.submitting") : t("team.invite.submit")}
             </button>
           </div>
         </form>
@@ -409,7 +411,7 @@ function ChangeRoleModal({
       onClose();
     },
     onError: (err: Error & { message?: string }) => {
-      setError(err.message || "Failed to update role.");
+      setError(err.message || t("team.changeRole.fallbackError"));
     },
   });
 
@@ -424,22 +426,22 @@ function ChangeRoleModal({
       <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
         <header className="admin-modal-header">
           <Shield size={20} strokeWidth={1.5} />
-          <h2>Change role for {member.name}</h2>
+          <h2>{t("team.changeRole.title", { name: member.name })}</h2>
         </header>
 
         <form onSubmit={handleSubmit} className="admin-modal-body">
           <div className="admin-field">
-            <label htmlFor="change-role">New role</label>
+            <label htmlFor="change-role">{t("team.changeRole.newRole")}</label>
             <select
               id="change-role"
               value={role}
               onChange={(e) => setRole(e.target.value as typeof role)}
               className="admin-input"
             >
-              <option value="finance">Finance / Verifier</option>
-              <option value="support">Support</option>
-              <option value="developer">Developer</option>
-              <option value="readonly">Read-only</option>
+              <option value="finance">{t("team.roles.finance")}</option>
+              <option value="support">{t("team.roles.support")}</option>
+              <option value="developer">{t("team.roles.developer")}</option>
+              <option value="readonly">{t("team.roles.readonly")}</option>
             </select>
           </div>
 
@@ -447,14 +449,14 @@ function ChangeRoleModal({
 
           <div className="admin-modal-actions">
             <button type="button" className="admin-btn admin-btn-ghost" onClick={onClose}>
-              Cancel
+              {t("team.changeRole.cancel")}
             </button>
             <button
               type="submit"
               className="admin-btn admin-btn-primary"
               disabled={update.isPending || role === member.role}
             >
-              {update.isPending ? "Updating..." : "Update role"}
+              {update.isPending ? t("team.changeRole.submitting") : t("team.changeRole.submit")}
             </button>
           </div>
         </form>
@@ -468,33 +470,33 @@ function ChangeRoleModal({
 const ROLE_DEFINITIONS = [
   {
     role: "owner",
-    label: "Platform Owner",
-    description: "Full access -- manage team, billing, tenants, impersonation",
-    permissions: ["Manage team members", "Manage plans and billing", "View and edit all tenants", "Impersonate tenant users", "Access all platform settings"],
+    label: t("team.roles.owner"),
+    description: t("team.roleDescriptions.owner"),
+    permissions: en.team.rolePermissions.owner,
   },
   {
     role: "finance",
-    label: "Finance / Verifier",
-    description: "Verify payments, view invoices, view tenants, view reports",
-    permissions: ["Verify payment proofs", "View invoices and billing", "View tenant list (read-only)", "View financial reports"],
+    label: t("team.roles.finance"),
+    description: t("team.roleDescriptions.finance"),
+    permissions: en.team.rolePermissions.finance,
   },
   {
     role: "support",
-    label: "Support",
-    description: "View tenants, impersonate for support, view audit logs",
-    permissions: ["View tenants and their details", "Impersonate for support (logged)", "View audit logs", "Cannot modify billing or plans"],
+    label: t("team.roles.support"),
+    description: t("team.roleDescriptions.support"),
+    permissions: en.team.rolePermissions.support,
   },
   {
     role: "developer",
-    label: "Developer",
-    description: "View system health, logs, feature flags",
-    permissions: ["View system health dashboard", "View application logs", "Manage feature flags", "Cannot access billing or tenant data"],
+    label: t("team.roles.developer"),
+    description: t("team.roleDescriptions.developer"),
+    permissions: en.team.rolePermissions.developer,
   },
   {
     role: "readonly",
-    label: "Read-only",
-    description: "View dashboard and reports only",
-    permissions: ["View main dashboard KPIs", "View aggregate reports", "No write access to any resource"],
+    label: t("team.roles.readonly"),
+    description: t("team.roleDescriptions.readonly"),
+    permissions: en.team.rolePermissions.readonly,
   },
 ] as const;
 

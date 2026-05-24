@@ -14,6 +14,7 @@ import {
   type UpdateBankAccountInput,
 } from "@/lib/api/admin-bank-accounts";
 import { useAdminAuthStore } from "@/lib/auth/store";
+import { t } from "@/lib/i18n";
 
 function countryFlag(cc: string): string {
   return String.fromCodePoint(...[...cc.toUpperCase()].map((c) => c.charCodeAt(0) + 127397));
@@ -61,19 +62,18 @@ export function BankingClient() {
     <>
       <header className="admin-page-header">
         <div>
-          <span className="admin-kpi-kicker">Finance · banking</span>
+          <span className="admin-kpi-kicker">{t("banking.kicker")}</span>
           <h1 className="admin-page-title" style={{ marginTop: 6 }}>
-            Platform Bank Accounts
+            {t("banking.title")}
           </h1>
           <p className="admin-page-sub">
-            Bank accounts displayed to tenants for subscription payment transfers. Keep details accurate
-            and disable accounts no longer in use.
+            {t("banking.subtitle")}
           </p>
         </div>
         {isOwner ? (
           <button type="button" className="admin-btn admin-btn-primary" onClick={openCreate}>
             <Plus size={16} strokeWidth={1.75} />
-            <span>Add account</span>
+            <span>{t("banking.addAccount")}</span>
           </button>
         ) : null}
       </header>
@@ -85,19 +85,19 @@ export function BankingClient() {
             checked={includeInactive}
             onChange={(e) => setIncludeInactive(e.target.checked)}
           />
-          <span>Include disabled accounts</span>
+          <span>{t("banking.includeDisabled")}</span>
         </label>
       </div>
 
       {query.isPending ? (
         <div className="admin-skeleton-block" aria-busy="true">
-          Loading bank accounts...
+          {t("banking.loading")}
         </div>
       ) : query.isError ? (
         <div className="admin-error-block">
-          Could not load bank accounts.{" "}
+          {t("banking.errorLoad")}{" "}
           <button type="button" className="admin-link" onClick={() => void query.refetch()}>
-            Retry
+            {t("banking.retry")}
           </button>
         </div>
       ) : query.data.length === 0 ? (
@@ -207,13 +207,13 @@ function BankAccountCard({
 
       {account.iban_last4 ? (
         <div className="admin-muted" style={{ fontSize: 12, marginBottom: 4 }}>
-          IBAN: •••• {account.iban_last4}
+          {t("banking.ibanPrefix")} •••• {account.iban_last4}
         </div>
       ) : null}
 
       {account.swift ? (
         <div className="admin-muted" style={{ fontSize: 12, marginBottom: 4 }}>
-          SWIFT: {account.swift}
+          {t("banking.swiftPrefix")} {account.swift}
         </div>
       ) : null}
 
@@ -228,7 +228,7 @@ function BankAccountCard({
           className="admin-chip-inactive"
           style={{ display: "inline-block", marginTop: 8, fontSize: 11 }}
         >
-          Disabled
+          {t("banking.disabled")}
         </span>
       ) : null}
 
@@ -252,14 +252,14 @@ function BankAccountCard({
                     disabled={revealing}
                     onClick={() => void handleReveal()}
                   >
-                    {revealing ? "..." : "Confirm reveal"}
+                    {revealing ? "..." : t("banking.confirmReveal")}
                   </button>
                   <button
                     type="button"
                     className="admin-btn admin-btn-sm"
                     onClick={() => setConfirmReveal(false)}
                   >
-                    Cancel
+                    {t("banking.cancel")}
                   </button>
                 </div>
               ) : (
@@ -269,7 +269,7 @@ function BankAccountCard({
                   onClick={() => setConfirmReveal(true)}
                 >
                   <Eye size={14} strokeWidth={1.5} />
-                  <span>Reveal</span>
+                  <span>{t("banking.reveal")}</span>
                 </button>
               )
             ) : (
@@ -279,13 +279,13 @@ function BankAccountCard({
                 onClick={() => setRevealed(null)}
               >
                 <EyeOff size={14} strokeWidth={1.5} />
-                <span>Hide</span>
+                <span>{t("banking.hide")}</span>
               </button>
             )}
 
             <button type="button" className="admin-btn admin-btn-sm" onClick={onEdit}>
               <Pencil size={14} strokeWidth={1.5} />
-              <span>Edit</span>
+              <span>{t("banking.edit")}</span>
             </button>
 
             <button
@@ -294,7 +294,7 @@ function BankAccountCard({
               disabled={togglePending}
               onClick={() => onToggleActive(!account.is_active)}
             >
-              {account.is_active ? "Disable" : "Enable"}
+              {account.is_active ? t("banking.disable") : t("banking.enable")}
             </button>
           </>
         ) : null}
@@ -307,17 +307,16 @@ function EmptyBanking({ isOwner, onCreate }: { isOwner: boolean; onCreate: () =>
   return (
     <div className="admin-empty-block">
       <Building2 size={32} strokeWidth={1.25} />
-      <h2>No bank accounts yet</h2>
+      <h2>{t("banking.empty.title")}</h2>
       <p>
-        Platform bank accounts are shown to tenants when they need to transfer subscription payments.
-        Add at least one account to enable bank-transfer billing.
+        {t("banking.empty.body")}
       </p>
       {isOwner ? (
         <button type="button" className="admin-btn admin-btn-primary" onClick={onCreate}>
-          Add the first account
+          {t("banking.empty.createFirst")}
         </button>
       ) : (
-        <p className="admin-muted">Ask the Platform Owner to add bank accounts.</p>
+        <p className="admin-muted">{t("banking.empty.ownerOnly")}</p>
       )}
     </div>
   );
@@ -385,7 +384,7 @@ function AddEditBankAccountModal({
       }
       onSaved();
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to save";
+      const msg = err instanceof Error ? err.message : t("banking.modal.fallbackError");
       setError(msg);
     } finally {
       setSaving(false);
@@ -400,7 +399,7 @@ function AddEditBankAccountModal({
         style={{ maxWidth: 520, width: "100%" }}
       >
         <h2 className="admin-modal-title">
-          {isEdit ? "Edit bank account" : "Add bank account"}
+          {isEdit ? t("banking.modal.editTitle") : t("banking.modal.addTitle")}
         </h2>
 
         {error ? <div className="admin-error-block" style={{ marginBottom: 12 }}>{error}</div> : null}
@@ -408,7 +407,7 @@ function AddEditBankAccountModal({
         <form onSubmit={(e) => void handleSubmit(e)}>
           <div className="admin-form-grid">
             <label className="admin-field">
-              <span className="admin-label">Bank name *</span>
+              <span className="admin-label">{t("banking.modal.bankName")}</span>
               <input
                 className="admin-input"
                 value={bankName}
@@ -419,7 +418,7 @@ function AddEditBankAccountModal({
             </label>
 
             <label className="admin-field">
-              <span className="admin-label">Account holder *</span>
+              <span className="admin-label">{t("banking.modal.accountHolder")}</span>
               <input
                 className="admin-input"
                 value={accountHolder}
@@ -431,7 +430,7 @@ function AddEditBankAccountModal({
 
             <label className="admin-field">
               <span className="admin-label">
-                Account number {isEdit ? "(leave blank to keep)" : "*"}
+                {isEdit ? t("banking.modal.accountNumberEdit") : t("banking.modal.accountNumberNew")}
               </span>
               <input
                 className="admin-input"
@@ -445,7 +444,7 @@ function AddEditBankAccountModal({
             </label>
 
             <label className="admin-field">
-              <span className="admin-label">IBAN (optional)</span>
+              <span className="admin-label">{t("banking.modal.iban")}</span>
               <input
                 className="admin-input"
                 value={iban}
@@ -455,7 +454,7 @@ function AddEditBankAccountModal({
             </label>
 
             <label className="admin-field">
-              <span className="admin-label">SWIFT (optional)</span>
+              <span className="admin-label">{t("banking.modal.swift")}</span>
               <input
                 className="admin-input"
                 value={swift}
@@ -466,7 +465,7 @@ function AddEditBankAccountModal({
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               <label className="admin-field">
-                <span className="admin-label">Currency code *</span>
+                <span className="admin-label">{t("banking.modal.currencyCode")}</span>
                 <input
                   className="admin-input"
                   value={currencyCode}
@@ -480,7 +479,7 @@ function AddEditBankAccountModal({
               </label>
 
               <label className="admin-field">
-                <span className="admin-label">Country code *</span>
+                <span className="admin-label">{t("banking.modal.countryCode")}</span>
                 <input
                   className="admin-input"
                   value={countryCode}
@@ -495,18 +494,18 @@ function AddEditBankAccountModal({
             </div>
 
             <label className="admin-field">
-              <span className="admin-label">Display name (English)</span>
+              <span className="admin-label">{t("banking.modal.displayName")}</span>
               <input
                 className="admin-input"
                 value={nameEn}
                 onChange={(e) => setNameEn(e.target.value)}
                 maxLength={200}
-                placeholder="e.g. Primary USD account"
+                placeholder={t("banking.modal.displayNamePlaceholder")}
               />
             </label>
 
             <label className="admin-field">
-              <span className="admin-label">Notes (English)</span>
+              <span className="admin-label">{t("banking.modal.notes")}</span>
               <textarea
                 className="admin-input"
                 value={notesEn}
@@ -519,10 +518,10 @@ function AddEditBankAccountModal({
 
           <div className="admin-modal-actions">
             <button type="button" className="admin-btn" onClick={onClose} disabled={saving}>
-              Cancel
+              {t("banking.modal.cancel")}
             </button>
             <button type="submit" className="admin-btn admin-btn-primary" disabled={saving}>
-              {saving ? "Saving..." : isEdit ? "Update" : "Create"}
+              {saving ? t("banking.modal.saving") : isEdit ? t("banking.modal.update") : t("banking.modal.create")}
             </button>
           </div>
         </form>

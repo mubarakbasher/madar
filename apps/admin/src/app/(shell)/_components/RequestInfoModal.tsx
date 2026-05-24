@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
+import { t } from "@/lib/i18n";
 
 export interface RequestInfoSubmit {
   message: string;
@@ -28,7 +29,7 @@ export function RequestInfoModal({
     try {
       await onSubmit({ message: trimmed });
     } catch (e) {
-      setError((e as Error).message || "Request failed. Please try again.");
+      setError((e as Error).message || t("proofs.requestInfo.fallbackError"));
       setSubmitting(false);
     }
   }
@@ -38,26 +39,26 @@ export function RequestInfoModal({
       <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
         <header className="admin-modal-head">
           <h2 id="request-info-modal-title" className="admin-modal-title">
-            Request more information
+            {t("proofs.requestInfo.title")}
           </h2>
           <button
             type="button"
             className="admin-icon-btn"
             onClick={onCancel}
             disabled={submitting}
-            aria-label="Cancel"
+            aria-label={t("proofs.requestInfo.cancel")}
           >
             <X size={16} strokeWidth={1.5} />
           </button>
         </header>
 
         <p className="admin-modal-body-text">
-          Send a message to the tenant asking for clarification. The proof will stay pending.
+          {t("proofs.requestInfo.body")}
         </p>
 
         <label className="admin-modal-field">
           <span className="admin-modal-label">
-            Message to tenant
+            {t("proofs.requestInfo.messageLabel")}
             <span className="admin-modal-label-hint"> ({trimmed.length}/500)</span>
           </span>
           <textarea
@@ -65,7 +66,7 @@ export function RequestInfoModal({
             onChange={(e) => setMessage(e.target.value)}
             disabled={submitting}
             rows={4}
-            placeholder="e.g. The transfer reference is not visible in the receipt. Could you upload a clearer image?"
+            placeholder={t("proofs.requestInfo.messagePlaceholder")}
             className="admin-modal-textarea"
             maxLength={500}
             autoFocus
@@ -80,7 +81,7 @@ export function RequestInfoModal({
 
         <div className="admin-modal-actions">
           <button type="button" className="admin-tb-action" onClick={onCancel} disabled={submitting}>
-            Cancel
+            {t("proofs.requestInfo.cancel")}
           </button>
           <button
             type="button"
@@ -88,7 +89,7 @@ export function RequestInfoModal({
             onClick={handleSubmit}
             disabled={!canSubmit}
           >
-            {submitting ? "Sending..." : "Send request"}
+            {submitting ? t("proofs.requestInfo.submitting") : t("proofs.requestInfo.submit")}
           </button>
         </div>
       </div>

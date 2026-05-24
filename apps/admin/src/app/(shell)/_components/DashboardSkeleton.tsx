@@ -1,3 +1,5 @@
+import { t } from "@/lib/i18n";
+
 export function DashboardSkeleton() {
   return (
     <div aria-busy="true">
@@ -11,7 +13,7 @@ export function DashboardSkeleton() {
         <div className="admin-skel" style={{ height: 240 }} />
         <div className="admin-skel" style={{ height: 240 }} />
       </div>
-      <span className="sr-only">Loading dashboard…</span>
+      <span className="sr-only">{t("dashboard.loadingSr")}</span>
     </div>
   );
 }

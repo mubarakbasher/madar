@@ -1,6 +1,7 @@
 "use client";
 
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { t } from "@/lib/i18n";
 
 interface Props {
   data: Array<{ date: string; count: number }>;
@@ -13,7 +14,7 @@ export function TenantGrowthChart({ data }: Props) {
   return (
     <div className="admin-panel" style={{ padding: 22 }}>
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 16 }}>
-        <span className="admin-kicker">Tenant growth &middot; 90 days</span>
+        <span className="admin-kicker">{t("dashboard.charts.tenantGrowth")}</span>
         <span style={{ fontSize: 11, fontFamily: "var(--sans)", color: "var(--ink-3)" }}>
           {first} &rarr; {last} tenants
         </span>

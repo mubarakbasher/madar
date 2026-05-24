@@ -15,7 +15,7 @@
     "build:api": "turbo run build --filter=@madar/api",
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
-    "i18n:check": "pnpm --filter=@madar/web run i18n:check",
+    "i18n:check": "pnpm --filter=@madar/web run i18n:check && pnpm --filter=@madar/admin run i18n:check",
     "db:generate": "pnpm --filter=@madar/db run db:generate",
     "db:migrate": "pnpm --filter=@madar/db run db:migrate",
     "db:migrate:deploy": "pnpm --filter=@madar/db run db:migrate:deploy",

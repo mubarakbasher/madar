@@ -12,6 +12,7 @@ import { KpiCard } from "./_components/KpiCard";
 import { DashboardSkeleton } from "./_components/DashboardSkeleton";
 import { TenantGrowthChart } from "./_components/TenantGrowthChart";
 import { MrrTrendChart } from "./_components/MrrTrendChart";
+import { t } from "@/lib/i18n";
 
 const ACTIVITY_DOT_COLOR: Record<ActivityItem["kind"], string> = {
   tenant_signup: "var(--accent)",
@@ -31,14 +32,14 @@ function formatCents(cents: string, currency: string): string {
 function relativeTime(iso: string): string {
   const diffMs = Date.now() - new Date(iso).getTime();
   const minutes = Math.round(diffMs / 60000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes} min ago`;
+  if (minutes < 1) return t("common.justNow");
+  if (minutes < 60) return t("common.minAgo", { count: minutes });
   const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours} h ago`;
+  if (hours < 24) return t("common.hAgo", { count: hours });
   const days = Math.round(hours / 24);
-  if (days < 30) return `${days} d ago`;
+  if (days < 30) return t("common.dAgo", { count: days });
   const months = Math.round(days / 30);
-  return `${months} mo ago`;
+  return t("common.moAgo", { count: months });
 }
 
 function formatDelta(n: number): { label: string; tone: "up" | "down" | "flat" } {
@@ -71,9 +72,9 @@ export function DashboardClient() {
   if (kpiQ.isError || activityQ.isError) {
     return (
       <div className="admin-error" role="alert">
-        <p className="admin-error-title">Couldn&apos;t load dashboard</p>
+        <p className="admin-error-title">{t("dashboard.errorTitle")}</p>
         <p className="admin-error-body" style={{ marginBottom: 14 }}>
-          The platform API didn&apos;t respond. Try again — if it persists, check the API service.
+          {t("dashboard.errorBody")}
         </p>
         <button
           type="button"
@@ -83,7 +84,7 @@ export function DashboardClient() {
             void activityQ.refetch();
           }}
         >
-          Retry
+          {t("dashboard.retry")}
         </button>
       </div>
     );
@@ -91,7 +92,7 @@ export function DashboardClient() {
 
   const kpi = kpiQ.data;
   const activity = activityQ.data;
-  const greeting = `Welcome, ${user?.name?.split(" ")[0] ?? "admin"}.`;
+  const greeting = t("home.welcome", { name: user?.name?.split(" ")[0] ?? "admin" });
   const activeDelta = formatDelta(kpi.active_tenants.delta_7d);
 
   return (
@@ -102,42 +103,42 @@ export function DashboardClient() {
           <p className="admin-page-sub">
             {kpi.pending_verifications.count > 0
               ? `${kpi.pending_verifications.count} payment proof${kpi.pending_verifications.count === 1 ? "" : "s"} awaiting verification.`
-              : "No pending verifications."}
+              : t("dashboard.noPendingVerifications")}
           </p>
         </div>
       </header>
 
       <div className="admin-kpi-grid">
         <KpiCard
-          kicker="Monthly recurring"
+          kicker={t("dashboard.kpi.monthlyRecurring")}
           value={formatCents(kpi.monthly_recurring.amount_cents, kpi.monthly_recurring.currency_code)}
-          note="across paying tenants"
+          note={t("dashboard.kpi.acrossPayingTenants")}
         />
         <KpiCard
-          kicker="Active tenants"
+          kicker={t("dashboard.kpi.activeTenants")}
           value={kpi.active_tenants.count}
           delta={activeDelta.label}
           deltaTone={activeDelta.tone}
-          note="active + trialing · last 7 days"
+          note={t("dashboard.kpi.activeTrialingNote")}
         />
         <KpiCard
-          kicker="Trials ending soon"
+          kicker={t("dashboard.kpi.trialsEndingSoon")}
           value={kpi.trials_ending_soon.count}
-          note={`within ${kpi.trials_ending_soon.window_days} days`}
+          note={t("dashboard.kpi.withinDays", { days: kpi.trials_ending_soon.window_days })}
         />
         <KpiCard
-          kicker="Pending verifications"
+          kicker={t("dashboard.kpi.pendingVerifications")}
           value={kpi.pending_verifications.count}
           note={
             kpi.pending_verifications.oldest_days != null
-              ? `oldest · ${kpi.pending_verifications.oldest_days} d`
-              : "queue clear"
+              ? t("dashboard.kpi.oldestDays", { days: kpi.pending_verifications.oldest_days })
+              : t("dashboard.kpi.queueClear")
           }
         />
         <KpiCard
-          kicker="System"
-          value={kpi.system_health.status === "healthy" ? "Healthy" : kpi.system_health.status}
-          note={`${kpi.system_health.uptime_30d_pct.toFixed(2)}% · 30d`}
+          kicker={t("dashboard.kpi.system")}
+          value={kpi.system_health.status === "healthy" ? t("dashboard.kpi.healthy") : kpi.system_health.status}
+          note={t("dashboard.kpi.uptimeNote", { pct: kpi.system_health.uptime_30d_pct.toFixed(2) })}
         />
       </div>
 
@@ -151,15 +152,14 @@ export function DashboardClient() {
       <div className="admin-activity-grid">
         <div className="admin-panel">
           <div className="admin-panel-head">
-            <span className="admin-panel-title">Verification queue</span>
+            <span className="admin-panel-title">{t("dashboard.verificationPanel")}</span>
             <a href="/verification" className="admin-tb-action" style={{ textDecoration: "none" }}>
-              Open queue →
+              {t("dashboard.openQueue")}
             </a>
           </div>
           {kpi.pending_verifications.count === 0 ? (
             <p style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--ink-3)" }}>
-              No payment proofs are awaiting verification. When tenants submit bank-transfer
-              receipts, they&apos;ll appear here.
+              {t("dashboard.verificationEmpty")}
             </p>
           ) : (
             <p style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--ink-2)" }}>
@@ -171,11 +171,11 @@ export function DashboardClient() {
         </div>
         <div className="admin-panel">
           <div className="admin-panel-head">
-            <span className="admin-panel-title">Recent activity</span>
+            <span className="admin-panel-title">{t("dashboard.recentActivity")}</span>
           </div>
           {activity.items.length === 0 ? (
             <p style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--ink-3)" }}>
-              No activity yet.
+              {t("dashboard.noActivityYet")}
             </p>
           ) : (
             <div>

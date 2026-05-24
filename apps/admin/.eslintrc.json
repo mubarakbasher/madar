@@ -1,6 +1,42 @@
 {
   "extends": "next/core-web-vitals",
+  "plugins": ["i18next"],
   "rules": {
+    "i18next/no-literal-string": [
+      "warn",
+      {
+        "markupOnly": true,
+        "ignoreAttribute": [
+          "className",
+          "style",
+          "type",
+          "name",
+          "id",
+          "htmlFor",
+          "role",
+          "href",
+          "src",
+          "key",
+          "autoComplete",
+          "inputMode",
+          "data-testid",
+          "data-theme",
+          "data-state"
+        ],
+        "ignore": [
+          "^[^a-zA-Z]*$",
+          "^[A-Z_]+$",
+          "^\\s*$"
+        ],
+        "ignoreCallee": [
+          "require",
+          "console.*",
+          "useQuery",
+          "useMutation",
+          "useForm"
+        ]
+      }
+    ],
     "no-restricted-imports": [
       "error",
       {
