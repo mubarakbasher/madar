@@ -17,6 +17,7 @@ export const ADMIN_CRON_QUEUE = "admin-cron";
 
 export const TRIAL_REMINDER_JOB = "trial-reminder-tick";
 export const LOW_STOCK_JOB = "low-stock-tick";
+export const BILLING_TICK_JOB = "billing-tick";
 
 /** Reminder fires when trial_ends_at is between (now + WINDOW_MIN_DAYS) and
  *  (now + WINDOW_MAX_DAYS), and `trial_reminder_sent_at IS NULL`. The window

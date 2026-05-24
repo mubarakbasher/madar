@@ -10,13 +10,17 @@ import { Logger } from "@nestjs/common";
 import { Processor, WorkerHost } from "@nestjs/bullmq";
 import type { Job } from "bullmq";
 import { AdminCronService } from "./cron.service";
-import { ADMIN_CRON_QUEUE, LOW_STOCK_JOB, TRIAL_REMINDER_JOB, type CronJobPayload } from "./cron.types";
+import { ADMIN_CRON_QUEUE, BILLING_TICK_JOB, LOW_STOCK_JOB, TRIAL_REMINDER_JOB, type CronJobPayload } from "./cron.types";
+import { BillingTrackerService } from "../billing-tracker/billing-tracker.service";
 
 @Processor(ADMIN_CRON_QUEUE)
 export class AdminCronProcessor extends WorkerHost {
   private readonly logger = new Logger(AdminCronProcessor.name);
 
-  constructor(private readonly cron: AdminCronService) {
+  constructor(
+    private readonly cron: AdminCronService,
+    private readonly billing: BillingTrackerService,
+  ) {
     super();
   }
 
@@ -26,6 +30,8 @@ export class AdminCronProcessor extends WorkerHost {
         return this.cron.runTrialReminderTick(null);
       case LOW_STOCK_JOB:
         return this.cron.runLowStockTick(null);
+      case BILLING_TICK_JOB:
+        return this.billing.runDailyTick(null);
       default:
         this.logger.warn(`Unknown admin-cron job: ${job.name}`);
         return { skipped: true, reason: "unknown_job_name" };

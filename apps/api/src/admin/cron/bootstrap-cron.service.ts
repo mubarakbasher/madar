@@ -14,6 +14,7 @@ import type { Queue } from "bullmq";
 import { loadEnv } from "../../env";
 import {
   ADMIN_CRON_QUEUE,
+  BILLING_TICK_JOB,
   LOW_STOCK_JOB,
   TRIAL_REMINDER_JOB,
   type CronJobPayload,
@@ -42,6 +43,7 @@ export class BootstrapCronService implements OnApplicationBootstrap {
     try {
       await this.registerRepeat(TRIAL_REMINDER_JOB, pattern, "trial-reminder-daily");
       await this.registerRepeat(LOW_STOCK_JOB, pattern, "low-stock-daily");
+      await this.registerRepeat(BILLING_TICK_JOB, pattern, "billing-tick-daily");
       this.logger.log(`admin-cron repeats registered with pattern "${pattern}"`);
     } catch (err) {
       this.logger.error("admin-cron repeat registration failed", err);

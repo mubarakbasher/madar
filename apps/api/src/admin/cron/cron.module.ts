@@ -11,6 +11,7 @@ import { Module, type DynamicModule } from "@nestjs/common";
 import { BullModule } from "@nestjs/bullmq";
 import { loadEnv } from "../../env";
 import { AdminAuthModule } from "../auth/admin-auth.module";
+import { BillingTrackerModule } from "../billing-tracker/billing-tracker.module";
 import { AdminCronController } from "./cron.controller";
 import { AdminCronProcessor } from "./cron.processor";
 import { AdminCronService } from "./cron.service";
@@ -26,7 +27,7 @@ export class AdminCronModule {
     if (!redisUrl) {
       return {
         module: AdminCronModule,
-        imports: [AdminAuthModule],
+        imports: [AdminAuthModule, BillingTrackerModule],
         providers: [AdminCronService],
         controllers: [AdminCronController],
         exports: [AdminCronService],
@@ -38,6 +39,7 @@ export class AdminCronModule {
       module: AdminCronModule,
       imports: [
         AdminAuthModule,
+        BillingTrackerModule,
         BullModule.forRoot({
           connection: {
             host: parsed.hostname,

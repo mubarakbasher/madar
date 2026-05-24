@@ -3,6 +3,7 @@ export type EmailTemplate =
   | "trial_ending"
   | "payment_received"
   | "suspended"
+  | "invoice_issued"
   | "admin_invite"
   | "staff_invite"
   | "password_reset"
@@ -96,6 +97,14 @@ export interface SuspendedVars {
   dataExportEndsAt: string;
 }
 
+export interface InvoiceIssuedVars {
+  tenantName: string;
+  referenceCode: string;
+  amountFormatted: string;
+  dueDate: string;
+  payUrl: string;
+}
+
 export interface AdminInviteVars {
   inviterName: string;
   inviteeName: string;
@@ -174,6 +183,7 @@ export type SendInput =
   | { template: "trial_ending"; to: string; locale: EmailLocale; vars: TrialEndingVars }
   | { template: "payment_received"; to: string; locale: EmailLocale; vars: PaymentReceivedVars }
   | { template: "suspended"; to: string; locale: EmailLocale; vars: SuspendedVars }
+  | { template: "invoice_issued"; to: string; locale: EmailLocale; vars: InvoiceIssuedVars }
   | { template: "admin_invite"; to: string; locale: EmailLocale; vars: AdminInviteVars }
   | { template: "staff_invite"; to: string; locale: EmailLocale; vars: StaffInviteVars }
   | { template: "password_reset"; to: string; locale: EmailLocale; vars: PasswordResetVars }

@@ -156,6 +156,55 @@ Export deadline: {{dataExportEndsAt}}`,
     },
   },
 
+  invoice_issued: {
+    subject: {
+      en: "New invoice {{referenceCode}} — {{amountFormatted}} due {{dueDate}}",
+      ar: "فاتورة جديدة {{referenceCode}} — {{amountFormatted}} مستحقة {{dueDate}}",
+    },
+    html: {
+      en: htmlShell(
+        "en",
+        `<h1 style="font-family: Fraunces, Georgia, serif; font-size: 26px;">Invoice issued</h1>
+<p>A new subscription invoice has been created for <strong>{{tenantName}}</strong>.</p>
+<table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+  <tr><td style="padding: 6px 0; color: #8A8478;">Reference</td><td style="padding: 6px 0;"><code>{{referenceCode}}</code></td></tr>
+  <tr><td style="padding: 6px 0; color: #8A8478;">Amount</td><td style="padding: 6px 0;"><strong>{{amountFormatted}}</strong></td></tr>
+  <tr><td style="padding: 6px 0; color: #8A8478;">Due by</td><td style="padding: 6px 0;">{{dueDate}}</td></tr>
+</table>
+<p>Transfer the amount to one of the platform bank accounts shown on your billing page:</p>
+<p><a href="{{payUrl}}" style="display: inline-block; padding: 12px 20px; background: #C96442; color: white; border-radius: 8px; text-decoration: none;">Pay invoice</a></p>
+<p>After transferring, upload your receipt on the billing page so our team can verify the payment.</p>`,
+      ),
+      ar: htmlShell(
+        "ar",
+        `<h1 style="font-family: 'IBM Plex Serif Arabic', Georgia, serif; font-size: 26px;">تم إصدار فاتورة</h1>
+<p>تم إنشاء فاتورة اشتراك جديدة لـ <strong>{{tenantName}}</strong>.</p>
+<table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+  <tr><td style="padding: 6px 0; color: #8A8478;">المرجع</td><td style="padding: 6px 0;"><code>{{referenceCode}}</code></td></tr>
+  <tr><td style="padding: 6px 0; color: #8A8478;">المبلغ</td><td style="padding: 6px 0;"><strong>{{amountFormatted}}</strong></td></tr>
+  <tr><td style="padding: 6px 0; color: #8A8478;">تاريخ الاستحقاق</td><td style="padding: 6px 0;">{{dueDate}}</td></tr>
+</table>
+<p>حوِّل المبلغ إلى أحد حسابات المنصة البنكية الموضحة في صفحة الفوترة:</p>
+<p><a href="{{payUrl}}" style="display: inline-block; padding: 12px 20px; background: #C96442; color: white; border-radius: 8px; text-decoration: none;">ادفع الفاتورة</a></p>
+<p>بعد التحويل، ارفع إيصالك في صفحة الفوترة ليتمكن فريقنا من التحقق من الدفعة.</p>`,
+      ),
+    },
+    text: {
+      en: `New invoice for {{tenantName}}:
+Reference: {{referenceCode}}
+Amount: {{amountFormatted}}
+Due: {{dueDate}}
+
+Pay: {{payUrl}}`,
+      ar: `فاتورة جديدة لـ {{tenantName}}:
+المرجع: {{referenceCode}}
+المبلغ: {{amountFormatted}}
+تاريخ الاستحقاق: {{dueDate}}
+
+ادفع: {{payUrl}}`,
+    },
+  },
+
   password_reset: {
     subject: {
       en: "Reset your Madar password",
