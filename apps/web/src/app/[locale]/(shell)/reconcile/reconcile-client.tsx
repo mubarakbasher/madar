@@ -196,7 +196,7 @@ function ChainCard({
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
           gap: 14,
         }}
       >
@@ -294,7 +294,7 @@ function BranchPanel({
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
           gap: 12,
           marginBlockEnd: 16,
         }}
@@ -458,6 +458,7 @@ function Stat({
           color,
           marginBlockStart: 4,
           fontVariantNumeric: "tabular-nums",
+          whiteSpace: "nowrap",
         }}
       >
         {value}
