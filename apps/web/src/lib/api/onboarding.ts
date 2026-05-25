@@ -13,7 +13,7 @@ export interface SelectPlanResult {
  * active plans, sorted by price ascending.
  */
 export function publicPlansRequest(): Promise<{ items: ApiPlan[]; total: number }> {
-  return apiFetch<{ items: ApiPlan[]; total: number }>("/v1/public/plans");
+  return apiFetch<{ items: ApiPlan[]; total: number }>("/v1/onboarding/public/plans");
 }
 
 /**
