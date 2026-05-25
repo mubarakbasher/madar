@@ -5,6 +5,7 @@ import { Search, X } from "lucide-react";
 import type { MutableRefObject } from "react";
 import type { Category } from "@/lib/mock-data/categories";
 import type { Product } from "@/lib/mock-data/products";
+import { productImagePublicUrl } from "@/lib/api/catalog";
 
 export function ProductGrid({
   search,
@@ -16,6 +17,7 @@ export function ProductGrid({
   products,
   onAdd,
   locale,
+  tenantId,
 }: {
   search: string;
   setSearch: (s: string) => void;
@@ -26,6 +28,7 @@ export function ProductGrid({
   products: Product[];
   onAdd: (id: string) => void;
   locale: string;
+  tenantId: string | null;
 }) {
   const t = useTranslations("pos");
 
@@ -96,15 +99,27 @@ export function ProductGrid({
           <div className="pos-grid">
             {products.map((p) => {
               const mark = p.name.split(" ")[0]?.slice(0, 2) ?? "·";
+              const imgSrc = tenantId ? productImagePublicUrl(tenantId, p.id, p.image_url ?? null) : null;
               return (
                 <button key={p.id} type="button" className="pos-tile" onClick={() => onAdd(p.id)}>
                   <div
                     className="pos-tile-visual"
                     style={{
-                      background: `linear-gradient(135deg, ${p.color}, color-mix(in oklab, ${p.color} 55%, #0E0B08))`,
+                      background: imgSrc
+                        ? "var(--bg-sunk)"
+                        : `linear-gradient(135deg, ${p.color}, color-mix(in oklab, ${p.color} 55%, #0E0B08))`,
                     }}
                   >
-                    <div className="pos-tile-mark serif">{mark}</div>
+                    {imgSrc ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={imgSrc}
+                        alt=""
+                        style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit" }}
+                      />
+                    ) : (
+                      <div className="pos-tile-mark serif">{mark}</div>
+                    )}
                   </div>
                   <div className="pos-tile-name">{p.name}</div>
                   <div className="pos-tile-price serif tnum" aria-label={`${p.price} EGP`}>

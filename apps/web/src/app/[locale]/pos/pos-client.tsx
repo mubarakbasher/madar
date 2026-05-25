@@ -144,6 +144,7 @@ function PosView({
   userRole,
 }: PosViewProps) {
   const t = useTranslations("pos");
+  const tenantId = useAuthStore((s) => s.tenant?.id ?? null);
   const queryClient = useQueryClient();
 
   const [cat, setCat] = useState<string>("all");
@@ -585,6 +586,7 @@ function PosView({
           products={filteredProducts}
           onAdd={addToCart}
           locale={locale}
+          tenantId={tenantId}
         />
         <Cart
           lines={cartLines}
