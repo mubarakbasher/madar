@@ -76,7 +76,7 @@ export class TrendsService {
         return "COUNT(DISTINCT s.id)::bigint";
       case "gross_profit":
         return `(COALESCE(SUM(s.total_cents), 0)
-           - COALESCE(SUM(COALESCE(sl.cogs_snapshot_cents, 0) * sl.qty), 0))::bigint`;
+           - COALESCE(SUM(COALESCE(sl.cogs_snapshot_cents, 0)), 0))::bigint`;
       case "revenue":
       default:
         return "COALESCE(SUM(s.total_cents), 0)::bigint";

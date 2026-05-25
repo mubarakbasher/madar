@@ -102,9 +102,9 @@ export class MoversService {
         SELECT sl.product_id,
                COALESCE(SUM(sl.line_total_cents), 0)::bigint                                       AS revenue_cents,
                COALESCE(SUM(sl.qty), 0)::bigint                                                    AS units,
-               COALESCE(SUM(COALESCE(sl.cogs_snapshot_cents, 0) * sl.qty), 0)::bigint              AS cogs_cents,
+               COALESCE(SUM(COALESCE(sl.cogs_snapshot_cents, 0)), 0)::bigint                       AS cogs_cents,
                (COALESCE(SUM(sl.line_total_cents), 0)
-                  - COALESCE(SUM(COALESCE(sl.cogs_snapshot_cents, 0) * sl.qty), 0))::bigint        AS gross_profit_cents
+                  - COALESCE(SUM(COALESCE(sl.cogs_snapshot_cents, 0)), 0))::bigint                 AS gross_profit_cents
         FROM sale_lines sl
         INNER JOIN sales s    ON s.id         = sl.sale_id
         INNER JOIN products p ON p.id         = sl.product_id
@@ -222,9 +222,9 @@ export class MoversService {
         SELECT sl.product_id,
                COALESCE(SUM(sl.line_total_cents), 0)::bigint                                       AS revenue_cents,
                COALESCE(SUM(sl.qty), 0)::bigint                                                    AS units,
-               COALESCE(SUM(COALESCE(sl.cogs_snapshot_cents, 0) * sl.qty), 0)::bigint              AS cogs_cents,
+               COALESCE(SUM(COALESCE(sl.cogs_snapshot_cents, 0)), 0)::bigint                       AS cogs_cents,
                (COALESCE(SUM(sl.line_total_cents), 0)
-                  - COALESCE(SUM(COALESCE(sl.cogs_snapshot_cents, 0) * sl.qty), 0))::bigint        AS gross_profit_cents
+                  - COALESCE(SUM(COALESCE(sl.cogs_snapshot_cents, 0)), 0))::bigint                 AS gross_profit_cents
         FROM sale_lines sl
         INNER JOIN sales s ON s.id = sl.sale_id
         WHERE s.tenant_id = $1::uuid

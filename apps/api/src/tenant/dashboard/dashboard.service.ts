@@ -198,7 +198,7 @@ export class DashboardService {
                 COUNT(DISTINCT s.id)::bigint AS transactions,
                 COALESCE(SUM(sl.qty), 0)::bigint AS items_sold,
                 (COALESCE(SUM(s.total_cents) FILTER (WHERE s.currency_code = $2), 0)
-                  - COALESCE(SUM(COALESCE(sl.cogs_snapshot_cents, 0) * sl.qty)
+                  - COALESCE(SUM(COALESCE(sl.cogs_snapshot_cents, 0))
                        FILTER (WHERE s.currency_code = $2), 0))::bigint AS gross_profit_cents
          FROM bounds, sales s
          LEFT JOIN sale_lines sl ON sl.sale_id = s.id AND sl.deleted_at IS NULL
@@ -213,7 +213,7 @@ export class DashboardService {
                 COUNT(DISTINCT s.id)::bigint AS transactions,
                 COALESCE(SUM(sl.qty), 0)::bigint AS items_sold,
                 (COALESCE(SUM(s.total_cents) FILTER (WHERE s.currency_code = $2), 0)
-                  - COALESCE(SUM(COALESCE(sl.cogs_snapshot_cents, 0) * sl.qty)
+                  - COALESCE(SUM(COALESCE(sl.cogs_snapshot_cents, 0))
                        FILTER (WHERE s.currency_code = $2), 0))::bigint AS gross_profit_cents
          FROM bounds, sales s
          LEFT JOIN sale_lines sl ON sl.sale_id = s.id AND sl.deleted_at IS NULL
@@ -253,7 +253,7 @@ export class DashboardService {
                 COALESCE(SUM(s.total_cents) FILTER (WHERE s.currency_code = $2), 0)::bigint AS revenue_cents,
                 COUNT(DISTINCT s.id)::bigint AS transactions,
                 (COALESCE(SUM(s.total_cents) FILTER (WHERE s.currency_code = $2), 0)
-                  - COALESCE(SUM(COALESCE(sl.cogs_snapshot_cents, 0) * sl.qty)
+                  - COALESCE(SUM(COALESCE(sl.cogs_snapshot_cents, 0))
                        FILTER (WHERE s.currency_code = $2), 0))::bigint AS gross_profit_cents
          FROM days
          LEFT JOIN sales s
