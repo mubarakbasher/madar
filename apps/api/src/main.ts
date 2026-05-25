@@ -24,7 +24,7 @@ async function bootstrap() {
     logger: env.NODE_ENV === "test" ? ["error", "warn"] : ["error", "warn", "log"],
   });
 
-  app.use(helmet());
+  app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
   app.use(cookieParser());
   app.enableCors({
     origin: env.API_CORS_ORIGIN,
