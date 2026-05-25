@@ -37,6 +37,7 @@ RUN corepack enable && corepack prepare pnpm@9.12.0 --activate
 COPY --from=build /repo/apps/web/.next ./apps/web/.next
 COPY --from=build /repo/apps/web/public ./apps/web/public
 COPY --from=build /repo/apps/web/package.json ./apps/web/package.json
+COPY --from=build /repo/apps/web/node_modules ./apps/web/node_modules
 COPY --from=build /repo/apps/web/next.config.mjs ./apps/web/next.config.mjs
 COPY --from=build /repo/apps/web/i18n ./apps/web/i18n
 COPY --from=build /repo/apps/web/messages ./apps/web/messages
