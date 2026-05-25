@@ -5,6 +5,7 @@ import { Search, Bell, Sparkles } from "lucide-react";
 import { usePathname } from "../../../../../i18n/routing";
 import { BranchSwitcher } from "./BranchSwitcher";
 import { LangSwitcher } from "./LangSwitcher";
+import { UserMenu } from "./UserMenu";
 
 function crumbKeyFor(pathname: string): "dashboard" | "checkout" | "inventory" | null {
   if (pathname === "/" || pathname === "") return "dashboard";
@@ -54,7 +55,7 @@ export function Topbar({ locale }: { locale: string }) {
         <Sparkles size={16} strokeWidth={1.5} />
       </button>
 
-      <div className="tb-avatar">O</div>
+      <UserMenu locale={locale} />
     </div>
   );
 }

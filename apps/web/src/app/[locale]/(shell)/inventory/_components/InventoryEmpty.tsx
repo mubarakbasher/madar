@@ -1,6 +1,7 @@
 "use client";
-import { PackageOpen } from "lucide-react";
+import { PackageOpen, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Link } from "../../../../../../i18n/routing";
 
 export function InventoryEmpty() {
   const t = useTranslations("inventory.empty");
@@ -53,10 +54,8 @@ export function InventoryEmpty() {
       >
         {t("body")}
       </p>
-      <button
-        type="button"
-        aria-disabled="true"
-        title={t("comingSoon")}
+      <Link
+        href="/inventory/products/new"
         className="rounded-xl"
         style={{
           marginTop: 8,
@@ -66,13 +65,16 @@ export function InventoryEmpty() {
           color: "white",
           fontSize: 14,
           fontWeight: 500,
-          opacity: 0.45,
-          cursor: "not-allowed",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 8,
+          textDecoration: "none",
           boxShadow: "0 6px 24px -14px color-mix(in oklab, var(--accent) 70%, transparent)",
         }}
       >
+        <Plus size={15} strokeWidth={1.5} />
         {t("addProduct")}
-      </button>
+      </Link>
     </div>
   );
 }

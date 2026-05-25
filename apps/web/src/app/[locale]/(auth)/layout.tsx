@@ -1,3 +1,5 @@
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { LocaleToggle } from "./_components/LocaleToggle";
 
@@ -10,6 +12,11 @@ export default async function AuthLayout({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  const refresh = cookies().get("madar_refresh")?.value;
+  if (refresh) {
+    redirect(`/${locale}`);
+  }
   const t = await getTranslations("auth");
 
   return (

@@ -74,3 +74,31 @@ a.sb-item {
   color: var(--ink-3);
   font-variant-numeric: tabular-nums;
 }
+
+/* User menu */
+.um-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: transparent;
+  border: 0;
+  text-align: start;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.um-item:hover {
+  background: var(--bg-elev);
+  color: var(--ink);
+}
+.um-item-danger {
+  color: var(--rose);
+}
+.um-item-danger:hover {
+  background: color-mix(in oklab, var(--rose) 10%, transparent);
+  color: var(--rose);
+}

@@ -192,6 +192,7 @@ html[lang="ar"] .serif { font-family: var(--font-arabic); }
   display: flex; flex-direction: column;
   position: sticky; top: 0; height: 100vh;
   z-index: 10;
+  overflow: hidden;
 }
 .sb-brand {
   display: flex; align-items: center; gap: 10px;
@@ -219,6 +220,12 @@ html[lang="ar"] .serif { font-family: var(--font-arabic); }
   font-weight: 500; letter-spacing: 0.12em;
   text-transform: uppercase; color: var(--ink-3);
   margin-top: 2px;
+}
+.sb-scroll {
+  flex: 1; min-height: 0;
+  overflow-y: auto; overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule) transparent;
 }
 .sb-section {
   padding: 14px 12px 6px;
@@ -372,6 +379,10 @@ html[lang="ar"] .serif { font-family: var(--font-arabic); }
   background: var(--accent); color: #fff;
   display: grid; place-items: center;
   font-family: var(--serif); font-size: 14px;
+  border: none; cursor: pointer;
+}
+.tb-avatar:hover {
+  opacity: 0.85;
 }
 
 /* ─── Content ─────────────────────────────────────── */

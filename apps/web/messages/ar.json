@@ -644,7 +644,11 @@
       "notifications": "الإشعارات",
       "askMadar": "اسأل مدار",
       "allBranches": "كل الفروع",
-      "branchSwitcher": "الفرع"
+      "branchSwitcher": "الفرع",
+      "userMenu": "قائمة الحساب",
+      "profile": "الملف الشخصي",
+      "settings": "الإعدادات",
+      "signOut": "تسجيل الخروج"
     },
     "crumb": {
       "dashboard": "لوحة التحكم",

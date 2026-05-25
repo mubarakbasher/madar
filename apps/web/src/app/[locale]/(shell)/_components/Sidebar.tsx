@@ -171,75 +171,77 @@ export function Sidebar() {
         </div>
       </div>
 
-      {SECTIONS.map((section) => (
-        <div key={section.titleKey}>
-          <div className="sb-section">{tSec(section.titleKey)}</div>
-          <nav className="sb-nav">
-            {section.items
-              .filter((item) => !item.roleGuard || item.roleGuard(role))
-              .map((item) => {
-              const Icon = item.icon;
-              const active = item.enabled && isActive(pathname, item.href);
-              const label = tNav(item.id);
-              const badge = item.badgeKey ? tNav(item.badgeKey) : null;
+      <div className="sb-scroll">
+        {SECTIONS.map((section) => (
+          <div key={section.titleKey}>
+            <div className="sb-section">{tSec(section.titleKey)}</div>
+            <nav className="sb-nav">
+              {section.items
+                .filter((item) => !item.roleGuard || item.roleGuard(role))
+                .map((item) => {
+                const Icon = item.icon;
+                const active = item.enabled && isActive(pathname, item.href);
+                const label = tNav(item.id);
+                const badge = item.badgeKey ? tNav(item.badgeKey) : null;
 
-              if (!item.enabled) {
+                if (!item.enabled) {
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className="sb-item"
+                      aria-disabled="true"
+                      tabIndex={-1}
+                    >
+                      <Icon className="sb-ico" size={18} strokeWidth={1.5} />
+                      <span className="sb-item-label">{label}</span>
+                      <span className="sb-soon">{tNav("soon")}</span>
+                    </button>
+                  );
+                }
+
                 return (
-                  <button
+                  <Link
                     key={item.id}
-                    type="button"
+                    href={
+                      item.href as
+                        | "/"
+                        | "/pos"
+                        | "/sales"
+                        | "/inventory"
+                        | "/transfers"
+                        | "/suppliers"
+                        | "/purchases"
+                        | "/returns"
+                        | "/branches"
+                        | "/customers"
+                        | "/shifts"
+                        | "/sales/verification"
+                        | "/sales/sync-conflicts"
+                        | "/reconcile"
+                        | "/reports"
+                        | "/billing"
+                        | "/settings"
+                    }
                     className="sb-item"
-                    aria-disabled="true"
-                    tabIndex={-1}
+                    aria-current={active ? "page" : undefined}
                   >
                     <Icon className="sb-ico" size={18} strokeWidth={1.5} />
                     <span className="sb-item-label">{label}</span>
-                    <span className="sb-soon">{tNav("soon")}</span>
-                  </button>
+                    {badge && <span className="sb-badge">{badge}</span>}
+                  </Link>
                 );
-              }
+              })}
+            </nav>
+          </div>
+        ))}
 
-              return (
-                <Link
-                  key={item.id}
-                  href={
-                    item.href as
-                      | "/"
-                      | "/pos"
-                      | "/sales"
-                      | "/inventory"
-                      | "/transfers"
-                      | "/suppliers"
-                      | "/purchases"
-                      | "/returns"
-                      | "/branches"
-                      | "/customers"
-                      | "/shifts"
-                      | "/sales/verification"
-                      | "/sales/sync-conflicts"
-                      | "/reconcile"
-                      | "/reports"
-                      | "/billing"
-                      | "/settings"
-                  }
-                  className="sb-item"
-                  aria-current={active ? "page" : undefined}
-                >
-                  <Icon className="sb-ico" size={18} strokeWidth={1.5} />
-                  <span className="sb-item-label">{label}</span>
-                  {badge && <span className="sb-badge">{badge}</span>}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-      ))}
-
-      <div className="sb-merchant">
-        <div className="sb-merchant-avatar">B</div>
-        <div className="sb-merchant-meta">
-          <b>{tMerch("name")}</b>
-          <small>{tMerch("meta")}</small>
+        <div className="sb-merchant">
+          <div className="sb-merchant-avatar">B</div>
+          <div className="sb-merchant-meta">
+            <b>{tMerch("name")}</b>
+            <small>{tMerch("meta")}</small>
+          </div>
         </div>
       </div>
 

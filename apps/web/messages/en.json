@@ -644,7 +644,11 @@
       "notifications": "Notifications",
       "askMadar": "Ask Madar",
       "allBranches": "All branches",
-      "branchSwitcher": "Branch"
+      "branchSwitcher": "Branch",
+      "userMenu": "Account menu",
+      "profile": "Profile",
+      "settings": "Settings",
+      "signOut": "Sign out"
     },
     "crumb": {
       "dashboard": "Dashboard",
