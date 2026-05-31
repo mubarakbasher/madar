@@ -46,6 +46,7 @@ export function UsersClient({ locale }: { locale: "en" | "ar" }) {
   const qc = useQueryClient();
   const currentRole = useAuthStore((s) => s.user?.role ?? "");
   const currentUserId = useAuthStore((s) => s.user?.id ?? "");
+  const patchUser = useAuthStore((s) => s.patchUser);
   const isOwner = currentRole === "owner";
 
   const [search, setSearch] = useState("");
@@ -365,7 +366,16 @@ export function UsersClient({ locale }: { locale: "en" | "ar" }) {
         <EditUserModal
           user={editingUser}
           locale={locale}
-          onClose={() => setEditingUser(null)}
+          isSelf={editingUser.id === currentUserId}
+          onClose={(updated) => {
+            if (updated && updated.id === currentUserId) {
+              // Reflect the new branch in the live session so the POS unlocks
+              // without a re-login.
+              patchUser({ branch_id: updated.branch_id });
+              setToast({ text: t("editModal.selfUpdatedToast"), tone: "ok" });
+            }
+            setEditingUser(null);
+          }}
         />
       )}
 
@@ -448,7 +458,16 @@ function UserRow({
       </td>
       <td>
         {isSelf ? (
-          <span className="usr-you-badge">{t("youBadge")}</span>
+          <div className="usr-row-actions">
+            <span className="usr-you-badge">{t("youBadge")}</span>
+            <button
+              type="button"
+              className="usr-btn usr-btn-ghost usr-btn-sm"
+              onClick={onEdit}
+            >
+              {t("actions.editBranch")}
+            </button>
+          </div>
         ) : (
           <div className="usr-row-actions">
             <button

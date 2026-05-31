@@ -102,6 +102,8 @@ export interface ReceiptResponse {
     name: string;
     name_i18n: { en: string; ar: string };
     logo_url: string | null;
+    legal_name: string | null;
+    tax_registration_number: string | null;
   };
   branch: {
     code: string;

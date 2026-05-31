@@ -52,6 +52,9 @@ describe("GET /v1/sales/:id/receipt-data", () => {
     expect(res.body.branch.code).toMatch(/^BR-/);
     expect(res.body.cashier).not.toBeNull();
     expect(res.body.cashier.name).toBe("Test Owner");
+    // Invoice-header fields surface for the A4 layout (null when unset).
+    expect(res.body.tenant).toHaveProperty("legal_name");
+    expect(res.body.tenant).toHaveProperty("tax_registration_number");
     // Cash sale → bank_account is null
     expect(res.body.bank_account).toBeNull();
   });

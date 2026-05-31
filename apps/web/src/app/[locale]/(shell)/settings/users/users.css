@@ -397,6 +397,16 @@
   overflow-y: auto;
 }
 
+.usr-self-note {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--accent) 8%, var(--bg-elev));
+  color: var(--ink-2);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
 .usr-modal-foot {
   display: flex;
   justify-content: flex-end;

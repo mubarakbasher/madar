@@ -32,6 +32,7 @@ interface AuthState {
   tenant: AuthTenant | null;
   bootstrapped: boolean;
   setAuth: (p: { accessToken: string; user: AuthUser; tenant: AuthTenant }) => void;
+  patchUser: (partial: Partial<AuthUser>) => void;
   clearAuth: () => void;
   setBootstrapped: () => void;
 }
@@ -43,6 +44,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   bootstrapped: false,
   setAuth: ({ accessToken, user, tenant }) =>
     set({ accessToken, user, tenant, bootstrapped: true }),
+  patchUser: (partial) =>
+    set((s) => (s.user ? { user: { ...s.user, ...partial } } : {})),
   clearAuth: () => set({ accessToken: null, user: null, tenant: null, bootstrapped: true }),
   setBootstrapped: () => set({ bootstrapped: true }),
 }));

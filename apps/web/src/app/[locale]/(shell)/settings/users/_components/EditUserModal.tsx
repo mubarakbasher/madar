@@ -25,10 +25,12 @@ const ROLES: TenantUserRole[] = ["manager", "cashier", "accountant", "auditor", 
 export function EditUserModal({
   user,
   locale,
+  isSelf = false,
   onClose,
 }: {
   user: ApiTenantUser;
   locale: "en" | "ar";
+  isSelf?: boolean;
   onClose: (updated: ApiTenantUser | null) => void;
 }) {
   const t = useTranslations("settings.users");
@@ -105,6 +107,7 @@ export function EditUserModal({
         <form onSubmit={onSubmit}>
           <div className="usr-modal-body">
             {errors.general && <div className="usr-general-error">{errors.general}</div>}
+            {isSelf && <p className="usr-self-note">{t("editModal.selfBranchNote")}</p>}
 
             <label className="usr-field">
               <span className="usr-field-label">{t("inviteModal.fields.email")}</span>
@@ -120,6 +123,7 @@ export function EditUserModal({
               <span className="usr-field-label">{t("editModal.fields.role")}</span>
               <select
                 value={role}
+                disabled={isSelf}
                 onChange={(e) => {
                   const next = e.target.value as TenantUserRole;
                   setRole(next);
@@ -160,6 +164,7 @@ export function EditUserModal({
               <input
                 type="checkbox"
                 checked={isActive}
+                disabled={isSelf}
                 onChange={(e) => setIsActive(e.target.checked)}
               />
               <span>{t("editModal.fields.isActive")}</span>

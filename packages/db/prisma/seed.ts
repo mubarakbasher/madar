@@ -140,6 +140,9 @@ async function main() {
       name: "Bayt Owner",
       role: "owner",
       locale: "en",
+      // Link the owner to the primary branch so the POS works out of the box.
+      // Owners can change their own branch from Settings → Users.
+      branch_id: branches[0].id,
     },
   });
 

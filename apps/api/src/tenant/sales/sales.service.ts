@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -89,6 +90,24 @@ export class SalesService {
         code: "unknown_branch",
         message: "Branch not found",
       });
+    }
+
+    // Branch authorization. Non-owners may only ring sales at their OWN assigned
+    // branch; owners are branch-agnostic (all-access). This stops a cashier
+    // pinned to one branch from passing a sibling branch's id to sell against a
+    // branch they aren't staffed at. Role + branch are read from the DB (the
+    // authoritative source) rather than trusting the JWT claim.
+    const actor = await scoped.user.findUnique({
+      where: { id: ctx.cashierId },
+      select: { role: true, branch_id: true },
+    });
+    if (actor?.role !== "owner") {
+      if (!actor?.branch_id || actor.branch_id !== input.branch_id) {
+        throw new ForbiddenException({
+          code: "branch_not_allowed",
+          message: "You can only sell at your assigned branch.",
+        });
+      }
     }
 
     // Load line products + their tax_class_id.
@@ -708,7 +727,14 @@ export class SalesService {
     const [tenant, branch, cashier, bankAccount] = await Promise.all([
       (await import("@madar/db")).adminPrisma.tenant.findUnique({
         where: { id: tenantId },
-        select: { id: true, name: true, name_i18n: true, logo_url: true },
+        select: {
+          id: true,
+          name: true,
+          name_i18n: true,
+          logo_url: true,
+          legal_name: true,
+          tax_registration_number: true,
+        },
       }),
       scoped.branch.findUnique({
         where: { id: sale.branch_id },
@@ -765,6 +791,8 @@ export class SalesService {
         name: tenant.name,
         name_i18n: tenant.name_i18n as { en: string; ar: string },
         logo_url: tenant.logo_url,
+        legal_name: tenant.legal_name,
+        tax_registration_number: tenant.tax_registration_number,
       },
       branch: branch
         ? {
@@ -935,6 +963,8 @@ export interface ReceiptResponse {
     name: string;
     name_i18n: { en: string; ar: string };
     logo_url: string | null;
+    legal_name: string | null;
+    tax_registration_number: string | null;
   };
   branch: {
     code: string;

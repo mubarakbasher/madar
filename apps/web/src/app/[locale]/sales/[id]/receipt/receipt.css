@@ -237,3 +237,117 @@
     width: 58mm;
   }
 }
+
+/* ── A4 (full-page, invoice-style) ───────────────────────────────────── */
+.receipt-a4 {
+  width: 210mm;
+  max-width: 100%;
+  padding: 16mm;
+  font-size: 13px;
+  font-family: "Geist", system-ui, sans-serif;
+}
+
+.receipt-a4.receipt-ar {
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+}
+
+.receipt-a4-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  text-align: start;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.receipt-a4 .receipt-logo {
+  margin: 0 0 8px;
+  max-width: 200px;
+  max-height: 72px;
+}
+
+.receipt-a4 .receipt-name {
+  font-size: 26px;
+  margin-bottom: 6px;
+}
+
+.receipt-a4-legal {
+  font-size: 12px;
+  color: #5B554B;
+}
+
+.receipt-a4-muted {
+  font-size: 11px;
+  color: #8A8478;
+  margin-top: 2px;
+}
+
+.receipt-a4-docmeta {
+  text-align: end;
+  min-width: 200px;
+  font-size: 12px;
+  color: #5B554B;
+}
+
+.receipt-a4-title {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 24px;
+  color: #1A1714;
+  margin-bottom: 10px;
+}
+
+.receipt-a4.receipt-ar .receipt-a4-title {
+  font-family: "IBM Plex Serif Arabic", Georgia, serif;
+}
+
+.receipt-a4-docmeta .receipt-meta-row {
+  gap: 16px;
+}
+
+.receipt-a4-stamp {
+  margin-top: 10px;
+}
+
+.receipt-a4 .receipt-items {
+  margin: 0 0 16px;
+}
+
+.receipt-a4 .receipt-line {
+  grid-template-columns: 3em 1fr auto;
+  gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid #E8E4DD;
+}
+
+.receipt-a4 .receipt-col-head {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #8A8478;
+  border-bottom: 2px solid #1A1714;
+}
+
+.receipt-a4 .receipt-totals {
+  margin-inline-start: auto;
+  max-width: 300px;
+  border-top: none;
+}
+
+.receipt-a4 .receipt-total-row {
+  font-size: 22px;
+}
+
+.receipt-a4 .receipt-footer {
+  margin-top: 28px;
+  border-top: 1px solid #E8E4DD;
+  padding-top: 12px;
+}
+
+@media print {
+  .receipt-a4 {
+    width: auto;
+    padding: 0;
+    font-size: 11px;
+  }
+}

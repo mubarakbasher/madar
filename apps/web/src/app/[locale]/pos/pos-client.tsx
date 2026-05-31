@@ -19,6 +19,8 @@ import { PaymentSheet, type PaymentSubmit } from "./_components/PaymentSheet";
 import { CustomerPickerModal, type PosCustomerPick } from "./_components/CustomerPickerModal";
 import { ShiftGate } from "./_components/ShiftGate";
 import { ShiftChip } from "./_components/ShiftChip";
+import { PosNoBranch } from "./_components/PosNoBranch";
+import { branchesListRequest } from "@/lib/api/branches";
 import type { CreateSaleInput, SalePaymentInput, SaleResponse } from "@/lib/api/sales";
 import { submitPaymentProof } from "@/lib/api/payment-proofs";
 import { listTenantBankAccounts } from "@/lib/api/tenant-bank-accounts";
@@ -40,6 +42,7 @@ export function PosClient({ locale }: { locale: "en" | "ar" }) {
   const tenant = useAuthStore((s) => s.tenant);
   const user = useAuthStore((s) => s.user);
   const bootstrapped = useAuthStore((s) => s.bootstrapped);
+  const branchId = user?.branch_id ?? null;
 
   // Mid-session recovery: if AuthBootstrap flips bootstrapped=true with no token,
   // bounce to /login?returnTo=/{locale}/pos. Server-side `requireAuth` only
@@ -54,17 +57,25 @@ export function PosClient({ locale }: { locale: "en" | "ar" }) {
   const productsQ = useQuery({
     queryKey: ["catalog", "products"],
     queryFn: () => productsListRequest(),
-    enabled: bootstrapped,
+    enabled: bootstrapped && !!branchId,
     staleTime: 30_000,
   });
   const categoriesQ = useQuery({
     queryKey: ["catalog", "categories"],
     queryFn: () => categoriesListRequest(),
-    enabled: bootstrapped,
+    enabled: bootstrapped && !!branchId,
     staleTime: 60_000,
   });
 
-  if (!bootstrapped || productsQ.isPending || categoriesQ.isPending) {
+  if (!bootstrapped) {
+    return <PosShellMessage tone="info">Loading catalog…</PosShellMessage>;
+  }
+  // No branch linked → selling is impossible (inventory commits against a
+  // branch). Show a calm explainer instead of failing at the payment step.
+  if (!branchId) {
+    return <PosNoBranch canManage={user?.role === "owner"} />;
+  }
+  if (productsQ.isPending || categoriesQ.isPending) {
     return <PosShellMessage tone="info">Loading catalog…</PosShellMessage>;
   }
   if (productsQ.isError || categoriesQ.isError) {
@@ -98,7 +109,7 @@ export function PosClient({ locale }: { locale: "en" | "ar" }) {
       apiCategories={apiCategories}
       categories={categories}
       currency={tenant?.default_currency_code ?? "EGP"}
-      branchId={user?.branch_id ?? null}
+      branchId={branchId}
       currentUserId={user?.id ?? null}
       userRole={user?.role ?? null}
     />
@@ -514,7 +525,17 @@ function PosView({
     return sale;
   }
 
-  const branchName = "Maadi"; // Branch switcher wiring lands with 1.8c.
+  // Resolve the real branch name for the header. Falls back to the branch code,
+  // then a generic label while the list loads.
+  const branchesQ = useQuery({
+    queryKey: ["branches", "list", { include_inactive: false }],
+    queryFn: () => branchesListRequest({ include_inactive: false }),
+    enabled: !!branchId,
+    staleTime: 60_000,
+  });
+  const activeBranch = branchesQ.data?.items.find((b) => b.id === branchId);
+  const branchName =
+    activeBranch?.name_i18n?.[locale] || activeBranch?.code || t("header.branchFallback");
 
   return (
     <ShiftGate branchId={branchId} currency={currency}>

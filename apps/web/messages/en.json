@@ -1337,6 +1337,12 @@
     }
   },
   "pos": {
+    "noBranch": {
+      "title": "You're not linked to a branch",
+      "bodyOwner": "Selling needs a branch — that's where inventory and the cash drawer live. Open Users settings and set your branch to start ringing sales.",
+      "bodyStaff": "Selling needs a branch. Ask an owner or manager to link your account to a branch, then sign in again.",
+      "cta": "Go to Users settings"
+    },
     "shift": {
       "loading": "Loading shift…",
       "openRequired": "Open a shift to start ringing sales.",
@@ -1387,6 +1393,7 @@
     "header": {
       "shiftOpen": "Shift open",
       "exit": "Exit POS",
+      "branchFallback": "Branch",
       "cashier": "Cashier",
       "shift": "Shift",
       "since": "since",
@@ -1568,6 +1575,15 @@
       "cashier": "Cashier",
       "date": "Date"
     },
+    "invoice": {
+      "title": "Invoice",
+      "taxId": "Tax Reg. No."
+    },
+    "cols": {
+      "qty": "Qty",
+      "item": "Item",
+      "amount": "Amount"
+    },
     "totals": {
       "subtotal": "Subtotal",
       "discount": "Discount",
@@ -1596,6 +1612,8 @@
       "print": "Print",
       "switch58": "Switch to 58mm",
       "switch80": "Switch to 80mm",
+      "switchA4": "Switch to A4",
+      "backToPos": "Back to POS",
       "refund": "Refund",
       "popDrawer": "Open drawer",
       "popDrawerPair": "Pair cash drawer",
@@ -2165,6 +2183,7 @@
       },
       "actions": {
         "edit": "Edit",
+        "editBranch": "Set branch",
         "resendInvite": "Resend invite",
         "deactivate": "Deactivate",
         "reactivate": "Reactivate",
@@ -2188,6 +2207,8 @@
         "submit": "Save changes",
         "cancel": "Cancel",
         "selfNote": "You can't edit your own role or access.",
+        "selfBranchNote": "You can set your own branch here so you can use the POS. Role and access stay locked — ask another owner to change those.",
+        "selfUpdatedToast": "Your branch was updated.",
         "fields": {
           "role": "Role",
           "branch": "Branch",

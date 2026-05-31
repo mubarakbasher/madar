@@ -288,13 +288,6 @@ export class UsersService {
     body: UpdateUserBody,
     ctx: AuditCtx,
   ): Promise<ApiUserSummary> {
-    if (targetId === actorId) {
-      throw new BadRequestException({
-        code: "cannot_edit_self",
-        message: "You can't edit your own membership — ask another owner to change your role or status",
-      });
-    }
-
     const scoped = tenantScoped(tenantId);
     const existing = await scoped.user.findUnique({
       where: { id: targetId },
@@ -304,6 +297,23 @@ export class UsersService {
         code: "unknown_user",
         message: "User not found",
       });
+    }
+
+    if (targetId === actorId) {
+      // Self-edit stays locked EXCEPT one path: an owner setting ONLY their own
+      // branch. This lets a solo owner link themselves to a branch so they can
+      // operate the POS (no other user exists to do it for them). Role/status
+      // self-changes remain blocked.
+      const onlyBranchChange =
+        body.role === undefined &&
+        body.is_active === undefined &&
+        body.branch_id !== undefined;
+      if (!(onlyBranchChange && existing.role === "owner")) {
+        throw new BadRequestException({
+          code: "cannot_edit_self",
+          message: "You can't edit your own membership — ask another owner to change your role or status",
+        });
+      }
     }
 
     // Resolve the post-update state for invariant checks (manager_requires_branch

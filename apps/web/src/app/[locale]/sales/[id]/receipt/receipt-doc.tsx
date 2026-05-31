@@ -16,7 +16,8 @@ import "./receipt.css";
 
 const REFUND_ROLES = new Set(["owner", "manager", "cashier", "accountant"]);
 
-type Size = "58mm" | "80mm";
+type Size = "58mm" | "a4";
+const SIZES: Size[] = ["58mm", "a4"];
 
 function centsMajor(cents: string | bigint, currency: string): string {
   const n = typeof cents === "bigint" ? Number(cents) : Number(BigInt(cents));
@@ -147,6 +148,13 @@ export function ReceiptDoc({
     ? `${branch.code} · ${branch.name_i18n[locale] || branch.name_i18n.en}`
     : null;
   const isPaid = sale.payment_status === "paid";
+  const isA4 = size === "a4";
+
+  const stamp = (
+    <span className={`receipt-stamp ${isPaid ? "" : "receipt-stamp-pending"}`}>
+      {isPaid ? t("status.paid") : t("status.pending")}
+    </span>
+  );
 
   return (
     <div className="receipt-shell">
@@ -155,40 +163,96 @@ export function ReceiptDoc({
         lang={locale}
         dir={locale === "ar" ? "rtl" : "ltr"}
       >
-        <header className="receipt-header">
-          {logoUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={logoUrl}
-              alt={tenantName}
-              className="receipt-logo"
-            />
-          )}
-          <h1 className="receipt-name">{tenantName}</h1>
-          {branchLabel && <div style={{ fontSize: 10 }}>{branchLabel}</div>}
-          {branch?.address_i18n && (
-            <div style={{ fontSize: 10, color: "#8A8478" }}>
-              {branch.address_i18n[locale] || branch.address_i18n.en}
-            </div>
-          )}
-        </header>
+        {/* A4 prints on A4 paper; thermal keeps the global zero-margin @page. */}
+        {isA4 && (
+          <style
+            dangerouslySetInnerHTML={{
+              __html: "@media print { @page { size: A4; margin: 14mm; } }",
+            }}
+          />
+        )}
 
-        <div className="receipt-meta">
-          <div className="receipt-meta-row">
-            <span>{t("meta.ticket")}</span>
-            <strong>{sale.code}</strong>
-          </div>
-          <div className="receipt-meta-row">
-            <span>{t("meta.cashier")}</span>
-            <span>{cashier?.name ?? "—"}</span>
-          </div>
-          <div className="receipt-meta-row">
-            <span>{t("meta.date")}</span>
-            <span>{fmtDate(sale.occurred_at, locale)}</span>
-          </div>
-        </div>
+        {isA4 ? (
+          <header className="receipt-header receipt-a4-header">
+            <div className="receipt-a4-identity">
+              {logoUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={logoUrl} alt={tenantName} className="receipt-logo" />
+              )}
+              <h1 className="receipt-name">{tenantName}</h1>
+              {tenant.legal_name && (
+                <div className="receipt-a4-legal">{tenant.legal_name}</div>
+              )}
+              {tenant.tax_registration_number && (
+                <div className="receipt-a4-muted">
+                  {t("invoice.taxId")}: {tenant.tax_registration_number}
+                </div>
+              )}
+              {branchLabel && <div className="receipt-a4-muted">{branchLabel}</div>}
+              {branch?.address_i18n && (
+                <div className="receipt-a4-muted">
+                  {branch.address_i18n[locale] || branch.address_i18n.en}
+                </div>
+              )}
+            </div>
+            <div className="receipt-a4-docmeta">
+              <div className="receipt-a4-title">{t("invoice.title")}</div>
+              <div className="receipt-meta-row">
+                <span>{t("meta.ticket")}</span>
+                <strong>{sale.code}</strong>
+              </div>
+              <div className="receipt-meta-row">
+                <span>{t("meta.date")}</span>
+                <span>{fmtDate(sale.occurred_at, locale)}</span>
+              </div>
+              <div className="receipt-meta-row">
+                <span>{t("meta.cashier")}</span>
+                <span>{cashier?.name ?? "—"}</span>
+              </div>
+              <div className="receipt-a4-stamp">{stamp}</div>
+            </div>
+          </header>
+        ) : (
+          <>
+            <header className="receipt-header">
+              {logoUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={logoUrl} alt={tenantName} className="receipt-logo" />
+              )}
+              <h1 className="receipt-name">{tenantName}</h1>
+              {branchLabel && <div style={{ fontSize: 10 }}>{branchLabel}</div>}
+              {branch?.address_i18n && (
+                <div style={{ fontSize: 10, color: "#8A8478" }}>
+                  {branch.address_i18n[locale] || branch.address_i18n.en}
+                </div>
+              )}
+            </header>
+
+            <div className="receipt-meta">
+              <div className="receipt-meta-row">
+                <span>{t("meta.ticket")}</span>
+                <strong>{sale.code}</strong>
+              </div>
+              <div className="receipt-meta-row">
+                <span>{t("meta.cashier")}</span>
+                <span>{cashier?.name ?? "—"}</span>
+              </div>
+              <div className="receipt-meta-row">
+                <span>{t("meta.date")}</span>
+                <span>{fmtDate(sale.occurred_at, locale)}</span>
+              </div>
+            </div>
+          </>
+        )}
 
         <section className="receipt-items">
+          {isA4 && (
+            <div className="receipt-line receipt-col-head">
+              <span className="receipt-line-qty">{t("cols.qty")}</span>
+              <div className="receipt-line-name">{t("cols.item")}</div>
+              <span className="receipt-line-amount">{t("cols.amount")}</span>
+            </div>
+          )}
           {sale.lines.map((line) => {
             const name = line.name_i18n[locale] || line.name_i18n.en || line.sku;
             return (
@@ -261,11 +325,7 @@ export function ReceiptDoc({
           </section>
         )}
 
-        <div style={{ textAlign: "center" }}>
-          <span className={`receipt-stamp ${isPaid ? "" : "receipt-stamp-pending"}`}>
-            {isPaid ? t("status.paid") : t("status.pending")}
-          </span>
-        </div>
+        {!isA4 && <div style={{ textAlign: "center" }}>{stamp}</div>}
 
         <footer className="receipt-footer">
           <p className="receipt-thanks">{t("thanks")}</p>
@@ -274,6 +334,9 @@ export function ReceiptDoc({
       </article>
 
       <div className="no-print">
+        <a href={`/${locale}/pos`} className="receipt-back-link">
+          {t("buttons.backToPos")}
+        </a>
         <button type="button" onClick={() => window.print()}>
           <Printer size={14} strokeWidth={1.5} style={{ verticalAlign: "middle", marginInlineEnd: 4 }} />
           {t("buttons.print")}
@@ -305,9 +368,11 @@ export function ReceiptDoc({
                     : t("buttons.popDrawer")}
           </button>
         )}
-        <a href={`?size=${size === "80mm" ? "58mm" : "80mm"}`}>
-          {size === "80mm" ? t("buttons.switch58") : t("buttons.switch80")}
-        </a>
+        {SIZES.filter((s) => s !== size).map((s) => (
+          <a key={s} href={`?size=${s}`}>
+            {s === "58mm" ? t("buttons.switch58") : t("buttons.switchA4")}
+          </a>
+        ))}
       </div>
     </div>
   );
