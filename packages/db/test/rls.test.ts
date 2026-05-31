@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { adminPrisma, basePrisma, tenantScoped } from "../src/index";
 import { TENANT_A_ID, TENANT_B_ID } from "./setup";
@@ -180,6 +181,44 @@ describe("Append-only audit logs", () => {
     expect(row).toBeTruthy();
     await expect(
       adminPrisma.auditLog.delete({ where: { id: row!.id } }),
+    ).rejects.toThrow();
+  });
+
+  it("UPDATE on platform_audit_log is blocked at the DB level", async () => {
+    const row = await adminPrisma.platformAuditLog.create({
+      data: { platform_user_id: randomUUID(), action: "test", metadata: {} },
+    });
+    await expect(
+      adminPrisma.platformAuditLog.update({
+        where: { id: row.id },
+        data: { action: "tampered" },
+      }),
+    ).rejects.toThrow();
+  });
+
+  it("DELETE on platform_audit_log is blocked at the DB level", async () => {
+    const row = await adminPrisma.platformAuditLog.create({
+      data: { platform_user_id: randomUUID(), action: "test", metadata: {} },
+    });
+    await expect(
+      adminPrisma.platformAuditLog.delete({ where: { id: row.id } }),
+    ).rejects.toThrow();
+  });
+
+  // TRUNCATE is NOT caught by the BEFORE UPDATE/DELETE row triggers — it's
+  // blocked by a dedicated BEFORE TRUNCATE statement trigger AND by revoking the
+  // verb from madar_app (20260602000000_audit_log_truncate_guard). Through the
+  // app role this rejects on the missing privilege; the trigger is the backstop
+  // for the superuser/owner path (exercised manually, not via the app client).
+  it("TRUNCATE on audit_log is blocked at the DB level", async () => {
+    await expect(
+      basePrisma.$executeRawUnsafe("TRUNCATE TABLE audit_log"),
+    ).rejects.toThrow();
+  });
+
+  it("TRUNCATE on platform_audit_log is blocked at the DB level", async () => {
+    await expect(
+      basePrisma.$executeRawUnsafe("TRUNCATE TABLE platform_audit_log"),
     ).rejects.toThrow();
   });
 });
