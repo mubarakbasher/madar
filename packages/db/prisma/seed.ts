@@ -127,6 +127,8 @@ async function main() {
   );
   console.log(`  ✓ ${branches.length} branches`);
   const branchByCode = new Map(branches.map((b) => [b.code, b]));
+  const primaryBranch = branches[0];
+  if (!primaryBranch) throw new Error("Seed expects at least one branch");
 
   // ── 6. Owner + cashiers ──────────────────────────────────────────
   const ownerPasswordHash = await argon2.hash("Demo123!");
@@ -142,7 +144,7 @@ async function main() {
       locale: "en",
       // Link the owner to the primary branch so the POS works out of the box.
       // Owners can change their own branch from Settings → Users.
-      branch_id: branches[0].id,
+      branch_id: primaryBranch.id,
     },
   });
 
