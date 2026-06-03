@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 import { ApiError } from "@/lib/api/client";
+import { useAuthStore } from "@/lib/auth/store";
 import { branchesListRequest } from "@/lib/api/branches";
 import { productsListRequest, type ApiProduct } from "@/lib/api/catalog";
 import {
@@ -29,9 +30,20 @@ export function NewTransferWizard({ locale }: { locale: string }) {
   const t = useTranslations("transfers.wizard");
   const tErr = useTranslations("transfers.errors");
 
+  // A manager can only dispatch FROM their own branch (the API enforces this),
+  // so lock the source for managers and preselect it; owners pick any branch.
+  const role = useAuthStore((s) => s.user?.role ?? "");
+  const userBranchId = useAuthStore((s) => s.user?.branch_id ?? null);
+  const isManager = role === "manager";
+  const sourceLocked = isManager && Boolean(userBranchId);
+
   const [step, setStep] = useState<Step>(1);
-  const [fromBranch, setFromBranch] = useState("");
+  const [fromBranch, setFromBranch] = useState(() => (sourceLocked ? userBranchId! : ""));
   const [toBranch, setToBranch] = useState("");
+  // Defensive: if auth hydrates after mount, still preselect a manager's branch.
+  useEffect(() => {
+    if (sourceLocked && userBranchId && !fromBranch) setFromBranch(userBranchId);
+  }, [sourceLocked, userBranchId, fromBranch]);
   const [notes, setNotes] = useState("");
   const [lines, setLines] = useState<DraftLine[]>([]);
   const [search, setSearch] = useState("");
@@ -118,6 +130,8 @@ export function NewTransferWizard({ locale }: { locale: string }) {
 
   const canStep1Next = Boolean(fromBranch && toBranch && fromBranch !== toBranch);
   const canStep2Next = lines.length > 0 && lines.every((l) => l.qty_sent > 0);
+  // Only the source-branch manager (or an owner) may dispatch immediately.
+  const canSendNow = role === "owner" || (isManager && fromBranch === userBranchId);
 
   return (
     <div className="xfer xfer-wizard">
@@ -150,7 +164,7 @@ export function NewTransferWizard({ locale }: { locale: string }) {
             <select
               value={fromBranch}
               onChange={(e) => setFromBranch(e.target.value)}
-              disabled={branchesQ.isPending || branchesQ.isError}
+              disabled={sourceLocked || branchesQ.isPending || branchesQ.isError}
             >
               <option value="">
                 {branchesQ.isPending
@@ -165,6 +179,9 @@ export function NewTransferWizard({ locale }: { locale: string }) {
                 </option>
               ))}
             </select>
+            {sourceLocked && (
+              <span className="xfer-field-hint">{t("step1.sourceLocked")}</span>
+            )}
           </label>
           <label className="xfer-field">
             <span className="xfer-field-label">{t("step1.toBranch")}</span>
@@ -374,14 +391,16 @@ export function NewTransferWizard({ locale }: { locale: string }) {
               >
                 {create.isPending ? t("actions.saving") : t("actions.saveDraft")}
               </button>
-              <button
-                type="button"
-                className="xfer-btn xfer-btn-primary"
-                disabled={create.isPending || send.isPending}
-                onClick={() => onReviewSubmit(true)}
-              >
-                {send.isPending ? t("actions.sending") : t("actions.sendNow")}
-              </button>
+              {canSendNow && (
+                <button
+                  type="button"
+                  className="xfer-btn xfer-btn-primary"
+                  disabled={create.isPending || send.isPending}
+                  onClick={() => onReviewSubmit(true)}
+                >
+                  {send.isPending ? t("actions.sending") : t("actions.sendNow")}
+                </button>
+              )}
             </div>
           </div>
         </>

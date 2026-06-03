@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -541,19 +542,28 @@ export class StockTransfersService {
     return { id, deleted_at: now.toISOString() };
   }
 
-  /** Owner: anywhere. Manager: only when their assigned branch is involved as sender or receiver. */
-  assertCanAct(actor: { role: string; userId: string; branchId: string | null }, t: { from_branch_id: string; to_branch_id: string }): void {
+  /**
+   * Owner: any branch. Manager: only when their assigned branch matches the
+   * required side. The source branch (or owner) owns the draft lifecycle
+   * (create / update / send / cancel / delete); the destination branch (or
+   * owner) owns receive. Callers pass the branch the action belongs to:
+   * `from_branch_id` for the draft lifecycle, `to_branch_id` for receive.
+   */
+  assertActorBranch(
+    actor: { role: string; userId: string; branchId: string | null },
+    requiredBranchId: string,
+  ): void {
     if (actor.role === "owner") return;
     if (actor.role !== "manager") {
-      throw new BadRequestException({
+      throw new ForbiddenException({
         code: "forbidden_role",
         message: "Only owners and managers can act on transfers",
       });
     }
-    if (!actor.branchId || (t.from_branch_id !== actor.branchId && t.to_branch_id !== actor.branchId)) {
-      throw new BadRequestException({
+    if (!actor.branchId || actor.branchId !== requiredBranchId) {
+      throw new ForbiddenException({
         code: "forbidden_branch",
-        message: "You can only act on transfers involving your assigned branch",
+        message: "You can only act on transfers for your assigned branch",
       });
     }
   }

@@ -93,9 +93,10 @@ export class StockTransfersController {
   ) {
     assertMutator(user);
     const branchId = await fetchActorBranchId(user.tenantId, user.userId);
-    this.transfers.assertCanAct(
+    // A manager may only create transfers dispatched FROM their own branch.
+    this.transfers.assertActorBranch(
       { role: user.role, userId: user.userId, branchId },
-      { from_branch_id: body.from_branch_id, to_branch_id: body.to_branch_id },
+      body.from_branch_id,
     );
     return this.transfers.create(user.tenantId, user.userId, body, buildCtx(user, req));
   }
@@ -111,9 +112,9 @@ export class StockTransfersController {
     assertMutator(user);
     const transfer = await this.transfers.getOne(user.tenantId, id);
     const branchId = await fetchActorBranchId(user.tenantId, user.userId);
-    this.transfers.assertCanAct(
+    this.transfers.assertActorBranch(
       { role: user.role, userId: user.userId, branchId },
-      { from_branch_id: transfer.from_branch_id, to_branch_id: transfer.to_branch_id },
+      transfer.from_branch_id,
     );
     return this.transfers.update(user.tenantId, id, body, buildCtx(user, req));
   }
@@ -130,12 +131,10 @@ export class StockTransfersController {
     const transfer = await this.transfers.getOne(user.tenantId, id);
     const branchId = await fetchActorBranchId(user.tenantId, user.userId);
     // Sender (from_branch) confirms dispatch.
-    if (user.role === "manager" && branchId !== transfer.from_branch_id) {
-      throw new ForbiddenException({
-        code: "forbidden_branch",
-        message: "Only a manager at the sender branch can dispatch",
-      });
-    }
+    this.transfers.assertActorBranch(
+      { role: user.role, userId: user.userId, branchId },
+      transfer.from_branch_id,
+    );
     return this.transfers.send(user.tenantId, id, user.userId, buildCtx(user, req));
   }
 
@@ -151,12 +150,11 @@ export class StockTransfersController {
     assertMutator(user);
     const transfer = await this.transfers.getOne(user.tenantId, id);
     const branchId = await fetchActorBranchId(user.tenantId, user.userId);
-    if (user.role === "manager" && branchId !== transfer.to_branch_id) {
-      throw new ForbiddenException({
-        code: "forbidden_branch",
-        message: "Only a manager at the receiver branch can confirm receipt",
-      });
-    }
+    // Receiver (to_branch) confirms receipt — the OTHER branch's manager.
+    this.transfers.assertActorBranch(
+      { role: user.role, userId: user.userId, branchId },
+      transfer.to_branch_id,
+    );
     return this.transfers.receive(user.tenantId, id, user.userId, body, buildCtx(user, req));
   }
 
@@ -171,9 +169,10 @@ export class StockTransfersController {
     assertMutator(user);
     const transfer = await this.transfers.getOne(user.tenantId, id);
     const branchId = await fetchActorBranchId(user.tenantId, user.userId);
-    this.transfers.assertCanAct(
+    // Cancelling a draft belongs to the source side (or owner).
+    this.transfers.assertActorBranch(
       { role: user.role, userId: user.userId, branchId },
-      { from_branch_id: transfer.from_branch_id, to_branch_id: transfer.to_branch_id },
+      transfer.from_branch_id,
     );
     return this.transfers.cancel(user.tenantId, id, user.userId, buildCtx(user, req));
   }
@@ -195,9 +194,9 @@ export class StockTransfersController {
     });
     if (row) {
       const branchId = await fetchActorBranchId(user.tenantId, user.userId);
-      this.transfers.assertCanAct(
+      this.transfers.assertActorBranch(
         { role: user.role, userId: user.userId, branchId },
-        { from_branch_id: row.from_branch_id, to_branch_id: row.to_branch_id },
+        row.from_branch_id,
       );
     }
     return this.transfers.softDelete(user.tenantId, id, buildCtx(user, req));

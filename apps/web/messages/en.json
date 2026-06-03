@@ -631,8 +631,7 @@
       "soon": "Soon"
     },
     "merchant": {
-      "name": "Bayt Coffee Co.",
-      "meta": "5 branches · Cairo"
+      "branches": "{count, plural, one {# branch} other {# branches}}"
     },
     "topbar": {
       "searchPlaceholder": "Search products, orders, branches…",
@@ -699,9 +698,60 @@
       "importCsv": "Import CSV"
     },
     "ai": {
-      "headline": "<b>3 SKUs</b> will run out within 7 days. Madar suggests reordering <b>Yirgacheffe (120)</b>, <b>Kenya AA (60)</b>, and <b>Geisha (24)</b> — bundled into one PO with Sidamo Direct.",
+      "summaryLead": "{count, plural, one {# SKU} other {# SKUs}} will run out within {days, plural, one {# day} other {# days}}.",
+      "suggestBundled": "Madar suggests reordering {items} — bundled into one PO with {supplier}.",
+      "suggestMulti": "Madar suggests reordering {items} across {suppliers} suppliers.",
+      "suggestPlain": "Madar suggests reordering {items}.",
+      "andMore": "+{count} more",
       "review": "Review reorder",
-      "why": "Why?"
+      "why": "Why?",
+      "whyExplain": "Ranked by the last 30 days of sales velocity and your per-branch reorder points."
+    },
+    "reorder": {
+      "back": "Back to inventory",
+      "kicker": "Inventory",
+      "title": "Reorder review",
+      "subtitle": "At-risk SKUs for this branch, grouped by preferred supplier. Adjust quantities, then create a draft purchase order per supplier.",
+      "horizonLabel": "Run-out horizon",
+      "horizonDays": "{days} days",
+      "forbidden": "Only owners and managers can review reorder suggestions.",
+      "selectBranch": "Select a single branch to see its reorder suggestions.",
+      "loading": "Calculating suggestions…",
+      "error": "Could not load reorder suggestions. Try again.",
+      "empty": {
+        "title": "All stock healthy",
+        "sub": "No SKUs are projected to run out within this horizon, and none are below their reorder point."
+      },
+      "leadTime": "Lead time {days} days",
+      "leadTimeUnknown": "Lead time not set",
+      "created": "Draft PO {code} created",
+      "creating": "Creating…",
+      "createPo": "Create draft PO",
+      "col": {
+        "product": "Product",
+        "onHand": "On hand",
+        "cover": "Days of cover",
+        "velocity": "Per day",
+        "order": "Order qty",
+        "unitCost": "Unit cost",
+        "lineTotal": "Line total",
+        "suggested": "Suggested"
+      },
+      "days": "{days}d",
+      "estTotal": "Estimated total",
+      "errors": {
+        "noLines": "Set at least one quantity above zero.",
+        "generic": "Could not create the purchase order. Try again."
+      },
+      "ungrouped": {
+        "title": "No preferred supplier",
+        "note": "Assign a preferred supplier to these products to include them in a purchase order.",
+        "assign": "Manage suppliers"
+      },
+      "toast": {
+        "created": "Draft PO {code} created.",
+        "view": "View"
+      }
     },
     "filters": {
       "allCategories": "All categories",
@@ -895,6 +945,29 @@
           "adjustment": "Adjustment",
           "receive": "Receive",
           "waste": "Waste"
+        },
+        "adjust": {
+          "action": "Adjust",
+          "title": "Adjust stock",
+          "close": "Close",
+          "currentLabel": "On hand",
+          "deltaLabel": "Qty delta (signed)",
+          "newTotalLabel": "New on-hand total:",
+          "kinds": {
+            "adjustment": "Recount",
+            "waste": "Waste / damage"
+          },
+          "noteLabel": "Reason (required)",
+          "notePlaceholder": "Why is the count changing?",
+          "apply": "Adjust stock",
+          "applying": "Applying…",
+          "cancel": "Cancel",
+          "errors": {
+            "invalidDelta": "Enter a non-zero integer.",
+            "noteRequired": "A reason is required so the ledger stays auditable.",
+            "negativeStock": "This would take stock below zero. Lower the amount.",
+            "generic": "Could not adjust stock. Try again."
+          }
         }
       },
       "activity": {
@@ -1573,7 +1646,8 @@
     "meta": {
       "ticket": "Ticket",
       "cashier": "Cashier",
-      "date": "Date"
+      "date": "Date",
+      "customer": "Customer"
     },
     "invoice": {
       "title": "Invoice",
@@ -2039,7 +2113,8 @@
         "loadingBranches": "Loading branches…",
         "branchesError": "Couldn't load branches.",
         "retry": "Retry",
-        "sameBranchError": "Source and destination must be different."
+        "sameBranchError": "Source and destination must be different.",
+        "sourceLocked": "Locked to your branch — you can only send from the branch you manage."
       },
       "step2": {
         "title": "Add items",
@@ -2072,6 +2147,8 @@
     "detail": {
       "kicker": "Transfer",
       "inTransitBanner": "These goods are in transit. Confirm receipt when they arrive.",
+      "awaitingReceive": "In transit — waiting for {branch} to confirm receipt.",
+      "onlySourceCanManage": "Only a manager at {branch} can send or cancel this transfer.",
       "discrepancyBanner": "This transfer arrived with a discrepancy. Adjust stock manually if needed.",
       "linesTitle": "Lines",
       "receiveTitle": "Confirm what arrived",

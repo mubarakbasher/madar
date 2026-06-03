@@ -48,9 +48,10 @@ export function adaptProduct(p: ApiProduct, locale: "en" | "ar"): Product {
     price: centsToMajor(p.price_cents),
     cost: centsToMajor(p.cost_cents),
     stock: p.qty_on_hand,
-    // Use Infinity for "no reorder point" so the `stock < low` check is always
-    // false and no Low badge appears.
-    low: p.reorder_point ?? Number.POSITIVE_INFINITY,
+    // No reorder point → never "low". `low` is compared as `stock < low`, so the
+    // sentinel must be -Infinity (always false) — NOT +Infinity, which would make
+    // every product without a reorder point read as low stock.
+    low: p.reorder_point ?? Number.NEGATIVE_INFINITY,
     vel: p.velocity_per_week,
     color: colorFromId(p.id),
     image_url: p.image_url,

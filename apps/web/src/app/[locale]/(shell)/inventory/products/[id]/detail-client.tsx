@@ -1,10 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, ImageIcon, Pencil } from "lucide-react";
 import { Link } from "../../../../../../../i18n/routing";
+import { SingleAdjustStockModal } from "../../_components/SingleAdjustStockModal";
 import {
   productActivityRequest,
   productDetailRequest,
@@ -56,6 +57,9 @@ const KIND_TONE: Record<string, string> = {
 export function ProductDetailClient({ id, locale }: { id: string; locale: "en" | "ar" }) {
   const t = useTranslations("inventory.detail");
   const tenant = useAuthStore((s) => s.tenant);
+  const role = useAuthStore((s) => s.user?.role ?? "");
+  const canAdjust = role === "owner" || role === "manager";
+  const qc = useQueryClient();
   const [tab, setTab] = useState<Tab>("overview");
 
   const detailQ = useQuery({
@@ -209,10 +213,14 @@ export function ProductDetailClient({ id, locale }: { id: string; locale: "en" |
           {tab === "overview" && <OverviewTab product={p} locale={locale} margin={margin} />}
           {tab === "stock" && (
             <StockTab
+              productId={p.id}
+              productName={p.name_i18n[locale] || p.name_i18n.en}
               perBranchStock={p.per_branch_stock}
               locale={locale}
               movements={movementsQ.data?.items ?? []}
               movementsLoading={movementsQ.isPending}
+              canAdjust={canAdjust}
+              onAdjusted={() => qc.invalidateQueries({ queryKey: ["catalog"] })}
             />
           )}
           {tab === "activity" && (
@@ -411,17 +419,26 @@ function PriceCell({ label, value }: { label: string; value: string }) {
 }
 
 function StockTab({
+  productId,
+  productName,
   perBranchStock,
   locale,
   movements,
   movementsLoading,
+  canAdjust,
+  onAdjusted,
 }: {
+  productId: string;
+  productName: string;
   perBranchStock: ApiPerBranchStock[];
   locale: "en" | "ar";
   movements: ApiMovementItem[];
   movementsLoading: boolean;
+  canAdjust: boolean;
+  onAdjusted: () => void;
 }) {
   const t = useTranslations("inventory.detail.stock");
+  const [adjustRow, setAdjustRow] = useState<ApiPerBranchStock | null>(null);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       <section
@@ -446,6 +463,7 @@ function StockTab({
                 <th style={{ padding: "6px 8px", textAlign: "end" }}>{t("reorderPoint")}</th>
                 <th style={{ padding: "6px 8px", textAlign: "end" }}>{t("available")}</th>
                 <th style={{ padding: "6px 8px", textAlign: "end" }}>{t("lastMovement")}</th>
+                {canAdjust && <th style={{ padding: "6px 8px", textAlign: "end" }} />}
               </tr>
             </thead>
             <tbody>
@@ -467,6 +485,26 @@ function StockTab({
                   <td style={{ padding: "10px 8px", textAlign: "end", color: "var(--ink-3)", fontSize: 11 }}>
                     {relativeTime(b.last_movement_at)}
                   </td>
+                  {canAdjust && (
+                    <td style={{ padding: "10px 8px", textAlign: "end" }}>
+                      <button
+                        type="button"
+                        onClick={() => setAdjustRow(b)}
+                        style={{
+                          padding: "5px 12px",
+                          borderRadius: 8,
+                          fontSize: 12.5,
+                          border: "1px solid var(--rule)",
+                          background: "var(--bg)",
+                          color: "var(--ink-2)",
+                          cursor: "pointer",
+                          fontFamily: "inherit",
+                        }}
+                      >
+                        {t("adjust.action")}
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -499,6 +537,22 @@ function StockTab({
           </div>
         )}
       </section>
+
+      {adjustRow && (
+        <SingleAdjustStockModal
+          productId={productId}
+          productName={productName}
+          branchId={adjustRow.branch_id}
+          branchCode={adjustRow.branch_code}
+          branchName={adjustRow.branch_name_i18n[locale] || adjustRow.branch_name_i18n.en}
+          currentQty={adjustRow.qty_on_hand}
+          onClose={() => setAdjustRow(null)}
+          onDone={() => {
+            onAdjusted();
+            setAdjustRow(null);
+          }}
+        />
+      )}
     </div>
   );
 }
