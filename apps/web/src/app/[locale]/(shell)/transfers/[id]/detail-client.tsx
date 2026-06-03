@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "@/lib/api/client";
+import { useAuthStore } from "@/lib/auth/store";
 import {
   transferGetRequest,
   transferSendRequest,
@@ -34,6 +35,8 @@ export function TransferDetailClient({ locale, id }: { locale: "en" | "ar"; id: 
   const t = useTranslations("transfers");
   const tErr = useTranslations("transfers.errors");
   const qc = useQueryClient();
+  const role = useAuthStore((s) => s.user?.role ?? "");
+  const userBranchId = useAuthStore((s) => s.user?.branch_id ?? null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [receiveDraft, setReceiveDraft] = useState<
@@ -109,6 +112,16 @@ export function TransferDetailClient({ locale, id }: { locale: "en" | "ar"; id: 
   }
   const x: ApiTransferDetail = q.data;
 
+  // Branch-correct authorization (mirrors the API). The source branch (or
+  // owner) owns the draft lifecycle; the destination branch (or owner) receives.
+  const isOwner = role === "owner";
+  const canSend = isOwner || (role === "manager" && userBranchId === x.from_branch_id);
+  const canReceive = isOwner || (role === "manager" && userBranchId === x.to_branch_id);
+  const canManageDraft = canSend; // send / cancel / delete a draft
+  const fromName = pickName(x.from_branch_name_i18n, locale);
+  const toName = pickName(x.to_branch_name_i18n, locale);
+  const showReceiveForm = x.status === "in_transit" && canReceive;
+
   return (
     <div className="xfer">
       <div className="xfer-detail-head">
@@ -122,7 +135,7 @@ export function TransferDetailClient({ locale, id }: { locale: "en" | "ar"; id: 
           </div>
         </div>
         <div className="xfer-detail-actions">
-          {x.status === "draft" && (
+          {x.status === "draft" && canManageDraft && (
             <>
               <button
                 type="button"
@@ -142,7 +155,7 @@ export function TransferDetailClient({ locale, id }: { locale: "en" | "ar"; id: 
               </button>
             </>
           )}
-          {(x.status === "draft" || x.status === "cancelled") && (
+          {(x.status === "draft" || x.status === "cancelled") && canManageDraft && (
             <button
               type="button"
               className="xfer-btn xfer-btn-danger"
@@ -164,8 +177,18 @@ export function TransferDetailClient({ locale, id }: { locale: "en" | "ar"; id: 
 
       {actionError && <div className="xfer-field-error">{actionError}</div>}
 
-      {x.status === "in_transit" && (
+      {x.status === "draft" && !canManageDraft && (
+        <div className="xfer-status-banner">
+          {t("detail.onlySourceCanManage", { branch: fromName })}
+        </div>
+      )}
+      {x.status === "in_transit" && canReceive && (
         <div className="xfer-status-banner">{t("detail.inTransitBanner")}</div>
+      )}
+      {x.status === "in_transit" && !canReceive && (
+        <div className="xfer-status-banner">
+          {t("detail.awaitingReceive", { branch: toName })}
+        </div>
       )}
       {x.status === "received" && x.has_discrepancy && (
         <div className="xfer-status-banner xfer-status-banner-discrepancy">
@@ -175,10 +198,10 @@ export function TransferDetailClient({ locale, id }: { locale: "en" | "ar"; id: 
 
       <section className="xfer-card">
         <h2 className="xfer-card-title">
-          {x.status === "in_transit" ? t("detail.receiveTitle") : t("detail.linesTitle")}
+          {showReceiveForm ? t("detail.receiveTitle") : t("detail.linesTitle")}
         </h2>
 
-        {x.status === "in_transit" ? (
+        {showReceiveForm ? (
           <ReceiveForm
             x={x}
             locale={locale}

@@ -119,9 +119,11 @@ export function ProductsTable({
           {rows.map((p) => {
             const isLow = p.stock < p.low;
             const margin = Math.round(((p.price - p.cost) / p.price) * 100);
+            // Floor the denominator at 1 so a zero-stock product with no reorder
+            // point (low = -Infinity) yields 0%, not 0/0 = NaN.
             const stockPct = Math.min(
               100,
-              (p.stock / Math.max(p.low * 2.5, p.stock)) * 100,
+              (p.stock / Math.max(p.low * 2.5, p.stock, 1)) * 100,
             );
             const isSel = selected.includes(p.id);
             return (

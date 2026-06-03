@@ -1,0 +1,133 @@
+<!doctype html>
+<!--
+  Madar receipt — VISUAL DEMO ONLY (not shipped code).
+  Static preview of the updated receipt: logo-only header (business name removed,
+  falls back to the name only when there is no logo), customer name added, shown
+  in A4 and 80mm widths. Open this file directly in a browser.
+  The real receipt is rendered by apps/web/.../sales/[id]/receipt/receipt-doc.tsx.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Madar receipt — demo</title>
+<style>
+  body { margin: 0; background: #F5F0E8; font-family: "JetBrains Mono", ui-monospace, monospace; color: #1A1714; padding: 24px; }
+  h2.label { font-family: system-ui, sans-serif; font-size: 13px; color: #8A8478; margin: 0 0 8px; }
+  .row { display: flex; gap: 40px; flex-wrap: wrap; align-items: flex-start; }
+  .receipt { background: #fff; padding: 16px; box-shadow: 0 12px 32px -16px rgba(0,0,0,.18); }
+  .logo { width: 120px; height: 48px; border: 1px dashed #C9C2B6; border-radius: 6px;
+          display: grid; place-items: center; color: #B7AE9F; font-size: 11px; margin: 0 auto 8px; }
+  .muted { color: #8A8478; }
+  .rule { border-top: 1px dashed #D8D2C6; margin: 10px 0; }
+  .row-line { display: grid; gap: 8px; padding: 4px 0; }
+  .tot { display: flex; justify-content: space-between; }
+  .tot.grand { font-weight: 700; font-size: 1.1em; }
+  .center { text-align: center; }
+
+  /* A4 (scaled down for screen) */
+  .a4 { width: 360px; font-size: 13px; }
+  .a4 .head { display: flex; justify-content: space-between; gap: 16px; }
+  .a4 .ident { text-align: left; }
+  .a4 .ident .logo { margin: 0 0 8px; }
+  .a4 .docmeta { text-align: right; font-size: 12px; }
+  .a4 .title { font-weight: 700; letter-spacing: .04em; margin-bottom: 6px; }
+  .a4 .colhead, .a4 .item { display: grid; grid-template-columns: 3em 1fr auto; gap: 16px; padding: 6px 0; }
+  .a4 .colhead { color: #8A8478; font-size: 11px; border-bottom: 1px solid #E8E4DD; }
+  .a4 .item { border-bottom: 1px solid #F0ECE4; }
+
+  /* 80mm thermal */
+  .t80 { width: 80mm; font-size: 11px; }
+  .t80 .head { text-align: center; }
+  .t80 .meta div { display: flex; justify-content: space-between; }
+  .t80 .item { display: grid; grid-template-columns: 1.7em 1fr auto; gap: 6px; padding: 2px 0; }
+</style>
+</head>
+<body>
+  <p style="font-family:system-ui,sans-serif;max-width:760px;color:#5a554c">
+    <strong>Demo preview.</strong> Business name removed (logo only); <strong>customer name</strong> added.
+    Left = A4, right = 80mm thermal. If a tenant has <em>no</em> logo, the business name shows instead
+    (see the third sample).
+  </p>
+
+  <div class="row">
+    <!-- A4 with logo -->
+    <div>
+      <h2 class="label">A4 · with logo</h2>
+      <div class="receipt a4">
+        <div class="head">
+          <div class="ident">
+            <div class="logo">LOGO</div>
+            <div class="muted">Reg. 12345 / VAT 9988</div>
+            <div class="muted">BR-MAIN · Downtown</div>
+            <div class="muted">12 Tahrir St, Cairo</div>
+            <div class="muted">Customer: Sara Ahmed</div>
+          </div>
+          <div class="docmeta">
+            <div class="title">INVOICE</div>
+            <div>Ticket: <strong>TX-4821</strong></div>
+            <div>2026-06-04 14:32</div>
+            <div>Cashier: Mona</div>
+            <div style="margin-top:6px;color:#3F7A52;font-weight:700">PAID</div>
+          </div>
+        </div>
+        <div class="colhead"><span>Qty</span><span>Item</span><span style="text-align:right">Amount</span></div>
+        <div class="item"><span>×2</span><span>Espresso</span><span style="text-align:right">£90.00</span></div>
+        <div class="item"><span>×1</span><span>Croissant</span><span style="text-align:right">£45.00</span></div>
+        <div class="rule"></div>
+        <div class="tot"><span>Subtotal</span><span>£135.00</span></div>
+        <div class="tot grand"><span>Total</span><span>£135.00</span></div>
+        <div class="rule"></div>
+        <div class="center muted">Thank you!</div>
+      </div>
+    </div>
+
+    <!-- 80mm with logo -->
+    <div>
+      <h2 class="label">80mm thermal · with logo</h2>
+      <div class="receipt t80">
+        <div class="head">
+          <div class="logo">LOGO</div>
+          <div style="font-size:10px">BR-MAIN · Downtown</div>
+        </div>
+        <div class="rule"></div>
+        <div class="meta">
+          <div><span>Ticket</span><strong>TX-4821</strong></div>
+          <div><span>Customer</span><span>Sara Ahmed</span></div>
+          <div><span>Cashier</span><span>Mona</span></div>
+          <div><span>Date</span><span>2026-06-04 14:32</span></div>
+        </div>
+        <div class="rule"></div>
+        <div class="item"><span>×2</span><span>Espresso</span><span style="text-align:right">£90.00</span></div>
+        <div class="item"><span>×1</span><span>Croissant</span><span style="text-align:right">£45.00</span></div>
+        <div class="rule"></div>
+        <div class="tot grand"><span>Total</span><span>£135.00</span></div>
+        <div class="rule"></div>
+        <div class="center muted">Thank you!</div>
+      </div>
+    </div>
+
+    <!-- 80mm NO logo → name fallback -->
+    <div>
+      <h2 class="label">80mm · no logo → name fallback</h2>
+      <div class="receipt t80">
+        <div class="head">
+          <h1 style="font-size:15px;margin:0 0 4px">Acme Coffee</h1>
+          <div style="font-size:10px">BR-MAIN · Downtown</div>
+        </div>
+        <div class="rule"></div>
+        <div class="meta">
+          <div><span>Ticket</span><strong>TX-4821</strong></div>
+          <div><span>Customer</span><span>Sara Ahmed</span></div>
+          <div><span>Cashier</span><span>Mona</span></div>
+        </div>
+        <div class="rule"></div>
+        <div class="item"><span>×2</span><span>Espresso</span><span style="text-align:right">£90.00</span></div>
+        <div class="rule"></div>
+        <div class="tot grand"><span>Total</span><span>£90.00</span></div>
+        <div class="rule"></div>
+        <div class="center muted">Thank you!</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

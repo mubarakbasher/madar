@@ -162,7 +162,11 @@ function InventoryView({
         canReorder={canReorder}
       />
 
-      <AiReorderNudge />
+      <AiReorderNudge
+        branchId={branchId}
+        canReorder={canReorder}
+        locale={locale === "ar" ? "ar" : "en"}
+      />
 
       <FilterBar
         cat={cat}

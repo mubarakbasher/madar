@@ -111,6 +111,7 @@ export interface ReceiptResponse {
     address_i18n: { en?: string; ar?: string } | null;
   } | null;
   cashier: { name: string } | null;
+  customer: { name: string } | null;
   bank_account: {
     bank_name: string;
     account_holder: string;

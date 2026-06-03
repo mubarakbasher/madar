@@ -1,6 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { useQuery } from "@tanstack/react-query";
 import {
   Home,
   ShoppingCart,
@@ -24,6 +25,8 @@ import {
 } from "lucide-react";
 import { Link, usePathname } from "../../../../../i18n/routing";
 import { useAuthStore } from "@/lib/auth/store";
+import { businessGetRequest } from "@/lib/api/business";
+import { branchesListRequest } from "@/lib/api/branches";
 
 type NavItem = {
   id: string;
@@ -157,9 +160,29 @@ export function Sidebar() {
   const tNav = useTranslations("shell.nav");
   const tSec = useTranslations("shell.section");
   const tMerch = useTranslations("shell.merchant");
+  const locale = useLocale();
   const pathname = usePathname();
   const user = useAuthStore((s) => s.user);
+  const tenant = useAuthStore((s) => s.tenant);
   const role = user?.role ?? "";
+
+  // Real store identity for the sidebar footer. `/v1/tenant` is open to every
+  // tenant role; the auth-store name is an instant fallback before it resolves.
+  const businessQ = useQuery({
+    queryKey: ["tenant", "business"],
+    queryFn: () => businessGetRequest(),
+    staleTime: 300_000,
+  });
+  const branchesQ = useQuery({
+    queryKey: ["branches", "list", { include_inactive: false }],
+    queryFn: () => branchesListRequest({ include_inactive: false }),
+    staleTime: 60_000,
+  });
+  const storeName = businessQ.data
+    ? businessQ.data.name_i18n[locale === "ar" ? "ar" : "en"] || businessQ.data.name
+    : tenant?.name ?? "";
+  const avatar = storeName.trim().charAt(0).toUpperCase() || "·";
+  const branchCount = branchesQ.data?.items.length ?? null;
 
   return (
     <aside className="sidebar">
@@ -237,10 +260,10 @@ export function Sidebar() {
         ))}
 
         <div className="sb-merchant">
-          <div className="sb-merchant-avatar">B</div>
+          <div className="sb-merchant-avatar">{avatar}</div>
           <div className="sb-merchant-meta">
-            <b>{tMerch("name")}</b>
-            <small>{tMerch("meta")}</small>
+            <b>{storeName}</b>
+            {branchCount != null && <small>{tMerch("branches", { count: branchCount })}</small>}
           </div>
         </div>
       </div>

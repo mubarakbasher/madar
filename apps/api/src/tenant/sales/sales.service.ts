@@ -724,7 +724,7 @@ export class SalesService {
     const scoped = tenantScoped(tenantId);
     const sale = await this.findOne(scoped, saleId);
 
-    const [tenant, branch, cashier, bankAccount] = await Promise.all([
+    const [tenant, branch, cashier, bankAccount, customer] = await Promise.all([
       (await import("@madar/db")).adminPrisma.tenant.findUnique({
         where: { id: tenantId },
         select: {
@@ -778,6 +778,13 @@ export class SalesService {
                   }),
             )
         : Promise.resolve(null),
+      // Customer name for the receipt header (when the sale was attached to one).
+      sale.customer_id
+        ? scoped.customer.findUnique({
+            where: { id: sale.customer_id },
+            select: { name: true },
+          })
+        : Promise.resolve(null),
     ]);
 
     if (!tenant) {
@@ -802,6 +809,7 @@ export class SalesService {
           }
         : null,
       cashier: cashier ? { name: cashier.name } : null,
+      customer: customer ? { name: customer.name } : null,
       bank_account: bankAccount
         ? {
             bank_name: bankAccount.bank_name,
@@ -972,6 +980,7 @@ export interface ReceiptResponse {
     address_i18n: { en?: string; ar?: string } | null;
   } | null;
   cashier: { name: string } | null;
+  customer: { name: string } | null;
   bank_account: {
     bank_name: string;
     account_holder: string;

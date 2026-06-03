@@ -16,8 +16,8 @@ import "./receipt.css";
 
 const REFUND_ROLES = new Set(["owner", "manager", "cashier", "accountant"]);
 
-type Size = "58mm" | "a4";
-const SIZES: Size[] = ["58mm", "a4"];
+type Size = "58mm" | "80mm" | "a4";
+const SIZES: Size[] = ["58mm", "80mm", "a4"];
 
 function centsMajor(cents: string | bigint, currency: string): string {
   const n = typeof cents === "bigint" ? Number(cents) : Number(BigInt(cents));
@@ -141,7 +141,7 @@ export function ReceiptDoc({
   }
 
   const data: ReceiptResponse = q.data;
-  const { sale, tenant, branch, cashier, bank_account } = data;
+  const { sale, tenant, branch, cashier, customer, bank_account } = data;
   const tenantName = locale === "ar" ? tenant.name_i18n.ar || tenant.name : tenant.name;
   const logoUrl = tenantLogoPublicUrl(tenant.id, tenant.logo_url);
   const branchLabel = branch
@@ -175,11 +175,12 @@ export function ReceiptDoc({
         {isA4 ? (
           <header className="receipt-header receipt-a4-header">
             <div className="receipt-a4-identity">
-              {logoUrl && (
+              {logoUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={logoUrl} alt={tenantName} className="receipt-logo" />
+              ) : (
+                <h1 className="receipt-name">{tenantName}</h1>
               )}
-              <h1 className="receipt-name">{tenantName}</h1>
               {tenant.legal_name && (
                 <div className="receipt-a4-legal">{tenant.legal_name}</div>
               )}
@@ -192,6 +193,11 @@ export function ReceiptDoc({
               {branch?.address_i18n && (
                 <div className="receipt-a4-muted">
                   {branch.address_i18n[locale] || branch.address_i18n.en}
+                </div>
+              )}
+              {customer && (
+                <div className="receipt-a4-muted">
+                  {t("meta.customer")}: {customer.name}
                 </div>
               )}
             </div>
@@ -215,11 +221,12 @@ export function ReceiptDoc({
         ) : (
           <>
             <header className="receipt-header">
-              {logoUrl && (
+              {logoUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={logoUrl} alt={tenantName} className="receipt-logo" />
+              ) : (
+                <h1 className="receipt-name">{tenantName}</h1>
               )}
-              <h1 className="receipt-name">{tenantName}</h1>
               {branchLabel && <div style={{ fontSize: 10 }}>{branchLabel}</div>}
               {branch?.address_i18n && (
                 <div style={{ fontSize: 10, color: "#8A8478" }}>
@@ -233,6 +240,12 @@ export function ReceiptDoc({
                 <span>{t("meta.ticket")}</span>
                 <strong>{sale.code}</strong>
               </div>
+              {customer && (
+                <div className="receipt-meta-row">
+                  <span>{t("meta.customer")}</span>
+                  <span>{customer.name}</span>
+                </div>
+              )}
               <div className="receipt-meta-row">
                 <span>{t("meta.cashier")}</span>
                 <span>{cashier?.name ?? "—"}</span>
@@ -370,7 +383,11 @@ export function ReceiptDoc({
         )}
         {SIZES.filter((s) => s !== size).map((s) => (
           <a key={s} href={`?size=${s}`}>
-            {s === "58mm" ? t("buttons.switch58") : t("buttons.switchA4")}
+            {s === "58mm"
+              ? t("buttons.switch58")
+              : s === "80mm"
+                ? t("buttons.switch80")
+                : t("buttons.switchA4")}
           </a>
         ))}
       </div>

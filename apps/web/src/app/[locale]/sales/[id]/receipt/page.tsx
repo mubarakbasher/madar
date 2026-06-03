@@ -17,6 +17,6 @@ export default async function ReceiptPage({
   // Receipt page calls protected endpoints — without this an unauthenticated
   // visitor sees a half-broken page instead of bouncing to /login.
   requireAuth(locale);
-  const size = sp.size === "58mm" ? "58mm" : "a4";
+  const size = sp.size === "58mm" ? "58mm" : sp.size === "80mm" ? "80mm" : "a4";
   return <ReceiptDoc id={id} locale={locale === "ar" ? "ar" : "en"} size={size} />;
 }

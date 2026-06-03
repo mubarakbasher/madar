@@ -57,6 +57,37 @@ describe("GET /v1/sales/:id/receipt-data", () => {
     expect(res.body.tenant).toHaveProperty("tax_registration_number");
     // Cash sale → bank_account is null
     expect(res.body.bank_account).toBeNull();
+    // No customer attached → customer is null
+    expect(res.body.customer).toBeNull();
+  });
+
+  it("sale with a customer returns the customer name on the receipt", async () => {
+    const cust = await adminPrisma.customer.create({
+      data: { tenant_id: t.tenantId, name: "Sara Ahmed" },
+    });
+    const target = t.products[2]!;
+    const sale = await request(booted.http)
+      .post("/v1/sales")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .set("Idempotency-Key", randomUUID())
+      .send({
+        branch_id: t.branchId,
+        customer_id: cust.id,
+        currency_code: "USD",
+        payment_method: "cash",
+        client_uuid: randomUUID(),
+        client_sequence: 3,
+        lines: [{ product_id: target.id, qty: 1, line_discount_cents: 0, note: null }],
+        cash_tendered_cents: Number(target.price_cents),
+      });
+    expect(sale.status).toBe(201);
+
+    const res = await request(booted.http)
+      .get(`/v1/sales/${sale.body.id}/receipt-data`)
+      .set("Authorization", `Bearer ${accessToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.customer).not.toBeNull();
+    expect(res.body.customer.name).toBe("Sara Ahmed");
   });
 
   it("bank_transfer sale exposes default tenant_bank_account", async () => {
