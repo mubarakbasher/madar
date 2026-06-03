@@ -46,7 +46,11 @@ async function seedSale(opts: {
       qty: opts.qty,
       unit_price_cents: opts.unitPriceCents,
       line_total_cents: total,
-      cogs_snapshot_cents: opts.cogsCents,
+      // `cogsCents` is the per-unit cost. Production (sales.service.ts) stores
+      // the per-line TOTAL (cost_cents × qty) in cogs_snapshot_cents, so the
+      // reports sum the column directly without re-multiplying by qty. Mirror
+      // that here, otherwise qty>1 sales under-seed COGS and inflate profit.
+      cogs_snapshot_cents: opts.cogsCents * BigInt(opts.qty),
     },
   });
   return sale;
