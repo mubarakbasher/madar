@@ -360,11 +360,12 @@ export async function makeSubscriptionInvoice(
     amountCents?: bigint;
     currencyCode?: string;
     status?: "draft" | "awaiting_payment" | "in_review" | "paid" | "overdue" | "cancelled";
+    dueDate?: Date;
   },
 ): Promise<{ id: string }> {
   const now = new Date();
   const periodEnd = new Date(now.getTime() + 30 * 86_400_000);
-  const due = new Date(now.getTime() + 7 * 86_400_000);
+  const due = opts?.dueDate ?? new Date(now.getTime() + 7 * 86_400_000);
   const row = await adminPrisma.subscriptionInvoice.create({
     data: {
       tenant_id: tenantId,

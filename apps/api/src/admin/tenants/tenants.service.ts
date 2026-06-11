@@ -1,5 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { adminPrisma } from "@madar/db";
+import { AdminAuditService } from "../auth/admin-audit.service";
+import { RedisService } from "../../common/redis.service";
+import { invalidateTenantStatus } from "../../tenant/auth/tenant-status.cache";
 import type { ListTenantsQuery } from "./dto/list-tenants.dto";
 
 export interface TenantListItem {
@@ -31,6 +34,45 @@ const MRR_STATUSES = new Set<string>(["active", "trialing", "grace_period"]);
 
 @Injectable()
 export class TenantsService {
+  constructor(
+    private readonly audit: AdminAuditService,
+    private readonly redis: RedisService,
+  ) {}
+
+  /**
+   * Manual lifecycle override — the escape hatch when the automatic
+   * payment-verified restore isn't enough (goodwill extensions, disputes,
+   * re-activating a cancelled tenant). Platform-owner only, reason required,
+   * always audited.
+   */
+  async updateStatus(
+    tenantId: string,
+    status: "trialing" | "active" | "grace_period" | "suspended" | "cancelled",
+    reason: string,
+    ctx: { platformUserId: string; ip: string; userAgent: string },
+  ): Promise<{ id: string; status: string }> {
+    const tenant = await adminPrisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { id: true, status: true },
+    });
+    if (!tenant) {
+      throw new NotFoundException({ code: "tenant_not_found", message: "Tenant not found" });
+    }
+    if (tenant.status !== status) {
+      await adminPrisma.tenant.update({ where: { id: tenantId }, data: { status } });
+      await invalidateTenantStatus(tenantId, this.redis);
+    }
+    await this.audit.write(ctx, {
+      action: "tenant_status_override",
+      targetTenantId: tenantId,
+      targetEntity: "tenant",
+      targetId: tenantId,
+      reason,
+      metadata: { from_status: tenant.status, to_status: status },
+    });
+    return { id: tenantId, status };
+  }
+
   async listTenants(query: ListTenantsQuery): Promise<ListTenantsResponse> {
     const where = {
       ...(query.status ? { status: query.status } : {}),

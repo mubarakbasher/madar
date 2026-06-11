@@ -1,6 +1,8 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
+  HttpException,
   Injectable,
   Logger,
   NotFoundException,
@@ -9,11 +11,14 @@ import {
 import { randomUUID } from "node:crypto";
 import { fromBuffer as fileTypeFromBuffer } from "file-type";
 import { adminPrisma, tenantScoped } from "@madar/db";
+import { withAdminTx, withTenantTx, type Tx } from "../shared/db-tx";
 import { ImageProcessor, type SupportedMime } from "../common/image/image-processor.service";
 import { TenantStorageService, type AllowedMime } from "../common/tenant-storage.service";
 import { AuditService } from "../tenant/auth/audit.service";
 import { AdminAuditService } from "../admin/auth/admin-audit.service";
 import { EmailService } from "../common/email/email.service";
+import { RedisService } from "../common/redis.service";
+import { getTenantStatus, invalidateTenantStatus } from "../tenant/auth/tenant-status.cache";
 import { getTenantPrimaryRecipient } from "../common/email/recipient.helper";
 import { adminPrisma as platformPrisma } from "@madar/db";
 import { loadEnv } from "../env";
@@ -54,6 +59,7 @@ interface ProofRow {
   previous_proof_id: string | null;
   info_requested_message: string | null;
   info_requested_at: Date | null;
+  created_by: string | null;
   created_at: Date;
   updated_at: Date;
 }
@@ -68,7 +74,29 @@ export class PaymentProofsService {
     private readonly tenantAudit: AuditService,
     private readonly adminAudit: AdminAuditService,
     private readonly email: EmailService,
+    private readonly redis: RedisService,
   ) {}
+
+  /**
+   * Suspended/cancelled tenants are read-only. The auth guard allowlists the
+   * whole /v1/payment-proofs prefix so they can still pay their subscription
+   * invoice — but SALE-context proof mutations change sales.payment_status
+   * and must stay blocked. Enforced here because only the service knows the
+   * proof's context.
+   */
+  private async assertSaleProofWritable(tenantId: string): Promise<void> {
+    const status = await getTenantStatus(tenantId, this.redis);
+    if (status === "suspended" || status === "cancelled") {
+      throw new HttpException(
+        {
+          code: "tenant_suspended",
+          message: "Subscription suspended — sale payment proofs are read-only.",
+          status,
+        },
+        423,
+      );
+    }
+  }
 
   // ─── submit ────────────────────────────────────────────────────────
   async submit(
@@ -100,6 +128,12 @@ export class PaymentProofsService {
     }
     const mime = detectedMime as SupportedMime;
 
+    // Suspended tenants may still submit SUBSCRIPTION proofs (that's how they
+    // get unsuspended) but not sale-context ones.
+    if (input.context === "sale") {
+      await this.assertSaleProofWritable(ctx.tenantId);
+    }
+
     // Validate the reference exists and is in this tenant.
     await this.assertReferenceExists(ctx.tenantId, input);
 
@@ -128,24 +162,40 @@ export class PaymentProofsService {
       },
     );
 
-    const created = await tenantScoped(ctx.tenantId).paymentProof.create({
-      data: {
-        id: proofId,
-        tenant_id: ctx.tenantId,
-        context: input.context,
-        reference_id: input.reference_id,
-        amount_cents: input.amount_cents,
-        currency_code: input.currency_code,
-        bank_account_kind: input.bank_account_kind,
-        bank_account_id: input.bank_account_id,
-        payer_name: input.payer_name,
-        payer_bank: input.payer_bank ?? null,
-        transfer_date: new Date(input.transfer_date),
-        transfer_reference: input.transfer_reference,
-        receipt_image_url: relPath,
-        status: "pending",
-        created_by: ctx.userId,
-      },
+    const created = await withTenantTx(ctx.tenantId, async (tx) => {
+      const row = await tx.paymentProof.create({
+        data: {
+          id: proofId,
+          tenant_id: ctx.tenantId,
+          context: input.context,
+          reference_id: input.reference_id,
+          amount_cents: input.amount_cents,
+          currency_code: input.currency_code,
+          bank_account_kind: input.bank_account_kind,
+          bank_account_id: input.bank_account_id,
+          payer_name: input.payer_name,
+          payer_bank: input.payer_bank ?? null,
+          transfer_date: new Date(input.transfer_date),
+          transfer_reference: input.transfer_reference,
+          receipt_image_url: relPath,
+          status: "pending",
+          created_by: ctx.userId,
+        },
+      });
+      if (input.context === "subscription") {
+        // The invoice now has a receipt awaiting human verification — move it
+        // to in_review so the daily lifecycle tick stops counting days past
+        // due. Without this, a tenant who paid on time would keep advancing
+        // toward suspension purely from verification lag.
+        await tx.subscriptionInvoice.updateMany({
+          where: {
+            id: input.reference_id,
+            status: { in: ["awaiting_payment", "overdue"] },
+          },
+          data: { status: "in_review" },
+        });
+      }
+      return row;
     });
 
     // Tenant audit. (Submission always writes to tenant audit because the
@@ -224,6 +274,9 @@ export class PaymentProofsService {
   ): Promise<ProofResponse> {
     const proof = await this.fetchRow(actor, proofId);
     this.assertContext(proof, allowedContexts);
+    if (proof.context === "sale" && actor.realm === "tenant") {
+      await this.assertSaleProofWritable(proof.tenant_id);
+    }
     if (proof.status !== "pending") {
       throw new UnprocessableEntityException({
         code: "proof_not_pending",
@@ -235,21 +288,37 @@ export class PaymentProofsService {
     let updatedRow: ProofRow;
 
     if (proof.context === "sale") {
-      // Tenant transaction: update proof + sale together.
-      updatedRow = (await tenantScoped(proof.tenant_id).$transaction(async (tx) => {
-        const updated = await tx.paymentProof.update({
-          where: { id: proofId },
+      // One real transaction: proof + sale move together or not at all. The
+      // status conditions in both UPDATEs make concurrent verify/reject lose
+      // cleanly (0 rows -> 409) instead of double-verifying or regressing a
+      // refunded sale back to paid.
+      updatedRow = (await withTenantTx(proof.tenant_id, async (tx) => {
+        const claimed = await tx.paymentProof.updateMany({
+          where: { id: proofId, status: "pending" },
           data: { status: "verified", verified_by: actor.userId, verified_at: now },
         });
-        await tx.sale
-          .update({
-            where: { id: proof.reference_id },
-            data: { payment_status: "paid" },
-          })
-          .catch((e) => {
-            this.logger.warn(`sale state sync failed: ${(e as Error).message}`);
+        if (claimed.count === 0) {
+          throw new ConflictException({
+            code: "proof_state_changed",
+            message: "Proof was decided by someone else — reload and review.",
           });
-        return updated;
+        }
+        const saleSync = await tx.sale.updateMany({
+          where: {
+            id: proof.reference_id,
+            payment_status: { in: ["payment_pending", "disputed"] },
+          },
+          data: { payment_status: "paid" },
+        });
+        if (saleSync.count === 0) {
+          // Sale gone or no longer awaiting payment (e.g. refunded since the
+          // proof was uploaded) — verifying this proof would corrupt state.
+          throw new ConflictException({
+            code: "sale_state_changed",
+            message: "The sale is no longer awaiting payment — review it before deciding.",
+          });
+        }
+        return tx.paymentProof.findUniqueOrThrow({ where: { id: proofId } });
       })) as unknown as ProofRow;
 
       await this.tenantAudit
@@ -275,22 +344,55 @@ export class PaymentProofsService {
         this.logger.warn(`sale payment_received email failed: ${(e as Error).message}`),
       );
     } else {
-      // Subscription — admin verifier. Update via adminPrisma + invoice sync.
-      updatedRow = (await adminPrisma.$transaction(async (tx) => {
-        const updated = await tx.paymentProof.update({
-          where: { id: proofId },
+      // Subscription — admin verifier. Same guarded-transition rules.
+      updatedRow = (await withAdminTx(async (tx) => {
+        const claimed = await tx.paymentProof.updateMany({
+          where: { id: proofId, status: "pending" },
           data: { status: "verified", verified_by: actor.userId, verified_at: now },
         });
-        await tx.subscriptionInvoice
-          .update({
-            where: { id: proof.reference_id },
-            data: { status: "paid", paid_at: now },
-          })
-          .catch((e) => {
-            this.logger.warn(`invoice state sync failed: ${(e as Error).message}`);
+        if (claimed.count === 0) {
+          throw new ConflictException({
+            code: "proof_state_changed",
+            message: "Proof was decided by someone else — reload and review.",
           });
-        return updated;
+        }
+        const invoiceSync = await tx.subscriptionInvoice.updateMany({
+          where: {
+            id: proof.reference_id,
+            status: { in: ["awaiting_payment", "in_review", "overdue"] },
+          },
+          data: { status: "paid", paid_at: now },
+        });
+        if (invoiceSync.count === 0) {
+          throw new ConflictException({
+            code: "invoice_state_changed",
+            message: "The invoice is no longer awaiting payment — review it before deciding.",
+          });
+        }
+        // The lifecycle tick only ever moves FORWARD (grace → suspended →
+        // cancelled); paying must be the road back. When this was the last
+        // unpaid invoice, restore a grace/suspended tenant to active.
+        const unpaidLeft = await tx.subscriptionInvoice.count({
+          where: {
+            tenant_id: proof.tenant_id,
+            status: { in: ["awaiting_payment", "in_review", "overdue"] },
+            deleted_at: null,
+          },
+        });
+        if (unpaidLeft === 0) {
+          await tx.tenant.updateMany({
+            where: { id: proof.tenant_id, status: { in: ["grace_period", "suspended"] } },
+            data: { status: "active" },
+          });
+        }
+        return tx.paymentProof.findUniqueOrThrow({ where: { id: proofId } });
       })) as unknown as ProofRow;
+
+      // Drop the cached status so a just-restored tenant regains write
+      // access immediately instead of after the 30s cache TTL.
+      await invalidateTenantStatus(proof.tenant_id, this.redis).catch((e) =>
+        this.logger.warn(`tenant-status cache invalidate failed: ${(e as Error).message}`),
+      );
 
       await this.adminAudit
         .write(
@@ -466,6 +568,9 @@ export class PaymentProofsService {
   ): Promise<ProofResponse> {
     const proof = await this.fetchRow(actor, proofId);
     this.assertContext(proof, allowedContexts);
+    if (proof.context === "sale" && actor.realm === "tenant") {
+      await this.assertSaleProofWritable(proof.tenant_id);
+    }
     if (proof.status !== "pending") {
       throw new UnprocessableEntityException({
         code: "proof_not_pending",
@@ -477,9 +582,9 @@ export class PaymentProofsService {
     let updatedRow: ProofRow;
 
     if (proof.context === "sale") {
-      updatedRow = (await tenantScoped(proof.tenant_id).$transaction(async (tx) => {
-        const updated = await tx.paymentProof.update({
-          where: { id: proofId },
+      updatedRow = (await withTenantTx(proof.tenant_id, async (tx) => {
+        const claimed = await tx.paymentProof.updateMany({
+          where: { id: proofId, status: "pending" },
           data: {
             status: "rejected",
             verified_by: actor.userId,
@@ -488,15 +593,19 @@ export class PaymentProofsService {
             notes: notes ?? null,
           },
         });
-        await tx.sale
-          .update({
-            where: { id: proof.reference_id },
-            data: { payment_status: "disputed" },
-          })
-          .catch((e) => {
-            this.logger.warn(`sale state sync failed: ${(e as Error).message}`);
+        if (claimed.count === 0) {
+          throw new ConflictException({
+            code: "proof_state_changed",
+            message: "Proof was decided by someone else — reload and review.",
           });
-        return updated;
+        }
+        // Only a sale still awaiting this payment becomes disputed; a sale
+        // that was paid/refunded since must not regress.
+        await tx.sale.updateMany({
+          where: { id: proof.reference_id, payment_status: "payment_pending" },
+          data: { payment_status: "disputed" },
+        });
+        return tx.paymentProof.findUniqueOrThrow({ where: { id: proofId } });
       })) as unknown as ProofRow;
 
       await this.tenantAudit
@@ -517,9 +626,9 @@ export class PaymentProofsService {
         )
         .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));
     } else {
-      updatedRow = (await adminPrisma.$transaction(async (tx) => {
-        const updated = await tx.paymentProof.update({
-          where: { id: proofId },
+      updatedRow = (await withAdminTx(async (tx) => {
+        const claimed = await tx.paymentProof.updateMany({
+          where: { id: proofId, status: "pending" },
           data: {
             status: "rejected",
             verified_by: actor.userId,
@@ -528,15 +637,20 @@ export class PaymentProofsService {
             notes: notes ?? null,
           },
         });
-        await tx.subscriptionInvoice
-          .update({
-            where: { id: proof.reference_id },
-            data: { status: "awaiting_payment" },
-          })
-          .catch((e) => {
-            this.logger.warn(`invoice state sync failed: ${(e as Error).message}`);
+        if (claimed.count === 0) {
+          throw new ConflictException({
+            code: "proof_state_changed",
+            message: "Proof was decided by someone else — reload and review.",
           });
-        return updated;
+        }
+        // in_review → awaiting_payment so the tenant can resubmit. An overdue
+        // invoice stays overdue (the due date governs), and a paid or
+        // cancelled invoice is left untouched.
+        await tx.subscriptionInvoice.updateMany({
+          where: { id: proof.reference_id, status: "in_review" },
+          data: { status: "awaiting_payment" },
+        });
+        return tx.paymentProof.findUniqueOrThrow({ where: { id: proofId } });
       })) as unknown as ProofRow;
 
       await this.adminAudit
@@ -568,8 +682,21 @@ export class PaymentProofsService {
     originalProofId: string,
     file: { buffer: Buffer; declaredMime: string; originalName: string },
     ctx: SubmitProofCtx,
+    opts?: { restrictToSubmitter?: string },
   ): Promise<ProofResponse> {
     const original = await this.fetchRow(actor, originalProofId);
+    if (original.context === "sale" && actor.realm === "tenant") {
+      await this.assertSaleProofWritable(original.tenant_id);
+    }
+    // Non-verifier roles may only resubmit their own rejected proof —
+    // resubmission cancels the original and so mutates the verification
+    // chain of custody.
+    if (opts?.restrictToSubmitter && original.created_by !== opts.restrictToSubmitter) {
+      throw new ForbiddenException({
+        code: "forbidden_role",
+        message: "Only the original submitter or a verifier can resubmit this proof",
+      });
+    }
     if (original.status !== "rejected") {
       throw new UnprocessableEntityException({
         code: "proof_not_resubmittable",
@@ -617,16 +744,34 @@ export class PaymentProofsService {
     );
 
     // Transaction: cancel original + create new proof linked to original.
-    const client = original.context === "sale"
-      ? tenantScoped(original.tenant_id)
-      : adminPrisma;
+    // The status guard makes concurrent resubmits of the same rejection lose
+    // cleanly instead of attaching two fresh pending proofs to one reference.
+    const runTx = <T>(fn: (tx: Tx) => Promise<T>) =>
+      original.context === "sale" ? withTenantTx(original.tenant_id, fn) : withAdminTx(fn);
 
-    const created = await client.$transaction(async (tx) => {
-      // Cancel the original proof.
-      await tx.paymentProof.update({
-        where: { id: originalProofId },
+    const created = await runTx(async (tx) => {
+      const cancelled = await tx.paymentProof.updateMany({
+        where: { id: originalProofId, status: "rejected" },
         data: { status: "cancelled", updated_at: new Date() },
       });
+      if (cancelled.count === 0) {
+        throw new ConflictException({
+          code: "proof_state_changed",
+          message: "This rejection was already resubmitted or cancelled.",
+        });
+      }
+
+      if (original.context === "subscription") {
+        // A fresh receipt is back in the verification queue — pause the
+        // lifecycle clock again (mirrors submit()).
+        await tx.subscriptionInvoice.updateMany({
+          where: {
+            id: original.reference_id,
+            status: { in: ["awaiting_payment", "overdue"] },
+          },
+          data: { status: "in_review" },
+        });
+      }
 
       // Create replacement proof copying key fields from the original.
       return tx.paymentProof.create({
@@ -695,6 +840,9 @@ export class PaymentProofsService {
     message: string,
   ): Promise<ProofResponse> {
     const proof = await this.fetchRow(actor, proofId);
+    if (proof.context === "sale" && actor.realm === "tenant") {
+      await this.assertSaleProofWritable(proof.tenant_id);
+    }
     if (proof.status !== "pending") {
       throw new UnprocessableEntityException({
         code: "proof_not_pending",
