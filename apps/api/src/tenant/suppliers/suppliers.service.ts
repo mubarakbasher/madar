@@ -12,6 +12,7 @@ import {
 // under RLS, so the read goes through adminPrisma — same pattern as branches.
 // eslint-disable-next-line no-restricted-imports
 import { adminPrisma, tenantScoped } from "@madar/db";
+import { withTenantTx } from "../../shared/db-tx";
 import { AuditService, type AuditCtx } from "../auth/audit.service";
 import { TenantStorageService } from "../../common/tenant-storage.service";
 import type { ListSuppliersQuery } from "./dto/list-suppliers.dto";
@@ -671,7 +672,7 @@ export class SuppliersService {
     const currencyCode = body.currency_code ?? supplier.currency_code;
     const isPreferred = body.is_preferred ?? false;
 
-    const created = await scoped.$transaction(async (tx) => {
+    const created = await withTenantTx(tenantId, async (tx) => {
       // Transactional unset-then-insert: when a new row is preferred, flip
       // any other preferred entries for the same product to false first.
       if (isPreferred) {
@@ -764,7 +765,7 @@ export class SuppliersService {
       });
     }
 
-    const updated = await scoped.$transaction(async (tx) => {
+    const updated = await withTenantTx(tenantId, async (tx) => {
       // Transactional unset of other preferred rows for the same product.
       if (body.is_preferred === true) {
         await tx.supplierProduct.updateMany({

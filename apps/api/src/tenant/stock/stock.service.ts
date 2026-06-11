@@ -5,6 +5,7 @@ import {
   UnprocessableEntityException,
 } from "@nestjs/common";
 import { tenantScoped } from "@madar/db";
+import { withTenantTx } from "../../shared/db-tx";
 import { AuditService, type AuditCtx } from "../auth/audit.service";
 import type { CreateAdjustmentBody } from "./dto/create-adjustment.dto";
 import type { ListMovementsQuery } from "./dto/list-movements.dto";
@@ -59,14 +60,6 @@ export class StockService {
     const scoped = tenantScoped(tenantId) as unknown as {
       branch: { findUnique: (args: { where: { id: string } }) => Promise<{ id: string; deleted_at: Date | null } | null> };
       product: { findUnique: (args: { where: { id: string } }) => Promise<{ id: string; sku: string; deleted_at: Date | null } | null> };
-      branchStock: {
-        findUnique: (args: {
-          where: {
-            tenant_id_branch_id_product_id: { tenant_id: string; branch_id: string; product_id: string };
-          };
-        }) => Promise<{ qty_on_hand: number } | null>;
-      };
-      $transaction: <T>(fn: (tx: any) => Promise<T>) => Promise<T>;
     };
 
     const [branch, product] = await Promise.all([
@@ -80,26 +73,26 @@ export class StockService {
       throw new NotFoundException({ code: "product_not_found", message: "Product not found" });
     }
 
-    const existing = await scoped.branchStock.findUnique({
-      where: {
-        tenant_id_branch_id_product_id: {
-          tenant_id: tenantId,
-          branch_id: body.branch_id,
-          product_id: body.product_id,
-        },
-      },
-    });
-    const beforeQty = existing?.qty_on_hand ?? 0;
-    const afterQty = beforeQty + body.qty_delta;
-    if (afterQty < 0) {
-      throw new ConflictException({
-        code: "negative_stock",
-        message: `Adjustment would push qty_on_hand to ${afterQty}. Set qty_delta so it stays at zero or above.`,
-        fields: { qty_delta: "negative_stock" },
-      });
-    }
+    const { movementId, beforeQty, newQty } = await withTenantTx(tenantId, async (tx) => {
+      // Lock the branch_stock row (if it exists) so concurrent adjustments
+      // serialize and the negative-stock guard evaluates against the current
+      // committed value, not a stale pre-transaction read.
+      const locked = await tx.$queryRaw<Array<{ qty_on_hand: number }>>`
+        SELECT qty_on_hand FROM branch_stock
+         WHERE tenant_id = ${tenantId}::uuid
+           AND branch_id = ${body.branch_id}::uuid
+           AND product_id = ${body.product_id}::uuid
+         FOR UPDATE`;
+      const currentQty = locked[0]?.qty_on_hand ?? 0;
+      const afterQty = currentQty + body.qty_delta;
+      if (afterQty < 0) {
+        throw new ConflictException({
+          code: "negative_stock",
+          message: `Adjustment would push qty_on_hand to ${afterQty}. Set qty_delta so it stays at zero or above.`,
+          fields: { qty_delta: "negative_stock" },
+        });
+      }
 
-    const { movementId, newQty } = await scoped.$transaction(async (tx) => {
       const movement = await tx.stockMovement.create({
         data: {
           tenant_id: tenantId,
@@ -122,7 +115,7 @@ export class StockService {
           },
         },
         update: {
-          qty_on_hand: afterQty,
+          qty_on_hand: { increment: body.qty_delta },
           last_movement_at: new Date(),
         },
         create: {
@@ -134,7 +127,7 @@ export class StockService {
           created_by: actorId,
         },
       });
-      return { movementId: movement.id, newQty: updated.qty_on_hand };
+      return { movementId: movement.id, beforeQty: currentQty, newQty: updated.qty_on_hand };
     });
 
     await this.audit.writeTenantScoped(auditCtx, {

@@ -14,6 +14,13 @@ import {
 /**
  * Helper — seed a paid sale at a chosen `occurred_at` so we can drive
  * this-week / prev-week / heatmap windows from the test side.
+ *
+ * NOTE: "current" sales are stamped 60s in the past, never `new Date()`.
+ * `occurred_at` comes from the HOST clock while the dashboard windows
+ * compare against Postgres `now()` — Docker Desktop's VM clock can drift
+ * a few hundred ms after host sleep, and a host-ahead skew makes a
+ * just-stamped sale land in the future and silently vanish from every
+ * `occurred_at < now()` window (deterministic-looking flake).
  */
 async function seedSale(opts: {
   tenantId: string;
@@ -129,7 +136,7 @@ describe("GET /v1/dashboard — chain-wide owner dashboard", () => {
       qty: 10,
       unitPriceCents: 99_000n,
       cogsCents: 50_000n,
-      occurredAt: new Date(),
+      occurredAt: new Date(Date.now() - 60_000),
     });
 
     const resA = await request(booted.http)
@@ -198,7 +205,7 @@ describe("GET /v1/dashboard — chain-wide owner dashboard", () => {
       qty: 2,
       unitPriceCents: p.price_cents,
       cogsCents: p.cost_cents,
-      occurredAt: new Date(),
+      occurredAt: new Date(Date.now() - 60_000),
     });
 
     const res = await request(booted.http)
@@ -276,7 +283,7 @@ describe("GET /v1/dashboard — chain-wide owner dashboard", () => {
       qty: 1,
       unitPriceCents: 5_000n,
       cogsCents: 1_000n,
-      occurredAt: new Date(),
+      occurredAt: new Date(Date.now() - 60_000),
       currencyCode: "USD",
     });
     // One sale in AED — counts as a transaction but is excluded from revenue.
@@ -288,7 +295,7 @@ describe("GET /v1/dashboard — chain-wide owner dashboard", () => {
       qty: 1,
       unitPriceCents: 9_999n,
       cogsCents: 1_000n,
-      occurredAt: new Date(),
+      occurredAt: new Date(Date.now() - 60_000),
       currencyCode: "AED",
     });
 
@@ -339,7 +346,7 @@ describe("GET /v1/dashboard — chain-wide owner dashboard", () => {
       qty: 1,
       unitPriceCents: 3_000n,
       cogsCents: 500n,
-      occurredAt: new Date(),
+      occurredAt: new Date(Date.now() - 60_000),
     });
     await seedSale({
       tenantId: t.tenantId,
@@ -349,7 +356,7 @@ describe("GET /v1/dashboard — chain-wide owner dashboard", () => {
       qty: 1,
       unitPriceCents: 9_000n,
       cogsCents: 500n,
-      occurredAt: new Date(),
+      occurredAt: new Date(Date.now() - 60_000),
     });
     await seedSale({
       tenantId: t.tenantId,
@@ -359,7 +366,7 @@ describe("GET /v1/dashboard — chain-wide owner dashboard", () => {
       qty: 1,
       unitPriceCents: 1_500n,
       cogsCents: 500n,
-      occurredAt: new Date(),
+      occurredAt: new Date(Date.now() - 60_000),
     });
 
     const res = await request(booted.http)

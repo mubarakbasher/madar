@@ -16,6 +16,7 @@ import { createHash, randomBytes } from "node:crypto";
 // (tenants, users) must go through adminPrisma.
 // eslint-disable-next-line no-restricted-imports
 import { adminPrisma, tenantScoped } from "@madar/db";
+import { withAdminTx } from "../../shared/db-tx";
 import { AuditService } from "./audit.service";
 import { TokenService } from "./token.service";
 import { MfaService } from "./mfa.service";
@@ -153,7 +154,7 @@ export class AuthService {
     const verifyTokenHash = sha256Hex(verifyRawToken);
     const verifyExpiresAt = new Date(Date.now() + verifyTtlHours * 3600 * 1000);
 
-    const created = await adminPrisma.$transaction(async (tx) => {
+    const created = await withAdminTx(async (tx) => {
       const tenant = await tx.tenant.create({
         data: {
           slug,

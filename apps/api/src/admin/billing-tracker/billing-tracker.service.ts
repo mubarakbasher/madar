@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { randomBytes } from "node:crypto";
 import { adminPrisma } from "@madar/db";
+import { withAdminTx } from "../../shared/db-tx";
 import { AdminAuditService, type AdminAuditCtx } from "../auth/admin-audit.service";
 import { RedisService } from "../../common/redis.service";
 import { EmailService } from "../../common/email/email.service";
@@ -225,7 +226,7 @@ export class BillingTrackerService {
     const dueDate = new Date(now);
     dueDate.setDate(dueDate.getDate() + TRIAL_INVOICE_DUE_DAYS);
 
-    const created = await adminPrisma.$transaction(async (tx) => {
+    const created = await withAdminTx(async (tx) => {
       // Re-check status inside the tx so concurrent ticks can't double-bootstrap.
       const fresh = await tx.tenant.findUnique({ where: { id: tenant.id } });
       if (!fresh || fresh.status !== "trialing") return false;

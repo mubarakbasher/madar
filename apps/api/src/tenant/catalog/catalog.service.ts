@@ -13,6 +13,7 @@ import { fromBuffer as fileTypeFromBuffer } from "file-type";
 // purpose.
 // eslint-disable-next-line no-restricted-imports
 import { adminPrisma, tenantScoped } from "@madar/db";
+import { withTenantTx } from "../../shared/db-tx";
 import { AuditService, type AuditCtx } from "../auth/audit.service";
 import { ImageProcessor, type SupportedMime } from "../../common/image/image-processor.service";
 import { STORAGE_SERVICE, type StorageService } from "../../common/storage/storage.service";
@@ -460,7 +461,7 @@ export class CatalogService {
 
     let createdId: string;
     try {
-      createdId = await scoped.$transaction(async (tx) => {
+      createdId = await withTenantTx(tenantId, async (tx) => {
         const product = await tx.product.create({
           data: {
             tenant_id: tenantId,

@@ -534,9 +534,21 @@ export class SalesService {
         hasNegativeStock = created.negativeStock;
         break;
       } catch (err) {
-        // Prisma P2002 unique violation on (tenant_id, code) → retry with a new code.
         const code = (err as { code?: string } | undefined)?.code;
-        if (code === "P2002") continue;
+        if (code === "P2002") {
+          // Disambiguate WHICH unique constraint fired. A (tenant_id,
+          // client_uuid) collision means a concurrent duplicate of the SAME
+          // sale slipped past the pre-transaction check — honor the
+          // idempotency contract and return the winner instead of erroring.
+          const target = (err as { meta?: { target?: string[] | string } }).meta?.target;
+          const targets = Array.isArray(target) ? target.join(",") : String(target ?? "");
+          if (targets.includes("client_uuid")) {
+            const winner = await this.findByClientUuid(scoped, input.client_uuid);
+            if (winner) return winner;
+          }
+          // Otherwise: (tenant_id, code) collision → retry with a fresh code.
+          continue;
+        }
         throw err;
       }
     }

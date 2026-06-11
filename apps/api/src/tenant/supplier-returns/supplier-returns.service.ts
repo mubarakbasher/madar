@@ -9,6 +9,7 @@ import {
   UnprocessableEntityException,
 } from "@nestjs/common";
 import { tenantScoped } from "@madar/db";
+import { withTenantTx } from "../../shared/db-tx";
 import { AuditService, type AuditCtx } from "../auth/audit.service";
 import type { ListSupplierReturnsQuery } from "./dto/list-returns.dto";
 import type {
@@ -249,7 +250,7 @@ export class SupplierReturnsService {
     for (let attempt = 0; attempt < 5 && !createdId; attempt++) {
       const code = this.generateRmaCode();
       try {
-        const result = await scoped.$transaction(async (tx) => {
+        const result = await withTenantTx(tenantId, async (tx) => {
           const header = await tx.supplierReturn.create({
             data: {
               tenant_id: tenantId,
@@ -337,9 +338,11 @@ export class SupplierReturnsService {
       0n,
     );
 
-    await scoped.$transaction(async (tx) => {
-      await tx.supplierReturn.update({
-        where: { id },
+    await withTenantTx(tenantId, async (tx) => {
+      // Guarded transition: claims the row only while still draft, so a
+      // concurrent send/cancel can't interleave (H-9).
+      const claimed = await tx.supplierReturn.updateMany({
+        where: { id, status: "draft" },
         data: {
           supplier_id: body.supplier_id,
           branch_id: body.branch_id,
@@ -349,6 +352,13 @@ export class SupplierReturnsService {
           total_cents: totalCents,
         },
       });
+      if (claimed.count !== 1) {
+        throw new ConflictException({
+          code: "supplier_return_state_changed",
+          message:
+            "Supplier return was modified by someone else — reload and retry.",
+        });
+      }
       // Replace lines wholesale.
       await tx.supplierReturnLine.deleteMany({ where: { return_id: id } });
       for (const l of body.lines) {
@@ -420,16 +430,32 @@ export class SupplierReturnsService {
     }
 
     const now = new Date();
-    await scoped.$transaction(async (tx) => {
-      await tx.supplierReturn.update({
-        where: { id },
+    const sent = await withTenantTx(tenantId, async (tx) => {
+      // Guarded transition (H-9): atomically claims draft → sent BEFORE any
+      // stock writes, so a concurrent send can never double-decrement
+      // branch_stock or duplicate stock_movements.
+      const claimed = await tx.supplierReturn.updateMany({
+        where: { id, status: "draft" },
         data: { status: "sent", sent_at: now, sent_by: actorId },
       });
-      for (const line of existing.lines) {
+      if (claimed.count !== 1) {
+        throw new ConflictException({
+          code: "supplier_return_state_changed",
+          message:
+            "Supplier return was modified by someone else — reload and retry.",
+        });
+      }
+      // Re-read inside the tx: a concurrent draft edit may have replaced the
+      // lines after the pre-read above. Same connection → consistent view.
+      const current = await tx.supplierReturn.findUniqueOrThrow({
+        where: { id },
+        include: { lines: true },
+      });
+      for (const line of current.lines) {
         await tx.stockMovement.create({
           data: {
             tenant_id: tenantId,
-            branch_id: existing.branch_id,
+            branch_id: current.branch_id,
             product_id: line.product_id,
             kind: "adjustment",
             qty_delta: -line.qty,
@@ -443,7 +469,7 @@ export class SupplierReturnsService {
           where: {
             tenant_id_branch_id_product_id: {
               tenant_id: tenantId,
-              branch_id: existing.branch_id,
+              branch_id: current.branch_id,
               product_id: line.product_id,
             },
           },
@@ -453,7 +479,7 @@ export class SupplierReturnsService {
           },
           create: {
             tenant_id: tenantId,
-            branch_id: existing.branch_id,
+            branch_id: current.branch_id,
             product_id: line.product_id,
             // Negative starting on-hand is intentional — see method doc.
             qty_on_hand: -line.qty,
@@ -462,6 +488,7 @@ export class SupplierReturnsService {
           },
         });
       }
+      return current;
     });
 
     await this.audit
@@ -470,8 +497,8 @@ export class SupplierReturnsService {
         entity: "supplier_return",
         entityId: id,
         after: {
-          lines_count: existing.lines.length,
-          total_cents: existing.total_cents.toString(),
+          lines_count: sent.lines.length,
+          total_cents: sent.total_cents.toString(),
         },
       })
       .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));
@@ -510,8 +537,9 @@ export class SupplierReturnsService {
       mergedNotes = existing.notes ? `${existing.notes}\n${appended}` : appended;
     }
 
-    await scoped.supplierReturn.update({
-      where: { id },
+    // Guarded transition (H-9): only flips sent → refunded if still sent.
+    const claimed = await scoped.supplierReturn.updateMany({
+      where: { id, status: "sent" },
       data: {
         status: "refunded",
         refunded_at: now,
@@ -519,6 +547,12 @@ export class SupplierReturnsService {
         ...(mergedNotes !== undefined ? { notes: mergedNotes } : {}),
       },
     });
+    if (claimed.count !== 1) {
+      throw new ConflictException({
+        code: "supplier_return_state_changed",
+        message: "Supplier return was modified by someone else — reload and retry.",
+      });
+    }
 
     await this.audit
       .writeTenantScoped(ctx, {
@@ -550,10 +584,17 @@ export class SupplierReturnsService {
         message: `Cannot cancel a supplier return in status ${existing.status} — only drafts can be cancelled`,
       });
     }
-    await scoped.supplierReturn.update({
-      where: { id },
+    // Guarded transition (H-9): only flips draft → cancelled if still draft.
+    const claimed = await scoped.supplierReturn.updateMany({
+      where: { id, status: "draft" },
       data: { status: "cancelled", cancelled_at: new Date(), cancelled_by: actorId },
     });
+    if (claimed.count !== 1) {
+      throw new ConflictException({
+        code: "supplier_return_state_changed",
+        message: "Supplier return was modified by someone else — reload and retry.",
+      });
+    }
     await this.audit
       .writeTenantScoped(ctx, {
         action: "supplier_return_cancelled",
