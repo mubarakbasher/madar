@@ -59,6 +59,7 @@ export interface CreateRefundBody {
   notes?: string | null;
   customer_id?: string | null;
   approved_by_user_id?: string | null;
+  approver_password?: string | null;
 }
 
 export interface SaleRefundsListResponse {

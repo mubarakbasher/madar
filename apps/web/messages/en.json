@@ -3430,6 +3430,9 @@
       "placeholder": "Pick an approver…",
       "loading": "Loading approvers…",
       "none": "No approvers found.",
+      "passwordLabel": "Approver's password",
+      "passwordPlaceholder": "Enter your password to approve",
+      "passwordHint": "The approver enters their own password — an approval is a credential, not a name on a list.",
       "role": {
         "owner": "Owner",
         "manager": "Manager"
