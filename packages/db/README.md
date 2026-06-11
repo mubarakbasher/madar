@@ -4,14 +4,14 @@ Prisma schema, migrations, and tenant-aware Postgres clients for Madar.
 
 ## Two clients, two realms
 
-- `tenantScoped(tenantId)` — for the tenant app (`apps/web`) and tenant-realm API routes (`apps/api/src/tenant`). Sets `app.current_tenant_id` per query so PostgreSQL RLS filters every row to that tenant.
-- `adminPrisma` — for the super-admin app (`apps/admin`) and admin-realm API routes (`apps/api/src/admin`). Sets `app.is_super_admin = true`, bypassing RLS for cross-tenant queries.
+- `tenantScoped(tenantId)` — for the tenant app (`apps/web`) and tenant-realm API routes (`apps/api/src/tenant`). Connects as `madar_app` and sets `app.current_tenant_id` per query so PostgreSQL RLS filters every row to that tenant.
+- `adminPrisma` — for the super-admin app (`apps/admin`) and admin-realm API routes (`apps/api/src/admin`). A plain client connecting as the dedicated `madar_admin` role (`ADMIN_DATABASE_URL`); its `admin_full_access` policy is the cross-tenant path. **The role is the privilege** — there is no session-variable bypass (ADR 0004).
 
 **Never** use `tenantScoped` in admin code or `adminPrisma` in tenant code. The whole multi-tenancy safety net rests on that boundary.
 
-## How RLS is plumbed
+## How tenant RLS is plumbed
 
-Each client wraps `$allOperations` and chains `set_config(...)` with the actual query inside a single `$transaction`:
+`tenantScoped` wraps `$allOperations` and chains `set_config(...)` with the actual query inside a single `$transaction`:
 
 ```ts
 basePrisma.$transaction([
@@ -22,24 +22,25 @@ basePrisma.$transaction([
 
 This pattern matters because `set_config(..., TRUE)` is transaction-local (equivalent to `SET LOCAL`). Without the surrounding `$transaction`, Prisma would run each statement in its own implicit transaction and the session variable would evaporate before the next query — silently breaking isolation.
 
-## Two database roles
+Because of that wrapper, `tenantScoped(...).$transaction(async …)` is NOT atomic — multi-step tenant writes must use `withTenantTx()` from `apps/api/src/shared/db-tx.ts` (lint-enforced). `adminPrisma` is unextended, so interactive transactions on it are real transactions.
+
+## Three database roles
 
 RLS is only enforced for non-superusers. Postgres superusers (and the
 table-owning role, unless `FORCE ROW LEVEL SECURITY` is set) bypass the policy
 unconditionally. The `POSTGRES_USER` set by docker-compose is a superuser —
-so we use **two roles**:
+so we use **three roles**:
 
-| Role | Used by | Env var | Subject to RLS? |
+| Role | Used by | Env var | RLS policy |
 |---|---|---|---|
-| `madar` | `prisma migrate`, tests' `migrate reset` | `DIRECT_DATABASE_URL` | No (superuser + table owner) |
-| `madar_app` | the app at runtime — both `tenantScoped` and `adminPrisma` | `DATABASE_URL` | **Yes** |
+| `madar` | `prisma migrate`, tests' `migrate reset` | `DIRECT_DATABASE_URL` | None (superuser + table owner) |
+| `madar_app` | tenant realm at runtime (`tenantScoped`) | `DATABASE_URL` | `tenant_isolation` (NULLIF on `app.current_tenant_id`) |
+| `madar_admin` | super-admin realm (`adminPrisma`) | `ADMIN_DATABASE_URL` | `admin_full_access` (USING true) |
 
-`adminPrisma` still works because the `tenant_isolation` policy explicitly
-allows rows through when `current_setting('app.is_super_admin')='true'`. That
-GUC is what bypasses RLS — not role attributes.
-
-`madar_app` is created by migration `20260514010000_app_role`. If you bring
-up a fresh database, that migration must apply before the app can connect.
+`madar_app` is created by migration `20260514010000_app_role`, `madar_admin`
+by `20260612000000_admin_role_split`. If you bring up a fresh database, both
+must apply before the app can connect. Both are created with placeholder
+passwords — production rotates them (docs/deployment.md §5b).
 
 ## PgBouncer
 

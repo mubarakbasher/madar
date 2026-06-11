@@ -1,14 +1,14 @@
-// The extended clients (tenantScoped / adminPrisma) wrap EVERY operation in
-// its own implicit batch $transaction on basePrisma, so an interactive
+// The tenantScoped extended client wraps EVERY operation in its own implicit
+// batch $transaction on basePrisma, so an interactive
 // `scoped.$transaction(async tx => ...)` does NOT give single-connection
 // atomicity: each inner statement runs on its own pooled connection, locks
 // release between statements, and a crash mid-sequence leaves partial writes
 // (e.g. a stock_movement without its branch_stock update). Multi-statement
-// writes must instead run on the raw client with the RLS context set once
-// via transaction-local set_config — these helpers are the only sanctioned
-// way to do that.
+// tenant writes must instead run on the raw client with the RLS context set
+// once via transaction-local set_config — withTenantTx is the only
+// sanctioned way to do that.
 // eslint-disable-next-line no-restricted-imports
-import { basePrisma, Prisma, type PrismaClient } from "@madar/db";
+import { adminPrisma, basePrisma, Prisma, type PrismaClient } from "@madar/db";
 
 export type Tx = Prisma.TransactionClient;
 
@@ -26,12 +26,13 @@ export async function withTenantTx<T>(tenantId: string, fn: (tx: Tx) => Promise<
 }
 
 /**
- * Run `fn` inside ONE real database transaction with the RLS super-admin
- * bypass set. Admin/platform code only — never reachable from tenant input.
+ * Run `fn` inside ONE real database transaction on the admin connection.
+ * Since ADR 0004, adminPrisma is a plain client on the `madar_admin` role —
+ * its RLS bypass is the ROLE itself, not a session variable — so a normal
+ * interactive transaction is already correct; this helper keeps one obvious
+ * entry point alongside withTenantTx for multi-step admin writes.
+ * Admin/platform code only — never reachable from tenant input.
  */
 export async function withAdminTx<T>(fn: (tx: Tx) => Promise<T>): Promise<T> {
-  return (basePrisma as PrismaClient).$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT set_config('app.is_super_admin', 'true', TRUE)`;
-    return fn(tx);
-  });
+  return (adminPrisma as PrismaClient).$transaction(async (tx) => fn(tx));
 }

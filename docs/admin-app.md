@@ -39,8 +39,8 @@ A super-admin panel cannot be "a few special routes inside the tenant app." We s
 ### 2.3 Data access
 
 - **`adminPrisma` client** is the only way to make cross-tenant queries.
-- Sets `app.is_super_admin = true` on its PostgreSQL session, which RLS policies recognize to bypass `tenant_id` filtering.
-- Tenant app's `tenantScoped` Prisma client **never** sets this flag.
+- Connects as the dedicated `madar_admin` PostgreSQL role (`ADMIN_DATABASE_URL`), whose `admin_full_access` RLS policy grants every row — the ROLE is the privilege; there is no session-variable bypass (ADR 0004).
+- Tenant app's `tenantScoped` Prisma client connects as `madar_app` and is filtered by `tenant_isolation` unconditionally.
 - Lint rule prevents `adminPrisma` from being imported in `apps/web/*`.
 
 ```typescript

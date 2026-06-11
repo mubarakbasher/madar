@@ -1,3 +1,4 @@
+import "./env-prelude";
 import argon2 from "argon2";
 import { adminPrisma } from "../src/admin";
 import {
@@ -9,10 +10,9 @@ import {
   STAFF,
 } from "./seed-data";
 
-// Seeds run as the non-superuser `madar_app` connection role, so RLS is in
-// force. adminPrisma sets `app.is_super_admin='true'` per query so the
-// tenant_isolation policy lets writes through into both tenant-scoped and
-// platform tables.
+// Seeds run as the non-superuser `madar_admin` connection role (ADR 0004):
+// its admin_full_access RLS policy lets writes through into both
+// tenant-scoped and platform tables — no session-variable bypass exists.
 const prisma = adminPrisma;
 
 // Static demo TOTP secret (32 bytes base32) — stable across re-seeds so the QR

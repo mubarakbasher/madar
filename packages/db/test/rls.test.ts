@@ -72,6 +72,39 @@ describe.each(TENANT_SCOPED_MODELS)("RLS — %s", (model) => {
   });
 });
 
+describe("is_super_admin escalation canary (ADR 0004)", () => {
+  // Before the role split, every policy honored the unreserved GUC
+  // `app.is_super_admin` — settable by ANY session, so one SQL injection in
+  // the tenant realm escalated to reading every tenant. The policies are now
+  // role-scoped (TO madar_app / TO madar_admin) and must ignore the GUC
+  // completely. set_config + query share one transaction so the setting is
+  // guaranteed to be active on the same connection as the read.
+
+  it("setting app.is_super_admin as madar_app grants NOTHING", async () => {
+    const rows = await basePrisma.$transaction(async (tx) => {
+      await tx.$executeRawUnsafe(`SELECT set_config('app.is_super_admin', 'true', false)`);
+      return tx.$queryRawUnsafe<unknown[]>(`SELECT id FROM sales`);
+    });
+    expect(rows).toHaveLength(0);
+  });
+
+  it("the GUC cannot widen an existing tenant context to another tenant", async () => {
+    const rows = await basePrisma.$transaction(async (tx) => {
+      await tx.$executeRawUnsafe(
+        `SELECT set_config('app.current_tenant_id', $1, true)`,
+        TENANT_A_ID,
+      );
+      await tx.$executeRawUnsafe(`SELECT set_config('app.is_super_admin', 'true', true)`);
+      return tx.$queryRawUnsafe<Array<{ tenant_id: string }>>(
+        `SELECT tenant_id FROM sales`,
+      );
+    });
+    expect(rows.length).toBeGreaterThan(0);
+    expect(rows.every((r) => r.tenant_id === TENANT_A_ID)).toBe(true);
+    expect(rows.find((r) => r.tenant_id === TENANT_B_ID)).toBeUndefined();
+  });
+});
+
 describe("WITH CHECK enforcement", () => {
   it("tenantScoped(A) cannot insert a product into tenant B", async () => {
     const client = tenantScoped(TENANT_A_ID);

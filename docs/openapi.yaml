@@ -7,8 +7,8 @@ info:
     - **Tenant app** (`apps/web`) via `/v1/*` routes with `TenantAuthGuard`
     - **Super-admin app** (`apps/admin`) via `/admin/v1/*` routes with `AdminAuthGuard`
 
-    Routes under `/v1/*` are tenant-scoped (RLS enforced via PostgreSQL session variable `app.current_tenant_id`).
-    Routes under `/admin/v1/*` bypass RLS (set `app.is_super_admin = true`) and access cross-tenant data.
+    Routes under `/v1/*` are tenant-scoped (RLS enforced via PostgreSQL session variable `app.current_tenant_id` on the `madar_app` role).
+    Routes under `/admin/v1/*` access cross-tenant data via the dedicated `madar_admin` DB role (ADR 0004 — no session-variable bypass).
 
     See `architecture.md`, `admin-app.md`, and `CLAUDE.md` for the full design.
 
@@ -488,7 +488,8 @@ components:
       bearerFormat: JWT
       description: |
         Super-admin JWT. Validated by AdminAuthGuard.
-        Sets PostgreSQL session var `app.is_super_admin = true`.
+        Queries run via the dedicated `madar_admin` DB role (ADR 0004);
+        there is no session-variable RLS bypass.
         Different signing secret from tenant JWTs.
 
   parameters:

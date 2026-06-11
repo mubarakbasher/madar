@@ -36,6 +36,16 @@ if (!process.env.PLATFORM_BANK_ENCRYPTION_KEY) {
   process.env.PLATFORM_BANK_ENCRYPTION_KEY = "f".repeat(64);
 }
 
+// adminPrisma connects as the madar_admin role (ADR 0004) and constructs at
+// import time. Derive the dev-convention default before any spec imports
+// @madar/db.
+if (!process.env.ADMIN_DATABASE_URL && process.env.DATABASE_URL) {
+  process.env.ADMIN_DATABASE_URL = process.env.DATABASE_URL.replace(
+    "madar_app:madar_app",
+    "madar_admin:madar_admin",
+  );
+}
+
 // Use the in-memory Redis fallback for tests so we don't have to flush a real
 // instance between specs. Refresh-jti storage and idempotency cache are
 // per-process and predictable.
