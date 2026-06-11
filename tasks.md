@@ -907,6 +907,12 @@ Eight self-host readiness items shipped in one push. Each was scoped tight and r
 
 ---
 
+## Quality audits
+
+- [x] **Full-system bug & security audit (2026-06-10)** — five-pass scan (realm/RLS boundary, security, business logic, frontend, database) + baselines (typecheck/lint/i18n/RLS/API tests). RLS 86/86 green, no cross-tenant leak or SQLi found; **12 HIGH findings** (over-refunds ignoring discounts, no path back to `active` after payment, `in_review` never set → wrongful suspension, P&L double-discount, noop virus-scanner default in prod, 17 non-atomic `scoped.$transaction` sites, payment-proof verify/reject races, idempotency cache not tenant-scoped, double stock moves on unguarded transitions, impersonation JWT in URL, swallowed tx errors), 21 MEDIUM, 20 LOW. Full report: `docs/audit-2026-06-10.md`. **Fixes not yet applied** — remediation order in report §8.
+
+---
+
 ## Working agreements
 
 - **Read first** before starting any task: `CLAUDE.md`, the design reference for that task, and any prior ADR in `docs/decisions/`.
