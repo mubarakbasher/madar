@@ -110,19 +110,24 @@ async function main() {
   console.log(`  ✓ Tenant: ${tenant.name} (${tenant.id})`);
 
   // ── 5. Branches ──────────────────────────────────────────────────
+  // find-then-create instead of upsert: the compound uniques are now PARTIAL
+  // indexes (WHERE deleted_at IS NULL) which Prisma can't address as typed
+  // upsert keys. Same idempotent semantics (seed never updates existing rows).
   const branches = await Promise.all(
-    BRANCHES.map((b) =>
-      prisma.branch.upsert({
-        where: { tenant_id_code: { tenant_id: tenant.id, code: b.code } },
-        update: {},
-        create: {
-          tenant_id: tenant.id,
-          code: b.code,
-          name_i18n: { en: b.name_en, ar: b.name_ar },
-          currency_code: "EGP",
-          opened_at: new Date(b.opened),
-        },
-      }),
+    BRANCHES.map(
+      async (b) =>
+        (await prisma.branch.findFirst({
+          where: { tenant_id: tenant.id, code: b.code, deleted_at: null },
+        })) ??
+        prisma.branch.create({
+          data: {
+            tenant_id: tenant.id,
+            code: b.code,
+            name_i18n: { en: b.name_en, ar: b.name_ar },
+            currency_code: "EGP",
+            opened_at: new Date(b.opened),
+          },
+        }),
     ),
   );
   console.log(`  ✓ ${branches.length} branches`);
@@ -132,39 +137,44 @@ async function main() {
 
   // ── 6. Owner + cashiers ──────────────────────────────────────────
   const ownerPasswordHash = await argon2.hash("Demo123!");
-  const owner = await prisma.user.upsert({
-    where: { tenant_id_email: { tenant_id: tenant.id, email: "owner@acme.test" } },
-    update: {},
-    create: {
-      tenant_id: tenant.id,
-      email: "owner@acme.test",
-      password_hash: ownerPasswordHash,
-      name: "Bayt Owner",
-      role: "owner",
-      locale: "en",
-      // Link the owner to the primary branch so the POS works out of the box.
-      // Owners can change their own branch from Settings → Users.
-      branch_id: primaryBranch.id,
-    },
-  });
+  const owner =
+    (await prisma.user.findFirst({
+      where: { tenant_id: tenant.id, email: "owner@acme.test", deleted_at: null },
+    })) ??
+    (await prisma.user.create({
+      data: {
+        tenant_id: tenant.id,
+        email: "owner@acme.test",
+        password_hash: ownerPasswordHash,
+        name: "Bayt Owner",
+        role: "owner",
+        locale: "en",
+        // Link the owner to the primary branch so the POS works out of the box.
+        // Owners can change their own branch from Settings → Users.
+        branch_id: primaryBranch.id,
+      },
+    }));
 
   const cashiers = await Promise.all(
     STAFF.map(async (s) => {
       const branch = branchByCode.get(s.branch_code);
       if (!branch) throw new Error(`Missing branch for cashier ${s.email}`);
-      return prisma.user.upsert({
-        where: { tenant_id_email: { tenant_id: tenant.id, email: s.email } },
-        update: {},
-        create: {
-          tenant_id: tenant.id,
-          email: s.email,
-          password_hash: ownerPasswordHash,
-          name: s.name,
-          role: s.role,
-          branch_id: branch.id,
-          locale: "en",
-        },
-      });
+      return (
+        (await prisma.user.findFirst({
+          where: { tenant_id: tenant.id, email: s.email, deleted_at: null },
+        })) ??
+        prisma.user.create({
+          data: {
+            tenant_id: tenant.id,
+            email: s.email,
+            password_hash: ownerPasswordHash,
+            name: s.name,
+            role: s.role,
+            branch_id: branch.id,
+            locale: "en",
+          },
+        })
+      );
     }),
   );
   console.log(`  ✓ 1 owner + ${cashiers.length} cashiers`);
@@ -172,17 +182,19 @@ async function main() {
 
   // ── 7. Categories ────────────────────────────────────────────────
   const categories = await Promise.all(
-    PRODUCT_CATEGORIES.map((c) =>
-      prisma.category.upsert({
-        where: { tenant_id_code: { tenant_id: tenant.id, code: c.code } },
-        update: {},
-        create: {
-          tenant_id: tenant.id,
-          code: c.code,
-          name_i18n: { en: c.name_en, ar: c.name_ar },
-          sort_order: c.sort,
-        },
-      }),
+    PRODUCT_CATEGORIES.map(
+      async (c) =>
+        (await prisma.category.findFirst({
+          where: { tenant_id: tenant.id, code: c.code, deleted_at: null },
+        })) ??
+        prisma.category.create({
+          data: {
+            tenant_id: tenant.id,
+            code: c.code,
+            name_i18n: { en: c.name_en, ar: c.name_ar },
+            sort_order: c.sort,
+          },
+        }),
     ),
   );
   console.log(`  ✓ ${categories.length} categories`);
@@ -190,22 +202,25 @@ async function main() {
 
   // ── 8. Products ──────────────────────────────────────────────────
   const products = await Promise.all(
-    PRODUCTS.map((p) => {
+    PRODUCTS.map(async (p) => {
       const category = categoryByCode.get(p.cat);
       if (!category) throw new Error(`Missing category for product ${p.sku}`);
-      return prisma.product.upsert({
-        where: { tenant_id_sku: { tenant_id: tenant.id, sku: p.sku } },
-        update: {},
-        create: {
-          tenant_id: tenant.id,
-          sku: p.sku,
-          name_i18n: { en: p.name_en, ar: p.name_ar },
-          category_id: category.id,
-          price_cents: BigInt(p.price * 100),
-          cost_cents: BigInt(p.cost * 100),
-          currency_code: "EGP",
-        },
-      });
+      return (
+        (await prisma.product.findFirst({
+          where: { tenant_id: tenant.id, sku: p.sku, deleted_at: null },
+        })) ??
+        prisma.product.create({
+          data: {
+            tenant_id: tenant.id,
+            sku: p.sku,
+            name_i18n: { en: p.name_en, ar: p.name_ar },
+            category_id: category.id,
+            price_cents: BigInt(p.price * 100),
+            cost_cents: BigInt(p.cost * 100),
+            currency_code: "EGP",
+          },
+        })
+      );
     }),
   );
   console.log(`  ✓ ${products.length} products`);
@@ -232,12 +247,12 @@ async function main() {
 
   // ── 10. Customers ────────────────────────────────────────────────
   const customers = await Promise.all(
-    CUSTOMERS.map((c) =>
-      prisma.customer.upsert({
-        where: { tenant_id_phone: { tenant_id: tenant.id, phone: c.phone } },
-        update: {},
-        create: { tenant_id: tenant.id, ...c },
-      }),
+    CUSTOMERS.map(
+      async (c) =>
+        (await prisma.customer.findFirst({
+          where: { tenant_id: tenant.id, phone: c.phone, deleted_at: null },
+        })) ??
+        prisma.customer.create({ data: { tenant_id: tenant.id, ...c } }),
     ),
   );
   console.log(`  ✓ ${customers.length} customers`);
@@ -357,6 +372,51 @@ async function main() {
       },
     }));
   console.log(`  ✓ Sample sale ${sale.code} (${sale.id})`);
+
+  // Ledger consistency for the sample sale (non-negotiable invariant:
+  // inventory commits on sale completion, and branch_stock never moves
+  // without a stock_movement). The sale branch was seeded with zero stock,
+  // so on first run: receive the sold quantities, then the sale consumes
+  // them — two movement rows per line, net zero qty_on_hand.
+  if (!existingSale) {
+    for (const l of lineDetails) {
+      await prisma.stockMovement.create({
+        data: {
+          tenant_id: tenant.id,
+          branch_id: saleBranch.id,
+          product_id: l.product.id,
+          kind: "receive",
+          qty_delta: l.qty,
+          unit_cost_cents: l.product.cost_cents,
+          reference_table: "seed",
+          reference_id: sale.id,
+          note: "Stock received ahead of sample sale",
+        },
+      });
+      await prisma.stockMovement.create({
+        data: {
+          tenant_id: tenant.id,
+          branch_id: saleBranch.id,
+          product_id: l.product.id,
+          kind: "sale",
+          qty_delta: -l.qty,
+          unit_cost_cents: l.product.cost_cents,
+          reference_table: "sales",
+          reference_id: sale.id,
+        },
+      });
+      // +qty then -qty: cache unchanged, but stamp the movement time.
+      await prisma.branchStock.updateMany({
+        where: {
+          tenant_id: tenant.id,
+          branch_id: saleBranch.id,
+          product_id: l.product.id,
+        },
+        data: { last_movement_at: new Date() },
+      });
+    }
+    console.log(`  ✓ Sample sale ledger: receive + sale movements per line`);
+  }
 
   // ── 13. Sale payment proof ───────────────────────────────────────
   const salePaymentProof = await prisma.paymentProof.upsert({

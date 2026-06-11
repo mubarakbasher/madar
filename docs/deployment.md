@@ -114,6 +114,22 @@ docker compose -f docker-compose.yml -f infra/docker-compose.prod.yml \
   run --rm api pnpm db:migrate:deploy
 ```
 
+### Step 5b — Rotate the runtime DB role password (required)
+
+Migration `20260514010000_app_role` creates the runtime role `madar_app` with
+a publicly-known placeholder password (migrations are immutable — see ADR
+0003). Rotate it immediately after the first migration run, and any time you
+suspect exposure:
+
+```bash
+docker compose -f docker-compose.yml -f infra/docker-compose.prod.yml \
+  --env-file .env.production exec postgres \
+  psql -U madar -d madar -c "ALTER ROLE madar_app WITH PASSWORD '<strong-generated-secret>';"
+```
+
+Then update `DATABASE_URL` in `.env.production` to use the new password and
+restart the API. Verify login with the old password now fails.
+
 ## Step 6 — First deploy
 
 ```bash

@@ -246,7 +246,11 @@ export class SuppliersController {
       docId,
     );
     res.setHeader("Content-Type", mime);
-    res.setHeader("Content-Disposition", `inline; filename="${filename}"`);
+    // original_filename is attacker-controlled (raw multer originalname) —
+    // a `"` would escape the quoted header parameter. Keep a conservative
+    // character set and fall back to the server-side document id.
+    const safeName = filename.replace(/[^\w.\- ]/g, "_").slice(0, 120) || docId;
+    res.setHeader("Content-Disposition", `inline; filename="${safeName}"`);
     res.setHeader("Cache-Control", "private, max-age=300");
     res.send(buffer);
   }

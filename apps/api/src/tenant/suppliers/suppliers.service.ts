@@ -905,14 +905,26 @@ export class SuppliersService {
 
     const { randomUUID } = await import("node:crypto");
     const docId = randomUUID();
-    const ext = extFromMime(file.declaredMime);
+    // Detect the real type from magic bytes — the client-declared MIME is
+    // untrusted and previously decided both the stored extension and the
+    // Content-Type later used when streaming (a PNG could be served as PDF).
+    const { fromBuffer: fileTypeFromBuffer } = await import("file-type");
+    const detected = await fileTypeFromBuffer(file.buffer);
+    const detectedMime = detected?.mime ?? "";
+    if (!["image/jpeg", "image/png", "application/pdf"].includes(detectedMime)) {
+      throw new BadRequestException({
+        code: "file_mime_unsupported",
+        message: "Document must be JPG, PNG, or PDF",
+      });
+    }
+    const ext = extFromMime(detectedMime);
     const { key, sizeBytes } = await this.tenantStorage.putTenantObject(
       {
         tenantId,
         prefix: `suppliers/${supplierId}/documents`,
         fileId: docId,
         ext,
-        contentType: file.declaredMime,
+        contentType: detectedMime,
         buffer: file.buffer,
       },
       {
