@@ -42,6 +42,7 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       DATABASE_URL: postgresql://madar_app:madar_app@localhost:5432/madar?schema=public
+      ADMIN_DATABASE_URL: postgresql://madar_admin:madar_admin@localhost:5432/madar?schema=public
       DIRECT_DATABASE_URL: postgresql://madar:madar@localhost:5432/madar?schema=public
       REDIS_URL: redis://localhost:6379
       JWT_TENANT_SECRET: ci-test-tenant-secret-must-be-32-chars-long-xxx

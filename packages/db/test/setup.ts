@@ -7,8 +7,9 @@ import { adminPrisma, basePrisma } from "../src/index";
  *
  * 1. Resets the database (drops everything, re-applies migrations, no seed).
  * 2. Inserts two test tenants A and B with one fixture row per tenant-scoped
- *    model. All writes go through adminPrisma (RLS bypassed via the
- *    app.is_super_admin flag) so we can populate both tenants from one process.
+ *    model. All writes go through adminPrisma (the madar_admin role, whose
+ *    admin_full_access policy bypasses tenant isolation — ADR 0004) so we can
+ *    populate both tenants from one process.
  *
  * The full RLS isolation tests then run against the populated DB. We deliberately
  * skip the demo seed (`pnpm db:seed`) so the test fixtures are minimal and

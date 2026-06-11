@@ -97,7 +97,7 @@ A cross-tenant data leak is an extinction-level event. Read this section before 
 
 1. Every table except platform tables (`tenants`, `platform_users`, `platform_audit_log`, `platform_bank_accounts`, `plans`, `feature_flags`) has `tenant_id`.
 2. **Tenant app:** every query goes through `tenantScoped(req)`. Lint enforces. Middleware sets `app.current_tenant_id` per request.
-3. **Admin app:** cross-tenant queries go through `adminPrisma` only, which sets `app.is_super_admin = true` and bypasses RLS. The tenant Prisma client **never** sets this flag.
+3. **Admin app:** cross-tenant queries go through `adminPrisma` only, which connects as the dedicated `madar_admin` DB role (`ADMIN_DATABASE_URL`) whose `admin_full_access` RLS policy is the ONLY cross-tenant path (ADR 0004 — there is no session-variable bypass). The tenant client connects as `madar_app` and **never** uses the admin URL.
 4. PostgreSQL RLS enabled on every tenant-scoped table.
 5. `pnpm test:rls` must pass before any merge.
 6. Never use raw `prisma.X.findMany()`.

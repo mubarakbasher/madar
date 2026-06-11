@@ -1,3 +1,4 @@
+import "./env-prelude";
 import { randomBytes } from "node:crypto";
 import argon2 from "argon2";
 import { adminPrisma } from "../src/admin";

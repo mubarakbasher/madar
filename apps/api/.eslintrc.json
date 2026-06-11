@@ -16,8 +16,8 @@
     "no-restricted-syntax": [
       "error",
       {
-        "selector": "CallExpression[callee.property.name='$transaction'][callee.object.name=/^(scoped|adminPrisma)$/]",
-        "message": "The $extends-wrapped clients wrap every operation in its own implicit transaction — $transaction on them is NOT atomic (locks don't hold across statements). Use withTenantTx()/withAdminTx() from src/shared/db-tx instead."
+        "selector": "CallExpression[callee.property.name='$transaction'][callee.object.name='scoped']",
+        "message": "The tenantScoped $extends client wraps every operation in its own implicit transaction — $transaction on it is NOT atomic (locks don't hold across statements). Use withTenantTx() from src/shared/db-tx instead. (adminPrisma is a plain client since ADR 0004 and is fine.)"
       },
       {
         "selector": "CallExpression[callee.property.name='$transaction'][callee.object.callee.name='tenantScoped']",

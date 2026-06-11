@@ -169,8 +169,8 @@ Cross-module calls go through services, never direct DB access into another modu
 
 Two guards, mutually exclusive:
 
-- **`TenantAuthGuard`** — validates tenant JWT, attaches `req.tenant` and `req.user` (tenant user), sets the PostgreSQL session `app.current_tenant_id`.
-- **`AdminAuthGuard`** — validates admin JWT, attaches `req.platformUser`, sets `app.is_super_admin = true`. Optionally validates IP allowlist.
+- **`TenantAuthGuard`** — validates tenant JWT, attaches `req.tenant` and `req.user` (tenant user); queries then run through `tenantScoped`, which sets the PostgreSQL session `app.current_tenant_id`.
+- **`AdminAuthGuard`** — validates admin JWT, attaches `req.platformUser`; queries then run through `adminPrisma` on the dedicated `madar_admin` DB role (ADR 0004). Optionally validates IP allowlist.
 
 A route uses exactly one guard. Mixing is a lint error.
 
@@ -204,33 +204,31 @@ Stored in Redis for 24 hours. Repeat with same key + same body = same response.
 
 - **Shared database, shared schema** for all tenants.
 - Every tenant-scoped table has a `tenant_id` column.
-- RLS policy on every table: `USING (tenant_id = current_setting('app.current_tenant_id')::uuid)`.
-- Admin queries bypass RLS by setting `app.is_super_admin = true`.
+- Tenant policy (`TO madar_app`): `USING (tenant_id = NULLIF(current_setting('app.current_tenant_id', true), '')::uuid)`.
+- Admin queries bypass tenant isolation via the dedicated `madar_admin` DB role, whose `admin_full_access` policy grants every row (ADR 0004). There is no session-variable bypass — *the role is the privilege*.
 
 ### 5.3 Two Prisma clients
 
 ```typescript
-// packages/db/tenant.ts
-export const tenantPrismaFactory = (tenantId: string) => {
-  return new PrismaClient().$extends({
+// packages/db/src/tenant.ts — connects as madar_app (DATABASE_URL)
+export const tenantScoped = (tenantId: string) =>
+  basePrisma.$extends({
     query: {
-      async $allOperations({ args, query, operation }) {
-        // Set session variable before each query
-        await prismaRaw.$executeRaw`SET LOCAL app.current_tenant_id = ${tenantId}`;
-        return query(args);
+      $allOperations({ args, query }) {
+        // set_config + query batched into ONE transaction so the
+        // transaction-local GUC is guaranteed active for the query.
+        return basePrisma.$transaction([
+          basePrisma.$executeRaw`SELECT set_config('app.current_tenant_id', ${tenantId}, TRUE)`,
+          query(args),
+        ]).then(([, result]) => result);
       }
     }
   });
-};
 
-// packages/db/admin.ts
-export const adminPrisma = new PrismaClient().$extends({
-  query: {
-    async $allOperations({ args, query }) {
-      await prismaRaw.$executeRaw`SET LOCAL app.is_super_admin = true`;
-      return query(args);
-    }
-  }
+// packages/db/src/admin.ts — connects as madar_admin (ADMIN_DATABASE_URL).
+// Plain client: the role's admin_full_access RLS policy IS the bypass.
+export const adminPrisma = new PrismaClient({
+  datasources: { db: { url: process.env.ADMIN_DATABASE_URL } },
 });
 ```
 

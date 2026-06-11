@@ -62,6 +62,7 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: postgres://madar_app:${MADAR_APP_PASSWORD:?MADAR_APP_PASSWORD is required}@postgres:5432/madar
+      ADMIN_DATABASE_URL: postgres://madar_admin:${MADAR_ADMIN_PASSWORD:?MADAR_ADMIN_PASSWORD is required}@postgres:5432/madar
       DIRECT_DATABASE_URL: postgres://${POSTGRES_USER:-madar}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@postgres:5432/madar
       REDIS_URL: redis://redis:6379
       S3_ENDPOINT: http://minio:9000

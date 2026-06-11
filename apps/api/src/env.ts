@@ -10,6 +10,9 @@ const envSchema = z.object({
     .pipe(z.array(z.string().url()).min(1)),
   DATABASE_URL: z.string().min(1),
   DIRECT_DATABASE_URL: z.string().min(1).optional(),
+  // madar_admin connection for adminPrisma (ADR 0004) — the admin realm's
+  // RLS bypass is this ROLE, not a session variable.
+  ADMIN_DATABASE_URL: z.string().min(1),
   REDIS_URL: z.string().min(1).optional(),
   JWT_TENANT_SECRET: z.string().min(32),
   JWT_TENANT_ACCESS_TTL: z.string().default("15m"),
