@@ -332,6 +332,10 @@ model User {
   tenant_id                     String         @db.Uuid
   email                         String
   email_verified                Boolean        @default(false)
+  // Staged email change: the login email only swaps to pending_email once the
+  // confirmation token (sent to the NEW address) is consumed. Reuses the
+  // email_verification_* token columns.
+  pending_email                 String?
   email_verification_token_hash String?
   email_verification_expires_at DateTime?      @db.Timestamptz
   password_hash                 String

@@ -42,7 +42,10 @@ describe("realm-canary — AdminAuthGuard rejects out-of-realm tokens", () => {
   it("rejects an mfa_pending token on /v1/admin/auth/me (access-only endpoint)", async () => {
     const a = await makePlatformUser({ emailPrefix: "canary-pending" });
     const adminTokens = booted.app.get(AdminTokenService);
-    const pending = adminTokens.mintMfaPending({ platformUserId: a.platformUserId, email: a.email });
+    const pending = await adminTokens.mintMfaPending({
+      platformUserId: a.platformUserId,
+      email: a.email,
+    });
 
     const res = await request(booted.http)
       .get("/v1/admin/auth/me")

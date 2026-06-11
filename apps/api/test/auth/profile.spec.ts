@@ -155,9 +155,10 @@ describe("Self-service profile (/v1/auth/me + change-password + change-email)", 
 
   // ─── change-email ─────────────────────────────────────────────────
 
-  it("change-email happy: row updates + verified flips false + new-address .eml lands + audit", async () => {
+  it("change-email is STAGED: login email untouched until the new address confirms; both emails sent; confirm swaps + revokes sessions", async () => {
     const t = await makeTenant({ slugPrefix: "em-ok" });
-    // Pre-mark verified so we can prove it flips back.
+    // Pre-mark verified so we can prove the staged flow never un-verifies
+    // the active address.
     await adminPrisma.user.update({
       where: { id: t.userId },
       data: { email_verified: true },
@@ -171,13 +172,16 @@ describe("Self-service profile (/v1/auth/me + change-password + change-email)", 
       .send({ new_email: newEmail, password: t.password });
     expect(res.status).toBe(200);
 
+    // The LOGIN email must not move yet — a hijacked session must not be
+    // able to silently take over the account.
     const u = await adminPrisma.user.findUnique({ where: { id: t.userId } });
-    expect(u?.email).toBe(newEmail);
-    expect(u?.email_verified).toBe(false);
+    expect(u?.email).toBe(t.email);
+    expect(u?.email_verified).toBe(true);
+    expect(u?.pending_email).toBe(newEmail);
     expect(u?.email_verification_token_hash).toBeTruthy();
     expect(u?.email_verification_expires_at).toBeTruthy();
 
-    // Fire-and-forget — poll for the file with a generous deadline (Windows
+    // Fire-and-forget — poll for the files with a generous deadline (Windows
     // file-flush latency on OneDrive is occasionally jumpy).
     let candidates: string[] = [];
     for (let i = 0; i < 30; i++) {
@@ -199,6 +203,37 @@ describe("Self-service profile (/v1/auth/me + change-password + change-email)", 
       }
     }
     expect(verifyContents).not.toBeNull();
+
+    // Heads-up notice to the OLD address.
+    let oldNotice = false;
+    for (let i = 0; i < 30 && !oldNotice; i++) {
+      const files = await fs.readdir(emailDir).catch(() => []);
+      for (const f of files.filter((n) => n.includes(t.email.split("@")[0]!))) {
+        const c = await fs.readFile(path.join(emailDir, f), "utf8");
+        if (c.includes("is being changed")) {
+          oldNotice = true;
+          break;
+        }
+      }
+      if (!oldNotice) await new Promise((r) => setTimeout(r, 100));
+    }
+    expect(oldNotice).toBe(true);
+
+    const requestedAudit = await readAuditLog(t.tenantId, "email_change_requested");
+    expect(requestedAudit.length).toBeGreaterThan(0);
+
+    // Confirm with the emailed token → email swaps + audit written.
+    const tokenMatch = verifyContents!.match(/verify-email\?token=([0-9a-f]+)/);
+    expect(tokenMatch).toBeTruthy();
+    const confirm = await request(booted.http)
+      .post("/v1/auth/verify-email")
+      .send({ token: tokenMatch![1] });
+    expect(confirm.status).toBe(200);
+
+    const after = await adminPrisma.user.findUnique({ where: { id: t.userId } });
+    expect(after?.email).toBe(newEmail);
+    expect(after?.pending_email).toBeNull();
+    expect(after?.email_verified).toBe(true);
 
     const audit = await readAuditLog(t.tenantId, "email_changed");
     expect(audit.length).toBeGreaterThan(0);

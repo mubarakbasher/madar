@@ -11,6 +11,7 @@ export interface AdminPrincipal {
 export interface AdminMfaPendingPrincipal {
   platformUserId: string;
   email: string;
+  jti: string;
 }
 
 export const CurrentAdmin = createParamDecorator(

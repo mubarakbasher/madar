@@ -3,6 +3,19 @@
     "name": "Madar",
     "tagline": "Run your shop the way it should run."
   },
+  "impersonationHandoff": {
+    "title": "Support sign-in",
+    "subtitle": "A platform administrator is about to sign in to this shop for support.",
+    "warning": "Only continue if you opened this page from the Madar admin panel yourself. This will replace any session in this browser tab.",
+    "confirm": "Continue as support",
+    "confirming": "Signing in…",
+    "cancel": "Cancel",
+    "errors": {
+      "missingCode": "Missing impersonation code — start again from the admin panel.",
+      "codeInvalid": "This impersonation link has expired or was already used. Start again from the admin panel.",
+      "network": "Could not reach the server — check your connection and retry."
+    }
+  },
   "onboarding": {
     "selectPlan": {
       "kicker": "Welcome to Madar",
@@ -591,7 +604,8 @@
     "all": "All",
     "today": "Today",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "language": "Language"
   },
   "home": {
     "headline": "Madar",
@@ -817,6 +831,7 @@
       }
     },
     "cols": {
+      "selectAll": "Select all",
       "sku": "SKU",
       "product": "Product",
       "price": "Price",
@@ -1200,6 +1215,7 @@
       "title": "Pay invoice",
       "subtitle": "{ref} · bank transfer + receipt upload",
       "loading": "Loading…",
+      "copy": "Copy",
       "step1": {
         "kicker": "Step 1 of 3 · Make the transfer",
         "heading": "Send {amount} by bank transfer",
@@ -1410,6 +1426,11 @@
     }
   },
   "pos": {
+    "catalog": {
+      "loading": "Loading catalog…",
+      "loadError": "Failed to load products.",
+      "retry": "Retry"
+    },
     "noBranch": {
       "title": "You're not linked to a branch",
       "bodyOwner": "Selling needs a branch — that's where inventory and the cash drawer live. Open Users settings and set your branch to start ringing sales.",
@@ -1489,6 +1510,8 @@
       "title": "Cart",
       "clear": "Clear",
       "hold": "Hold",
+      "decreaseQty": "Decrease quantity",
+      "increaseQty": "Increase quantity",
       "addCustomer": "Add customer to this sale",
       "visits": "{count, plural, one {# visit} other {# visits}}",
       "storeCredit": "store credit",
@@ -1778,6 +1801,11 @@
     },
     "loading": "Loading queue…",
     "loadingProof": "Loading proof…",
+    "receipt": {
+      "pdfTitle": "Receipt PDF",
+      "imageAlt": "Receipt",
+      "fullscreenAlt": "Receipt fullscreen"
+    },
     "list": {
       "noRef": "no ref",
       "today": "today",

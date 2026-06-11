@@ -15,7 +15,10 @@ const envSchema = z.object({
   JWT_TENANT_ACCESS_TTL: z.string().default("15m"),
   JWT_TENANT_REFRESH_TTL: z.string().default("30d"),
   JWT_ADMIN_SECRET: z.string().min(32),
-  JWT_ADMIN_ACCESS_TTL: z.string().default("8h"),
+  // Short access half: AdminAuthGuard is stateless, so this TTL is the upper
+  // bound on how long a deactivated/compromised super-admin keeps power.
+  // The refresh half (revocable, is_active re-checked) carries the session.
+  JWT_ADMIN_ACCESS_TTL: z.string().default("15m"),
   JWT_ADMIN_REFRESH_TTL: z.string().default("8h"),
   JWT_ADMIN_MFA_PENDING_TTL: z.string().default("5m"),
   JWT_TENANT_MFA_PENDING_TTL: z.string().default("5m"),

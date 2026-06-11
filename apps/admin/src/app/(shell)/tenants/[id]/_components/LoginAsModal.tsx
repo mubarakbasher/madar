@@ -37,14 +37,12 @@ export function LoginAsModal({
         user_id: targetUserId,
         reason: reason.trim(),
       });
-      // Open the tenant app in a new tab via the handoff page.
+      // Open the tenant app's handoff page with ONLY the single-use code —
+      // never the JWT (URLs land in history, proxies, and access logs). The
+      // handoff page shows a confirmation and exchanges the code via POST.
       const url =
         `${TENANT_ORIGIN}/en/impersonation-handoff` +
-        `?token=${encodeURIComponent(res.access_token)}` +
-        `&tenant_id=${encodeURIComponent(res.target_tenant.id)}` +
-        `&tenant_name=${encodeURIComponent(res.target_tenant.name)}` +
-        `&user_email=${encodeURIComponent(res.target_user.email)}` +
-        `&expires_at=${encodeURIComponent(res.expires_at)}`;
+        `?code=${encodeURIComponent(res.handoff_code)}`;
       window.open(url, "_blank", "noopener,noreferrer");
       onClose();
     } catch (err) {

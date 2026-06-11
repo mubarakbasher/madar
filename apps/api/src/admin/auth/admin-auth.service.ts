@@ -96,7 +96,7 @@ export class AdminAuthService {
       });
     }
 
-    const minted = this.tokens.mintMfaPending({ platformUserId: user.id, email: user.email });
+    const minted = await this.tokens.mintMfaPending({ platformUserId: user.id, email: user.email });
 
     await this.audit
       .write(
@@ -113,11 +113,13 @@ export class AdminAuthService {
 
   // ─── step 2: MFA verify ───────────────────────────────────────────
   async verifyMfa(
-    platformUserId: string,
+    challenger: { platformUserId: string; jti: string },
     input: MfaVerifyInput,
     ctx: { ip: string; userAgent: string },
   ): Promise<AdminAuthResult> {
-    const user = await adminPrisma.platformUser.findUnique({ where: { id: platformUserId } });
+    const user = await adminPrisma.platformUser.findUnique({
+      where: { id: challenger.platformUserId },
+    });
     if (!user || !user.mfa_secret || !user.mfa_enabled) {
       throw new UnauthorizedException({
         code: "mfa_pending_invalid",
@@ -127,6 +129,9 @@ export class AdminAuthService {
 
     const ok = this.mfa.verify(input.code, user.mfa_secret);
     if (!ok) {
+      // Wrong codes burn down the challenge — after 5 the jti is voided and
+      // a captured pending token can't be brute-forced for its full TTL.
+      await this.tokens.recordMfaPendingFailure(challenger.jti);
       await this.audit
         .write(
           { platformUserId: user.id, ip: ctx.ip, userAgent: ctx.userAgent },
@@ -138,6 +143,9 @@ export class AdminAuthService {
         message: "Verification code is incorrect",
       });
     }
+
+    // Single-use: a successful verification consumes the challenge.
+    await this.tokens.consumeMfaPending(challenger.jti);
 
     const mfaVerifiedAt = Math.floor(Date.now() / 1000);
     const pair = await this.tokens.mintAccessPair({
@@ -197,7 +205,9 @@ export class AdminAuthService {
       platformUserId: user.id,
       email: user.email,
       role: user.role,
-      mfaVerifiedAt: Math.floor(Date.now() / 1000),
+      // Preserve the original MFA verification time (older tokens minted
+      // before the claim existed fall back to "now" once, then carry it).
+      mfaVerifiedAt: claims.mfa_verified_at ?? Math.floor(Date.now() / 1000),
     });
 
     await this.audit

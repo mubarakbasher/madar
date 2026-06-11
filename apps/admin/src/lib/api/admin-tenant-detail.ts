@@ -67,7 +67,9 @@ export function adminGetTenant(id: string): Promise<TenantDetail> {
 }
 
 export interface ImpersonationStartResponse {
-  access_token: string;
+  // Single-use code the tenant app exchanges for the JWT — the token itself
+  // never travels in a URL.
+  handoff_code: string;
   expires_at: string;
   expires_in: number;
   jti: string;
