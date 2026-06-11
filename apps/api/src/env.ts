@@ -72,3 +72,18 @@ export function loadEnv(): Env {
 export function resetEnvCache(): void {
   cached = null;
 }
+
+/**
+ * Hard production-safety invariants that a single forgotten env var must not
+ * silently violate. Called from bootstrap; throwing here aborts startup.
+ */
+export function assertProductionSafety(env: Env): void {
+  if (env.NODE_ENV !== "production") return;
+  if (env.VIRUS_SCANNER !== "clamav") {
+    throw new Error(
+      "Refusing to start: NODE_ENV=production requires VIRUS_SCANNER=clamav. " +
+        "The noop scanner accepts every upload unscanned — set VIRUS_SCANNER=clamav " +
+        "(and CLAMAV_HOST/CLAMAV_PORT) or explicitly run a non-production NODE_ENV.",
+    );
+  }
+}

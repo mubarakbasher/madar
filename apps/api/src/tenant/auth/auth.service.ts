@@ -9,6 +9,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import argon2 from "argon2";
+import { burnPasswordVerification } from "../../common/timing-safe-auth";
 import { createHash, randomBytes } from "node:crypto";
 // Pre-auth flows (signup, login lookup, password reset, email verification,
 // MFA enrollment) run before a tenant JWT exists, so platform-table reads
@@ -265,6 +266,7 @@ export class AuthService {
     });
 
     if (candidates.length === 0) {
+      await burnPasswordVerification(input.password);
       throw new UnauthorizedException({
         code: "invalid_credentials",
         message: "Email or password is incorrect",

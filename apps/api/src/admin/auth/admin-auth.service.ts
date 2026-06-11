@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import argon2 from "argon2";
+import { burnPasswordVerification } from "../../common/timing-safe-auth";
 import { adminPrisma } from "@madar/db";
 import { AdminAuditService } from "./admin-audit.service";
 import { AdminMfaService } from "./admin-mfa.service";
@@ -53,6 +54,7 @@ export class AdminAuthService {
 
     if (!user) {
       // No audit (no platform_user_id to attribute to).
+      await burnPasswordVerification(input.password);
       throw new UnauthorizedException({
         code: "invalid_credentials",
         message: "Email or password is incorrect",
