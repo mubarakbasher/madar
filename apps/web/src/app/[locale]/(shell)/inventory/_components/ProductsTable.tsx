@@ -70,7 +70,7 @@ export function ProductsTable({
                 type="checkbox"
                 checked={allSelected}
                 onChange={toggleAll}
-                aria-label="Select all"
+                aria-label={t("cols.selectAll")}
               />
             </th>
             <th className="inv-th">

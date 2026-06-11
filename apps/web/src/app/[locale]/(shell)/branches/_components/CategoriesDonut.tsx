@@ -8,6 +8,7 @@ export function CategoriesDonut({
   data,
   locale,
   size = 180,
+  label,
   labelMissing,
 }: {
   data: Array<{
@@ -18,6 +19,7 @@ export function CategoriesDonut({
   }>;
   locale: "en" | "ar";
   size?: number;
+  label: string;
   labelMissing: string;
 }) {
   const total = data.reduce((sum, d) => sum + d.cents, 0);
@@ -43,7 +45,7 @@ export function CategoriesDonut({
 
   return (
     <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-label="Top categories donut">
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-label={label}>
         <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--rule)" strokeWidth={stroke} />
         {slices.map(({ d, i, startAngle, endAngle }) => {
           const large = endAngle - startAngle > Math.PI ? 1 : 0;

@@ -9,6 +9,7 @@
  * response into a `rows: string[][]` table.
  */
 import { Injectable } from "@nestjs/common";
+import { currencyMinorUnits } from "../../../../common/currency";
 import { PnlService } from "../../pnl/pnl.service";
 import { TaxReportService } from "../../tax/tax.service";
 import { TrendsService } from "../../trends/trends.service";
@@ -39,7 +40,8 @@ function isoDaysAgo(days: number): string {
 function fmtCentsAsMajor(cents: string | number | bigint, currency: string): string {
   const n = typeof cents === "string" ? Number(cents) : Number(cents);
   if (!Number.isFinite(n)) return "—";
-  return `${currency} ${(n / 100).toFixed(2)}`;
+  const digits = currencyMinorUnits(currency);
+  return `${currency} ${(n / 10 ** digits).toFixed(digits)}`;
 }
 
 // ─── PNL ────────────────────────────────────────────────────────────

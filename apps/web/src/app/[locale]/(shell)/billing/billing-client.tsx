@@ -14,6 +14,7 @@ import {
   type ApiSubscription,
   type ApiSubscriptionInvoice,
 } from "@/lib/api/billing";
+import { currencyMinorUnits, minorToMajor } from "@/lib/currency";
 
 type Tab = "plan" | "invoices" | "history";
 
@@ -27,13 +28,15 @@ const INVOICE_TONE: Record<string, { color: string; bg: string; label: string }>
 };
 
 function formatCents(cents: string, currency: string): string {
-  const major = Number(BigInt(cents)) / 100;
+  const code = currency || "USD";
+  // Compact billing display: no forced trailing zeros, but allow the
+  // currency's real precision instead of truncating to whole units.
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: currency || "USD",
+    currency: code,
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(major);
+    maximumFractionDigits: currencyMinorUnits(code),
+  }).format(minorToMajor(cents, code));
 }
 
 function shortDate(iso: string | null): string {

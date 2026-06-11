@@ -12,6 +12,7 @@ import {
 } from "@/lib/api/reports/movers";
 import { branchScopeParam, useBranchScopeStore } from "@/lib/branch-scope/store";
 import { useAuthStore } from "@/lib/auth/store";
+import { currencyMinorUnits } from "@/lib/currency";
 import { Sparkline } from "../../_dashboard/Sparkline";
 
 /**
@@ -227,7 +228,7 @@ function isoDate(d: Date): string {
 }
 
 function formatCurrency(cents: bigint, currency: string, locale: "en" | "ar"): string {
-  const minor = MINOR_UNITS[currency] ?? 2;
+  const minor = currencyMinorUnits(currency);
   const divisor = 10n ** BigInt(minor);
   const whole = Number(cents / divisor);
   const remainder = Number(cents % divisor) / Number(divisor);
@@ -254,16 +255,3 @@ function formatPct(v: number, locale: "en" | "ar"): string {
     return `${v}%`;
   }
 }
-
-/** ISO 4217 minor-unit exceptions (everything not listed = 2). */
-const MINOR_UNITS: Record<string, number> = {
-  JPY: 0,
-  KRW: 0,
-  KWD: 3,
-  BHD: 3,
-  OMR: 3,
-  IQD: 3,
-  TND: 3,
-  JOD: 3,
-  LYD: 3,
-};

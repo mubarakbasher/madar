@@ -9,7 +9,7 @@ import {
   Wallet,
   type LucideIcon,
 } from "lucide-react";
-import { formatNumber } from "@/lib/currency";
+import { formatNumber, minorToMajor } from "@/lib/currency";
 import type {
   ApiOwnerDashboardRecentTx,
 } from "@/lib/api/dashboard";
@@ -130,7 +130,8 @@ export function RecentTxCard({
           const methodLabel = KNOWN_METHODS.has(tx.payment_method)
             ? tMethod(tx.payment_method as "cash")
             : tx.payment_method;
-          const total = Math.round(Number(tx.total_cents) / 100);
+          // Intentionally rounded to whole major units — compact dashboard row.
+          const total = Math.round(minorToMajor(tx.total_cents, currency_code));
           return (
             <div key={tx.id} className="dash-tx-row">
               <Icon

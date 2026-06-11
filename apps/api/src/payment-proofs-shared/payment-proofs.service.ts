@@ -18,6 +18,7 @@ import { AuditService } from "../tenant/auth/audit.service";
 import { AdminAuditService } from "../admin/auth/admin-audit.service";
 import { EmailService } from "../common/email/email.service";
 import { RedisService } from "../common/redis.service";
+import { formatMoney } from "../common/currency";
 import { getTenantStatus, invalidateTenantStatus } from "../tenant/auth/tenant-status.cache";
 import { getTenantPrimaryRecipient } from "../common/email/recipient.helper";
 import { adminPrisma as platformPrisma } from "@madar/db";
@@ -433,14 +434,12 @@ export class PaymentProofsService {
       }),
     ]);
     if (!recipient || !invoice || !tenant) return;
-    const major = Number(invoice.amount_cents) / 100;
     const locale = tenant.default_locale === "ar" ? "ar" : "en";
-    const amountFormatted = new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-      style: "currency",
-      currency: invoice.currency_code,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(major);
+    const amountFormatted = formatMoney(
+      invoice.amount_cents,
+      invoice.currency_code,
+      locale === "ar" ? "ar-EG" : "en-US",
+    );
     await this.email.send({
       template: "payment_received",
       to: recipient.email,
@@ -468,13 +467,11 @@ export class PaymentProofsService {
     ]);
     if (!recipient || !tenant) return;
     const locale = tenant.default_locale === "ar" ? "ar" : "en";
-    const major = Number(proof.amount_cents) / 100;
-    const amountFormatted = new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-      style: "currency",
-      currency: proof.currency_code,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(major);
+    const amountFormatted = formatMoney(
+      proof.amount_cents,
+      proof.currency_code,
+      locale === "ar" ? "ar-EG" : "en-US",
+    );
     await this.email.send({
       template: "payment_received",
       to: recipient.email,
@@ -502,13 +499,11 @@ export class PaymentProofsService {
     ]);
     if (!recipient || !tenant) return;
     const locale = tenant.default_locale === "ar" ? "ar" : "en";
-    const major = Number(proof.amount_cents) / 100;
-    const amountFormatted = new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-      style: "currency",
-      currency: proof.currency_code,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(major);
+    const amountFormatted = formatMoney(
+      proof.amount_cents,
+      proof.currency_code,
+      locale === "ar" ? "ar-EG" : "en-US",
+    );
     const env = loadEnv();
     await this.email.send({
       template: "payment_proof_rejected",
@@ -537,13 +532,11 @@ export class PaymentProofsService {
     ]);
     if (!recipient || !tenant) return;
     const locale = tenant.default_locale === "ar" ? "ar" : "en";
-    const major = Number(proof.amount_cents) / 100;
-    const amountFormatted = new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-      style: "currency",
-      currency: proof.currency_code,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(major);
+    const amountFormatted = formatMoney(
+      proof.amount_cents,
+      proof.currency_code,
+      locale === "ar" ? "ar-EG" : "en-US",
+    );
     const env = loadEnv();
     await this.email.send({
       template: "payment_proof_info_requested",

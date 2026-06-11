@@ -14,6 +14,7 @@ import {
   SplitSquareHorizontal,
 } from "lucide-react";
 import { ApiError } from "@/lib/api/client";
+import { majorToMinor, minorToMajor } from "@/lib/currency";
 import { CardPaymentBody } from "./CardPaymentBody";
 import { StoreCreditBody } from "./StoreCreditBody";
 import { SplitTenderBody, type SplitPaymentSlice } from "./SplitTenderBody";
@@ -55,7 +56,7 @@ export interface PaymentSheetCustomer {
  * Each non-cash body owns its own submit button; cash uses the bottom row.
  */
 export function PaymentSheet({
-  total,
+  total_cents,
   tax,
   taxInclusive,
   currency,
@@ -63,7 +64,9 @@ export function PaymentSheet({
   onClose,
   onSubmit,
 }: {
-  total: number;
+  /** Integer minor units — the cart's authoritative total. */
+  total_cents: number;
+  /** Major units, display only. */
   tax?: number;
   taxInclusive?: boolean;
   currency: string;
@@ -71,6 +74,8 @@ export function PaymentSheet({
   onClose: () => void;
   onSubmit: (payment: PaymentSubmit) => Promise<void>;
 }) {
+  // Major-unit mirror for the cash denomination chips + display.
+  const total = minorToMajor(total_cents, currency);
   const t = useTranslations("pos.payment");
   const tMethods = useTranslations("pos.payment.methods");
   const tStoreCredit = useTranslations("pos.payment.storeCredit");
@@ -98,7 +103,7 @@ export function PaymentSheet({
   const canConfirm = useBottomRow && cashOk && transferOk && !submitting;
 
   const storeCreditMinor = customer?.store_credit_balance_cents ?? null;
-  const totalMinor = Math.round(total * 100);
+  const totalMinor = total_cents;
   const storeCreditOk =
     customer != null && storeCreditMinor != null && storeCreditMinor >= totalMinor;
   const storeCreditDisabled = !storeCreditOk;
@@ -152,7 +157,7 @@ export function PaymentSheet({
     if (method === "cash") {
       await dispatchSubmit({
         method: "cash",
-        cash_tendered_cents: Math.round(cashTendered * 100),
+        cash_tendered_cents: majorToMinor(cashTendered, currency),
       });
     } else if (method === "tx") {
       if (!receiptFile) {
@@ -345,7 +350,7 @@ export function PaymentSheet({
                   total={total}
                   currency={currency}
                   balance={
-                    storeCreditMinor != null ? storeCreditMinor / 100 : null
+                    storeCreditMinor != null ? minorToMajor(storeCreditMinor, currency) : null
                   }
                   customerName={customer?.name ?? null}
                   submitting={submitting}

@@ -7,7 +7,7 @@ import { MapPin, ChevronDown, Globe } from "lucide-react";
 import { branchesListRequest } from "@/lib/api/branches";
 import { useAuthStore } from "@/lib/auth/store";
 import { useBranchScopeStore } from "@/lib/branch-scope/store";
-import { formatNumberShort } from "@/lib/currency";
+import { formatNumberShort, minorToMajor } from "@/lib/currency";
 
 export function BranchSwitcher({ locale }: { locale: string }) {
   const t = useTranslations("shell.topbar");
@@ -99,7 +99,9 @@ export function BranchSwitcher({ locale }: { locale: string }) {
                 >
                   <MapPin size={14} strokeWidth={1.5} />
                   <span style={{ flex: 1 }}>{pickName(b.name_i18n, locale)}</span>
-                  <span className="bs-amount">{formatNumberShort(cents / 100, locale)}</span>
+                  <span className="bs-amount">
+                    {formatNumberShort(minorToMajor(cents, b.currency_code), locale)}
+                  </span>
                 </button>
               );
             })}

@@ -22,6 +22,7 @@ export function MfaEnrollWizard({
 }) {
   const t = useTranslations("auth.mfa.enroll");
   const tCh = useTranslations("auth.mfa.challenge");
+  const tCommon = useTranslations("common");
   const [step, setStep] = useState<Step>("scan");
   const [start, setStart] = useState<MfaEnrollStartResponse | null>(null);
   const [startError, setStartError] = useState<string | null>(null);
@@ -106,7 +107,7 @@ export function MfaEnrollWizard({
         <button
           type="button"
           onClick={() => onClose(step === "codes" && confirmedSaved)}
-          aria-label="Close"
+          aria-label={tCommon("close")}
           style={{ border: "none", background: "transparent", cursor: "pointer", color: "var(--ink-2)" }}
         >
           <X size={16} />

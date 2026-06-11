@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { KPICard } from "./KPICard";
-import { formatNumber } from "@/lib/currency";
+import { formatNumber, minorToMajor } from "@/lib/currency";
 import type {
   ApiOwnerDashboardPrevWeek,
   ApiOwnerDashboardSparklines,
@@ -19,11 +19,11 @@ interface KpiRowProps {
   locale: string;
 }
 
-// Cents → display units. Money is `bigint` cents on the server, serialized as
-// a numeric string; coerce here for the formatter (assumes < 2^53 cents).
-function centsToUnits(cents: string | number): number {
-  const n = typeof cents === "string" ? Number(cents) : cents;
-  return Math.round(n / 100);
+// Cents → whole display units (intentionally compact for KPI cards). Money is
+// `bigint` cents on the server, serialized as a numeric string; coerce here
+// for the formatter (assumes < 2^53 cents).
+function centsToUnits(cents: string | number, currency: string): number {
+  return Math.round(minorToMajor(cents, currency));
 }
 
 function symbolFor(currency: string, locale: string): string {
@@ -53,15 +53,15 @@ export function KpiRow({
   const t = useTranslations("dashboard.kpi");
   const cur = symbolFor(currency_code, locale);
 
-  const revenueSpark = sparklines.revenue_cents.map(centsToUnits);
-  const grossSpark = sparklines.gross_profit_cents.map(centsToUnits);
+  const revenueSpark = sparklines.revenue_cents.map((c) => centsToUnits(c, currency_code));
+  const grossSpark = sparklines.gross_profit_cents.map((c) => centsToUnits(c, currency_code));
   const txSpark = sparklines.transactions;
 
   return (
     <section className="dash-kpi-row">
       <KPICard
         label={t("revenueLabel")}
-        value={formatNumber(centsToUnits(week.revenue_cents), locale)}
+        value={formatNumber(centsToUnits(week.revenue_cents, currency_code), locale)}
         unit={cur}
         delta={vs_prev_week.revenue_pct}
         deltaLabel={t("vsLastWeek")}
@@ -69,7 +69,7 @@ export function KpiRow({
       />
       <KPICard
         label={t("grossProfitLabel")}
-        value={formatNumber(centsToUnits(week.gross_profit_cents), locale)}
+        value={formatNumber(centsToUnits(week.gross_profit_cents, currency_code), locale)}
         unit={cur}
         delta={vs_prev_week.gross_profit_pct}
         deltaLabel={t("vsLastWeek")}

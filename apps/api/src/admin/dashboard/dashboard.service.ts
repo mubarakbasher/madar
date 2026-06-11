@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { adminPrisma } from "@madar/db";
+import { formatMoney } from "../../common/currency";
 
 export interface KpiResponse {
   monthly_recurring: { amount_cents: string; currency_code: string; delta_pct_30d: number | null };
@@ -250,13 +251,13 @@ export class DashboardService {
     for (const p of pendingProofs) {
       const name = tenantMap.get(p.tenant_id);
       if (!name) continue;
-      const major = Number(p.amount_cents) / 100;
+      const amount = formatMoney(p.amount_cents, p.currency_code, "en-US");
       items.push({
         kind: "verification_pending",
         occurred_at: p.created_at.toISOString(),
         tenant_id: p.tenant_id,
         tenant_name: name,
-        text: `${name} submitted ${major.toFixed(2)} ${p.currency_code} for verification (${p.context})`,
+        text: `${name} submitted ${amount} for verification (${p.context})`,
       });
     }
 

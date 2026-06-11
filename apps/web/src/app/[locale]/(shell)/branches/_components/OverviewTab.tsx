@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import type { ApiBranchDetail } from "@/lib/api/branches";
-import { formatCurrency, formatNumber } from "@/lib/currency";
+import { formatCurrency, formatNumber, minorToMajor } from "@/lib/currency";
 
 function relTime(iso: string, locale: string): string {
   const diffMs = Date.now() - new Date(iso).getTime();
@@ -37,13 +37,13 @@ export function OverviewTab({
         <div className="br-kpi">
           <div className="br-kpi-label">{t("todayRevenue")}</div>
           <div className="br-kpi-value">
-            {formatCurrency(Number(branch.today_revenue_cents) / 100, branch.currency_code, locale)}
+            {formatCurrency(minorToMajor(branch.today_revenue_cents, branch.currency_code), branch.currency_code, locale)}
           </div>
         </div>
         <div className="br-kpi">
           <div className="br-kpi-label">{t("weekRevenue")}</div>
           <div className="br-kpi-value">
-            {formatCurrency(Number(branch.kpis.week_revenue_cents) / 100, branch.currency_code, locale)}
+            {formatCurrency(minorToMajor(branch.kpis.week_revenue_cents, branch.currency_code), branch.currency_code, locale)}
           </div>
         </div>
         <div className="br-kpi">

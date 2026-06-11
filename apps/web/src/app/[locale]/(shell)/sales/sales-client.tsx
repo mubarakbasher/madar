@@ -14,6 +14,7 @@ import {
   useBranchScopeStore,
   branchScopeParam,
 } from "@/lib/branch-scope/store";
+import { currencyMinorUnits, formatMoney, minorToMajor } from "@/lib/currency";
 
 type Status = "all" | "paid" | "payment_pending" | "disputed" | "refunded";
 type Method =
@@ -26,12 +27,9 @@ type Method =
 
 function fmtMoney(cents: string, currency: string, locale: "en" | "ar"): string {
   try {
-    return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-      style: "currency",
-      currency,
-    }).format(Number(cents) / 100);
+    return formatMoney(cents, currency, locale);
   } catch {
-    return `${currency} ${(Number(cents) / 100).toFixed(2)}`;
+    return `${currency} ${minorToMajor(cents, currency).toFixed(currencyMinorUnits(currency))}`;
   }
 }
 
@@ -253,7 +251,7 @@ export function SalesListClient({ locale }: { locale: "en" | "ar" }) {
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 aria-label={t("pagination.prev")}
               >
-                <ChevronLeft size={14} strokeWidth={1.5} />
+                <ChevronLeft size={14} strokeWidth={1.5} className="rtl:rotate-180" />
                 {t("pagination.prev")}
               </button>
               <span>
@@ -267,7 +265,7 @@ export function SalesListClient({ locale }: { locale: "en" | "ar" }) {
                 aria-label={t("pagination.next")}
               >
                 {t("pagination.next")}
-                <ChevronRight size={14} strokeWidth={1.5} />
+                <ChevronRight size={14} strokeWidth={1.5} className="rtl:rotate-180" />
               </button>
             </div>
           </div>

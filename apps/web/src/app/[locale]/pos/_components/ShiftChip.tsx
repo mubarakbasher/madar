@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Clock, LogOut } from "lucide-react";
+import { formatMoney } from "@/lib/currency";
 
 function fmtDuration(iso: string, locale: "en" | "ar"): string {
   const elapsed = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
@@ -9,15 +10,6 @@ function fmtDuration(iso: string, locale: "en" | "ar"): string {
   const m = Math.floor((elapsed % 3600) / 60);
   if (h > 0) return `${h}h ${m}m`;
   return locale === "ar" ? `${m} د` : `${m}m`;
-}
-
-function fmtCurrencyMinor(amountMinor: string, currency: string, locale: "en" | "ar"): string {
-  const major = Number(amountMinor) / 100;
-  return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 2,
-  }).format(major);
 }
 
 export function ShiftChip({
@@ -51,7 +43,7 @@ export function ShiftChip({
       <Clock size={12} strokeWidth={1.75} />
       <span>
         {t("openFor", { duration: fmtDuration(openedAt, locale) })} ·{" "}
-        {t("float", { amount: fmtCurrencyMinor(openingFloatCents, currency, locale) })}
+        {t("float", { amount: formatMoney(openingFloatCents, currency, locale) })}
       </span>
       <button
         type="button"

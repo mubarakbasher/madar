@@ -102,8 +102,15 @@ export class PnlService {
     const refunds = toBig(t?.refunds_cents);
     const transactions = toNumber(t?.transactions);
 
-    const grossProfit = revenue - discount - tax - cogs;
-    const netRevenue = grossProfit - refunds;
+    // total_cents is ALREADY net of discount (sales.service computes
+    // total = subtotal − discount [+ tax]) — subtracting discount again here
+    // was audit finding H-4 (gross profit understated by every discount).
+    // discount_cents stays in the response as an informational line.
+    const grossProfit = revenue - tax - cogs;
+    // Refunds are subtracted exactly once, from revenue (M-13): refunded
+    // sales remain IN revenue and partial refunds are captured via
+    // refunded_amount_cents.
+    const netRevenue = revenue - refunds;
     const grossProfitPct =
       revenue > 0n
         ? Math.round((Number(grossProfit) / Number(revenue)) * 10000) / 100
@@ -150,7 +157,7 @@ export class PnlService {
     const sql = `
       WITH matching_sales AS (
         SELECT DISTINCT s.id, s.total_cents, s.discount_cents, s.tax_cents,
-                        s.payment_status, s.currency_code
+                        s.refunded_amount_cents, s.payment_status, s.currency_code
         FROM sales s
         ${categoryFragment.join}
         WHERE s.tenant_id = $1::uuid
@@ -161,19 +168,24 @@ export class PnlService {
           ${categoryFragment.where}
       ),
       sale_totals AS (
+        -- Revenue is GROSS of refunds: refunded sales were collected, then
+        -- returned — they stay in revenue and the refund shows in
+        -- refunds_cents (SUM of refunded_amount_cents, which also captures
+        -- PARTIAL refunds on sales that are still 'paid'). Net revenue =
+        -- revenue − refunds downstream.
         SELECT
-          COALESCE(SUM(total_cents)    FILTER (WHERE payment_status IN ('paid','payment_pending') AND currency_code = $2), 0)::bigint AS revenue_cents,
-          COALESCE(SUM(discount_cents) FILTER (WHERE payment_status IN ('paid','payment_pending') AND currency_code = $2), 0)::bigint AS discount_cents,
-          COALESCE(SUM(tax_cents)      FILTER (WHERE payment_status IN ('paid','payment_pending') AND currency_code = $2), 0)::bigint AS tax_cents,
-          COALESCE(SUM(total_cents)    FILTER (WHERE payment_status = 'refunded' AND currency_code = $2), 0)::bigint AS refunds_cents,
-          COUNT(DISTINCT id) FILTER (WHERE payment_status IN ('paid','payment_pending') AND currency_code = $2)::bigint AS transactions
+          COALESCE(SUM(total_cents)            FILTER (WHERE payment_status IN ('paid','payment_pending','refunded') AND currency_code = $2), 0)::bigint AS revenue_cents,
+          COALESCE(SUM(discount_cents)         FILTER (WHERE payment_status IN ('paid','payment_pending','refunded') AND currency_code = $2), 0)::bigint AS discount_cents,
+          COALESCE(SUM(tax_cents)              FILTER (WHERE payment_status IN ('paid','payment_pending','refunded') AND currency_code = $2), 0)::bigint AS tax_cents,
+          COALESCE(SUM(refunded_amount_cents)  FILTER (WHERE currency_code = $2), 0)::bigint AS refunds_cents,
+          COUNT(DISTINCT id) FILTER (WHERE payment_status IN ('paid','payment_pending','refunded') AND currency_code = $2)::bigint AS transactions
         FROM matching_sales
       ),
       line_totals AS (
         SELECT COALESCE(SUM(COALESCE(sl.cogs_snapshot_cents, 0)), 0)::bigint AS cogs_cents
         FROM matching_sales ms
         INNER JOIN sale_lines sl ON sl.sale_id = ms.id AND sl.deleted_at IS NULL
-        WHERE ms.payment_status IN ('paid','payment_pending')
+        WHERE ms.payment_status IN ('paid','payment_pending','refunded')
           AND ms.currency_code = $2
       )
       SELECT sale_totals.revenue_cents,
@@ -210,7 +222,7 @@ export class PnlService {
       WHERE s.tenant_id = $1::uuid
         AND s.deleted_at IS NULL
         AND sl.deleted_at IS NULL
-        AND s.payment_status IN ('paid','payment_pending')
+        AND s.payment_status IN ('paid','payment_pending','refunded')
         AND s.currency_code = $2
         AND s.occurred_at >= $3::timestamptz
         AND s.occurred_at <  ($4::timestamptz + interval '1 day')

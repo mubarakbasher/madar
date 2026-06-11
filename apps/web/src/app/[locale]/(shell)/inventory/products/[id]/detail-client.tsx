@@ -17,17 +17,21 @@ import {
   type ApiProductDetail,
 } from "@/lib/api/catalog";
 import { useAuthStore } from "@/lib/auth/store";
+import { currencyMinorUnits, minorToMajor } from "@/lib/currency";
+import { swatchFromId } from "@/lib/swatch";
 
 type Tab = "overview" | "stock" | "activity";
 
 function formatMajor(cents: string | bigint, currency: string): string {
-  const n = typeof cents === "bigint" ? Number(cents) : Number(BigInt(cents));
+  const code = currency || "USD";
+  // Compact intent: no forced trailing zeros, but keep the currency's real
+  // precision (KWD=3, JPY=0) instead of truncating to whole units.
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: currency || "USD",
+    currency: code,
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n / 100);
+    maximumFractionDigits: currencyMinorUnits(code),
+  }).format(minorToMajor(cents, code));
 }
 
 function relativeTime(iso: string | null): string {
@@ -253,22 +257,10 @@ export function ProductDetailClient({ id, locale }: { id: string; locale: "en" |
 }
 
 function ImageHeader({ imageUrl, color }: { imageUrl: string | null; color: string }) {
-  // Match the gradient palette used by the inventory list's swatch.
-  const PALETTE = [
-    "#3D2817",
-    "#6B3F1D",
-    "#A8693B",
-    "#C96442",
-    "#5F4830",
-    "#8B6B45",
-    "#3F5A47",
-    "#7A4A3F",
-  ];
-  let hash = 0;
-  for (let i = 0; i < color.length; i++) {
-    hash = (hash * 31 + color.charCodeAt(i)) | 0;
-  }
-  const swatch = PALETTE[Math.abs(hash) % PALETTE.length]!;
+  // `color` is already the swatch token the inventory list picked for this
+  // record (a `var(--swatch-N)` reference) — use it directly so the detail
+  // header genuinely matches the list tile.
+  const swatch = color || swatchFromId("fallback");
   return (
     <div
       style={{
@@ -279,7 +271,7 @@ function ImageHeader({ imageUrl, color }: { imageUrl: string | null; color: stri
         flexShrink: 0,
         background: imageUrl
           ? "transparent"
-          : `linear-gradient(135deg, ${swatch}, color-mix(in oklab, ${swatch} 55%, #1A1714))`,
+          : `linear-gradient(135deg, ${swatch}, color-mix(in oklab, ${swatch} 55%, var(--swatch-mix-base)))`,
         display: "grid",
         placeItems: "center",
       }}

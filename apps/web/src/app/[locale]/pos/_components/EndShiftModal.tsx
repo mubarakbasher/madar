@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "@/lib/api/client";
+import { majorToMinor } from "@/lib/currency";
 import { shiftCloseRequest, type ApiShiftDetail } from "@/lib/api/shifts";
 
 export function EndShiftModal({
@@ -53,7 +54,7 @@ export function EndShiftModal({
       setError(tErr("invalidCash"));
       return;
     }
-    m.mutate(Math.round(major * 100));
+    m.mutate(majorToMinor(major, currency));
   }
 
   return (

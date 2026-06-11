@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { ArrowDown, ArrowUp, TrendingUp } from "lucide-react";
 import { TrendLineChart } from "@/components/charts/TrendLineChart";
 import { useAuthStore } from "@/lib/auth/store";
+import { currencyMinorUnits, minorToMajor } from "@/lib/currency";
 import { branchesListRequest } from "@/lib/api/branches";
 import {
   trendsRequest,
@@ -23,12 +24,15 @@ function formatValue(metric: TrendsMetric, currency: string, locale: "en" | "ar"
   if (metric === "transactions") {
     return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US").format(v);
   }
+  // Compact KPI intent: no forced trailing zeros, but allow the currency's
+  // real precision (KWD=3, JPY=0) instead of truncating to whole units.
+  const code = currency || "USD";
   return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
     style: "currency",
-    currency: currency || "USD",
+    currency: code,
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(v / 100);
+    maximumFractionDigits: currencyMinorUnits(code),
+  }).format(minorToMajor(v, code));
 }
 
 function shortDate(iso: string, locale: "en" | "ar"): string {

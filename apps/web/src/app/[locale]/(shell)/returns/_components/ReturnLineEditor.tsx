@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Trash2 } from "lucide-react";
 import type { ApiProduct } from "@/lib/api/catalog";
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency, minorToMajor } from "@/lib/currency";
 
 export interface DraftRMALine {
   /** Stable key so React doesn't lose focus when reordering. */
@@ -203,7 +203,7 @@ export function ReturnLineEditor({
       />
 
       <div className="rma-line-total">
-        {formatCurrency(lineTotal / 100, currencyCode, locale)}
+        {formatCurrency(minorToMajor(lineTotal, currencyCode), currencyCode, locale)}
       </div>
 
       <div className="rma-reason-input">

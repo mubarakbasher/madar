@@ -10,6 +10,7 @@ import {
   type ReconcileTotals,
 } from "@/lib/api/reconcile";
 import { useAuthStore } from "@/lib/auth/store";
+import { currencyMinorUnits, formatMoney, minorToMajor } from "@/lib/currency";
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
@@ -17,12 +18,9 @@ function todayIso(): string {
 
 function fmtMoney(cents: string, currency: string, locale: "en" | "ar"): string {
   try {
-    return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-      style: "currency",
-      currency: currency || "USD",
-    }).format(Number(cents) / 100);
+    return formatMoney(cents, currency || "USD", locale);
   } catch {
-    return `${currency} ${(Number(cents) / 100).toFixed(2)}`;
+    return `${currency} ${minorToMajor(cents, currency).toFixed(currencyMinorUnits(currency))}`;
   }
 }
 

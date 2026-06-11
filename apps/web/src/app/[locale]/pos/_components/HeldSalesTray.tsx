@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { ArrowRight, X } from "lucide-react";
 import type { ApiHeldSaleSummary } from "@/lib/api/held-sales";
+import { minorToMajor } from "@/lib/currency";
 
 export type HeldTicket = ApiHeldSaleSummary;
 
@@ -20,6 +21,7 @@ export function HeldSalesTray({
   onDelete: (t: HeldTicket) => void;
 }) {
   const t = useTranslations("pos.held");
+  const tCommon = useTranslations("common");
 
   return (
     <div className="pos-modal-bg" onClick={onClose}>
@@ -29,7 +31,7 @@ export function HeldSalesTray({
             <span className="kicker">{t("kicker")}</span>
             <h3 className="serif">{t("title", { count: held.length })}</h3>
           </div>
-          <button type="button" className="pos-icon-btn" onClick={onClose} aria-label="Close">
+          <button type="button" className="pos-icon-btn" onClick={onClose} aria-label={tCommon("close")}>
             <X size={14} strokeWidth={1.5} />
           </button>
         </header>
@@ -40,7 +42,8 @@ export function HeldSalesTray({
             </div>
           ) : (
             held.map((h) => {
-              const totalDisplay = Math.round(Number(h.total_cents) / 100);
+              // Intentionally rounded to whole major units — compact tray display.
+              const totalDisplay = Math.round(minorToMajor(h.total_cents, currency));
               const who = h.customer_name ?? h.cashier_name ?? t("walkInCustomer");
               return (
                 <div key={h.id} className="pos-held-row">

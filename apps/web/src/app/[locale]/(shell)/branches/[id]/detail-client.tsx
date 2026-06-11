@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { Pencil, TrendingUp } from "lucide-react";
 import { branchGetRequest, type ApiBranchDetail } from "@/lib/api/branches";
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency, minorToMajor } from "@/lib/currency";
 import { OverviewTab } from "../_components/OverviewTab";
 import { StaffTab } from "../_components/StaffTab";
 import { StockTab } from "../_components/StockTab";
@@ -65,7 +65,7 @@ export function BranchDetailClient({ locale, id }: { locale: "en" | "ar"; id: st
             <span>·</span>
             <span>
               {formatCurrency(
-                Number(branch.today_revenue_cents) / 100,
+                minorToMajor(branch.today_revenue_cents, branch.currency_code),
                 branch.currency_code,
                 locale,
               )}{" "}

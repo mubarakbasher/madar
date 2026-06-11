@@ -33,6 +33,7 @@ type StockFilter = "all" | "low";
  * `Product[]` + `Category[]` come from.
  */
 export function InventoryClient({ locale }: { locale: "en" | "ar" }) {
+  const tenantCurrency = useAuthStore((s) => s.tenant?.default_currency_code ?? "EGP");
   const selectedBranchId = useBranchScopeStore((s) => s.selectedBranchId);
   const hydrated = useBranchScopeStore((s) => s.hydrated);
   const hydrate = useBranchScopeStore((s) => s.hydrate);
@@ -64,7 +65,7 @@ export function InventoryClient({ locale }: { locale: "en" | "ar" }) {
     );
   }
 
-  const products = productsQ.data.items.map((p) => adaptProduct(p, locale));
+  const products = productsQ.data.items.map((p) => adaptProduct(p, locale, tenantCurrency));
   const categories = categoriesQ.data.items.map((c) => adaptCategory(c, locale));
 
   if (products.length === 0) return <InventoryEmpty />;
@@ -208,6 +209,7 @@ function InventoryView({
             name: p.name,
             priceMajor: p.price,
           }))}
+          currencyCode={tenant?.default_currency_code ?? "EGP"}
           onClose={() => setOpenModal(null)}
           onDone={() => {
             setOpenModal(null);

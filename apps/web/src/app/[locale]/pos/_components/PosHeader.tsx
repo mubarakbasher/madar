@@ -64,7 +64,7 @@ export function PosHeader({
           aria-label={t("exit")}
           title={t("exit")}
         >
-          <ArrowLeft size={14} strokeWidth={1.5} />
+          <ArrowLeft size={14} strokeWidth={1.5} className="rtl:rotate-180" />
           <span className="pos-exit-label">{t("exit")}</span>
         </Link>
         <div className="pos-shift-dot" aria-label={t("shiftOpen")} />

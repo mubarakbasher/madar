@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { ArrowUp, ArrowDown } from "lucide-react";
-import { formatNumberShort } from "@/lib/currency";
+import { formatNumberShort, minorToMajor } from "@/lib/currency";
 import type { ApiOwnerDashboardLeaderboardRow } from "@/lib/api/dashboard";
 
 interface BranchStripProps {
@@ -37,7 +37,7 @@ export function BranchStrip({
   // once for the bar-fill math, keep it as a number for compact formatting.
   const rows = leaderboard.map((row) => ({
     ...row,
-    revenue_units: Math.round(Number(row.revenue_cents) / 100),
+    revenue_units: Math.round(minorToMajor(row.revenue_cents, currency_code)),
   }));
   const max = rows.length > 0 ? Math.max(...rows.map((r) => r.revenue_units)) : 0;
 

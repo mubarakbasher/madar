@@ -15,6 +15,7 @@ import {
   type ProofStatus,
 } from "@/lib/api/payment-proofs";
 import { useAuthStore } from "@/lib/auth/store";
+import { formatMoney as formatMoneyShared, minorToMajor } from "@/lib/currency";
 import { MatchIndicators } from "./_components/MatchIndicators";
 import { ProofActionBar } from "./_components/ProofActionBar";
 import { ReceiptViewer } from "./_components/ReceiptViewer";
@@ -36,15 +37,10 @@ function daysClass(d: number): string {
 }
 
 function formatMoney(cents: string, currency: string, locale: string): string {
-  const major = Number(BigInt(cents)) / 100;
   try {
-    return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-      style: "currency",
-      currency: currency || "EGP",
-      maximumFractionDigits: 2,
-    }).format(major);
+    return formatMoneyShared(cents, currency || "EGP", locale);
   } catch {
-    return `${major.toFixed(2)} ${currency}`;
+    return `${minorToMajor(cents, currency || "EGP")} ${currency}`;
   }
 }
 

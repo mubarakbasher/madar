@@ -5,6 +5,7 @@ import { withAdminTx } from "../../shared/db-tx";
 import { AdminAuditService, type AdminAuditCtx } from "../auth/admin-audit.service";
 import { RedisService } from "../../common/redis.service";
 import { EmailService } from "../../common/email/email.service";
+import { formatMoney } from "../../common/currency";
 import { getTenantPrimaryRecipient } from "../../common/email/recipient.helper";
 import { loadEnv } from "../../env";
 import { invalidateTenantStatus } from "../../tenant/auth/tenant-status.cache";
@@ -262,11 +263,11 @@ export class BillingTrackerService {
   ): Promise<void> {
     const recipient = await getTenantPrimaryRecipient(tenantId);
     if (!recipient) return;
-    const amountFormatted = new Intl.NumberFormat(recipient.locale === "ar" ? "ar-EG" : "en-US", {
-      style: "currency",
-      currency: plan.currency_code || "USD",
-      maximumFractionDigits: 2,
-    }).format(Number(plan.monthly_price_cents) / 100);
+    const amountFormatted = formatMoney(
+      plan.monthly_price_cents,
+      plan.currency_code || "USD",
+      recipient.locale === "ar" ? "ar-EG" : "en-US",
+    );
     const tenantOrigin = loadEnv().TENANT_WEB_ORIGIN || "http://localhost:3000";
     await this.email.send({
       template: "invoice_issued",

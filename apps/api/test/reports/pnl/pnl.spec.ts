@@ -127,13 +127,14 @@ describe("GET /v1/reports/pnl", () => {
     expect(res.body.gross_profit_cents).toBe("9200");
     expect(res.body.gross_profit_pct).toBeCloseTo(65.71, 1);
     expect(res.body.refunds_cents).toBe("0");
-    expect(res.body.net_revenue_cents).toBe("9200");
+    // Net revenue = revenue − refunds (NOT gross profit − refunds).
+    expect(res.body.net_revenue_cents).toBe("14000");
     expect(res.body.transactions).toBe(2);
     expect(res.body.mixed_currency_warning).toBe(false);
     expect(Array.isArray(res.body.breakdown)).toBe(true);
   });
 
-  it("refund excluded from revenue; surfaces in refunds_cents", async () => {
+  it("refunds: revenue stays GROSS, refunds_cents sums refunded_amount_cents (full + partial), net = revenue − refunds", async () => {
     const t = await makeTenantWithCatalog({ slugPrefix: "pnl-refund" });
     const owner = await tokens.mintPair({
       userId: t.userId,
@@ -151,6 +152,11 @@ describe("GET /v1/reports/pnl", () => {
       cogsCents: p.cost_cents * 2n,
       occurredAt: new Date(),
     });
+    // Partially refunded sale: status stays 'paid' but 1500 went back.
+    await adminPrisma.sale.update({
+      where: { id: paid.id },
+      data: { refunded_amount_cents: 1500n },
+    });
     const refunded = await seedSale({
       tenantId: t.tenantId,
       branchId: t.branchId,
@@ -163,7 +169,7 @@ describe("GET /v1/reports/pnl", () => {
     });
     await adminPrisma.sale.update({
       where: { id: refunded.id },
-      data: { payment_status: "refunded" },
+      data: { payment_status: "refunded", refunded_amount_cents: 7000n },
     });
 
     const res = await request(booted.http)
@@ -171,11 +177,47 @@ describe("GET /v1/reports/pnl", () => {
       .query({ currency: "USD", from: todayIso(-1), to: todayIso() })
       .set("Authorization", `Bearer ${owner.access_token}`);
     expect(res.status).toBe(200);
-    expect(res.body.revenue_cents).toBe("7000"); // only the `paid` row
-    expect(res.body.refunds_cents).toBe("7000"); // the refunded row's total
-    expect(res.body.transactions).toBe(1);
-    // Sanity — the paid sale id still exists
-    expect(paid.id).toBeTruthy();
+    // Both sales collected money — both are revenue; the money returned shows
+    // once, in refunds. The old model both excluded refunded sales from
+    // revenue AND subtracted them again (M-13) and missed partial refunds.
+    expect(res.body.revenue_cents).toBe("14000");
+    expect(res.body.refunds_cents).toBe("8500"); // 7000 full + 1500 partial
+    expect(res.body.net_revenue_cents).toBe("5500");
+    expect(res.body.transactions).toBe(2);
+  });
+
+  it("H-4 regression: discounts are not subtracted twice from gross profit", async () => {
+    const t = await makeTenantWithCatalog({ slugPrefix: "pnl-disc" });
+    const owner = await tokens.mintPair({
+      userId: t.userId,
+      tenantId: t.tenantId,
+      role: "owner",
+    });
+    const p = t.products[0]!; // 3500 / 1200
+    // qty 2 @3500 with a 500 discount → customer paid 6500; COGS 2400.
+    await seedSale({
+      tenantId: t.tenantId,
+      branchId: t.branchId,
+      cashierId: t.userId,
+      productId: p.id,
+      qty: 2,
+      unitPriceCents: p.price_cents,
+      cogsCents: p.cost_cents * 2n,
+      discountCents: 500n,
+      occurredAt: new Date(),
+    });
+
+    const res = await request(booted.http)
+      .get("/v1/reports/pnl")
+      .query({ currency: "USD", from: todayIso(-1), to: todayIso() })
+      .set("Authorization", `Bearer ${owner.access_token}`);
+    expect(res.status).toBe(200);
+    expect(res.body.revenue_cents).toBe("6500"); // already net of discount
+    expect(res.body.discount_cents).toBe("500"); // informational line
+    // gross profit = 6500 − 0 tax − 2400 cogs = 4100. The pre-fix formula
+    // produced 3600 (discount subtracted from an already-discounted total).
+    expect(res.body.gross_profit_cents).toBe("4100");
+    expect(res.body.net_revenue_cents).toBe("6500");
   });
 
   it("branch filter narrows to a single branch", async () => {

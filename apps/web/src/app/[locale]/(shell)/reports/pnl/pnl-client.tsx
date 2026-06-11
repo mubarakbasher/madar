@@ -13,6 +13,14 @@ import {
   type ApiPnlReport,
   type PnlQueryOpts,
 } from "@/lib/api/reports/pnl";
+import { formatMoney as formatMoneyShared, minorToMajor } from "@/lib/currency";
+import {
+  localDaysAgo,
+  localIsoDate,
+  localStartOfMonth,
+  localStartOfWeek,
+  localStartOfYear,
+} from "@/lib/local-date";
 import "./pnl.css";
 
 const READER_ROLES = new Set(["owner", "manager", "accountant", "auditor"]);
@@ -24,45 +32,29 @@ interface DateRange {
   to: string;
 }
 
-function isoDate(d: Date): string {
-  return d.toISOString().slice(0, 10);
-}
-
 function rangeForPreset(preset: Preset): DateRange {
   const today = new Date();
-  const to = isoDate(today);
+  const to = localIsoDate(today);
   if (preset === "thisWeek") {
-    const d = new Date(today);
-    const isoDow = (d.getUTCDay() + 6) % 7; // Mon=0
-    d.setUTCDate(d.getUTCDate() - isoDow);
-    return { from: isoDate(d), to };
+    return { from: localIsoDate(localStartOfWeek(today)), to };
   }
   if (preset === "thisMonth") {
-    const d = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1));
-    return { from: isoDate(d), to };
+    return { from: localIsoDate(localStartOfMonth(today)), to };
   }
   if (preset === "last30") {
-    const d = new Date(today);
-    d.setUTCDate(d.getUTCDate() - 29);
-    return { from: isoDate(d), to };
+    return { from: localIsoDate(localDaysAgo(today, 29)), to };
   }
   if (preset === "thisYear") {
-    const d = new Date(Date.UTC(today.getUTCFullYear(), 0, 1));
-    return { from: isoDate(d), to };
+    return { from: localIsoDate(localStartOfYear(today)), to };
   }
   return { from: to, to };
 }
 
 function formatMoney(cents: string, currency: string, locale: string): string {
-  const n = Number(cents) / 100;
   try {
-    return new Intl.NumberFormat(locale, {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 2,
-    }).format(n);
+    return formatMoneyShared(cents, currency, locale);
   } catch {
-    return `${n.toFixed(2)} ${currency}`;
+    return `${minorToMajor(cents, currency)} ${currency}`;
   }
 }
 

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import { productUpdateRequest } from "@/lib/api/catalog";
 import { ApiError } from "@/lib/api/client";
+import { currencyMinorUnits, majorToMinor } from "@/lib/currency";
 
 interface SelectedRow {
   id: string;
@@ -23,10 +24,12 @@ type Mode = "set" | "pct";
  */
 export function BulkEditPriceModal({
   rows,
+  currencyCode,
   onClose,
   onDone,
 }: {
   rows: SelectedRow[];
+  currencyCode: string;
   onClose: () => void;
   onDone: () => void;
 }) {
@@ -36,13 +39,16 @@ export function BulkEditPriceModal({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
+  const fractionDigits = currencyMinorUnits(currencyCode);
 
   function previewPriceMajor(currentMajor: number): number | null {
     const n = Number(value);
     if (!Number.isFinite(n) || n < 0) return null;
     if (mode === "set") return n;
-    // pct: +X% (positive grows, negative shrinks). Round to 2 dp.
-    return Math.max(0, Math.round(currentMajor * (1 + n / 100) * 100) / 100);
+    // pct: +X% (positive grows, negative shrinks). Round to the currency's
+    // real precision (KWD=3 dp, JPY=0 dp).
+    const f = 10 ** fractionDigits;
+    return Math.max(0, Math.round(currentMajor * (1 + n / 100) * f) / f);
   }
 
   async function submit(): Promise<void> {
@@ -70,7 +76,7 @@ export function BulkEditPriceModal({
         if (nextMajor === null) {
           failed += 1;
         } else {
-          const cents = Math.round(nextMajor * 100);
+          const cents = majorToMinor(nextMajor, currencyCode);
           await productUpdateRequest(row.id, { price_cents: cents });
         }
       } catch (err) {
@@ -180,8 +186,8 @@ export function BulkEditPriceModal({
             <p style={{ marginBlockStart: 10, fontSize: 12, color: "var(--ink-3)" }}>
               {t("preview", {
                 name: sample.name,
-                from: sample.priceMajor.toFixed(2),
-                to: sampleNext.toFixed(2),
+                from: sample.priceMajor.toFixed(fractionDigits),
+                to: sampleNext.toFixed(fractionDigits),
               })}
             </p>
           )}

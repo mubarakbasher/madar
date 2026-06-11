@@ -12,7 +12,7 @@ import {
 import { suppliersListRequest } from "@/lib/api/suppliers";
 import { branchesListRequest } from "@/lib/api/branches";
 import { useAuthStore } from "@/lib/auth/store";
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency, minorToMajor } from "@/lib/currency";
 import { ReturnStatusPill } from "./_components/ReturnStatusPill";
 import "./returns.css";
 
@@ -166,13 +166,13 @@ export function ReturnsClient({ locale }: { locale: "en" | "ar" }) {
         <div className="rma-hero-cell">
           <div className="rma-hero-label">{t("hero.refundPending")}</div>
           <div className="rma-hero-value">
-            {formatCurrency(hero.refundPending / 100, tenantCurrency, locale)}
+            {formatCurrency(minorToMajor(hero.refundPending, tenantCurrency), tenantCurrency, locale)}
           </div>
         </div>
         <div className="rma-hero-cell">
           <div className="rma-hero-label">{t("hero.thisMonthRefunded")}</div>
           <div className="rma-hero-value">
-            {formatCurrency(hero.thisMonthRefunded / 100, tenantCurrency, locale)}
+            {formatCurrency(minorToMajor(hero.thisMonthRefunded, tenantCurrency), tenantCurrency, locale)}
           </div>
         </div>
       </div>
@@ -303,7 +303,7 @@ export function ReturnsClient({ locale }: { locale: "en" | "ar" }) {
                   </td>
                   <td className="rma-table-num">
                     {formatCurrency(
-                      Number(r.total_cents) / 100,
+                      minorToMajor(r.total_cents, r.currency_code),
                       r.currency_code,
                       locale,
                     )}

@@ -5,14 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 import { Printer } from "lucide-react";
 import { Link } from "../../../../../../i18n/routing";
 import { shiftGetRequest } from "@/lib/api/shifts";
+import { formatMoney } from "@/lib/currency";
 
 function fmtMoney(amountMinor: string | null, currency: string, locale: "en" | "ar"): string {
   if (amountMinor == null) return "—";
-  const major = Number(amountMinor) / 100;
-  return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-    style: "currency",
-    currency,
-  }).format(major);
+  return formatMoney(amountMinor, currency, locale);
 }
 
 function fmtDate(iso: string | null, locale: "en" | "ar"): string {

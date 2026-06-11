@@ -2,19 +2,15 @@
 import { Check, X, Minus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ProofItem } from "@/lib/api/payment-proofs";
+import { formatMoney as formatMoneyShared, minorToMajor } from "@/lib/currency";
 
 type Tone = "ok" | "bad" | "neutral";
 
 function formatMoney(cents: string, currency: string): string {
-  const major = Number(BigInt(cents)) / 100;
   try {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: currency || "USD",
-      maximumFractionDigits: 2,
-    }).format(major);
+    return formatMoneyShared(cents, currency || "USD");
   } catch {
-    return `${major.toFixed(2)} ${currency}`;
+    return `${minorToMajor(cents, currency || "USD")} ${currency}`;
   }
 }
 

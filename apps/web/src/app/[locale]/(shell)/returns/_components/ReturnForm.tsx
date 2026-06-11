@@ -20,7 +20,7 @@ import {
   type UpdateReturnBody,
 } from "@/lib/api/supplier-returns";
 import { useAuthStore } from "@/lib/auth/store";
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency, minorToMajor } from "@/lib/currency";
 import { ReturnLineEditor, type DraftRMALine } from "./ReturnLineEditor";
 
 interface InitialDraft {
@@ -376,7 +376,7 @@ export function ReturnForm({ locale, mode, editingId, initial }: ReturnFormProps
         <div className="rma-subtotal-box">
           <span className="rma-subtotal-label">{t("subtotal")}</span>
           <span className="rma-subtotal-value">
-            {formatCurrency(subtotalCents / 100, currency, locale)}
+            {formatCurrency(minorToMajor(subtotalCents, currency), currency, locale)}
           </span>
         </div>
       </section>

@@ -13,6 +13,7 @@ import {
   type ApiCustomerDetail,
   type ApiCustomerSale,
 } from "@/lib/api/customers";
+import { formatMoney } from "@/lib/currency";
 
 type Tab = "overview" | "credit" | "sales";
 
@@ -22,11 +23,7 @@ function fmtMoney(
   locale: "en" | "ar",
 ): string {
   if (!amountMinor || !currency) return "—";
-  const major = Number(amountMinor) / 100;
-  return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-    style: "currency",
-    currency,
-  }).format(major);
+  return formatMoney(amountMinor, currency, locale);
 }
 
 function fmtDate(iso: string, locale: "en" | "ar"): string {

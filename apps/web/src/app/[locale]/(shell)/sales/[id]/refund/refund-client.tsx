@@ -20,6 +20,11 @@ import {
   approversListRequest,
   type ApproverSummary,
 } from "@/lib/api/users";
+import {
+  currencyMinorUnits,
+  formatMoney as formatMoneyIntl,
+  minorToMajor,
+} from "@/lib/currency";
 
 type Step = "lines" | "method" | "review";
 type Method = "cash" | "card" | "bank_transfer" | "store_credit";
@@ -32,12 +37,9 @@ interface PickedLine {
 
 function formatMoney(cents: bigint, currency: string, locale: "en" | "ar"): string {
   try {
-    return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-      style: "currency",
-      currency: currency || "USD",
-    }).format(Number(cents) / 100);
+    return formatMoneyIntl(cents, currency || "USD", locale);
   } catch {
-    return `${currency} ${(Number(cents) / 100).toFixed(2)}`;
+    return `${currency} ${minorToMajor(cents, currency).toFixed(currencyMinorUnits(currency))}`;
   }
 }
 
@@ -508,7 +510,7 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
               onClick={() => setStep(step === "review" ? "method" : "lines")}
               disabled={createMut.isPending}
             >
-              <ArrowLeft size={14} strokeWidth={1.5} />
+              <ArrowLeft size={14} strokeWidth={1.5} className="rtl:rotate-180" />
               {t("actions.back")}
             </button>
           )}
@@ -520,7 +522,7 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
               onClick={() => setStep("method")}
             >
               {t("actions.next")}
-              <ChevronRight size={14} strokeWidth={1.5} />
+              <ChevronRight size={14} strokeWidth={1.5} className="rtl:rotate-180" />
             </button>
           )}
           {step === "method" && (
@@ -531,7 +533,7 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
               onClick={() => setStep("review")}
             >
               {t("actions.next")}
-              <ChevronRight size={14} strokeWidth={1.5} />
+              <ChevronRight size={14} strokeWidth={1.5} className="rtl:rotate-180" />
             </button>
           )}
           {step === "review" && (
@@ -596,7 +598,7 @@ function Stepper({
             <span className="rf-step-num">{idx + 1}</span>
             {t(`steps.${s}`)}
             {idx < order.length - 1 && (
-              <ChevronRight size={12} strokeWidth={1.5} className="rf-step-arrow" />
+              <ChevronRight size={12} strokeWidth={1.5} className="rf-step-arrow rtl:rotate-180" />
             )}
           </span>
         );

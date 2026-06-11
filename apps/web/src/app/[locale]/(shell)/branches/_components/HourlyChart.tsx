@@ -9,10 +9,12 @@ import { useId } from "react";
  */
 export function HourlyChart({
   data,
+  label,
   height = 180,
   width = 720,
 }: {
   data: Array<{ hour: number; cents: number }>;
+  label: string;
   height?: number;
   width?: number;
 }) {
@@ -29,7 +31,7 @@ export function HourlyChart({
       width="100%"
       height={height}
       role="img"
-      aria-label="Hourly revenue chart"
+      aria-label={label}
       style={{ display: "block" }}
     >
       <defs>

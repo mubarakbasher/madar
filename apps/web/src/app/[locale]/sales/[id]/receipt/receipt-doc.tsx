@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Printer, Undo2, Banknote } from "lucide-react";
 import { receiptDataRequest, type ReceiptResponse } from "@/lib/api/sales";
 import { tenantLogoPublicUrl } from "@/lib/api/business";
+import { formatMoney } from "@/lib/currency";
 import { useAuthStore } from "@/lib/auth/store";
 import {
   findPairedPrinter,
@@ -19,14 +20,9 @@ const REFUND_ROLES = new Set(["owner", "manager", "cashier", "accountant"]);
 type Size = "58mm" | "80mm" | "a4";
 const SIZES: Size[] = ["58mm", "80mm", "a4"];
 
+// Receipts always print Western digits ("en") regardless of UI locale.
 function centsMajor(cents: string | bigint, currency: string): string {
-  const n = typeof cents === "bigint" ? Number(cents) : Number(BigInt(cents));
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency || "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(n / 100);
+  return formatMoney(cents, currency || "USD", "en");
 }
 
 function fmtDate(iso: string, locale: "en" | "ar"): string {
