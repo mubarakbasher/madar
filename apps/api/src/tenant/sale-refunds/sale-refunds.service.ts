@@ -11,6 +11,8 @@ import {
 // FOR UPDATE the parent sale row. Mirrors the sales-service pattern.
 // eslint-disable-next-line no-restricted-imports
 import { basePrisma, tenantScoped } from "@madar/db";
+import argon2 from "argon2";
+import { burnPasswordVerification } from "../../common/timing-safe-auth";
 import { AuditService, type AuditCtx } from "../auth/audit.service";
 import type { CreateRefundBody } from "./dto/create-refund.dto";
 import type { ListRefundsQuery } from "./dto/list-refunds.dto";
@@ -22,6 +24,20 @@ const MANAGER_THRESHOLD_DEFAULT_CENTS = 50_00n; // $50 — override via env.
 
 function refundCode(): string {
   return REFUND_CODE_PREFIX + Math.random().toString(36).slice(2, 8).toUpperCase();
+}
+
+/**
+ * Cumulative proportional allocation: the money owed for refunding `qty` more
+ * units of a line whose `pool` cents cover `origQty` units, when `already`
+ * units were refunded before. floor(pool·(already+qty)/origQty) −
+ * floor(pool·already/origQty) — successive slices always sum to exactly
+ * `pool` once every unit is refunded.
+ */
+function allocateShare(pool: bigint, origQty: number, already: number, qty: number): bigint {
+  if (origQty <= 0) return 0n;
+  const oq = BigInt(origQty);
+  const upTo = (units: bigint) => (pool * units) / oq;
+  return upTo(BigInt(already + qty)) - upTo(BigInt(already));
 }
 
 export interface ApiSaleRefundLine {
@@ -220,6 +236,16 @@ export class SaleRefundsService {
               message: "This sale is already fully refunded.",
             });
           }
+          // Refunds only against money actually received. A payment_pending or
+          // disputed bank-transfer sale was never collected — cash must not
+          // leave the drawer for it; resolve the payment proof first.
+          if (sale.payment_status !== "paid") {
+            throw new UnprocessableEntityException({
+              code: "sale_not_paid",
+              message: "Only paid sales can be refunded.",
+              details: { payment_status: sale.payment_status },
+            });
+          }
 
           // Pull sale lines + any prior refund quantities so we can validate
           // the request and snapshot prices/tax.
@@ -235,6 +261,14 @@ export class SaleRefundsService {
             },
           });
           const lineById = new Map(lineLookup.map((l) => [l.id, l]));
+
+          // Was this sale priced tax-inclusive? Derive from the sale itself
+          // (not the tenant's *current* setting, which may have changed since):
+          // exclusive sales satisfy total = Σline_total + Σtax, inclusive ones
+          // total = Σline_total. With zero tax the two are identical.
+          const allLineTotal = lineLookup.reduce((s, l) => s + l.line_total_cents, 0n);
+          const allTax = lineLookup.reduce((s, l) => s + l.tax_cents, 0n);
+          const taxExclusive = allTax > 0n && sale.total_cents === allLineTotal + allTax;
 
           // How many of each sale_line have already been refunded.
           const priorAgg = await tx.saleRefundLine.groupBy({
@@ -281,26 +315,34 @@ export class SaleRefundsService {
                 details: { sale_line_id: orig.id, remaining },
               });
             }
-            // Snapshot per-unit price + tax from the ORIGINAL sale (not current
-            // catalog) so refunds happen at the price the customer paid.
-            const unitPrice = orig.unit_price_cents;
-            const perUnitTax = orig.qty > 0 ? orig.tax_cents / BigInt(orig.qty) : 0n;
-            const lineSubtotal = unitPrice * BigInt(inLine.qty);
-            const lineTax = perUnitTax * BigInt(inLine.qty);
-            const lineTotal = lineSubtotal + lineTax;
+            // Refund what the customer actually PAID for these units, from the
+            // ORIGINAL sale line: line_total_cents is already net of the line
+            // discount (and includes tax when the sale was tax-inclusive).
+            // Allocate cumulatively so a full refund across any sequence of
+            // partial refunds sums to exactly the line's paid amount — no
+            // remainder cents lost to per-unit floor division, no over-refund
+            // from using the gross unit price.
+            const lineSubtotal = allocateShare(
+              orig.line_total_cents,
+              orig.qty,
+              alreadyRefunded,
+              inLine.qty,
+            );
+            const lineTax = allocateShare(orig.tax_cents, orig.qty, alreadyRefunded, inLine.qty);
+            const lineTotal = taxExclusive ? lineSubtotal + lineTax : lineSubtotal;
             runningSubtotal += lineSubtotal;
             runningTax += lineTax;
             linesToCreate.push({
               sale_line_id: orig.id,
               qty: inLine.qty,
-              unit_price_snapshot_cents: unitPrice,
+              unit_price_snapshot_cents: orig.unit_price_cents,
               tax_snapshot_cents: lineTax,
               line_total_cents: lineTotal,
               restock: inLine.restock ?? true,
               product_id: orig.product_id,
             });
           }
-          const refundTotal = runningSubtotal + runningTax;
+          const refundTotal = taxExclusive ? runningSubtotal + runningTax : runningSubtotal;
 
           if (paymentTotal !== refundTotal) {
             throw new UnprocessableEntityException({
@@ -313,31 +355,55 @@ export class SaleRefundsService {
             });
           }
 
+          // Hard ceiling: cumulative refunds can never exceed what was paid.
+          // The per-line allocation already guarantees this for refunds made
+          // by this code path; the guard protects sales that carry inflated
+          // refund counters from the pre-fix gross-price math.
+          if (sale.refunded_amount_cents + refundTotal > sale.total_cents) {
+            throw new UnprocessableEntityException({
+              code: "refund_exceeds_sale_total",
+              message: "Refund would exceed the amount paid for this sale.",
+              details: {
+                sale_total_cents: sale.total_cents.toString(),
+                already_refunded_cents: sale.refunded_amount_cents.toString(),
+                refund_total_cents: refundTotal.toString(),
+              },
+            });
+          }
+
           // Manager-approval gate for cashier-initiated refunds above the
           // threshold. The approver must be an owner or manager of the tenant.
           const threshold = this.managerThreshold();
           const requiresManager = user.role === "cashier" && refundTotal > threshold;
           if (requiresManager) {
-            if (!body.approved_by_user_id) {
+            if (!body.approved_by_user_id || !body.approver_password) {
               throw new ForbiddenException({
                 code: "manager_approval_required",
-                message: "This refund needs a manager's approval.",
+                message: "This refund needs a manager's approval (id + password).",
                 details: { threshold_cents: threshold.toString() },
               });
             }
+            // Approval is a credential, not a UUID: the approver proves
+            // presence by entering their own password. A cashier who merely
+            // knows a manager's user id must not be able to self-approve.
             const approver = await tx.user.findUnique({
               where: { id: body.approved_by_user_id },
-              select: { role: true, deleted_at: true, is_active: true },
+              select: { role: true, deleted_at: true, is_active: true, password_hash: true },
             });
-            if (
-              !approver ||
-              approver.deleted_at ||
-              !approver.is_active ||
-              !(approver.role === "owner" || approver.role === "manager")
-            ) {
+            const eligible =
+              approver &&
+              !approver.deleted_at &&
+              approver.is_active &&
+              (approver.role === "owner" || approver.role === "manager");
+            const passwordOk = eligible
+              ? await argon2
+                  .verify(approver.password_hash, body.approver_password)
+                  .catch(() => false)
+              : (await burnPasswordVerification(body.approver_password), false);
+            if (!passwordOk) {
               throw new ForbiddenException({
                 code: "invalid_approver",
-                message: "Approver is not an active owner or manager.",
+                message: "Approver credentials are not valid.",
               });
             }
           }

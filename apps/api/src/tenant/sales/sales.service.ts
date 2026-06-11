@@ -81,7 +81,12 @@ export class SalesService {
 
     // Idempotency on client_uuid — return the existing sale if this UUID has been seen.
     const existing = await this.findByClientUuid(scoped, input.client_uuid);
-    if (existing) return existing;
+    if (existing) {
+      await this.recordDuplicateUuidConflict(scoped, ctx, input, existing.id).catch((e) =>
+        this.logger.warn(`duplicate_uuid conflict write failed: ${(e as Error).message}`),
+      );
+      return existing;
+    }
 
     // Verify branch exists in this tenant (RLS-scoped).
     const branch = await scoped.branch.findUnique({ where: { id: input.branch_id } });
@@ -534,9 +539,21 @@ export class SalesService {
         hasNegativeStock = created.negativeStock;
         break;
       } catch (err) {
-        // Prisma P2002 unique violation on (tenant_id, code) → retry with a new code.
         const code = (err as { code?: string } | undefined)?.code;
-        if (code === "P2002") continue;
+        if (code === "P2002") {
+          // Disambiguate WHICH unique constraint fired. A (tenant_id,
+          // client_uuid) collision means a concurrent duplicate of the SAME
+          // sale slipped past the pre-transaction check — honor the
+          // idempotency contract and return the winner instead of erroring.
+          const target = (err as { meta?: { target?: string[] | string } }).meta?.target;
+          const targets = Array.isArray(target) ? target.join(",") : String(target ?? "");
+          if (targets.includes("client_uuid")) {
+            const winner = await this.findByClientUuid(scoped, input.client_uuid);
+            if (winner) return winner;
+          }
+          // Otherwise: (tenant_id, code) collision → retry with a fresh code.
+          continue;
+        }
         throw err;
       }
     }
@@ -607,9 +624,32 @@ export class SalesService {
     return response;
   }
 
-  async getSale(tenantId: string, saleId: string): Promise<SaleResponse> {
+  async getSale(
+    tenantId: string,
+    saleId: string,
+    caller?: { userId: string; role: string },
+  ): Promise<SaleResponse> {
     const scoped = tenantScoped(tenantId);
-    return this.findOne(scoped, saleId);
+    const sale = await this.findOne(scoped, saleId);
+    this.assertCallerCanSeeSale(sale, caller);
+    return sale;
+  }
+
+  /**
+   * The list endpoint restricts cashiers to their own sales — the detail and
+   * receipt endpoints must apply the same scope or a cashier can read any
+   * sale in any branch by UUID (CLAUDE.md: role + branch scope for tenants).
+   */
+  private assertCallerCanSeeSale(
+    sale: { cashier_id: string },
+    caller?: { userId: string; role: string },
+  ): void {
+    if (caller && caller.role === "cashier" && sale.cashier_id !== caller.userId) {
+      throw new ForbiddenException({
+        code: "forbidden_role",
+        message: "Cashiers can only view their own sales",
+      });
+    }
   }
 
   async list(
@@ -720,9 +760,14 @@ export class SalesService {
     };
   }
 
-  async getSaleForReceipt(tenantId: string, saleId: string): Promise<ReceiptResponse> {
+  async getSaleForReceipt(
+    tenantId: string,
+    saleId: string,
+    caller?: { userId: string; role: string },
+  ): Promise<ReceiptResponse> {
     const scoped = tenantScoped(tenantId);
     const sale = await this.findOne(scoped, saleId);
+    this.assertCallerCanSeeSale(sale, caller);
 
     const [tenant, branch, cashier, bankAccount, customer] = await Promise.all([
       (await import("@madar/db")).adminPrisma.tenant.findUnique({
@@ -904,6 +949,35 @@ export class SalesService {
     const sale = await scoped.sale.findFirst({ where: { client_uuid: clientUuid } });
     if (!sale) return null;
     return this.findOne(scoped, sale.id);
+  }
+
+  /**
+   * An offline-completed sale arriving with an already-seen client_uuid is
+   * served idempotently — but it also means a device replayed its queue, and
+   * the manager review screen should see that. Only offline submissions get a
+   * conflict row; plain online retries are routine.
+   */
+  private async recordDuplicateUuidConflict(
+    scoped: ReturnType<typeof tenantScoped>,
+    ctx: SaleCtx,
+    input: CreateSaleInput,
+    existingSaleId: string,
+  ): Promise<void> {
+    if (!input.offline_completed) return;
+    await scoped.syncConflict.create({
+      data: {
+        tenant_id: ctx.tenantId,
+        conflict_kind: "duplicate_uuid",
+        reference_table: "sales",
+        reference_id: existingSaleId,
+        details: {
+          client_uuid: input.client_uuid,
+          client_sequence: input.client_sequence ?? null,
+          cashier_id: ctx.cashierId,
+        },
+        occurred_at: new Date(),
+      },
+    });
   }
 }
 

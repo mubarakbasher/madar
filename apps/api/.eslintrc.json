@@ -12,6 +12,19 @@
     "*.config.ts",
     "vitest.config.ts"
   ],
+  "rules": {
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "CallExpression[callee.property.name='$transaction'][callee.object.name=/^(scoped|adminPrisma)$/]",
+        "message": "The $extends-wrapped clients wrap every operation in its own implicit transaction — $transaction on them is NOT atomic (locks don't hold across statements). Use withTenantTx()/withAdminTx() from src/shared/db-tx instead."
+      },
+      {
+        "selector": "CallExpression[callee.property.name='$transaction'][callee.object.callee.name='tenantScoped']",
+        "message": "tenantScoped(...).$transaction is not atomic — use withTenantTx() from src/shared/db-tx."
+      }
+    ]
+  },
   "overrides": [
     {
       "files": ["src/tenant/**/*.ts"],

@@ -10,6 +10,7 @@ type Stage = "password" | "codes";
 
 export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void }) {
   const t = useTranslations("auth.mfa.regenerate");
+  const tCommon = useTranslations("common");
   const [stage, setStage] = useState<Stage>("password");
   const [password, setPassword] = useState("");
   const [codes, setCodes] = useState<string[]>([]);
@@ -94,7 +95,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
               cursor: "pointer",
               color: "var(--ink-2)",
             }}
-            aria-label="Close"
+            aria-label={tCommon("close")}
           >
             <X size={16} />
           </button>

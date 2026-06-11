@@ -58,20 +58,55 @@ describe("POST /v1/admin/tenants/:id/impersonate", () => {
     await booted.app.close();
   });
 
-  it("happy path (owner role): mints token + writes platform_audit_log impersonation_started", async () => {
+  /** Start impersonation and swap the one-time handoff code for the JWT. */
+  async function startAndExchange(reason: string): Promise<string> {
+    const startRes = await request(booted.http)
+      .post(`/v1/admin/tenants/${tenant.tenantId}/impersonate`)
+      .set("Authorization", `Bearer ${adminAccess}`)
+      .send({ user_id: tenant.userId, reason });
+    expect(startRes.status).toBe(201);
+    const ex = await request(booted.http)
+      .post("/v1/impersonation/exchange")
+      .send({ code: startRes.body.handoff_code });
+    expect(ex.status).toBe(200);
+    return ex.body.access_token as string;
+  }
+
+  it("happy path (owner role): returns a single-use handoff code (never the JWT) + double-logs impersonation_started", async () => {
     const res = await request(booted.http)
       .post(`/v1/admin/tenants/${tenant.tenantId}/impersonate`)
       .set("Authorization", `Bearer ${adminAccess}`)
       .send({ user_id: tenant.userId, reason: "Investigating reported sync issue" });
 
     expect(res.status).toBe(201);
-    expect(res.body.access_token).toEqual(expect.any(String));
+    expect(res.body.access_token).toBeUndefined();
+    expect(res.body.handoff_code).toMatch(/^[0-9a-f]{64}$/);
     expect(res.body.target_tenant.id).toBe(tenant.tenantId);
     expect(res.body.target_user.id).toBe(tenant.userId);
     expect(res.body.jti).toEqual(expect.any(String));
 
+    // Exchange works exactly once.
+    const ex1 = await request(booted.http)
+      .post("/v1/impersonation/exchange")
+      .send({ code: res.body.handoff_code });
+    expect(ex1.status).toBe(200);
+    expect(ex1.body.access_token).toEqual(expect.any(String));
+    expect(ex1.body.impersonator_email).toBe(admin.email);
+    const ex2 = await request(booted.http)
+      .post("/v1/impersonation/exchange")
+      .send({ code: res.body.handoff_code });
+    expect(ex2.status).toBe(401);
+    expect(ex2.body.code).toBe("handoff_code_invalid");
+
     const audit = await readPlatformAudit(admin.platformUserId, "impersonation_started");
     expect(audit.some((a) => a.target_tenant_id === tenant.tenantId)).toBe(true);
+
+    // CLAUDE.md double-logging: the tenant's own audit_log carries the start.
+    const tenantAudit = await adminPrisma.auditLog.findMany({
+      where: { tenant_id: tenant.tenantId, action: "impersonation_started" },
+    });
+    expect(tenantAudit.length).toBeGreaterThan(0);
+    expect(tenantAudit[0]!.impersonator_id).toBe(admin.platformUserId);
   });
 
   it("support role can also start impersonation", async () => {
@@ -119,12 +154,7 @@ describe("POST /v1/admin/tenants/:id/impersonate", () => {
   });
 
   it("minted impersonation token validates against TenantAuthGuard with impersonator claim", async () => {
-    const startRes = await request(booted.http)
-      .post(`/v1/admin/tenants/${tenant.tenantId}/impersonate`)
-      .set("Authorization", `Bearer ${adminAccess}`)
-      .send({ user_id: tenant.userId, reason: "validate token shape" });
-    expect(startRes.status).toBe(201);
-    const imperToken: string = startRes.body.access_token;
+    const imperToken = await startAndExchange("validate token shape");
 
     const me = await request(booted.http)
       .get("/v1/impersonation/me")
@@ -138,11 +168,7 @@ describe("POST /v1/admin/tenants/:id/impersonate", () => {
   });
 
   it("destructive op (product delete) under impersonation is blocked 403", async () => {
-    const startRes = await request(booted.http)
-      .post(`/v1/admin/tenants/${tenant.tenantId}/impersonate`)
-      .set("Authorization", `Bearer ${adminAccess}`)
-      .send({ user_id: tenant.userId, reason: "test destructive block" });
-    const imperToken: string = startRes.body.access_token;
+    const imperToken = await startAndExchange("test destructive block");
 
     const del = await request(booted.http)
       .delete(`/v1/products/${tenant.products[0]!.id}`)
@@ -152,11 +178,7 @@ describe("POST /v1/admin/tenants/:id/impersonate", () => {
   });
 
   it("non-destructive sale under impersonation is allowed and audit_log carries impersonator_id", async () => {
-    const startRes = await request(booted.http)
-      .post(`/v1/admin/tenants/${tenant.tenantId}/impersonate`)
-      .set("Authorization", `Bearer ${adminAccess}`)
-      .send({ user_id: tenant.userId, reason: "test double-log" });
-    const imperToken: string = startRes.body.access_token;
+    const imperToken = await startAndExchange("test double-log");
 
     const productForSale = tenant.products[1]!;
     const sale = await request(booted.http)
@@ -183,11 +205,7 @@ describe("POST /v1/admin/tenants/:id/impersonate", () => {
   });
 
   it("exit revokes the jti — subsequent requests with the token return 401 impersonation_revoked", async () => {
-    const startRes = await request(booted.http)
-      .post(`/v1/admin/tenants/${tenant.tenantId}/impersonate`)
-      .set("Authorization", `Bearer ${adminAccess}`)
-      .send({ user_id: tenant.userId, reason: "test exit" });
-    const imperToken: string = startRes.body.access_token;
+    const imperToken = await startAndExchange("test exit");
 
     const exit = await request(booted.http)
       .post("/v1/impersonation/exit")

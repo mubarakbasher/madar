@@ -13,6 +13,11 @@ import {
   rejectPaymentProof,
 } from "@/lib/api/payment-proofs";
 import { useAuthStore } from "@/lib/auth/store";
+import {
+  currencyMinorUnits,
+  formatMoney as formatMoneyIntl,
+  minorToMajor,
+} from "@/lib/currency";
 import { MatchIndicators } from "../_components/MatchIndicators";
 import { ProofActionBar } from "../_components/ProofActionBar";
 import { ReceiptViewer } from "../_components/ReceiptViewer";
@@ -22,15 +27,11 @@ import "../verification.css";
 const VERIFIER_ROLES = new Set(["owner", "manager"]);
 
 function formatMoney(cents: string, currency: string, locale: string): string {
-  const major = Number(BigInt(cents)) / 100;
+  const code = currency || "EGP";
   try {
-    return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-      style: "currency",
-      currency: currency || "EGP",
-      maximumFractionDigits: 2,
-    }).format(major);
+    return formatMoneyIntl(cents, code, locale);
   } catch {
-    return `${major.toFixed(2)} ${currency}`;
+    return `${minorToMajor(cents, code).toFixed(currencyMinorUnits(code))} ${currency}`;
   }
 }
 
@@ -126,7 +127,7 @@ export function ProofDetailClient({ proofId }: { proofId: string }) {
             className="vq-kicker"
             style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}
           >
-            <ArrowLeft size={12} strokeWidth={2} />
+            <ArrowLeft size={12} strokeWidth={2} className="rtl:rotate-180" />
             {t("title")}
           </Link>
           <h1 className="vq-title" style={{ marginTop: 6 }}>

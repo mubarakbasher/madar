@@ -127,6 +127,45 @@ describe("POST /v1/admin/auth/mfa/verify", () => {
     expect(res.status).toBe(400);
   });
 
+  it("mfa_pending token is single-use: replay after a successful verify returns 401", async () => {
+    const a = await makePlatformUser({ emailPrefix: "mfa-replay" });
+    const mfaPending = await startLogin(booted, a.email, a.password);
+
+    const first = await request(booted.http)
+      .post("/v1/admin/auth/mfa/verify")
+      .set("Authorization", `Bearer ${mfaPending}`)
+      .send({ code: currentTotp(a.mfaSecret) });
+    expect(first.status).toBe(200);
+
+    // A captured pending token must be worthless after the real login.
+    const replay = await request(booted.http)
+      .post("/v1/admin/auth/mfa/verify")
+      .set("Authorization", `Bearer ${mfaPending}`)
+      .send({ code: currentTotp(a.mfaSecret) });
+    expect(replay.status).toBe(401);
+    expect(replay.body).toMatchObject({ code: "mfa_pending_invalid" });
+  });
+
+  it("five wrong codes void the challenge — the right code no longer works", async () => {
+    const a = await makePlatformUser({ emailPrefix: "mfa-burn" });
+    const mfaPending = await startLogin(booted, a.email, a.password);
+
+    for (let i = 0; i < 5; i++) {
+      const res = await request(booted.http)
+        .post("/v1/admin/auth/mfa/verify")
+        .set("Authorization", `Bearer ${mfaPending}`)
+        .send({ code: "000000" });
+      expect(res.status).toBe(401);
+    }
+
+    const afterBurn = await request(booted.http)
+      .post("/v1/admin/auth/mfa/verify")
+      .set("Authorization", `Bearer ${mfaPending}`)
+      .send({ code: currentTotp(a.mfaSecret) });
+    expect(afterBurn.status).toBe(401);
+    expect(afterBurn.body).toMatchObject({ code: "mfa_pending_invalid" });
+  });
+
   it("admin-realm access token (typ:access) rejected on mfa/verify (must be typ:mfa_pending)", async () => {
     const a = await makePlatformUser({ emailPrefix: "mfa-typmix" });
     const tokens = booted.app.get(AdminTokenService);

@@ -8,6 +8,7 @@ import { ApiError } from "@/lib/api/client";
 
 export function DisableMfaModal({ onClose }: { onClose: (disabled: boolean) => void }) {
   const t = useTranslations("auth.mfa.disable");
+  const tCommon = useTranslations("common");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -77,7 +78,7 @@ export function DisableMfaModal({ onClose }: { onClose: (disabled: boolean) => v
             type="button"
             onClick={() => onClose(false)}
             style={{ border: "none", background: "transparent", cursor: "pointer", color: "var(--ink-2)" }}
-            aria-label="Close"
+            aria-label={tCommon("close")}
           >
             <X size={16} />
           </button>

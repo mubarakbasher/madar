@@ -6,6 +6,7 @@ import {
   UnprocessableEntityException,
 } from "@nestjs/common";
 import { tenantScoped } from "@madar/db";
+import { withTenantTx } from "../../shared/db-tx";
 import { AuditService, type AuditCtx } from "../auth/audit.service";
 import type { ListHeldSalesQuery } from "./dto/list.dto";
 import type { HeldSaleLineBody, PutHeldSaleBody } from "./dto/put.dto";
@@ -181,7 +182,7 @@ export class HeldSalesService {
       });
     }
 
-    const created = await scoped.$transaction(async (tx) => {
+    const created = await withTenantTx(tenantId, async (tx) => {
       const held = await tx.heldSale.create({
         data: {
           tenant_id: tenantId,

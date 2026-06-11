@@ -24,6 +24,7 @@ import { Idempotent, IdempotencyInterceptor } from "../../common/idempotency.int
 import { RateLimit, RateLimitGuard } from "../../common/rate-limit.guard";
 import { getClientIp, getUserAgent } from "../../common/request-context";
 import { CurrentUser, type TenantPrincipal } from "../auth/current-user.decorator";
+import { assertNotImpersonating } from "../auth/impersonation.helper";
 import { PaymentProofsService } from "../../payment-proofs-shared/payment-proofs.service";
 import {
   SubmitProofSchema,
@@ -219,6 +220,10 @@ export class PaymentProofsController {
     @UploadedFile() file: Express.Multer.File | undefined,
     @Req() req: Request,
   ) {
+    // Resubmission cancels the original proof — a chain-of-custody mutation.
+    // Impersonating admins are blocked, and non-verifier roles may only
+    // resubmit their own proof (enforced in the service via created_by).
+    assertNotImpersonating(user, "resubmit_payment_proof");
     if (!file) {
       throw new BadRequestException({
         code: "receipt_required",
@@ -243,6 +248,7 @@ export class PaymentProofsController {
         userAgent: getUserAgent(req),
         ...(user.impersonatorId ? { impersonatorId: user.impersonatorId } : {}),
       },
+      VERIFIER_ROLES.has(user.role) ? undefined : { restrictToSubmitter: user.userId },
     );
   }
 

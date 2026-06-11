@@ -38,6 +38,7 @@ export function ScheduledReportModal({
   onSubmit,
 }: ScheduledReportModalProps) {
   const t = useTranslations("reports.scheduled");
+  const tCommon = useTranslations("common");
 
   const [name, setName] = useState<string>(initial?.name ?? "");
   const [kind, setKind] = useState<ScheduledReportKind>(initial?.report_kind ?? "pnl");
@@ -193,7 +194,7 @@ export function ScheduledReportModal({
                   {r}
                   <button
                     type="button"
-                    aria-label="Remove"
+                    aria-label={tCommon("remove")}
                     onClick={() => removeRecipient(r)}
                   >
                     <X size={10} strokeWidth={1.5} />

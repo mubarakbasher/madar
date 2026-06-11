@@ -21,6 +21,7 @@ export const CreateRefundSchema = z.object({
   notes: z.string().trim().max(2000).optional().nullable(),
   customer_id: z.string().uuid().optional().nullable(),
   approved_by_user_id: z.string().uuid().optional().nullable(),
+  approver_password: z.string().min(1).max(200).optional().nullable(),
 });
 
 export type CreateRefundBody = z.infer<typeof CreateRefundSchema>;

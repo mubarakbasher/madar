@@ -113,4 +113,65 @@ describe("POST /v1/sales — idempotency", () => {
     expect(res.status).toBe(400);
     expect(res.body).toMatchObject({ code: "idempotency_key_required" });
   });
+
+  it("same key with a DIFFERENT body returns 422 idempotency_payload_mismatch", async () => {
+    const idemKey = randomUUID();
+    const r1 = await request(booted.http)
+      .post("/v1/sales")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .set("Idempotency-Key", idemKey)
+      .send(buildBody(randomUUID()));
+    expect(r1.status).toBe(201);
+
+    const r2 = await request(booted.http)
+      .post("/v1/sales")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .set("Idempotency-Key", idemKey)
+      .send(buildBody(randomUUID())); // different client_uuid → different payload
+    expect(r2.status).toBe(422);
+    expect(r2.body).toMatchObject({ code: "idempotency_payload_mismatch" });
+  });
+
+  it("another tenant replaying the same Idempotency-Key never receives the first tenant's cached response", async () => {
+    const { makeTenantWithCatalog } = await import("../helpers/fixtures");
+    const other = await makeTenantWithCatalog({ slugPrefix: "sale-idem-b" });
+    const otherToken = (
+      await booted.app
+        .get(TokenService)
+        .mintPair({ userId: other.userId, tenantId: other.tenantId, role: "owner" })
+    ).access_token;
+
+    const sharedKey = randomUUID();
+
+    const a = await request(booted.http)
+      .post("/v1/sales")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .set("Idempotency-Key", sharedKey)
+      .send(buildBody(randomUUID()));
+    expect(a.status).toBe(201);
+
+    // Same route, same UUID key, different tenant: must execute B's own
+    // request (its own branch/product), not replay A's cached sale.
+    const b = await request(booted.http)
+      .post("/v1/sales")
+      .set("Authorization", `Bearer ${otherToken}`)
+      .set("Idempotency-Key", sharedKey)
+      .send({
+        branch_id: other.branchId,
+        customer_id: null,
+        currency_code: "USD",
+        payment_method: "cash" as const,
+        client_uuid: randomUUID(),
+        client_sequence: 1,
+        lines: [
+          { product_id: other.products[0]!.id, qty: 1, line_discount_cents: 0, note: null },
+        ],
+        cash_tendered_cents: 5000,
+      });
+    expect(b.status).toBe(201);
+    expect(b.body.id).not.toBe(a.body.id);
+
+    const bRow = await adminPrisma.sale.findUnique({ where: { id: b.body.id } });
+    expect(bRow!.tenant_id).toBe(other.tenantId);
+  });
 });

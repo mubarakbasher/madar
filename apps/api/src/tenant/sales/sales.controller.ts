@@ -60,7 +60,7 @@ export class SalesController {
     @CurrentUser() user: TenantPrincipal,
     @Param("id", new ParseUUIDPipe()) id: string,
   ) {
-    return this.sales.getSale(user.tenantId, id);
+    return this.sales.getSale(user.tenantId, id, { userId: user.userId, role: user.role });
   }
 
   @Get(":id/receipt-data")
@@ -69,6 +69,9 @@ export class SalesController {
     @CurrentUser() user: TenantPrincipal,
     @Param("id", new ParseUUIDPipe()) id: string,
   ) {
-    return this.sales.getSaleForReceipt(user.tenantId, id);
+    return this.sales.getSaleForReceipt(user.tenantId, id, {
+      userId: user.userId,
+      role: user.role,
+    });
   }
 }

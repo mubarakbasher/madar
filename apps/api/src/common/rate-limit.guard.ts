@@ -28,10 +28,10 @@ export class RateLimitGuard implements CanActivate {
   constructor(private readonly redis: RedisService, private readonly reflector: Reflector) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // Skip outside production: dev workflows (and tests) hit the same endpoints
-    // dozens of times in a session and the rate limit just adds friction.
-    // Production keeps the limits enforced.
-    if (process.env.NODE_ENV !== "production") return true;
+    // Skip only under test: specs hit the same endpoints dozens of times per
+    // run. Dev and staging keep the limits enforced — a staging deploy with
+    // NODE_ENV=development must not ship with zero brute-force protection.
+    if (process.env.NODE_ENV === "test") return true;
 
     const opts = this.reflector.getAllAndOverride<RateLimitOptions | undefined>(META, [
       context.getHandler(),

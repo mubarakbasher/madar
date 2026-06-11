@@ -55,6 +55,7 @@ function useReceiptBlob(proofId: string | null): BlobState {
 
 export function ReceiptViewer({ proofId }: { proofId: string | null }) {
   const t = useTranslations("verification");
+  const tCommon = useTranslations("common");
   const { url, mime, isLoading, error } = useReceiptBlob(proofId);
   const [fullscreen, setFullscreen] = useState(false);
 
@@ -78,14 +79,14 @@ export function ReceiptViewer({ proofId }: { proofId: string | null }) {
     <>
       <div className="vq-receipt">
         {isPdf ? (
-          <iframe src={url} className="vq-receipt-pdf" title="Receipt PDF" />
+          <iframe src={url} className="vq-receipt-pdf" title={t("receipt.pdfTitle")} />
         ) : (
           <button
             type="button"
             className="vq-receipt-img-button"
             onClick={() => setFullscreen(true)}
           >
-            <img src={url} alt="Receipt" className="vq-receipt-img" />
+            <img src={url} alt={t("receipt.imageAlt")} className="vq-receipt-img" />
             <span className="vq-receipt-fullscreen-hint">
               <Maximize2 size={14} strokeWidth={1.5} />
             </span>
@@ -104,11 +105,11 @@ export function ReceiptViewer({ proofId }: { proofId: string | null }) {
             type="button"
             className="vq-modal-close"
             onClick={() => setFullscreen(false)}
-            aria-label="Close"
+            aria-label={tCommon("close")}
           >
             <X size={20} strokeWidth={1.5} />
           </button>
-          <img src={url} alt="Receipt fullscreen" className="vq-receipt-fullscreen-img" />
+          <img src={url} alt={t("receipt.fullscreenAlt")} className="vq-receipt-fullscreen-img" />
         </div>
       )}
     </>

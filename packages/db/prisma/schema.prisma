@@ -332,6 +332,10 @@ model User {
   tenant_id                     String         @db.Uuid
   email                         String
   email_verified                Boolean        @default(false)
+  // Staged email change: the login email only swaps to pending_email once the
+  // confirmation token (sent to the NEW address) is consumed. Reuses the
+  // email_verification_* token columns.
+  pending_email                 String?
   email_verification_token_hash String?
   email_verification_expires_at DateTime?      @db.Timestamptz
   password_hash                 String
@@ -350,7 +354,11 @@ model User {
   created_by                    String?        @db.Uuid
   deleted_at                    DateTime?      @db.Timestamptz
 
-  @@unique([tenant_id, email])
+  // Uniqueness of (tenant_id, email) is enforced by a PARTIAL unique index
+  // (WHERE deleted_at IS NULL) created in migration 20260611130000 — Prisma
+  // can't model partial uniques, so a soft-deleted user no longer blocks
+  // re-using their email. Same pattern for branches/categories/products/
+  // customers below.
   @@index([tenant_id, deleted_at])
   @@map("users")
 }
@@ -374,7 +382,7 @@ model Branch {
   created_by      String?   @db.Uuid
   deleted_at      DateTime? @db.Timestamptz
 
-  @@unique([tenant_id, code])
+  // (tenant_id, code) unique via partial index WHERE deleted_at IS NULL.
   @@index([tenant_id, deleted_at])
   @@map("branches")
 }
@@ -391,7 +399,7 @@ model Category {
   created_by String?   @db.Uuid
   deleted_at DateTime? @db.Timestamptz
 
-  @@unique([tenant_id, code])
+  // (tenant_id, code) unique via partial index WHERE deleted_at IS NULL.
   @@index([tenant_id, deleted_at])
   @@map("categories")
 }
@@ -415,7 +423,7 @@ model Product {
   created_by       String?   @db.Uuid
   deleted_at       DateTime? @db.Timestamptz
 
-  @@unique([tenant_id, sku])
+  // (tenant_id, sku) unique via partial index WHERE deleted_at IS NULL.
   @@index([tenant_id, deleted_at])
   @@index([tenant_id, category_id])
   @@index([tenant_id, tax_class_id])
@@ -439,8 +447,8 @@ model Customer {
 
   store_credit_ledger StoreCreditLedger[]
 
-  @@unique([tenant_id, phone])
-  @@unique([tenant_id, email])
+  // (tenant_id, phone) and (tenant_id, email) unique via partial indexes
+  // WHERE deleted_at IS NULL.
   @@index([tenant_id, deleted_at])
   @@map("customers")
 }
@@ -498,6 +506,10 @@ model StockMovement {
   kind            StockMovementKind
   qty_delta       Int
   unit_cost_cents BigInt?
+  // Sibling currency for unit_cost_cents (money convention) — snapshots which
+  // currency a movement's cost was recorded in for multi-currency tenants.
+  // Nullable: legacy rows are backfilled from the branch currency.
+  currency_code   String?           @db.VarChar(3)
   reference_table String?
   reference_id    String?           @db.Uuid
   note            String?
@@ -1066,7 +1078,9 @@ model StoreCreditLedger {
   created_by          String?              @db.Uuid
   created_at          DateTime             @default(now()) @db.Timestamptz
 
-  customer Customer @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  // Restrict: a hard customer delete must never silently erase financial
+  // history. Customers are soft-deleted in normal flow.
+  customer Customer @relation(fields: [customer_id], references: [id], onDelete: Restrict)
 
   @@index([tenant_id, customer_id, created_at(sort: Desc)])
   @@index([tenant_id, reference_table, reference_id])
@@ -1110,6 +1124,8 @@ model SyncConflict {
   review_notes      String?
   occurred_at       DateTime            @db.Timestamptz
   created_at        DateTime            @default(now()) @db.Timestamptz
+  // Rows mutate on review — convention requires updated_at on mutable tables.
+  updated_at        DateTime            @default(now()) @db.Timestamptz
 
   @@index([tenant_id, resolution_status, created_at(sort: Desc)])
   @@index([tenant_id, reference_table, reference_id])

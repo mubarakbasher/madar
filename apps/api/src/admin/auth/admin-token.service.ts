@@ -22,7 +22,7 @@ export interface AdminAccessClaims {
   aud: string;
 }
 
-export interface AdminRefreshClaims extends Omit<AdminAccessClaims, "typ" | "mfa_verified_at"> {
+export interface AdminRefreshClaims extends Omit<AdminAccessClaims, "typ"> {
   typ: "refresh";
 }
 
@@ -53,11 +53,18 @@ export class AdminTokenService {
   constructor(private readonly redis: RedisService) {}
 
   // ─── mfa_pending (5min, no refresh half) ───────────────────────────
-  mintMfaPending(p: { platformUserId: string; email: string }): {
+  // Each challenge jti is registered in Redis and consumed on success (or
+  // voided after too many wrong codes) — a captured mfa_pending token must
+  // not be replayable for its whole TTL. Mirrors the tenant flow.
+  private mfaPendingKey(jti: string): string {
+    return `mfa-pending:admin:${jti}`;
+  }
+
+  async mintMfaPending(p: { platformUserId: string; email: string }): Promise<{
     token: string;
     expires_in: number;
     jti: string;
-  } {
+  }> {
     const env = loadEnv();
     const ttl = parseDuration(env.JWT_ADMIN_MFA_PENDING_TTL);
     const jti = randomUUID();
@@ -79,7 +86,35 @@ export class AdminTokenService {
       env.JWT_ADMIN_SECRET,
       opts,
     );
+    // Value = failed TOTP attempts so far.
+    await this.redis.setEx(this.mfaPendingKey(jti), "0", ttl);
     return { token, expires_in: ttl, jti };
+  }
+
+  async isMfaPendingAlive(jti: string): Promise<boolean> {
+    return (await this.redis.get(this.mfaPendingKey(jti))) !== null;
+  }
+
+  /** Single-use: delete the challenge after a successful verification. */
+  async consumeMfaPending(jti: string): Promise<void> {
+    await this.redis.del(this.mfaPendingKey(jti));
+  }
+
+  /**
+   * Count a failed TOTP attempt; void the challenge entirely once the cap is
+   * hit so a captured token cannot be brute-forced for its full TTL.
+   */
+  async recordMfaPendingFailure(jti: string, maxAttempts = 5): Promise<void> {
+    const key = this.mfaPendingKey(jti);
+    const raw = await this.redis.get(key);
+    if (raw === null) return;
+    const failures = Number(raw) + 1;
+    if (failures >= maxAttempts) {
+      await this.redis.del(key);
+      return;
+    }
+    const env = loadEnv();
+    await this.redis.setEx(key, String(failures), parseDuration(env.JWT_ADMIN_MFA_PENDING_TTL));
   }
 
   verifyMfaPending(token: string): AdminMfaPendingClaims {
@@ -134,6 +169,9 @@ export class AdminTokenService {
       platform_user_id: p.platformUserId,
       email: p.email,
       role: p.role,
+      // Carried through rotation so a refreshed session keeps the ORIGINAL
+      // MFA time — refreshing must never look like a fresh MFA verification.
+      mfa_verified_at: p.mfaVerifiedAt,
       realm: "admin" as const,
       typ: "refresh" as const,
     };

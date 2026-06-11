@@ -47,6 +47,10 @@ export interface ReconcileDayResponse {
   date: string;
   branches: ReconcileBranch[];
   chain_totals: ReconcileTotals;
+  // Chain totals are plain sums across branches — meaningless when branches
+  // trade in different currencies (USD cents + KWD fils). Mirrors the PnL
+  // report's warning flag so the UI can caveat the chain card.
+  mixed_currency_warning: boolean;
 }
 
 @Injectable()
@@ -74,9 +78,9 @@ export class ReconcileService {
     if (opts.branchId) branchWhere.id = opts.branchId;
     const branches = (await scoped.branch.findMany({
       where: branchWhere,
-      select: { id: true, code: true, name_i18n: true },
+      select: { id: true, code: true, name_i18n: true, currency_code: true },
       orderBy: { code: "asc" },
-    })) as Array<{ id: string; code: string; name_i18n: unknown }>;
+    })) as Array<{ id: string; code: string; name_i18n: unknown; currency_code: string }>;
 
     const perBranch: ReconcileBranch[] = [];
     for (const b of branches) {
@@ -85,8 +89,14 @@ export class ReconcileService {
     }
 
     const chainTotals = this.sumTotals(perBranch.map((b) => b.totals));
+    const currencies = new Set(branches.map((b) => b.currency_code));
 
-    return { date: opts.date, branches: perBranch, chain_totals: chainTotals };
+    return {
+      date: opts.date,
+      branches: perBranch,
+      chain_totals: chainTotals,
+      mixed_currency_warning: currencies.size > 1,
+    };
   }
 
   private async collectBranch(

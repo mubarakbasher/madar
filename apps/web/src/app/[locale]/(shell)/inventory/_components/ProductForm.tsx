@@ -23,6 +23,7 @@ import {
 import { taxClassesListRequest, type ApiTaxClass } from "@/lib/api/tax-classes";
 import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/auth/store";
+import { currencyMinorUnits, majorToMinor, minorToMajor } from "@/lib/currency";
 
 type Mode = "create" | "edit";
 
@@ -42,15 +43,14 @@ interface FormState {
   initial_stock: Array<ProductInitialStockEntry & { _key: string }>;
 }
 
-function centsToMajor(cents: string): string {
-  const n = Number(BigInt(cents));
-  return (n / 100).toFixed(2);
+function centsToMajor(cents: string, currencyCode: string): string {
+  return minorToMajor(cents, currencyCode).toFixed(currencyMinorUnits(currencyCode));
 }
 
-function majorToCents(major: string): number {
+function majorToCents(major: string, currencyCode: string): number {
   const trimmed = major.trim();
   if (!trimmed) return 0;
-  const n = Math.round(Number(trimmed) * 100);
+  const n = majorToMinor(Number(trimmed), currencyCode);
   if (!Number.isFinite(n) || n < 0) return 0;
   return n;
 }
@@ -103,8 +103,8 @@ export function ProductForm({
       description_ar: product?.description_i18n?.ar ?? "",
       category_id: product?.category_id ?? "",
       tax_class_id: product?.tax_class_id ?? "",
-      price_major: product ? centsToMajor(product.price_cents) : "",
-      cost_major: product ? centsToMajor(product.cost_cents) : "",
+      price_major: product ? centsToMajor(product.price_cents, product.currency_code) : "",
+      cost_major: product ? centsToMajor(product.cost_cents, product.currency_code) : "",
       currency_code: product?.currency_code ?? defaultCurrencyCode,
       barcode: product?.barcode ?? "",
       is_active: product?.is_active ?? true,
@@ -209,8 +209,8 @@ export function ProductForm({
           : null,
       category_id: form.category_id || null,
       tax_class_id: form.tax_class_id || null,
-      price_cents: majorToCents(form.price_major),
-      cost_cents: majorToCents(form.cost_major),
+      price_cents: majorToCents(form.price_major, form.currency_code),
+      cost_cents: majorToCents(form.cost_major, form.currency_code),
       currency_code: form.currency_code.toUpperCase(),
       barcode: form.barcode.trim() || null,
       is_active: form.is_active,
@@ -241,9 +241,9 @@ export function ProductForm({
     }
     if ((form.category_id || null) !== product.category_id) body.category_id = form.category_id || null;
     if ((form.tax_class_id || null) !== product.tax_class_id) body.tax_class_id = form.tax_class_id || null;
-    const priceCents = majorToCents(form.price_major);
+    const priceCents = majorToCents(form.price_major, form.currency_code);
     if (priceCents !== Number(BigInt(product.price_cents))) body.price_cents = priceCents;
-    const costCents = majorToCents(form.cost_major);
+    const costCents = majorToCents(form.cost_major, form.currency_code);
     if (costCents !== Number(BigInt(product.cost_cents))) body.cost_cents = costCents;
     if (form.currency_code.toUpperCase() !== product.currency_code) {
       body.currency_code = form.currency_code.toUpperCase();

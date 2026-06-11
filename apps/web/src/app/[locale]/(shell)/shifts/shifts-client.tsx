@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "../../../../../i18n/routing";
 import { shiftsListRequest, type ApiCashierShift } from "@/lib/api/shifts";
+import { formatMoney } from "@/lib/currency";
 
 type Tab = "open" | "closed" | "all";
 
@@ -14,11 +15,7 @@ function fmtCurrencyMinor(
   locale: "en" | "ar",
 ): string {
   if (amountMinor == null) return "—";
-  const major = Number(amountMinor) / 100;
-  return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-    style: "currency",
-    currency,
-  }).format(major);
+  return formatMoney(amountMinor, currency, locale);
 }
 
 function fmtDate(iso: string | null, locale: "en" | "ar"): string {

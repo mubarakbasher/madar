@@ -15,7 +15,7 @@ import {
   type ApiReturnDetail,
 } from "@/lib/api/supplier-returns";
 import { useAuthStore } from "@/lib/auth/store";
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency, minorToMajor } from "@/lib/currency";
 import { RefundDialog } from "../_components/RefundDialog";
 import { ReturnStatusPill } from "../_components/ReturnStatusPill";
 import { ReturnTimeline } from "../_components/ReturnTimeline";
@@ -177,7 +177,7 @@ export function ReturnDetailClient({
           <div className="rma-kpi-label">{tDetail("totalLabel")}</div>
           <div className="rma-kpi-value">
             {formatCurrency(
-              Number(rma.total_cents) / 100,
+              minorToMajor(rma.total_cents, rma.currency_code),
               rma.currency_code,
               locale,
             )}
@@ -240,14 +240,14 @@ export function ReturnDetailClient({
                     <td className="rma-num">{l.qty}</td>
                     <td className="rma-num">
                       {formatCurrency(
-                        Number(l.unit_cost_cents) / 100,
+                        minorToMajor(l.unit_cost_cents, rma.currency_code),
                         rma.currency_code,
                         locale,
                       )}
                     </td>
                     <td className="rma-num">
                       {formatCurrency(
-                        Number(l.line_total_cents) / 100,
+                        minorToMajor(l.line_total_cents, rma.currency_code),
                         rma.currency_code,
                         locale,
                       )}

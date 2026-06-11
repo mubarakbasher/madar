@@ -17,6 +17,7 @@ import {
   branchScopeParam,
 } from "@/lib/branch-scope/store";
 import { useAuthStore } from "@/lib/auth/store";
+import { currencyMinorUnits, formatMoney, minorToMajor } from "@/lib/currency";
 
 type KindFilter = "all" | StockMovementKind;
 
@@ -41,12 +42,9 @@ function fmtDate(iso: string, locale: "en" | "ar"): string {
 function fmtMoney(cents: string | null, currency: string, locale: "en" | "ar"): string {
   if (cents == null) return "—";
   try {
-    return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-      style: "currency",
-      currency,
-    }).format(Number(cents) / 100);
+    return formatMoney(cents, currency, locale);
   } catch {
-    return `${currency} ${(Number(cents) / 100).toFixed(2)}`;
+    return `${currency} ${minorToMajor(cents, currency).toFixed(currencyMinorUnits(currency))}`;
   }
 }
 
@@ -335,7 +333,7 @@ export function MovementsClient({ locale }: { locale: "en" | "ar" }) {
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
               >
-                <ChevronLeft size={14} strokeWidth={1.5} />
+                <ChevronLeft size={14} strokeWidth={1.5} className="rtl:rotate-180" />
                 {t("pagination.prev")}
               </button>
               <span>
@@ -348,7 +346,7 @@ export function MovementsClient({ locale }: { locale: "en" | "ar" }) {
                 onClick={() => setPage((p) => p + 1)}
               >
                 {t("pagination.next")}
-                <ChevronRight size={14} strokeWidth={1.5} />
+                <ChevronRight size={14} strokeWidth={1.5} className="rtl:rotate-180" />
               </button>
             </div>
           </div>

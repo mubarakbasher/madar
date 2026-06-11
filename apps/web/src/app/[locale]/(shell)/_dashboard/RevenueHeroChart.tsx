@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { ArrowUp, ArrowDown } from "lucide-react";
-import { formatNumber } from "@/lib/currency";
+import { formatNumber, minorToMajor } from "@/lib/currency";
 import type { ApiOwnerDashboardRevenuePoint } from "@/lib/api/dashboard";
 
 interface RevenueHeroChartProps {
@@ -71,7 +71,7 @@ export function RevenueHeroChart({
 
   // Series of display units (not cents) for the SVG. Round to whole units
   // for cleaner axis labels — the underlying cents are still in the data.
-  const series = revenue_30d.map((p) => Math.round(p.cents / 100));
+  const series = revenue_30d.map((p) => Math.round(minorToMajor(p.cents, currency_code)));
 
   const w = 720;
   const h = 280;

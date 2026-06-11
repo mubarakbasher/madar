@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, TrendingDown, TrendingUp } from "lucide-react";
 import { branchDashboardRequest, type ApiBranchDashboard } from "@/lib/api/branches";
-import { formatCurrency, formatNumber } from "@/lib/currency";
+import { formatCurrency, formatNumber, minorToMajor } from "@/lib/currency";
 import { HourlyChart } from "../../_components/HourlyChart";
 import { CategoriesDonut } from "../../_components/CategoriesDonut";
 
@@ -41,8 +41,8 @@ export function DashboardClient({ locale, id }: { locale: "en" | "ar"; id: strin
 
   const d: ApiBranchDashboard = q.data;
   const name = locale === "ar" ? d.branch_name_i18n.ar || d.branch_name_i18n.en : d.branch_name_i18n.en;
-  const todayMajor = Number(d.today_cents) / 100;
-  const avgBasketMajor = Number(d.avg_basket_cents) / 100;
+  const todayMajor = minorToMajor(d.today_cents, d.currency_code);
+  const avgBasketMajor = minorToMajor(d.avg_basket_cents, d.currency_code);
   const positive = (d.vs_yesterday_pct ?? 0) >= 0;
 
   return (
@@ -53,7 +53,7 @@ export function DashboardClient({ locale, id }: { locale: "en" | "ar"; id: strin
           <h1 className="br-title">{name}</h1>
         </div>
         <a className="br-btn" href={`/${locale}/branches/${id}`}>
-          <ArrowLeft size={13} strokeWidth={1.5} /> {t("back")}
+          <ArrowLeft size={13} strokeWidth={1.5} className="rtl:rotate-180" /> {t("back")}
         </a>
       </div>
 
@@ -114,7 +114,7 @@ export function DashboardClient({ locale, id }: { locale: "en" | "ar"; id: strin
         {d.hourly.every((h) => h.cents === 0) ? (
           <p className="br-empty-line">{tChart("hourlyEmpty")}</p>
         ) : (
-          <HourlyChart data={d.hourly} />
+          <HourlyChart data={d.hourly} label={tChart("hourly")} />
         )}
       </section>
 
@@ -123,7 +123,12 @@ export function DashboardClient({ locale, id }: { locale: "en" | "ar"; id: strin
         {d.top_categories.length === 0 ? (
           <p className="br-empty-line">{tChart("topCategoriesEmpty")}</p>
         ) : (
-          <CategoriesDonut data={d.top_categories} locale={locale} labelMissing="—" />
+          <CategoriesDonut
+            data={d.top_categories}
+            locale={locale}
+            label={tChart("topCategories")}
+            labelMissing="—"
+          />
         )}
       </section>
 
@@ -147,7 +152,7 @@ export function DashboardClient({ locale, id }: { locale: "en" | "ar"; id: strin
                     {isMe ? ` · ${t("leaderboard.thisBranch")}` : ""}
                   </span>
                   <span className="br-list-meta">
-                    {formatCurrency(Number(row.today_cents) / 100, d.currency_code, locale)}
+                    {formatCurrency(minorToMajor(row.today_cents, d.currency_code), d.currency_code, locale)}
                   </span>
                 </li>
               );

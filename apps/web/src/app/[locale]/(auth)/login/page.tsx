@@ -48,7 +48,15 @@ function LoginForm() {
    */
   function postLoginDestination(): { kind: "next"; path: string } | { kind: "intl"; path: string } {
     const raw = searchParams.get("returnTo");
-    if (raw && raw.startsWith("/") && !raw.startsWith("//") && !raw.includes(":")) {
+    // `/\evil.com` normalizes to protocol-relative `//evil.com` in browsers,
+    // so backslashes are rejected along with `//` and absolute URLs.
+    if (
+      raw &&
+      raw.startsWith("/") &&
+      !raw.startsWith("//") &&
+      !raw.includes("\\") &&
+      !raw.includes(":")
+    ) {
       // returnTo already includes the locale prefix — go via plain router so
       // next-intl doesn't re-prefix it.
       return { kind: "next", path: raw };

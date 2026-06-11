@@ -17,6 +17,7 @@ export function LineEditSheet({
   onRemove: () => void;
 }) {
   const t = useTranslations("pos.line");
+  const tCommon = useTranslations("common");
   const [qty, setQty] = useState(line.qty);
   const [discount, setDiscount] = useState(line.discount || 0);
   const [note, setNote] = useState(line.note || "");
@@ -34,7 +35,7 @@ export function LineEditSheet({
               <span style={{ fontFamily: "var(--mono)" }}>{line.p.sku}</span>
             </div>
           </div>
-          <button type="button" className="pos-icon-btn" onClick={onClose} aria-label="Close">
+          <button type="button" className="pos-icon-btn" onClick={onClose} aria-label={tCommon("close")}>
             <X size={14} strokeWidth={1.5} />
           </button>
         </header>

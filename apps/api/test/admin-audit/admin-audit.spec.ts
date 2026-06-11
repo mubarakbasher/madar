@@ -87,7 +87,12 @@ describe("Admin audit endpoints", () => {
       .set("Authorization", `Bearer ${adminToken}`)
       .send({ user_id: tenant.userId, reason: "actions count check" });
     expect(start.status).toBe(201);
-    const imperToken: string = start.body.access_token;
+    // Start returns a single-use handoff code, not the JWT — exchange it.
+    const exchange = await request(booted.http)
+      .post("/v1/impersonation/exchange")
+      .send({ code: start.body.handoff_code });
+    expect(exchange.status).toBe(200);
+    const imperToken: string = exchange.body.access_token;
 
     // Run a non-destructive sale under the impersonation token.
     const sale = await request(booted.http)

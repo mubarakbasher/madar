@@ -9,13 +9,17 @@ import { ApiError } from "../../../../lib/api/client";
 import { tryRefresh } from "../../../../lib/api/client";
 import type { ApiPlan } from "../../../../lib/api/billing";
 import { publicPlansRequest, selectPlanRequest } from "../../../../lib/api/onboarding";
+import { currencyMinorUnits, minorToMajor } from "../../../../lib/currency";
 
 function formatPrice(cents: string, currency: string, locale: string): string {
-  const major = Number(BigInt(cents)) / 100;
+  const code = currency || "USD";
+  const major = minorToMajor(cents, code);
   return new Intl.NumberFormat(locale === "ar" ? "ar" : "en-US", {
     style: "currency",
-    currency: currency || "USD",
-    maximumFractionDigits: major % 1 === 0 ? 0 : 2,
+    currency: code,
+    // Whole prices stay compact ("$29"); fractional ones use the currency's
+    // real precision (KWD=3, JPY=0).
+    maximumFractionDigits: major % 1 === 0 ? 0 : currencyMinorUnits(code),
   }).format(major);
 }
 

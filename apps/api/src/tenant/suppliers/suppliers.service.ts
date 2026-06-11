@@ -12,6 +12,7 @@ import {
 // under RLS, so the read goes through adminPrisma — same pattern as branches.
 // eslint-disable-next-line no-restricted-imports
 import { adminPrisma, tenantScoped } from "@madar/db";
+import { withTenantTx } from "../../shared/db-tx";
 import { AuditService, type AuditCtx } from "../auth/audit.service";
 import { TenantStorageService } from "../../common/tenant-storage.service";
 import type { ListSuppliersQuery } from "./dto/list-suppliers.dto";
@@ -671,7 +672,7 @@ export class SuppliersService {
     const currencyCode = body.currency_code ?? supplier.currency_code;
     const isPreferred = body.is_preferred ?? false;
 
-    const created = await scoped.$transaction(async (tx) => {
+    const created = await withTenantTx(tenantId, async (tx) => {
       // Transactional unset-then-insert: when a new row is preferred, flip
       // any other preferred entries for the same product to false first.
       if (isPreferred) {
@@ -764,7 +765,7 @@ export class SuppliersService {
       });
     }
 
-    const updated = await scoped.$transaction(async (tx) => {
+    const updated = await withTenantTx(tenantId, async (tx) => {
       // Transactional unset of other preferred rows for the same product.
       if (body.is_preferred === true) {
         await tx.supplierProduct.updateMany({
@@ -904,14 +905,26 @@ export class SuppliersService {
 
     const { randomUUID } = await import("node:crypto");
     const docId = randomUUID();
-    const ext = extFromMime(file.declaredMime);
+    // Detect the real type from magic bytes — the client-declared MIME is
+    // untrusted and previously decided both the stored extension and the
+    // Content-Type later used when streaming (a PNG could be served as PDF).
+    const { fromBuffer: fileTypeFromBuffer } = await import("file-type");
+    const detected = await fileTypeFromBuffer(file.buffer);
+    const detectedMime = detected?.mime ?? "";
+    if (!["image/jpeg", "image/png", "application/pdf"].includes(detectedMime)) {
+      throw new BadRequestException({
+        code: "file_mime_unsupported",
+        message: "Document must be JPG, PNG, or PDF",
+      });
+    }
+    const ext = extFromMime(detectedMime);
     const { key, sizeBytes } = await this.tenantStorage.putTenantObject(
       {
         tenantId,
         prefix: `suppliers/${supplierId}/documents`,
         fileId: docId,
         ext,
-        contentType: file.declaredMime,
+        contentType: detectedMime,
         buffer: file.buffer,
       },
       {

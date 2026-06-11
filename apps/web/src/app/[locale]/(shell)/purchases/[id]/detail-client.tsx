@@ -14,7 +14,7 @@ import {
   type ApiPODetail,
 } from "@/lib/api/purchase-orders";
 import { useAuthStore } from "@/lib/auth/store";
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency, minorToMajor } from "@/lib/currency";
 import { POStatusPill } from "../_components/POStatusPill";
 import { POTimeline } from "../_components/POTimeline";
 import { SendToSupplierDialog } from "../_components/SendToSupplierDialog";
@@ -153,25 +153,25 @@ export function PODetailClient({
         <div className="po-kpi-cell">
           <div className="po-kpi-label">{tDetail("kpis.subtotal")}</div>
           <div className="po-kpi-value">
-            {formatCurrency(Number(po.subtotal_cents) / 100, po.currency_code, locale)}
+            {formatCurrency(minorToMajor(po.subtotal_cents, po.currency_code), po.currency_code, locale)}
           </div>
         </div>
         <div className="po-kpi-cell">
           <div className="po-kpi-label">{tDetail("kpis.tax")}</div>
           <div className="po-kpi-value">
-            {formatCurrency(Number(po.tax_cents) / 100, po.currency_code, locale)}
+            {formatCurrency(minorToMajor(po.tax_cents, po.currency_code), po.currency_code, locale)}
           </div>
         </div>
         <div className="po-kpi-cell">
           <div className="po-kpi-label">{tDetail("kpis.shipping")}</div>
           <div className="po-kpi-value">
-            {formatCurrency(Number(po.shipping_cents) / 100, po.currency_code, locale)}
+            {formatCurrency(minorToMajor(po.shipping_cents, po.currency_code), po.currency_code, locale)}
           </div>
         </div>
         <div className="po-kpi-cell">
           <div className="po-kpi-label">{tDetail("kpis.total")}</div>
           <div className="po-kpi-value">
-            {formatCurrency(Number(po.total_cents) / 100, po.currency_code, locale)}
+            {formatCurrency(minorToMajor(po.total_cents, po.currency_code), po.currency_code, locale)}
           </div>
         </div>
       </div>
@@ -212,14 +212,14 @@ export function PODetailClient({
                       </td>
                       <td className="po-num">
                         {formatCurrency(
-                          Number(l.unit_cost_cents) / 100,
+                          minorToMajor(l.unit_cost_cents, po.currency_code),
                           po.currency_code,
                           locale,
                         )}
                       </td>
                       <td className="po-num">
                         {formatCurrency(
-                          Number(l.line_total_cents) / 100,
+                          minorToMajor(l.line_total_cents, po.currency_code),
                           po.currency_code,
                           locale,
                         )}

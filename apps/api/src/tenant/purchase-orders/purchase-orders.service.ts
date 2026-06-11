@@ -15,6 +15,7 @@ import {
 // via adminPrisma for the same reason: cross-realm `tenants` lookup).
 // eslint-disable-next-line no-restricted-imports
 import { adminPrisma, tenantScoped } from "@madar/db";
+import { withTenantTx } from "../../shared/db-tx";
 import { AuditService, type AuditCtx } from "../auth/audit.service";
 import type { PurchaseOrderPdfInput } from "../../shared/pdf/po-pdf.renderer";
 import type { ListPurchaseOrdersQuery } from "./dto/list-po.dto";
@@ -282,7 +283,7 @@ export class PurchaseOrdersService {
     for (let attempt = 0; attempt < 5 && !createdId; attempt++) {
       const code = this.generatePoCode();
       try {
-        const result = await scoped.$transaction(async (tx) => {
+        const result = await withTenantTx(tenantId, async (tx) => {
           const header = await tx.purchaseOrder.create({
             data: {
               tenant_id: tenantId,
@@ -384,9 +385,11 @@ export class PurchaseOrdersService {
     const shippingCents = BigInt(body.shipping_cents ?? 0);
     const totalCents = subtotal + taxCents + shippingCents;
 
-    await scoped.$transaction(async (tx) => {
-      await tx.purchaseOrder.update({
-        where: { id },
+    await withTenantTx(tenantId, async (tx) => {
+      // Guarded transition: claims the row only while still draft, so a
+      // concurrent order/cancel/receive can't interleave (H-9).
+      const claimed = await tx.purchaseOrder.updateMany({
+        where: { id, status: "draft" },
         data: {
           supplier_id: body.supplier_id,
           branch_id: body.branch_id,
@@ -404,6 +407,13 @@ export class PurchaseOrdersService {
           total_cents: totalCents,
         },
       });
+      if (claimed.count !== 1) {
+        throw new ConflictException({
+          code: "purchase_order_state_changed",
+          message:
+            "Purchase order was modified by someone else — reload and retry.",
+        });
+      }
       // Replace lines wholesale (matches stock-transfer pattern).
       await tx.purchaseOrderLine.deleteMany({ where: { po_id: id } });
       for (const r of lineResolutions) {
@@ -455,10 +465,17 @@ export class PurchaseOrdersService {
       });
     }
 
-    await scoped.purchaseOrder.update({
-      where: { id },
+    // Guarded transition (H-9): only flips draft → ordered if still draft.
+    const claimed = await scoped.purchaseOrder.updateMany({
+      where: { id, status: "draft" },
       data: { status: "ordered", ordered_at: new Date(), ordered_by: actorId },
     });
+    if (claimed.count !== 1) {
+      throw new ConflictException({
+        code: "purchase_order_state_changed",
+        message: "Purchase order was modified by someone else — reload and retry.",
+      });
+    }
 
     // Look up supplier contact email for the controller's email decision +
     // the audit metadata. Do this AFTER the transition succeeds so a missing
@@ -545,11 +562,21 @@ export class PurchaseOrdersService {
     }
 
     const now = new Date();
-    await scoped.$transaction(async (tx) => {
-      await tx.purchaseOrder.update({
-        where: { id },
+    await withTenantTx(tenantId, async (tx) => {
+      // Guarded transition (H-9): atomically claims ordered → received BEFORE
+      // any stock writes, so a concurrent receive can never double-increment
+      // branch_stock or duplicate stock_movements.
+      const claimed = await tx.purchaseOrder.updateMany({
+        where: { id, status: "ordered" },
         data: { status: "received", received_at: now, received_by: actorId },
       });
+      if (claimed.count !== 1) {
+        throw new ConflictException({
+          code: "purchase_order_state_changed",
+          message:
+            "Purchase order was modified by someone else — reload and retry.",
+        });
+      }
       for (const r of body.lines) {
         const sourceLine = lineById.get(r.line_id)!;
         const isShort = r.qty_received < sourceLine.qty_ordered;
@@ -643,10 +670,17 @@ export class PurchaseOrdersService {
         message: `Cannot cancel a purchase order in status ${existing.status} — only drafts can be cancelled`,
       });
     }
-    await scoped.purchaseOrder.update({
-      where: { id },
+    // Guarded transition (H-9): only flips draft → cancelled if still draft.
+    const claimed = await scoped.purchaseOrder.updateMany({
+      where: { id, status: "draft" },
       data: { status: "cancelled", cancelled_at: new Date(), cancelled_by: actorId },
     });
+    if (claimed.count !== 1) {
+      throw new ConflictException({
+        code: "purchase_order_state_changed",
+        message: "Purchase order was modified by someone else — reload and retry.",
+      });
+    }
     await this.audit
       .writeTenantScoped(ctx, {
         action: "purchase_order_cancelled",

@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import * as Sentry from "@sentry/node";
 import { AppModule } from "./app.module";
-import { loadEnv } from "./env";
+import { assertProductionSafety, loadEnv } from "./env";
 import { initSentry } from "./sentry";
 
 // Default JSON.stringify can't serialize BigInt — make it emit strings so
@@ -16,6 +16,7 @@ import { initSentry } from "./sentry";
 
 async function bootstrap() {
   const env = loadEnv();
+  assertProductionSafety(env);
   // Init Sentry before Nest so startup errors are captured. No-op when
   // SENTRY_DSN_API is empty (default in dev + CI).
   initSentry();

@@ -20,6 +20,11 @@ import {
   approversListRequest,
   type ApproverSummary,
 } from "@/lib/api/users";
+import {
+  currencyMinorUnits,
+  formatMoney as formatMoneyIntl,
+  minorToMajor,
+} from "@/lib/currency";
 
 type Step = "lines" | "method" | "review";
 type Method = "cash" | "card" | "bank_transfer" | "store_credit";
@@ -32,12 +37,9 @@ interface PickedLine {
 
 function formatMoney(cents: bigint, currency: string, locale: "en" | "ar"): string {
   try {
-    return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-      style: "currency",
-      currency: currency || "USD",
-    }).format(Number(cents) / 100);
+    return formatMoneyIntl(cents, currency || "USD", locale);
   } catch {
-    return `${currency} ${(Number(cents) / 100).toFixed(2)}`;
+    return `${currency} ${minorToMajor(cents, currency).toFixed(currencyMinorUnits(currency))}`;
   }
 }
 
@@ -110,9 +112,24 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
       .filter((r) => r.remaining > 0);
   }, [sale, refundedByLine]);
 
-  // Compute refund totals from snapshot prices. Tax is proportional to qty.
+  // Compute refund totals exactly the way the API does: each line refunds a
+  // cumulative proportional share of what the customer actually PAID for it
+  // (line_total_cents — net of discount; includes tax on tax-inclusive
+  // sales), so partial refunds in any order sum to exactly the paid amount.
   const totals = useMemo(() => {
     if (!sale) return { subtotalCents: 0n, taxCents: 0n, totalCents: 0n, qtyPicked: 0 };
+
+    const allLineTotal = sale.lines.reduce((s, l) => s + bi(l.line_total_cents), 0n);
+    const allTax = sale.lines.reduce((s, l) => s + bi(l.tax_cents), 0n);
+    const taxExclusive = allTax > 0n && bi(sale.total_cents) === allLineTotal + allTax;
+
+    const share = (pool: bigint, origQty: number, already: number, qty: number) => {
+      if (origQty <= 0) return 0n;
+      const oq = BigInt(origQty);
+      const upTo = (units: bigint) => (pool * units) / oq;
+      return upTo(BigInt(already + qty)) - upTo(BigInt(already));
+    };
+
     let subtotal = 0n;
     let tax = 0n;
     let qtyPicked = 0;
@@ -120,15 +137,13 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
       const picked = picks[line.id]?.qty ?? 0;
       if (picked <= 0) continue;
       qtyPicked += picked;
-      const unitPrice = bi(line.unit_price_cents);
-      subtotal += unitPrice * BigInt(picked);
-      if (line.qty > 0) {
-        const lineTax = bi(line.tax_cents);
-        tax += (lineTax * BigInt(picked)) / BigInt(line.qty);
-      }
+      const already = refundedByLine.get(line.id) ?? 0;
+      subtotal += share(bi(line.line_total_cents), line.qty, already, picked);
+      tax += share(bi(line.tax_cents), line.qty, already, picked);
     }
-    return { subtotalCents: subtotal, taxCents: tax, totalCents: subtotal + tax, qtyPicked };
-  }, [sale, refundable, picks]);
+    const total = taxExclusive ? subtotal + tax : subtotal;
+    return { subtotalCents: subtotal, taxCents: tax, totalCents: total, qtyPicked };
+  }, [sale, refundable, picks, refundedByLine]);
 
   const currency = sale?.currency_code ?? "USD";
   const fmt = (cents: bigint) => formatMoney(cents, currency, locale);
@@ -180,7 +195,7 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
     },
   });
 
-  const submit = (approvedByUserId?: string) => {
+  const submit = (approvedByUserId?: string, approverPassword?: string) => {
     if (!sale) return;
     setGeneralError(null);
     const body: CreateRefundBody = {
@@ -200,6 +215,7 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
       notes: notes.trim() ? notes.trim() : null,
       customer_id: method === "store_credit" ? customerId : null,
       ...(approvedByUserId ? { approved_by_user_id: approvedByUserId } : {}),
+      ...(approverPassword ? { approver_password: approverPassword } : {}),
     };
     createMut.mutate(body);
   };
@@ -494,7 +510,7 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
               onClick={() => setStep(step === "review" ? "method" : "lines")}
               disabled={createMut.isPending}
             >
-              <ArrowLeft size={14} strokeWidth={1.5} />
+              <ArrowLeft size={14} strokeWidth={1.5} className="rtl:rotate-180" />
               {t("actions.back")}
             </button>
           )}
@@ -506,7 +522,7 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
               onClick={() => setStep("method")}
             >
               {t("actions.next")}
-              <ChevronRight size={14} strokeWidth={1.5} />
+              <ChevronRight size={14} strokeWidth={1.5} className="rtl:rotate-180" />
             </button>
           )}
           {step === "method" && (
@@ -517,7 +533,7 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
               onClick={() => setStep("review")}
             >
               {t("actions.next")}
-              <ChevronRight size={14} strokeWidth={1.5} />
+              <ChevronRight size={14} strokeWidth={1.5} className="rtl:rotate-180" />
             </button>
           )}
           {step === "review" && (
@@ -551,9 +567,9 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
           loading={approversQ.isPending}
           submitting={createMut.isPending}
           onClose={() => setApprovalModalOpen(false)}
-          onConfirm={(id) => {
+          onConfirm={(id, password) => {
             setApprovalModalOpen(false);
-            submit(id);
+            submit(id, password);
           }}
         />
       )}
@@ -582,7 +598,7 @@ function Stepper({
             <span className="rf-step-num">{idx + 1}</span>
             {t(`steps.${s}`)}
             {idx < order.length - 1 && (
-              <ChevronRight size={12} strokeWidth={1.5} className="rf-step-arrow" />
+              <ChevronRight size={12} strokeWidth={1.5} className="rf-step-arrow rtl:rotate-180" />
             )}
           </span>
         );
@@ -704,10 +720,11 @@ function ApprovalModal({
   loading: boolean;
   submitting: boolean;
   onClose: () => void;
-  onConfirm: (userId: string) => void;
+  onConfirm: (userId: string, password: string) => void;
 }) {
   const t = useTranslations("refunds.approval");
   const [selected, setSelected] = useState<string>("");
+  const [password, setPassword] = useState("");
 
   return (
     <div className="rf-modal-bg" onClick={onClose} role="dialog" aria-modal>
@@ -735,6 +752,21 @@ function ApprovalModal({
           </select>
         )}
 
+        <label className="rf-label" style={{ marginBlockStart: 12 }}>
+          {t("passwordLabel")}
+        </label>
+        <input
+          type="password"
+          className="rf-input"
+          autoComplete="off"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder={t("passwordPlaceholder")}
+        />
+        <p className="rf-modal-sub" style={{ marginBlockStart: 6 }}>
+          {t("passwordHint")}
+        </p>
+
         <div className="rf-modal-actions">
           <button type="button" className="rf-btn" onClick={onClose} disabled={submitting}>
             {t("cancel")}
@@ -742,8 +774,8 @@ function ApprovalModal({
           <button
             type="button"
             className="rf-btn rf-btn-primary"
-            onClick={() => selected && onConfirm(selected)}
-            disabled={!selected || submitting}
+            onClick={() => selected && password && onConfirm(selected, password)}
+            disabled={!selected || !password || submitting}
           >
             {submitting ? t("submitting") : t("confirm")}
           </button>

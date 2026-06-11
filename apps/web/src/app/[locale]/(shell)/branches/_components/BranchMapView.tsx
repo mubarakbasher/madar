@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ExternalLink, MapPin, Package, TrendingUp } from "lucide-react";
 import type { ApiBranchSummary } from "@/lib/api/branches";
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency, minorToMajor } from "@/lib/currency";
 import type { LngLatLike, Map as MapInstance, Marker } from "maplibre-gl";
 
 /**
@@ -174,7 +174,7 @@ export function BranchMapView({
               <dt>{tBr("salesToday")}</dt>
               <dd>
                 {formatCurrency(
-                  Number(selected.today_revenue_cents) / 100,
+                  minorToMajor(selected.today_revenue_cents, selected.currency_code),
                   selected.currency_code,
                   locale,
                 )}

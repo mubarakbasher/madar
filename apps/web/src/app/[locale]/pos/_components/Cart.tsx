@@ -14,6 +14,11 @@ export type CartLine = {
 
 export type CartLineEx = CartLine & {
   p: Product;
+  /** Net line total in integer minor units (gross − floor'd percent discount). */
+  priceCents: number;
+  /** Floor'd percent discount in integer minor units. */
+  discountCents: number;
+  /** Major-unit mirror of priceCents — display only. */
   price: number;
 };
 
@@ -131,7 +136,7 @@ export function Cart({
                 <button
                   type="button"
                   onClick={() => onAdjustQty(line.id, -1)}
-                  aria-label="Decrease quantity"
+                  aria-label={t("cart.decreaseQty")}
                 >
                   <Minus size={14} strokeWidth={1.5} />
                 </button>
@@ -139,7 +144,7 @@ export function Cart({
                 <button
                   type="button"
                   onClick={() => onAdjustQty(line.id, +1)}
-                  aria-label="Increase quantity"
+                  aria-label={t("cart.increaseQty")}
                 >
                   <Plus size={14} strokeWidth={1.5} />
                 </button>

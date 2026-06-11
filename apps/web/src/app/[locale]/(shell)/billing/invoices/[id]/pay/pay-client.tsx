@@ -14,17 +14,12 @@ import {
 } from "@/lib/api/billing";
 import { useAuthStore } from "@/lib/auth/store";
 import { ApiError } from "@/lib/api/client";
+import { currencyMinorUnits, formatMoney, minorToMajor } from "@/lib/currency";
 
 type Step = 1 | 2 | 3;
 
 function formatCents(cents: string, currency: string): string {
-  const major = Number(BigInt(cents)) / 100;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency || "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(major);
+  return formatMoney(cents, currency || "USD", "en");
 }
 
 /**
@@ -41,7 +36,9 @@ function buildPaymentQrPayload(input: {
   currency: string;
   reference: string;
 }): string {
-  const major = (Number(BigInt(input.amountCents)) / 100).toFixed(2);
+  const major = minorToMajor(input.amountCents, input.currency).toFixed(
+    currencyMinorUnits(input.currency),
+  );
   const lines = [
     `Bank: ${input.bank.bank_name}`,
     `Account holder: ${input.bank.account_holder}`,
@@ -581,6 +578,7 @@ function BankField({
   onCopy?: () => void;
   copied?: boolean;
 }) {
+  const t = useTranslations("billing.pay");
   return (
     <div
       style={{
@@ -605,7 +603,7 @@ function BankField({
               color: copied ? "var(--sage)" : "var(--ink-3)",
               padding: 4,
             }}
-            aria-label="Copy"
+            aria-label={t("copy")}
           >
             {copied ? <Check size={13} /> : <Copy size={13} />}
           </button>

@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Pencil, Package, Users } from "lucide-react";
 import type { ApiBranchSummary } from "@/lib/api/branches";
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency, minorToMajor } from "@/lib/currency";
 
 function pickName(i18n: { en: string; ar: string } | undefined, locale: string): string {
   if (!i18n) return "";
@@ -44,7 +44,7 @@ export function BranchCard({
         <div className="br-stat">
           <div className="br-stat-label">{t("salesToday")}</div>
           <div className="br-stat-value">
-            {formatCurrency(cents / 100, branch.currency_code, locale)}
+            {formatCurrency(minorToMajor(cents, branch.currency_code), branch.currency_code, locale)}
           </div>
         </div>
         <div className="br-stat">

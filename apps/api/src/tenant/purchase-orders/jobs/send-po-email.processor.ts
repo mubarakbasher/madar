@@ -23,6 +23,7 @@ import type { Job } from "bullmq";
 // eslint-disable-next-line no-restricted-imports -- background job loads PO + supplier + tenant for email rendering; runs outside request context so tenantScoped is unavailable
 import { adminPrisma } from "@madar/db";
 import { EmailService } from "../../../common/email/email.service";
+import { formatMoney } from "../../../common/currency";
 import {
   renderPurchaseOrderPdf,
   type PurchaseOrderPdfInput,
@@ -222,7 +223,7 @@ function renderEmailHtml(input: PurchaseOrderPdfInput): string {
   <p style="margin: 0 0 16px; color: #5C564D;">From <strong>${escapeHtml(input.tenant.name)}</strong></p>
   <p style="margin: 0 0 16px;">Hello${input.supplier.contact_name ? ` ${escapeHtml(input.supplier.contact_name)}` : ""},</p>
   <p style="margin: 0 0 16px;">Please find attached purchase order <strong>${escapeHtml(input.po.code)}</strong> for delivery${input.po.expected_at ? ` on or before <strong>${escapeHtml(input.po.expected_at.toISOString().slice(0, 10))}</strong>` : ""}.</p>
-  <p style="margin: 0 0 16px;">Total: <strong>${escapeHtml(input.po.currency_code)} ${((input.po.total_cents) / 100).toFixed(2)}</strong></p>
+  <p style="margin: 0 0 16px;">Total: <strong>${escapeHtml(formatMoney(input.po.total_cents, input.po.currency_code, "en-US"))}</strong></p>
   ${input.po.notes ? `<p style="margin: 0 0 16px; color: #5C564D; font-style: italic;">${escapeHtml(input.po.notes)}</p>` : ""}
   <p style="margin: 24px 0 0;">Thanks,<br />${escapeHtml(input.tenant.name)}</p>
   <hr style="border: none; border-top: 1px solid #E8E4DD; margin: 32px 0;" />
@@ -240,7 +241,7 @@ function renderEmailText(input: PurchaseOrderPdfInput): string {
     "",
     `Please find attached purchase order ${input.po.code}${input.po.expected_at ? ` for delivery on or before ${input.po.expected_at.toISOString().slice(0, 10)}` : ""}.`,
     "",
-    `Total: ${input.po.currency_code} ${(input.po.total_cents / 100).toFixed(2)}`,
+    `Total: ${formatMoney(input.po.total_cents, input.po.currency_code, "en-US")}`,
   ];
   if (input.po.notes) {
     lines.push("", input.po.notes);

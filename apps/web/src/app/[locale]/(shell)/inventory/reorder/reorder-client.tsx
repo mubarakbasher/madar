@@ -13,6 +13,7 @@ import { purchaseOrderCreateRequest } from "@/lib/api/purchase-orders";
 import { ApiError } from "@/lib/api/client";
 import { useBranchScopeStore, branchScopeParam } from "@/lib/branch-scope/store";
 import { useAuthStore } from "@/lib/auth/store";
+import { currencyMinorUnits, formatMoney, minorToMajor } from "@/lib/currency";
 
 const HORIZONS = [7, 14, 30] as const;
 
@@ -22,14 +23,10 @@ function i18nName(n: { en?: string; ar?: string } | null, fallback: string, loca
 }
 
 function fmtMoney(cents: string | number, currency: string, locale: "en" | "ar"): string {
-  const major = Number(cents) / 100;
   try {
-    return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-      style: "currency",
-      currency: currency || "USD",
-    }).format(major);
+    return formatMoney(cents, currency || "USD", locale);
   } catch {
-    return `${currency} ${major.toFixed(2)}`;
+    return `${currency} ${minorToMajor(cents, currency).toFixed(currencyMinorUnits(currency))}`;
   }
 }
 

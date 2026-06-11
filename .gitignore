@@ -50,3 +50,5 @@ next-env.d.ts
 
 # Local payment-proof storage (1.11a, until 1.11d wires MinIO)
 apps/api/var/
+
+apps/api/test/var/

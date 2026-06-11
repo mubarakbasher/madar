@@ -9,6 +9,7 @@ import {
   customersListRequest,
   type ApiCustomerSummary,
 } from "@/lib/api/customers";
+import { formatMoney } from "@/lib/currency";
 
 function useDebounced<T>(value: T, delayMs: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -25,11 +26,7 @@ function formatCurrencyMinor(
   locale: "en" | "ar",
 ): string {
   if (!amountMinor || !currency) return "—";
-  const major = Number(amountMinor) / 100;
-  return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-    style: "currency",
-    currency,
-  }).format(major);
+  return formatMoney(amountMinor, currency, locale);
 }
 
 function formatRelative(iso: string | null, locale: "en" | "ar"): string {

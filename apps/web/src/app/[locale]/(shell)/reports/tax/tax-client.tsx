@@ -14,26 +14,21 @@ import {
 } from "@/lib/api/reports/tax";
 import { branchesListRequest } from "@/lib/api/branches";
 import { useAuthStore } from "@/lib/auth/store";
+import { formatMoney as formatMoneyShared, minorToMajor } from "@/lib/currency";
+import { localDaysAgo, localIsoDate } from "@/lib/local-date";
 
 function todayIso(): string {
-  return new Date().toISOString().slice(0, 10);
+  return localIsoDate(new Date());
 }
 function thirtyDaysAgoIso(): string {
-  return new Date(Date.now() - 30 * 86_400_000).toISOString().slice(0, 10);
+  return localIsoDate(localDaysAgo(new Date(), 30));
 }
 
 function formatMoney(cents: string, currency: string, locale: "en" | "ar"): string {
-  const big = BigInt(cents);
-  const major = Number(big) / 100;
   try {
-    return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-      style: "currency",
-      currency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(major);
+    return formatMoneyShared(cents, currency, locale);
   } catch {
-    return `${currency} ${major.toFixed(2)}`;
+    return `${currency} ${minorToMajor(cents, currency)}`;
   }
 }
 

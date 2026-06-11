@@ -23,6 +23,7 @@
     "db:studio": "pnpm --filter=@madar/db run db:studio",
     "db:seed": "pnpm --filter=@madar/db run db:seed",
     "db:bootstrap-admin": "pnpm --filter=@madar/db run db:bootstrap-admin",
+    "test": "pnpm test:api",
     "test:rls": "pnpm --filter=@madar/db run test:rls",
     "test:api": "pnpm --filter=@madar/api run test",
     "test:realm": "pnpm --filter=@madar/api run test:realm"

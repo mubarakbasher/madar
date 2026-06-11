@@ -1,10 +1,11 @@
 "use client";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "../../../../../i18n/routing";
 
 const labels: Record<string, string> = { en: "EN", ar: "ع" };
 
 export function LocaleToggle() {
+  const t = useTranslations("common");
   const router = useRouter();
   const pathname = usePathname();
   const current = useLocale();
@@ -17,7 +18,7 @@ export function LocaleToggle() {
   return (
     <div
       role="group"
-      aria-label="Language"
+      aria-label={t("language")}
       className="inline-flex items-center gap-1 rounded-full border px-1 py-1 text-[12px]"
       style={{
         borderColor: "var(--rule)",

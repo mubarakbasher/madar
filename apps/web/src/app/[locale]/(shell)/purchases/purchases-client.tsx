@@ -12,7 +12,7 @@ import {
 import { suppliersListRequest } from "@/lib/api/suppliers";
 import { branchesListRequest } from "@/lib/api/branches";
 import { useAuthStore } from "@/lib/auth/store";
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency, minorToMajor } from "@/lib/currency";
 import { POStatusPill } from "./_components/POStatusPill";
 import "./purchases.css";
 
@@ -152,13 +152,13 @@ export function PurchasesClient({ locale }: { locale: "en" | "ar" }) {
         <div className="po-hero-cell">
           <div className="po-hero-label">{t("hero.openOwed")}</div>
           <div className="po-hero-value">
-            {formatCurrency(hero.openOwed / 100, tenantCurrency, locale)}
+            {formatCurrency(minorToMajor(hero.openOwed, tenantCurrency), tenantCurrency, locale)}
           </div>
         </div>
         <div className="po-hero-cell">
           <div className="po-hero-label">{t("hero.thisMonthSpend")}</div>
           <div className="po-hero-value">
-            {formatCurrency(hero.thisMonthSpend / 100, tenantCurrency, locale)}
+            {formatCurrency(minorToMajor(hero.thisMonthSpend, tenantCurrency), tenantCurrency, locale)}
           </div>
         </div>
       </div>
@@ -282,7 +282,7 @@ export function PurchasesClient({ locale }: { locale: "en" | "ar" }) {
                   </td>
                   <td className="po-table-num">
                     {formatCurrency(
-                      Number(r.total_cents) / 100,
+                      minorToMajor(r.total_cents, r.currency_code),
                       r.currency_code,
                       locale,
                     )}

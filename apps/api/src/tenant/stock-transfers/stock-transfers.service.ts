@@ -9,6 +9,7 @@ import {
   UnprocessableEntityException,
 } from "@nestjs/common";
 import { tenantScoped } from "@madar/db";
+import { withTenantTx } from "../../shared/db-tx";
 import { AuditService, type AuditCtx } from "../auth/audit.service";
 import type { ListTransfersQuery } from "./dto/list-transfers.dto";
 import type { CreateTransferBody } from "./dto/create-transfer.dto";
@@ -173,7 +174,7 @@ export class StockTransfersService {
     for (let attempt = 0; attempt < 5 && !createdId; attempt++) {
       const code = `TXR-${randomUUID().slice(0, 6).toUpperCase()}`;
       try {
-        const tx = await scoped.$transaction(async (tx) => {
+        const tx = await withTenantTx(tenantId, async (tx) => {
           const header = await tx.stockTransfer.create({
             data: {
               tenant_id: tenantId,
@@ -248,7 +249,7 @@ export class StockTransfersService {
       this.assertNoDuplicateProducts(body.lines);
     }
 
-    await scoped.$transaction(async (tx) => {
+    await withTenantTx(tenantId, async (tx) => {
       const data: Record<string, unknown> = {};
       if (body.notes !== undefined) data.notes = body.notes;
       if (Object.keys(data).length) {
@@ -308,11 +309,19 @@ export class StockTransfersService {
       });
     }
 
-    await scoped.$transaction(async (tx) => {
-      await tx.stockTransfer.update({
-        where: { id },
+    await withTenantTx(tenantId, async (tx) => {
+      // Guarded status transition: only the first concurrent send() wins.
+      // Must run BEFORE any stock writes so a loser does no stock work.
+      const advanced = await tx.stockTransfer.updateMany({
+        where: { id, status: "draft" },
         data: { status: "in_transit", sent_at: new Date(), sent_by: actorId },
       });
+      if (advanced.count === 0) {
+        throw new ConflictException({
+          code: "transfer_state_changed",
+          message: "Transfer was modified by someone else — reload and retry.",
+        });
+      }
       for (const line of existing.lines) {
         await tx.stockMovement.create({
           data: {
@@ -408,11 +417,19 @@ export class StockTransfersService {
       });
     }
 
-    await scoped.$transaction(async (tx) => {
-      await tx.stockTransfer.update({
-        where: { id },
+    await withTenantTx(tenantId, async (tx) => {
+      // Guarded status transition: only the first concurrent receive() wins.
+      // Must run BEFORE any stock writes so a loser does no stock work.
+      const advanced = await tx.stockTransfer.updateMany({
+        where: { id, status: "in_transit" },
         data: { status: "received", received_at: new Date(), received_by: actorId },
       });
+      if (advanced.count === 0) {
+        throw new ConflictException({
+          code: "transfer_state_changed",
+          message: "Transfer was modified by someone else — reload and retry.",
+        });
+      }
       for (const r of body.lines) {
         const sourceLine = lineById.get(r.line_id)!;
         const discrepant = r.qty_received !== sourceLine.qty_sent;

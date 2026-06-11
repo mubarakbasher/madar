@@ -27,6 +27,18 @@
   --amber: #B98A3D;           /* warnings */
   --amber-soft: #EFDFC1;
 
+  /* Decorative product/category swatches — deterministic by record id.
+     Same values in dark mode (deep warm tones read fine on both). */
+  --swatch-1: #3D2817;        /* espresso bean */
+  --swatch-2: #6B3F1D;        /* chocolate */
+  --swatch-3: #A8693B;        /* amber roast */
+  --swatch-4: #C96442;        /* terracotta */
+  --swatch-5: #5F4830;        /* walnut */
+  --swatch-6: #8B6B45;        /* toffee */
+  --swatch-7: #3F5A47;        /* sage */
+  --swatch-8: #7A4A3F;        /* brick */
+  --swatch-mix-base: #1A1714; /* gradient mix anchor for swatch headers */
+
   /* Type — actual font family names wired via packages/ui/src/fonts.ts */
   --serif: var(--font-fraunces), "GT Sectra", "Source Serif 4", Georgia, serif;
   --sans: var(--font-inter-tight), "Söhne", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;

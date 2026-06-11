@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Banknote, CreditCard, Coins, Plus, Trash2 } from "lucide-react";
+import { currencyMinorUnits, majorToMinor, minorToMajor } from "@/lib/currency";
 
 export type SplitMethod = "cash" | "card" | "store_credit";
 
@@ -64,6 +65,10 @@ export function SplitTenderBody({
   const tMethods = useTranslations("pos.payment.split.methods");
 
   const [slices, setSlices] = useState<SliceState[]>(() => [makeSlice("cash"), makeSlice("card")]);
+
+  // Currency-aware input granularity: KWD steps by 0.001, JPY by 1.
+  const fractionDigits = currencyMinorUnits(currency);
+  const inputStep = 1 / 10 ** fractionDigits;
 
   const paidCents = useMemo(
     () => slices.reduce((sum, s) => sum + (Number.isFinite(s.amount_cents) ? s.amount_cents : 0), 0),
@@ -183,7 +188,7 @@ export function SplitTenderBody({
                       onClick={() => updateSlice(s.key, { method: m })}
                       title={
                         disabled
-                          ? `${tMethods("storeCredit")} · ${storeCreditBalance / 100} ${currency}`
+                          ? `${tMethods("storeCredit")} · ${minorToMajor(storeCreditBalance, currency)} ${currency}`
                           : undefined
                       }
                       style={{
@@ -223,11 +228,11 @@ export function SplitTenderBody({
                 type="number"
                 inputMode="decimal"
                 min={0}
-                step={0.01}
-                value={s.amount_cents === 0 ? "" : s.amount_cents / 100}
+                step={inputStep}
+                value={s.amount_cents === 0 ? "" : minorToMajor(s.amount_cents, currency)}
                 onChange={(e) => {
                   const raw = e.target.value;
-                  const parsed = raw === "" ? 0 : Math.round(Number(raw) * 100);
+                  const parsed = raw === "" ? 0 : majorToMinor(Number(raw), currency);
                   updateSlice(s.key, { amount_cents: Number.isFinite(parsed) ? parsed : 0 });
                 }}
                 className="pos-input tnum"
@@ -274,11 +279,11 @@ export function SplitTenderBody({
                     type="number"
                     inputMode="decimal"
                     min={0}
-                    step={0.01}
-                    value={s.cash_tendered_cents === 0 ? "" : s.cash_tendered_cents / 100}
+                    step={inputStep}
+                    value={s.cash_tendered_cents === 0 ? "" : minorToMajor(s.cash_tendered_cents, currency)}
                     onChange={(e) => {
                       const raw = e.target.value;
-                      const parsed = raw === "" ? 0 : Math.round(Number(raw) * 100);
+                      const parsed = raw === "" ? 0 : majorToMinor(Number(raw), currency);
                       updateSlice(s.key, {
                         cash_tendered_cents: Number.isFinite(parsed) ? parsed : 0,
                       });
@@ -325,13 +330,13 @@ export function SplitTenderBody({
         <div>
           <div className="kicker">{t("footer.paid")}</div>
           <div className="serif tnum" style={{ fontSize: 16, fontWeight: 500 }}>
-            {(paidCents / 100).toFixed(2)} {currency}
+            {minorToMajor(paidCents, currency).toFixed(fractionDigits)} {currency}
           </div>
         </div>
         <div>
           <div className="kicker">{t("footer.total")}</div>
           <div className="serif tnum" style={{ fontSize: 16, fontWeight: 500 }}>
-            {(total_cents / 100).toFixed(2)} {currency}
+            {minorToMajor(total_cents, currency).toFixed(fractionDigits)} {currency}
           </div>
         </div>
         <div>
@@ -344,7 +349,7 @@ export function SplitTenderBody({
               color: remainingCents === 0 ? "var(--sage)" : "var(--rose)",
             }}
           >
-            {(remainingCents / 100).toFixed(2)} {currency}
+            {minorToMajor(remainingCents, currency).toFixed(fractionDigits)} {currency}
           </div>
         </div>
       </div>

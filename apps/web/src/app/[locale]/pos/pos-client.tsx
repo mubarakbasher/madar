@@ -33,12 +33,14 @@ import {
   type HeldSalesListResponse,
 } from "@/lib/api/held-sales";
 import { syncConflictsSummaryRequest } from "@/lib/api/sync-conflicts";
+import { minorToMajor } from "@/lib/currency";
 import { dispatchSale } from "@/lib/offline/dispatch";
 import { startSyncEngine } from "@/lib/offline/sync";
 import { saveCatalogSnapshot } from "@/lib/offline/catalog-cache";
 import { Link } from "../../../../i18n/routing";
 
 export function PosClient({ locale }: { locale: "en" | "ar" }) {
+  const t = useTranslations("pos");
   const tenant = useAuthStore((s) => s.tenant);
   const user = useAuthStore((s) => s.user);
   const bootstrapped = useAuthStore((s) => s.bootstrapped);
@@ -68,7 +70,7 @@ export function PosClient({ locale }: { locale: "en" | "ar" }) {
   });
 
   if (!bootstrapped) {
-    return <PosShellMessage tone="info">Loading catalog…</PosShellMessage>;
+    return <PosShellMessage tone="info">{t("catalog.loading")}</PosShellMessage>;
   }
   // No branch linked → selling is impossible (inventory commits against a
   // branch). Show a calm explainer instead of failing at the payment step.
@@ -76,12 +78,12 @@ export function PosClient({ locale }: { locale: "en" | "ar" }) {
     return <PosNoBranch canManage={user?.role === "owner"} />;
   }
   if (productsQ.isPending || categoriesQ.isPending) {
-    return <PosShellMessage tone="info">Loading catalog…</PosShellMessage>;
+    return <PosShellMessage tone="info">{t("catalog.loading")}</PosShellMessage>;
   }
   if (productsQ.isError || categoriesQ.isError) {
     return (
       <PosShellMessage tone="error">
-        <p style={{ marginBottom: 12 }}>Failed to load products.</p>
+        <p style={{ marginBottom: 12 }}>{t("catalog.loadError")}</p>
         <button
           type="button"
           className="pos-btn"
@@ -90,7 +92,7 @@ export function PosClient({ locale }: { locale: "en" | "ar" }) {
             void categoriesQ.refetch();
           }}
         >
-          Retry
+          {t("catalog.retry")}
         </button>
       </PosShellMessage>
     );
@@ -98,7 +100,8 @@ export function PosClient({ locale }: { locale: "en" | "ar" }) {
 
   const apiProducts = productsQ.data.items;
   const apiCategories = categoriesQ.data.items;
-  const products = apiProducts.map((p) => adaptProduct(p, locale));
+  const currency = tenant?.default_currency_code ?? "EGP";
+  const products = apiProducts.map((p) => adaptProduct(p, locale, currency));
   const categories = apiCategories.map((c) => adaptCategory(c, locale));
 
   return (
@@ -108,7 +111,7 @@ export function PosClient({ locale }: { locale: "en" | "ar" }) {
       apiProducts={apiProducts}
       apiCategories={apiCategories}
       categories={categories}
-      currency={tenant?.default_currency_code ?? "EGP"}
+      currency={currency}
       branchId={branchId}
       currentUserId={user?.id ?? null}
       userRole={user?.role ?? null}
@@ -206,37 +209,52 @@ function PosView({
     [products, cat, search],
   );
 
+  // Integer-cent cart math (audit L-9): per line, gross = unit price_cents ×
+  // qty and the percent discount floors via BigInt division — the exact
+  // semantics the hold/complete payload builders use, so the on-screen totals
+  // always match the cents we send. `price` is the major-unit mirror for
+  // display only.
   const cartLines: CartLineEx[] = useMemo(
     () =>
       cart
         .map((c) => {
           const p = products.find((x) => x.id === c.id);
-          if (!p) return null;
-          const price = p.price * c.qty * (1 - c.discount / 100);
-          return { ...c, p, price };
+          const apiProd = apiProductById.get(c.id);
+          if (!p || !apiProd) return null;
+          const grossCents = BigInt(apiProd.price_cents) * BigInt(c.qty);
+          const discountCents = Number((grossCents * BigInt(c.discount)) / 100n);
+          const priceCents = Number(grossCents) - discountCents;
+          return { ...c, p, priceCents, discountCents, price: minorToMajor(priceCents, currency) };
         })
         .filter((l): l is CartLineEx => l !== null),
-    [cart, products],
+    [cart, products, apiProductById, currency],
   );
 
-  const subtotal = cartLines.reduce((s, l) => s + l.price, 0);
-  const totalDiscount = cartLines.reduce((s, l) => s + (l.p.price * l.qty * l.discount) / 100, 0);
+  const subtotalCents = cartLines.reduce((s, l) => s + l.priceCents, 0);
+  const totalDiscountCents = cartLines.reduce((s, l) => s + l.discountCents, 0);
 
   // Per-line tax preview using the effective rate from `apiProduct.tax_rate_pct`
   // (resolves product class → tenant default → null on the server). For
   // tax-inclusive tenants the displayed price already contains the tax, so we
-  // extract it; otherwise it's added on top. Server re-computes authoritatively
-  // on completeSale — this is preview only.
+  // extract it; otherwise it's added on top. Percent-of-cents is intrinsically
+  // fractional, so each line rounds to the nearest cent (unavoidable rounding —
+  // the server re-computes authoritatively on completeSale; this is preview only).
   const taxInclusive = useAuthStore((s) => s.tenant?.tax_inclusive_default ?? false);
-  const tax = cartLines.reduce((sum, l) => {
+  const taxCents = cartLines.reduce((sum, l) => {
     const rate = apiProductById.get(l.p.id)?.tax_rate_pct;
     if (rate == null || rate <= 0) return sum;
     if (taxInclusive) {
-      return sum + (l.price * rate) / (100 + rate);
+      return sum + Math.round((l.priceCents * rate) / (100 + rate));
     }
-    return sum + (l.price * rate) / 100;
+    return sum + Math.round((l.priceCents * rate) / 100);
   }, 0);
-  const total = taxInclusive ? subtotal : subtotal + tax;
+  const totalCents = taxInclusive ? subtotalCents : subtotalCents + taxCents;
+
+  // Major-unit mirrors for display-only consumers.
+  const subtotal = minorToMajor(subtotalCents, currency);
+  const totalDiscount = minorToMajor(totalDiscountCents, currency);
+  const tax = minorToMajor(taxCents, currency);
+  const total = minorToMajor(totalCents, currency);
 
   // Offline POS bootstrap. Idempotent: registering twice is a no-op.
   useEffect(() => {
@@ -472,10 +490,10 @@ function PosView({
         cashier_id: currentUserId ?? "",
         customer_id: customer?.id ?? null,
         occurred_at: new Date().toISOString(),
-        subtotal_cents: String(Math.round((subtotal ?? 0) * 100)),
+        subtotal_cents: String(subtotalCents),
         discount_cents: "0",
         tax_cents: "0",
-        total_cents: String(Math.round((total ?? 0) * 100)),
+        total_cents: String(totalCents),
         cash_tendered_cents: null,
         change_due_cents: null,
         currency_code: currency,
@@ -673,7 +691,7 @@ function PosView({
             id: c.id,
             name: c.name,
             visits: c.salesCount,
-            credit: Math.round(Number(c.storeCreditMinor) / 100),
+            credit: Math.round(minorToMajor(c.storeCreditMinor, c.storeCreditCurrency ?? currency)),
             currency: c.storeCreditCurrency,
           });
           setCustomerPickerOpen(false);
@@ -683,7 +701,7 @@ function PosView({
 
       {payOpen && (
         <PaymentSheet
-          total={total}
+          total_cents={totalCents}
           tax={tax}
           taxInclusive={taxInclusive}
           currency={currency}

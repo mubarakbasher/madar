@@ -29,6 +29,13 @@ if (fs.existsSync(dotenvPath)) {
 // Tell the rate-limit guard + redis service we're in test mode.
 process.env.NODE_ENV = "test";
 
+// Bank-account specs need an encryption key. Setting it inside a spec file is
+// too late — loadEnv() may already be cached by an earlier module import — so
+// provide a deterministic default here, before anything evaluates env.
+if (!process.env.PLATFORM_BANK_ENCRYPTION_KEY) {
+  process.env.PLATFORM_BANK_ENCRYPTION_KEY = "f".repeat(64);
+}
+
 // Use the in-memory Redis fallback for tests so we don't have to flush a real
 // instance between specs. Refresh-jti storage and idempotency cache are
 // per-process and predictable.

@@ -74,6 +74,18 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     this.memory.delete(key);
   }
 
+  /** Atomic read-and-delete — for single-use tokens/codes. */
+  async getDel(key: string): Promise<string | null> {
+    if (this.client) {
+      const res = await this.client.multi().get(key).del(key).exec();
+      return (res?.[0]?.[1] as string | null) ?? null;
+    }
+    this.purgeExpired();
+    const value = this.memory.get(key)?.value ?? null;
+    this.memory.delete(key);
+    return value;
+  }
+
   async delByPattern(pattern: string): Promise<number> {
     if (this.client) {
       // SCAN-based cleanup; bounded ops for our use case.

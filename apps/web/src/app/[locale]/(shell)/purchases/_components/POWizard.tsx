@@ -22,7 +22,7 @@ import {
   type UpdatePOBody,
 } from "@/lib/api/purchase-orders";
 import { useAuthStore } from "@/lib/auth/store";
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency, minorToMajor } from "@/lib/currency";
 import { POLineEditor, type DraftPOLine } from "./POLineEditor";
 import { SendToSupplierDialog } from "./SendToSupplierDialog";
 
@@ -495,7 +495,7 @@ export function POWizard({
             <div className="po-subtotal-box">
               <span className="po-subtotal-label">{t("step2.subtotal")}</span>
               <span className="po-subtotal-value">
-                {formatCurrency(subtotalCents / 100, currency, locale)}
+                {formatCurrency(minorToMajor(subtotalCents, currency), currency, locale)}
               </span>
             </div>
 
@@ -615,10 +615,10 @@ export function POWizard({
                             </td>
                             <td className="po-num">{qty}</td>
                             <td className="po-num">
-                              {formatCurrency(cost / 100, currency, locale)}
+                              {formatCurrency(minorToMajor(cost, currency), currency, locale)}
                             </td>
                             <td className="po-num">
-                              {formatCurrency((qty * cost) / 100, currency, locale)}
+                              {formatCurrency(minorToMajor(qty * cost, currency), currency, locale)}
                             </td>
                           </tr>
                         );
@@ -641,20 +641,20 @@ export function POWizard({
               <div className="po-totals">
                 <div className="po-totals-row">
                   <span className="po-totals-row-label">{t("step3.subtotal")}</span>
-                  <span>{formatCurrency(subtotalCents / 100, currency, locale)}</span>
+                  <span>{formatCurrency(minorToMajor(subtotalCents, currency), currency, locale)}</span>
                 </div>
                 <div className="po-totals-row">
                   <span className="po-totals-row-label">{t("step3.tax")}</span>
-                  <span>{formatCurrency(taxNum / 100, currency, locale)}</span>
+                  <span>{formatCurrency(minorToMajor(taxNum, currency), currency, locale)}</span>
                 </div>
                 <div className="po-totals-row">
                   <span className="po-totals-row-label">{t("step3.shipping")}</span>
-                  <span>{formatCurrency(shippingNum / 100, currency, locale)}</span>
+                  <span>{formatCurrency(minorToMajor(shippingNum, currency), currency, locale)}</span>
                 </div>
                 <div className="po-totals-grand">
                   <span className="po-field-label">{t("step3.grandTotal")}</span>
                   <span className="po-totals-grand-value">
-                    {formatCurrency(grandCents / 100, currency, locale)}
+                    {formatCurrency(minorToMajor(grandCents, currency), currency, locale)}
                   </span>
                 </div>
               </div>

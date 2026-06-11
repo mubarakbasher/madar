@@ -9,12 +9,14 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import argon2 from "argon2";
+import { burnPasswordVerification } from "../../common/timing-safe-auth";
 import { createHash, randomBytes } from "node:crypto";
 // Pre-auth flows (signup, login lookup, password reset, email verification,
 // MFA enrollment) run before a tenant JWT exists, so platform-table reads
 // (tenants, users) must go through adminPrisma.
 // eslint-disable-next-line no-restricted-imports
 import { adminPrisma, tenantScoped } from "@madar/db";
+import { withAdminTx } from "../../shared/db-tx";
 import { AuditService } from "./audit.service";
 import { TokenService } from "./token.service";
 import { MfaService } from "./mfa.service";
@@ -152,7 +154,7 @@ export class AuthService {
     const verifyTokenHash = sha256Hex(verifyRawToken);
     const verifyExpiresAt = new Date(Date.now() + verifyTtlHours * 3600 * 1000);
 
-    const created = await adminPrisma.$transaction(async (tx) => {
+    const created = await withAdminTx(async (tx) => {
       const tenant = await tx.tenant.create({
         data: {
           slug,
@@ -265,6 +267,7 @@ export class AuthService {
     });
 
     if (candidates.length === 0) {
+      await burnPasswordVerification(input.password);
       throw new UnauthorizedException({
         code: "invalid_credentials",
         message: "Email or password is incorrect",
@@ -554,6 +557,37 @@ export class AuthService {
       user.email_verification_expires_at.getTime() < Date.now()
     ) {
       throw new GoneException({ code: "verify_token_expired", message: "This verification link has expired" });
+    }
+
+    if (user.pending_email) {
+      // Confirmed email CHANGE: swap now, and kill every other session —
+      // whoever initiated the change should have to sign in again with the
+      // new address.
+      const oldEmail = user.email;
+      await adminPrisma.user.update({
+        where: { id: user.id },
+        data: {
+          email: user.pending_email,
+          pending_email: null,
+          email_verified: true,
+          email_verification_token_hash: null,
+          email_verification_expires_at: null,
+        },
+      });
+      await this.tokens.revokeAllRefreshTokensForUser(user.id);
+      await this.audit
+        .writeTenantScoped(
+          { tenantId: user.tenant_id, userId: user.id, ip: ctx.ip, userAgent: ctx.userAgent },
+          {
+            action: "email_changed",
+            entity: "user",
+            entityId: user.id,
+            before: { email: oldEmail },
+            after: { email: user.pending_email },
+          },
+        )
+        .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));
+      return;
     }
 
     await adminPrisma.user.update({
@@ -1032,26 +1066,29 @@ export class AuthService {
     const tokenHash = sha256Hex(rawToken);
     const expiresAt = new Date(Date.now() + ttlHours * 3600 * 1000);
 
-    try {
-      await adminPrisma.user.update({
-        where: { id: user.id },
-        data: {
-          email: input.new_email,
-          email_verified: false,
-          email_verification_token_hash: tokenHash,
-          email_verification_expires_at: expiresAt,
-        },
+    // STAGED change: the login email is untouched until the NEW address
+    // proves it can receive mail (token consumed in verifyEmail). Swapping
+    // immediately would let a hijacked session silently take over the
+    // account — password resets would start going to the attacker.
+    const emailTaken = await adminPrisma.user.findFirst({
+      where: { tenant_id: user.tenant_id, email: input.new_email, deleted_at: null },
+      select: { id: true },
+    });
+    if (emailTaken) {
+      throw new ConflictException({
+        code: "email_taken",
+        message: "Another user already has this email",
       });
-    } catch (e) {
-      const code = (e as { code?: string } | undefined)?.code;
-      if (code === "P2002") {
-        throw new ConflictException({
-          code: "email_taken",
-          message: "Another user already has this email",
-        });
-      }
-      throw e;
     }
+
+    await adminPrisma.user.update({
+      where: { id: user.id },
+      data: {
+        pending_email: input.new_email,
+        email_verification_token_hash: tokenHash,
+        email_verification_expires_at: expiresAt,
+      },
+    });
 
     const tenant = await adminPrisma.tenant.findUnique({ where: { id: user.tenant_id } });
     const locale = pickLocale(user.locale);
@@ -1069,6 +1106,16 @@ export class AuthService {
       })
       .catch((e) => this.logger.warn(`email_verification send failed: ${(e as Error).message}`));
 
+    // Heads-up to the OLD address so the real owner notices a hijack attempt
+    // while their login still works.
+    this.email
+      .sendRaw({
+        to: user.email,
+        subject: "Your Madar sign-in email is being changed",
+        html: `<p>Hi ${user.name},</p><p>A request was made to change your Madar sign-in email to <strong>${input.new_email}</strong>. Nothing changes until that address confirms.</p><p>If this wasn't you, change your password immediately — your current email keeps working until the new one is confirmed.</p>`,
+      })
+      .catch((e) => this.logger.warn(`email-change notice send failed: ${(e as Error).message}`));
+
     await this.audit
       .writeTenantScoped(
         {
@@ -1079,11 +1126,11 @@ export class AuthService {
           ...(p.impersonatorId ? { impersonatorId: p.impersonatorId } : {}),
         },
         {
-          action: "email_changed",
+          action: "email_change_requested",
           entity: "user",
           entityId: p.userId,
           before: { email: user.email },
-          after: { email: input.new_email },
+          after: { pending_email: input.new_email },
         },
       )
       .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));

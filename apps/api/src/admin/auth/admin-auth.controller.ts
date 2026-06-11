@@ -66,7 +66,7 @@ export class AdminAuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.auth.verifyMfa(challenger.platformUserId, body, {
+    const result = await this.auth.verifyMfa(challenger, body, {
       ip: getClientIp(req),
       userAgent: getUserAgent(req),
     });
