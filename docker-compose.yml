@@ -83,8 +83,10 @@ services:
         condition: service_healthy
     environment:
       # Point at the in-network postgres + minio. Uses the `madar` superuser
-      # because the backup needs full SELECT regardless of RLS.
-      DATABASE_URL: postgres://madar:madar@postgres:5432/madar
+      # because the backup needs full SELECT regardless of RLS. The password
+      # interpolates from the env file in prod (defaults match dev compose);
+      # keep POSTGRES_PASSWORD URL-safe — this is consumed as a URL.
+      DATABASE_URL: postgres://${POSTGRES_USER:-madar}:${POSTGRES_PASSWORD:-madar}@postgres:5432/madar
       BACKUP_S3_ENDPOINT: http://minio:9000
       BACKUP_S3_BUCKET: ${BACKUP_S3_BUCKET:-madar-backups}
       BACKUP_S3_ACCESS_KEY: ${BACKUP_S3_ACCESS_KEY:-madar}
