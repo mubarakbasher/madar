@@ -1,4 +1,5 @@
 import { ShieldCheck } from "lucide-react";
+import { MadarMark } from "@madar/ui";
 import { t } from "../../lib/i18n";
 
 export default function AdminAuthLayout({ children }: { children: React.ReactNode }) {
@@ -6,9 +7,7 @@ export default function AdminAuthLayout({ children }: { children: React.ReactNod
     <div className="min-h-dvh bg-bg text-ink">
       <header className="flex items-center justify-between px-6 py-5 lg:px-10">
         <div className="flex items-center gap-3">
-          <div className="grid h-9 w-9 place-items-center rounded-lg bg-accent text-white font-serif text-xl">
-            M
-          </div>
+          <MadarMark size={36} className="text-accent" />
           <span className="font-serif text-xl tracking-tight">{t("brand.name")}</span>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft px-2.5 py-0.5 text-[10px] font-sans font-semibold uppercase tracking-wider text-accent-ink">
             <ShieldCheck className="h-3 w-3" strokeWidth={2} />

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
+import { MadarMark } from "@madar/ui";
 import { LocaleToggle } from "./_components/LocaleToggle";
 
 export default async function AuthLayout({
@@ -35,12 +36,7 @@ export default async function AuthLayout({
           aria-hidden="true"
         >
           <div className="flex items-center gap-3">
-            <div
-              className="grid h-9 w-9 place-items-center rounded-lg text-white"
-              style={{ background: "var(--accent)", fontFamily: "var(--serif)" }}
-            >
-              M
-            </div>
+            <MadarMark size={36} style={{ color: "var(--accent)" }} />
             <span style={{ fontFamily: "var(--serif)", fontSize: 22, letterSpacing: "-0.01em" }}>
               Madar
             </span>
@@ -95,9 +91,10 @@ export default async function AuthLayout({
         >
           <header className="flex items-center justify-between px-6 py-5 lg:px-10">
             <span
-              className="lg:hidden"
+              className="inline-flex items-center gap-2 lg:hidden"
               style={{ fontFamily: "var(--serif)", fontSize: 20, letterSpacing: "-0.01em" }}
             >
+              <MadarMark size={22} style={{ color: "var(--accent)" }} />
               Madar
             </span>
             <span className="hidden lg:block" />

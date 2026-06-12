@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Madar — logo candidates</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Serif:wght@500&family=IBM+Plex+Sans+Arabic:wght@500&display=swap" rel="stylesheet" />
+<style>
+  /* Token palette (from packages/ui tokens.css) */
+  :root {
+    --bg: #FAF7F2;
+    --paper: #F6F2EB;
+    --ink: #1A1714;
+    --ink-3: #6B6259;
+    --rule: #E5DED2;
+    --accent: #C8553D;
+    --admin: #4A6B7A;
+    --dark-bg: #161310;
+    --dark-accent: #E27A60;
+    --dark-admin: #6B8A99;
+    --serif: "Fraunces", Georgia, serif;
+    --arabic: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 14px/1.5 system-ui, sans-serif;
+    padding: 40px 48px 80px;
+  }
+  h1 { font-family: var(--serif); font-weight: 500; font-size: 34px; margin: 0 0 4px; }
+  .sub { color: var(--ink-3); margin: 0 0 36px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 22px;
+  }
+  .card {
+    background: #FFFFFE;
+    border: 1px solid var(--rule);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .card header { display: flex; align-items: baseline; gap: 10px; }
+  .num {
+    font-family: var(--serif);
+    font-size: 22px; font-weight: 600;
+    color: var(--accent);
+    min-width: 30px;
+  }
+  .name { font-weight: 600; }
+  .desc { color: var(--ink-3); font-size: 12.5px; }
+
+  .hero {
+    background: var(--paper);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 26px 0;
+    color: var(--accent);
+  }
+  .hero svg { width: 96px; height: 96px; }
+
+  .lockup {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    padding: 6px 0;
+    color: var(--accent);
+  }
+  .lockup svg { width: 34px; height: 34px; flex: none; }
+  .word { display: flex; flex-direction: column; line-height: 1.05; }
+  .word .en { font-family: var(--serif); font-size: 26px; font-weight: 500; color: var(--ink); }
+  .word .ar { font-family: var(--arabic); font-size: 17px; color: var(--ink-3); }
+
+  .variants { display: flex; gap: 8px; }
+  .sw {
+    flex: 1;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 12px 0;
+    position: relative;
+    border: 1px solid var(--rule);
+  }
+  .sw svg { width: 40px; height: 40px; }
+  .sw .tag {
+    position: absolute; bottom: 3px; inset-inline-start: 7px;
+    font-size: 9px; letter-spacing: .04em; text-transform: uppercase;
+  }
+  .sw-dark   { background: var(--dark-bg);  color: var(--dark-accent); border-color: #2A251F; }
+  .sw-dark   .tag { color: #8A8478; }
+  .sw-admin  { background: var(--bg); color: var(--admin); }
+  .sw-admin  .tag { color: var(--ink-3); }
+  .sw-tiny   { background: var(--paper); color: var(--accent); }
+  .sw-tiny   svg { width: 16px; height: 16px; }
+  .sw-tiny   .tag { color: var(--ink-3); }
+
+  svg text { user-select: none; }
+</style>
+</head>
+<body>
+
+<h1>Madar — logo candidates</h1>
+<p class="sub">12 directions · مدار = orbit · each shown large, as a lockup, in dark mode, in the admin slate-teal theme, and at favicon size (16&nbsp;px). All single-color, drawn with the system palette.</p>
+
+<!-- ====== Mark definitions (48×48 viewBox, currentColor) ====== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+
+    <!-- 1 · Orbit classic -->
+    <symbol id="m1" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="16" fill="none" stroke="currentColor" stroke-width="2.5"/>
+      <circle cx="24" cy="24" r="5.5" fill="currentColor"/>
+      <circle cx="35.5" cy="12.8" r="3.2" fill="currentColor"/>
+    </symbol>
+
+    <!-- 2 · Tilted ellipse -->
+    <symbol id="m2" viewBox="0 0 48 48">
+      <g transform="rotate(-24 24 24)">
+        <ellipse cx="24" cy="24" rx="19" ry="8.5" fill="none" stroke="currentColor" stroke-width="2.5"/>
+      </g>
+      <circle cx="24" cy="24" r="6.5" fill="currentColor"/>
+    </symbol>
+
+    <!-- 3 · Double orbit -->
+    <symbol id="m3" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="10.5" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <circle cx="24" cy="24" r="17.5" fill="none" stroke="currentColor" stroke-width="2.2"/>
+      <circle cx="24" cy="24" r="3.4" fill="currentColor"/>
+      <circle cx="33.2" cy="18.9" r="2.8" fill="currentColor"/>
+      <circle cx="11.3" cy="33.3" r="2.8" fill="currentColor"/>
+    </symbol>
+
+    <!-- 4 · Crescent orbit -->
+    <symbol id="m4" viewBox="0 0 48 48">
+      <path d="M 24 9 A 15 15 0 1 0 39 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="39" cy="15.5" r="4" fill="currentColor"/>
+      <circle cx="24" cy="24" r="5" fill="currentColor"/>
+    </symbol>
+
+    <!-- 5 · Serif M tile -->
+    <symbol id="m5" viewBox="0 0 48 48">
+      <rect x="3" y="3" width="42" height="42" rx="12" fill="currentColor"/>
+      <text x="24" y="33.5" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="600" font-size="26" fill="#FAF7F2">M</text>
+    </symbol>
+
+    <!-- 6 · M + moon -->
+    <symbol id="m6" viewBox="0 0 48 48">
+      <text x="22" y="38" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-weight="600" font-size="36" fill="currentColor">M</text>
+      <circle cx="40" cy="11" r="3.6" fill="currentColor"/>
+    </symbol>
+
+    <!-- 7 · Arabic م mark -->
+    <symbol id="m7" viewBox="0 0 48 48">
+      <text x="24" y="34" text-anchor="middle" font-family="'IBM Plex Sans Arabic', system-ui, sans-serif" font-weight="500" font-size="34" fill="currentColor">م</text>
+    </symbol>
+
+    <!-- 8 · م + orbit -->
+    <symbol id="m8" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="19" fill="none" stroke="currentColor" stroke-width="2.4"/>
+      <text x="24" y="31" text-anchor="middle" font-family="'IBM Plex Sans Arabic', system-ui, sans-serif" font-weight="500" font-size="23" fill="currentColor">م</text>
+      <circle cx="37.5" cy="10.5" r="3" fill="currentColor"/>
+    </symbol>
+
+    <!-- 9 · Radar rings -->
+    <symbol id="m9" viewBox="0 0 48 48">
+      <circle cx="13" cy="35" r="4.5" fill="currentColor"/>
+      <path d="M 21 27 A 11.3 11.3 0 0 1 24.3 35"  fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" transform="rotate(-45 13 35)"/>
+      <path d="M 26 22 A 18.4 18.4 0 0 1 31.4 35"  fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" transform="rotate(-45 13 35)"/>
+      <path d="M 31 17 A 25.5 25.5 0 0 1 38.5 35"  fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" transform="rotate(-45 13 35)"/>
+    </symbol>
+
+    <!-- 10 · Orbital m (arches) -->
+    <symbol id="m10" viewBox="0 0 48 48">
+      <path d="M 9 38 V 22 a 7.5 7.5 0 0 1 15 0 v 16 m 0 -16 a 7.5 7.5 0 0 1 15 0 v 16"
+            fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="39" cy="9" r="3.4" fill="currentColor"/>
+    </symbol>
+
+    <!-- 11 · Wordmark orbit-dot (mini symbol = ringed dot) -->
+    <symbol id="m11" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="13" fill="none" stroke="currentColor" stroke-width="2.6"/>
+      <circle cx="24" cy="24" r="4.5" fill="currentColor"/>
+    </symbol>
+
+    <!-- 12 · Eclipse -->
+    <symbol id="m12" viewBox="0 0 48 48">
+      <circle cx="22" cy="26" r="14.5" fill="currentColor"/>
+      <circle cx="35" cy="13" r="6.5" fill="none" stroke="currentColor" stroke-width="2.5"/>
+    </symbol>
+
+  </defs>
+</svg>
+
+<div class="grid" id="grid"></div>
+
+<script>
+  const CANDIDATES = [
+    [1,  "Orbit classic",   "Thin ring, planet at center, moon on the ring — the name, literally."],
+    [2,  "Tilted ellipse",  "Saturn-style orbit around a solid dot. Calm, scientific."],
+    [3,  "Double orbit",    "Two rings, two satellites — multi-branch, one center."],
+    [4,  "Crescent orbit",  "An open arc with the satellite at its end — motion, not a closed loop."],
+    [5,  "Serif M tile",    "The current placeholder, done properly: Fraunces M on a rounded tile."],
+    [6,  "M + moon",        "Editorial serif M with a small satellite floating above."],
+    [7,  "Meem م",          "The Arabic initial as the mark — bilingual identity first."],
+    [8,  "م in orbit",      "Meem inside a thin orbit ring with a satellite."],
+    [9,  "Radar sweep",     "Signal arcs from a fixed point — coverage, live sync."],
+    [10, "Orbital arches",  "A lowercase m built from two arches + satellite. Friendly, ownable."],
+    [11, "Wordmark + ring", "“Madar” logotype; the ringed dot replaces the second a’s counter."],
+    [12, "Eclipse",         "Planet with a ringed moon passing — quiet, geometric."],
+  ];
+
+  const grid = document.getElementById("grid");
+  for (const [n, name, desc] of CANDIDATES) {
+    const card = document.createElement("div");
+    card.className = "card";
+    const lockupWord = n === 11
+      ? `<div class="word"><span class="en">Mad<span style="color:var(--accent)">a</span>r</span><span class="ar">مدار</span></div>`
+      : `<div class="word"><span class="en">Madar</span><span class="ar">مدار</span></div>`;
+    card.innerHTML = `
+      <header>
+        <span class="num">${n}</span>
+        <div><div class="name">${name}</div><div class="desc">${desc}</div></div>
+      </header>
+      <div class="hero"><svg><use href="#m${n}"/></svg></div>
+      <div class="lockup"><svg><use href="#m${n}"/></svg>${lockupWord}</div>
+      <div class="variants">
+        <div class="sw sw-dark"><svg><use href="#m${n}"/></svg><span class="tag">dark</span></div>
+        <div class="sw sw-admin"><svg><use href="#m${n}"/></svg><span class="tag">admin</span></div>
+        <div class="sw sw-tiny"><svg><use href="#m${n}"/></svg><span class="tag">16px</span></div>
+      </div>`;
+    grid.appendChild(card);
+  }
+</script>
+
+</body>
+</html>

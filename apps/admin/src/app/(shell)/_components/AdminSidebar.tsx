@@ -15,6 +15,7 @@ import {
   Settings,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { MadarMark } from "@madar/ui";
 import { useAdminAuthStore } from "@/lib/auth/store";
 import { adminFetchKpi } from "@/lib/api/admin-dashboard";
 import { t } from "@/lib/i18n";
@@ -89,7 +90,9 @@ export function AdminSidebar() {
   return (
     <aside className="admin-sidebar">
       <div className="admin-brand">
-        <div className="admin-brand-mark">M</div>
+        <div className="admin-brand-mark">
+          <MadarMark size={24} />
+        </div>
         <div className="admin-brand-text">
           <span className="admin-brand-name">{t("brand.name")}</span>
           <span className="admin-brand-tag">{t("brand.tag")}</span>
