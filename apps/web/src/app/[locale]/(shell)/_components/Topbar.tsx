@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Search, Bell, Sparkles } from "lucide-react";
 import { usePathname } from "../../../../../i18n/routing";
@@ -14,14 +15,36 @@ function crumbKeyFor(pathname: string): "dashboard" | "checkout" | "inventory" |
   return null;
 }
 
+/**
+ * Today's date for the dashboard crumb, e.g. "Mon · 8 Jun 2026".
+ * Formatted in an effect so the server (its own timezone) and the browser
+ * never disagree during hydration — the sub appears client-side only.
+ */
+function useTodaySub(locale: string): string {
+  const [sub, setSub] = useState("");
+  useEffect(() => {
+    const tag = locale === "ar" ? "ar-EG" : "en-GB";
+    const now = new Date();
+    const weekday = new Intl.DateTimeFormat(tag, { weekday: "short" }).format(now);
+    const date = new Intl.DateTimeFormat(tag, {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }).format(now);
+    setSub(`${weekday} · ${date}`);
+  }, [locale]);
+  return sub;
+}
+
 export function Topbar({ locale }: { locale: string }) {
   const tShell = useTranslations("shell");
   const tBar = useTranslations("shell.topbar");
   const tCrumb = useTranslations("shell.crumb");
   const pathname = usePathname();
   const key = crumbKeyFor(pathname);
+  const todaySub = useTodaySub(locale);
   const crumb = key ? tCrumb(key) : tShell("brand");
-  const sub = key ? tCrumb(`${key}Sub`) : "";
+  const sub = key === "dashboard" ? todaySub : key ? tCrumb(`${key}Sub`) : "";
 
   return (
     <div className="topbar">
