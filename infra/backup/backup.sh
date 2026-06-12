@@ -39,6 +39,13 @@ export AWS_ACCESS_KEY_ID="$BACKUP_S3_ACCESS_KEY"
 export AWS_SECRET_ACCESS_KEY="$BACKUP_S3_SECRET_KEY"
 export AWS_DEFAULT_REGION="${BACKUP_S3_REGION:-us-east-1}"
 
+# MinIO does not auto-create buckets — a fresh deploy would otherwise fail
+# every nightly run with NoSuchBucket. Idempotent: head, then create.
+if ! aws ${S3_ENDPOINT_FLAG} s3api head-bucket --bucket "$BACKUP_S3_BUCKET" 2>/dev/null; then
+  echo "[backup] bucket ${BACKUP_S3_BUCKET} missing — creating"
+  aws ${S3_ENDPOINT_FLAG} s3 mb "s3://${BACKUP_S3_BUCKET}"
+fi
+
 # Use multipart upload via `cp` (handles streaming + retries).
 aws ${S3_ENDPOINT_FLAG} s3 cp "$LOCAL" "s3://${BACKUP_S3_BUCKET}/${KEY}" \
   --no-progress \
