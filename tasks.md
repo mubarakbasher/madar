@@ -929,6 +929,12 @@ Eight self-host readiness items shipped in one push. Each was scoped tight and r
 
 ---
 
+## Brand
+
+- [x] **Product logo (2026-06-12, branch `feat/ui-madar-logo`)** — "crescent orbit" mark chosen from 12 candidates (`docs/design/logo-candidates.html`): open 270° ring, satellite in the gap, planet at center (مدار = orbit). `MadarMark`/`MadarLogo` components in `packages/ui/src/logo.tsx` (currentColor → admin teal + dark mode free); placeholder "M" tiles replaced in web auth layout (desktop + mobile), admin auth layout, admin sidebar; favicons `apps/{web,admin}/src/app/icon.svg` (terracotta / slate teal); PWA `icon-192/512.png` regenerated via `scripts/gen-icons.mjs` (reuses apps/api sharp, maskable-safe). Receipts stay tenant-logo-first; email footer unchanged.
+
+---
+
 ## Working agreements
 
 - **Read first** before starting any task: `CLAUDE.md`, the design reference for that task, and any prior ADR in `docs/decisions/`.
