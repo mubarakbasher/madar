@@ -6,6 +6,9 @@ export interface CreateSaleLineInput {
   qty: number;
   line_discount_cents: number;
   note: string | null;
+  // Price the till charged (cached catalog). Honored only for offline-synced
+  // sales; the server records catalog drift as a price_drift conflict.
+  unit_price_cents?: string | number;
 }
 
 export type PaymentMethodId = "cash" | "card" | "bank_transfer" | "store_credit";
@@ -30,6 +33,9 @@ export interface CreateSaleInput {
   payments?: SalePaymentInput[];
   client_uuid: string;
   client_sequence: number | null;
+  // Stable per-installation id (ADR 0005) — subject for the server's
+  // per-device monotonic sequence validation.
+  device_id?: string | null;
   // Offline-POS fields (Phase 2.3) — when the cashier rings a sale while
   // offline, the device captures the wall-clock time; the server clamps to
   // now() if it's in the future. `offline_completed=true` opts the sale into

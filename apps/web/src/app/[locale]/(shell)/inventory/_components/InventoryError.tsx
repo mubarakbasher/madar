@@ -12,8 +12,8 @@ export function InventoryError({ onRetry }: { onRetry: () => void }) {
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
-        padding: "80px 24px",
-        gap: 16,
+        padding: "80px var(--space-5)",
+        gap: "var(--space-4)",
       }}
       role="alert"
     >
@@ -23,7 +23,7 @@ export function InventoryError({ onRetry }: { onRetry: () => void }) {
           height: 56,
           display: "grid",
           placeItems: "center",
-          borderRadius: 14,
+          borderRadius: "var(--radius-lg)",
           background: "color-mix(in oklab, var(--rose) 14%, var(--bg-elev))",
           color: "var(--rose)",
         }}
@@ -49,9 +49,9 @@ export function InventoryError({ onRetry }: { onRetry: () => void }) {
         onClick={onRetry}
         className="inline-flex items-center gap-2 rounded-xl"
         style={{
-          marginTop: 8,
+          marginTop: "var(--space-2)",
           height: 40,
-          paddingInline: 16,
+          paddingInline: "var(--space-4)",
           background: "var(--bg)",
           color: "var(--ink)",
           fontSize: 14,

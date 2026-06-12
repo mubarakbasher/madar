@@ -69,7 +69,7 @@ export function ShiftsListClient({ locale }: { locale: "en" | "ar" }) {
         <div className="sh-empty">{t("errorBody")}</div>
       ) : (q.data?.items.length ?? 0) === 0 ? (
         <div className="sh-empty">
-          <div style={{ fontFamily: "var(--font-display)", fontSize: 24, marginBlockEnd: 8 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 24, marginBlockEnd: "var(--space-2)" }}>
             {t("emptyTitle")}
           </div>
           <p>{t("emptyBody")}</p>

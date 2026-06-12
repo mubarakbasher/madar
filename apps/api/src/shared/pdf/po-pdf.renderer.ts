@@ -20,6 +20,7 @@
  * `coerceToWinAnsi()` below.
  */
 import { PDFDocument, StandardFonts, type PDFFont, type PDFPage, rgb } from "pdf-lib";
+import { currencyMinorUnits } from "../../common/currency";
 
 // ─── Public input shape ───────────────────────────────────────────────
 
@@ -446,19 +447,22 @@ function drawTotalRow(
 // ─── Helpers ─────────────────────────────────────────────────────────
 
 /**
- * Format an integer cents amount as `{CCY} {N.NN}`. Uses string arithmetic
- * (NOT float division) for the dollars portion to avoid the float-cents
- * pitfall called out in CLAUDE.md. Two-decimal output regardless of the
- * currency's minor-unit count — the PO domain only ships ISO 4217 currencies
- * with 2 minor units today; widening this requires a `currency_minor_units`
- * lookup analogous to the sales code.
+ * Format an integer minor-units amount as `{CCY} {N.NNN…}`. Integer
+ * arithmetic only (NOT float division) to avoid the float-cents pitfall
+ * called out in CLAUDE.md, with the currency's REAL minor-unit count
+ * (KWD=3, JPY=0) via the shared lookup.
  */
 export function formatMoney(currencyCode: string, cents: number): string {
   const negative = cents < 0;
   const abs = Math.abs(Math.trunc(cents));
-  const major = Math.floor(abs / 100);
-  const minor = abs % 100;
-  const formatted = `${major.toLocaleString("en-US")}.${minor.toString().padStart(2, "0")}`;
+  const digits = currencyMinorUnits(currencyCode);
+  const div = 10 ** digits;
+  const formatted =
+    digits === 0
+      ? Math.floor(abs).toLocaleString("en-US")
+      : `${Math.floor(abs / div).toLocaleString("en-US")}.${(abs % div)
+          .toString()
+          .padStart(digits, "0")}`;
   return `${currencyCode} ${negative ? "-" : ""}${formatted}`;
 }
 

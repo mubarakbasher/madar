@@ -40,8 +40,8 @@ export function LineEditSheet({
           </button>
         </header>
 
-        <div style={{ padding: "20px 24px" }}>
-          <div className="kicker" style={{ marginBottom: 8 }}>
+        <div style={{ padding: "20px var(--space-5)" }}>
+          <div className="kicker" style={{ marginBottom: "var(--space-2)" }}>
             {t("quantity")}
           </div>
           <div className="pos-numpad">
@@ -66,7 +66,7 @@ export function LineEditSheet({
             </span>
           </div>
 
-          <div className="kicker" style={{ marginTop: 18, marginBottom: 8 }}>
+          <div className="kicker" style={{ marginTop: 18, marginBottom: "var(--space-2)" }}>
             {t("lineDiscount")}
           </div>
           <div style={{ display: "flex", gap: 6 }}>
@@ -109,7 +109,7 @@ export function LineEditSheet({
             {t("remove")}
           </button>
           <span style={{ flex: 1 }} />
-          <div style={{ textAlign: "end", marginInlineEnd: 12 }}>
+          <div style={{ textAlign: "end", marginInlineEnd: "var(--space-3)" }}>
             <div className="kicker">{t("newTotal")}</div>
             <div className="serif tnum" style={{ fontSize: 22, fontWeight: 500 }}>
               {Math.round(newPrice)}

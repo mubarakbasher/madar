@@ -60,9 +60,9 @@ export function SyncConflictsClient({ locale: _locale }: { locale: string }): JS
 
   if (!canRead) {
     return (
-      <section style={{ padding: "32px 24px", maxWidth: 720 }}>
+      <section style={{ padding: "var(--space-6) var(--space-5)", maxWidth: 720 }}>
         <span className="kicker">{t("kicker")}</span>
-        <h1 className="serif" style={{ fontSize: 32, fontWeight: 500, marginBottom: 8 }}>
+        <h1 className="serif" style={{ fontSize: 32, fontWeight: 500, marginBottom: "var(--space-2)" }}>
           {t("title")}
         </h1>
         <p style={{ color: "var(--ink-2)" }}>{t("errors.forbidden_role")}</p>
@@ -71,19 +71,19 @@ export function SyncConflictsClient({ locale: _locale }: { locale: string }): JS
   }
 
   return (
-    <section style={{ padding: "24px 24px 80px" }}>
-      <header style={{ marginBottom: 16 }}>
+    <section style={{ padding: "var(--space-5) var(--space-5) 80px" }}>
+      <header style={{ marginBottom: "var(--space-4)" }}>
         <span className="kicker">{t("kicker")}</span>
         <h1
           className="serif"
-          style={{ fontSize: 32, fontWeight: 500, marginTop: 6, marginBottom: 4 }}
+          style={{ fontSize: 32, fontWeight: 500, marginTop: 6, marginBottom: "var(--space-1)" }}
         >
           {t("title")}
         </h1>
         <p style={{ color: "var(--ink-2)", maxWidth: 720, fontSize: 14 }}>{t("subtitle")}</p>
       </header>
 
-      <div style={{ display: "flex", gap: 4, marginBottom: 12, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: "var(--space-1)", marginBottom: "var(--space-3)", flexWrap: "wrap" }}>
         {TABS.map((s) => (
           <button
             type="button"
@@ -94,7 +94,7 @@ export function SyncConflictsClient({ locale: _locale }: { locale: string }): JS
             }}
             aria-pressed={status === s}
             style={{
-              padding: "8px 14px",
+              padding: "var(--space-2) 14px",
               borderRadius: 8,
               border: "1px solid var(--rule)",
               background: status === s ? "var(--bg-elev)" : "transparent",
@@ -114,7 +114,7 @@ export function SyncConflictsClient({ locale: _locale }: { locale: string }): JS
         style={{
           display: "grid",
           gridTemplateColumns: "minmax(300px, 380px) 1fr",
-          gap: 16,
+          gap: "var(--space-4)",
           minHeight: 480,
         }}
       >
@@ -127,12 +127,12 @@ export function SyncConflictsClient({ locale: _locale }: { locale: string }): JS
           }}
         >
           {listQ.isPending && (
-            <div style={{ padding: 16, color: "var(--ink-3)" }}>{t("loading")}</div>
+            <div style={{ padding: "var(--space-4)", color: "var(--ink-3)" }}>{t("loading")}</div>
           )}
           {listQ.isError && (
-            <div style={{ padding: 16 }}>
+            <div style={{ padding: "var(--space-4)" }}>
               <strong style={{ color: "var(--ink)" }}>{t("error.title")}</strong>
-              <p style={{ color: "var(--ink-2)", margin: "6px 0 12px", fontSize: 13 }}>
+              <p style={{ color: "var(--ink-2)", margin: "6px 0 var(--space-3)", fontSize: 13 }}>
                 {t("error.body")}
               </p>
               <button
@@ -145,11 +145,11 @@ export function SyncConflictsClient({ locale: _locale }: { locale: string }): JS
             </div>
           )}
           {listQ.isSuccess && items.length === 0 && (
-            <div style={{ padding: 24, textAlign: "center" }}>
+            <div style={{ padding: "var(--space-5)", textAlign: "center" }}>
               <h3 className="serif" style={{ fontSize: 18, fontWeight: 500 }}>
                 {t("empty.title")}
               </h3>
-              <p style={{ color: "var(--ink-3)", fontSize: 13, marginTop: 4 }}>
+              <p style={{ color: "var(--ink-3)", fontSize: 13, marginTop: "var(--space-1)" }}>
                 {t("empty.body")}
               </p>
             </div>
@@ -168,13 +168,13 @@ export function SyncConflictsClient({ locale: _locale }: { locale: string }): JS
                   alignItems: "flex-start",
                   width: "100%",
                   textAlign: "start",
-                  padding: "12px 14px",
+                  padding: "var(--space-3) 14px",
                   border: 0,
                   borderTop: "1px solid var(--rule)",
                   background: isSel ? "var(--bg-sunk)" : "transparent",
                   cursor: "pointer",
                   fontFamily: "inherit",
-                  gap: 4,
+                  gap: "var(--space-1)",
                 }}
               >
                 <span
@@ -199,7 +199,7 @@ export function SyncConflictsClient({ locale: _locale }: { locale: string }): JS
             border: "1px solid var(--rule)",
             borderRadius: 12,
             background: "var(--bg-elev)",
-            padding: 24,
+            padding: "var(--space-5)",
             minHeight: 480,
           }}
         >
@@ -253,7 +253,7 @@ function ConflictDetail({
         <span className="kicker">{t("detail.kindLabel")}</span>
         <h2
           className="serif"
-          style={{ fontSize: 24, fontWeight: 500, marginTop: 4 }}
+          style={{ fontSize: 24, fontWeight: 500, marginTop: "var(--space-1)" }}
         >
           {t(`kinds.${conflict.conflict_kind}`)}
         </h2>
@@ -268,8 +268,8 @@ function ConflictDetail({
         <span className="kicker">{t("detail.detailsLabel")}</span>
         <pre
           style={{
-            marginTop: 4,
-            padding: 12,
+            marginTop: "var(--space-1)",
+            padding: "var(--space-3)",
             borderRadius: 8,
             background: "var(--bg-sunk)",
             color: "var(--ink-2)",
@@ -293,7 +293,7 @@ function ConflictDetail({
         <div>
           <label
             htmlFor="review-notes"
-            style={{ fontSize: 12, color: "var(--ink-3)", display: "block", marginBottom: 4 }}
+            style={{ fontSize: 12, color: "var(--ink-3)", display: "block", marginBottom: "var(--space-1)" }}
           >
             {t("detail.reviewLabel")}
           </label>
@@ -321,7 +321,7 @@ function ConflictDetail({
         <div
           role="alert"
           style={{
-            padding: "10px 12px",
+            padding: "10px var(--space-3)",
             borderRadius: 8,
             background: "var(--rose-soft)",
             color: "var(--rose)",
@@ -333,7 +333,7 @@ function ConflictDetail({
       )}
 
       {isOpen && canResolve && (
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
           <button
             type="button"
             className="pos-btn"

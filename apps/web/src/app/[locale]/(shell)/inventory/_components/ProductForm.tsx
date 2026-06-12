@@ -290,8 +290,8 @@ export function ProductForm({
   }, [product, tenant, currentProductImage]);
 
   return (
-    <div style={{ paddingBlock: "32px 96px", maxWidth: 920, marginInline: "auto" }}>
-      <div style={{ marginBottom: 24 }}>
+    <div style={{ paddingBlock: "var(--space-6) var(--space-9)", maxWidth: 920, marginInline: "auto" }}>
+      <div style={{ marginBottom: "var(--space-5)" }}>
         <button
           type="button"
           onClick={() => router.push("/inventory")}
@@ -315,17 +315,17 @@ export function ProductForm({
             fontSize: 36,
             letterSpacing: "-0.02em",
             lineHeight: 1.15,
-            marginTop: 12,
+            marginTop: "var(--space-3)",
           }}
         >
           {mode === "create" ? t("createTitle") : t("editTitle")}
         </h1>
-        <p style={{ color: "var(--ink-3)", fontSize: 14, marginTop: 8 }}>
+        <p style={{ color: "var(--ink-3)", fontSize: 14, marginTop: "var(--space-2)" }}>
           {mode === "create" ? t("createSubtitle") : t("editSubtitle")}
         </p>
       </div>
 
-      <form onSubmit={onSubmit} noValidate style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      <form onSubmit={onSubmit} noValidate style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
         {/* Image ─────────────────────────────────────────── */}
         <Section title={t("image.section")}>
           <ImageBlock
@@ -387,16 +387,16 @@ export function ProductForm({
 
         {/* Basics ───────────────────────────────────────── */}
         <Section title={t("sections.basics")}>
-          <div style={{ marginBottom: 12, display: "inline-flex", border: "1px solid var(--rule)", borderRadius: 999, padding: 2 }}>
+          <div style={{ marginBottom: "var(--space-3)", display: "inline-flex", border: "1px solid var(--rule)", borderRadius: "var(--radius-full)", padding: 2 }}>
             {(["en", "ar"] as const).map((l) => (
               <button
                 key={l}
                 type="button"
                 onClick={() => setActiveLang(l)}
                 style={{
-                  padding: "4px 14px",
+                  padding: "var(--space-1) 14px",
                   fontSize: 12,
-                  borderRadius: 999,
+                  borderRadius: "var(--radius-full)",
                   background: activeLang === l ? "var(--accent)" : "transparent",
                   color: activeLang === l ? "white" : "var(--ink-3)",
                   border: "none",
@@ -482,7 +482,7 @@ export function ProductForm({
 
         {/* Pricing ──────────────────────────────────────── */}
         <Section title={t("sections.pricing")}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
             <Field
               label={t("fields.priceMajor", { currency: form.currency_code })}
               error={fieldErrors.price_major ?? fieldErrors.price_cents}
@@ -507,7 +507,7 @@ export function ProductForm({
             </Field>
           </div>
           {margin !== null && (
-            <p style={{ marginTop: 8, fontSize: 12, color: "var(--ink-3)" }}>
+            <p style={{ marginTop: "var(--space-2)", fontSize: 12, color: "var(--ink-3)" }}>
               {t("marginPreview", { percent: margin })}
             </p>
           )}
@@ -520,7 +520,7 @@ export function ProductForm({
             subtitle={t("sections.initialStockSubtitle")}
           >
             {form.initial_stock.length === 0 && (
-              <p style={{ fontSize: 13, color: "var(--ink-3)", marginBottom: 12 }}>
+              <p style={{ fontSize: 13, color: "var(--ink-3)", marginBottom: "var(--space-3)" }}>
                 {t("initialStock.emptyHint")}
               </p>
             )}
@@ -530,7 +530,7 @@ export function ProductForm({
                 style={{
                   display: "grid",
                   gridTemplateColumns: "2fr 1fr 1fr 1fr auto",
-                  gap: 8,
+                  gap: "var(--space-2)",
                   alignItems: "end",
                   marginBottom: 10,
                 }}
@@ -629,11 +629,11 @@ export function ProductForm({
                 set("initial_stock", next);
               }}
               style={{
-                marginTop: 4,
+                marginTop: "var(--space-1)",
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 6,
-                padding: "8px 12px",
+                padding: "var(--space-2) var(--space-3)",
                 fontSize: 13,
                 background: "transparent",
                 border: "1px dashed var(--rule)",
@@ -650,7 +650,7 @@ export function ProductForm({
 
         {/* Status ────────────────────────────────────────── */}
         <Section title={t("sections.status")}>
-          <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14 }}>
+          <label style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-2)", fontSize: 14 }}>
             <input
               type="checkbox"
               checked={form.is_active}
@@ -668,7 +668,7 @@ export function ProductForm({
               color: "var(--rose)",
               border: "1px solid color-mix(in oklab, var(--rose) 24%, transparent)",
               padding: "10px 14px",
-              borderRadius: 10,
+              borderRadius: "var(--radius)",
               fontSize: 14,
             }}
           >
@@ -683,10 +683,10 @@ export function ProductForm({
             bottom: 0,
             background: "var(--bg)",
             borderTop: "1px solid var(--rule)",
-            paddingBlock: 16,
-            marginTop: 8,
+            paddingBlock: "var(--space-4)",
+            marginTop: "var(--space-2)",
             display: "flex",
-            gap: 12,
+            gap: "var(--space-3)",
             justifyContent: "flex-end",
           }}
         >
@@ -696,7 +696,7 @@ export function ProductForm({
             style={{
               height: 44,
               paddingInline: 20,
-              borderRadius: 10,
+              borderRadius: "var(--radius)",
               background: "transparent",
               border: "1px solid var(--rule)",
               color: "var(--ink-2)",
@@ -711,8 +711,8 @@ export function ProductForm({
             disabled={submitting}
             style={{
               height: 44,
-              paddingInline: 24,
-              borderRadius: 10,
+              paddingInline: "var(--space-5)",
+              borderRadius: "var(--radius)",
               background: "var(--accent)",
               color: "white",
               border: "none",
@@ -745,7 +745,7 @@ function Section({
         background: "var(--surface)",
         border: "1px solid var(--rule)",
         borderRadius: 16,
-        padding: 24,
+        padding: "var(--space-5)",
       }}
     >
       <h2
@@ -753,15 +753,15 @@ function Section({
           fontFamily: "var(--serif)",
           fontSize: 18,
           letterSpacing: "-0.01em",
-          marginBottom: subtitle ? 4 : 16,
+          marginBottom: subtitle ? "var(--space-1)" : "var(--space-4)",
         }}
       >
         {title}
       </h2>
       {subtitle && (
-        <p style={{ fontSize: 13, color: "var(--ink-3)", marginBottom: 16 }}>{subtitle}</p>
+        <p style={{ fontSize: 13, color: "var(--ink-3)", marginBottom: "var(--space-4)" }}>{subtitle}</p>
       )}
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>{children}</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>{children}</div>
     </section>
   );
 }
@@ -795,7 +795,7 @@ function Field({
       )}
       {children}
       {error && (
-        <div style={{ marginTop: 4, fontSize: 12, color: "var(--rose)" }}>{error}</div>
+        <div style={{ marginTop: "var(--space-1)", fontSize: 12, color: "var(--rose)" }}>{error}</div>
       )}
     </label>
   );
@@ -872,7 +872,7 @@ function TaxClassField({
           );
         })}
       </select>
-      <p style={{ marginTop: 4, fontSize: 11, color: "var(--ink-3)" }}>{t("hint")}</p>
+      <p style={{ marginTop: "var(--space-1)", fontSize: 11, color: "var(--ink-3)" }}>{t("hint")}</p>
     </Field>
   );
 }
@@ -881,7 +881,7 @@ function inputStyle(): React.CSSProperties {
   return {
     width: "100%",
     height: 40,
-    padding: "0 12px",
+    padding: "0 var(--space-3)",
     borderRadius: 8,
     border: "1px solid var(--rule)",
     background: "var(--bg)",
@@ -908,7 +908,7 @@ function ImageBlock({
   onRemove: () => void;
 }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)" }}>
       <div
         style={{
           width: 96,
@@ -934,13 +934,13 @@ function ImageBlock({
         )}
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: "var(--space-2)" }}>
           <button
             type="button"
             onClick={onPick}
             disabled={busy}
             style={{
-              padding: "8px 14px",
+              padding: "var(--space-2) 14px",
               borderRadius: 8,
               background: "var(--accent)",
               color: "white",
@@ -962,7 +962,7 @@ function ImageBlock({
               onClick={onRemove}
               disabled={busy}
               style={{
-                padding: "8px 12px",
+                padding: "var(--space-2) var(--space-3)",
                 borderRadius: 8,
                 background: "transparent",
                 border: "1px solid var(--rule)",
@@ -971,7 +971,7 @@ function ImageBlock({
                 cursor: busy ? "not-allowed" : "pointer",
                 display: "inline-flex",
                 alignItems: "center",
-                gap: 4,
+                gap: "var(--space-1)",
               }}
             >
               <X size={13} strokeWidth={1.5} />

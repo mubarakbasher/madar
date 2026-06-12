@@ -1,6 +1,7 @@
 import { Controller, Get, Query, Res, UseGuards } from "@nestjs/common";
 import type { Response } from "express";
 import { ZodValidationPipe } from "../../../common/zod-validation.pipe";
+import { minorToDecimalString } from "../../../common/currency";
 import { RateLimit, RateLimitGuard } from "../../../common/rate-limit.guard";
 import { CurrentUser, type TenantPrincipal } from "../../auth/current-user.decorator";
 import { renderTaxReportPdf, type TaxReportPdfInput } from "../../../shared/pdf/tax-report-pdf.renderer";
@@ -71,37 +72,34 @@ function csvEscape(s: string): string {
   return s;
 }
 
-function centsToDecimal(cents: string): string {
-  const big = BigInt(cents);
-  const neg = big < 0n;
-  const abs = neg ? -big : big;
-  const major = abs / 100n;
-  const minor = abs % 100n;
-  return `${neg ? "-" : ""}${major.toString()}.${minor.toString().padStart(2, "0")}`;
-}
-
-function buildCsv(report: { items: Array<{
-  tax_class_code: string | null;
-  rate_bps: number;
-  taxable_sales_cents: string;
-  tax_collected_cents: string;
-  transactions: number;
-}>; totals: { taxable_sales_cents: string; tax_collected_cents: string; transactions: number } }): string {
+function buildCsv(report: {
+  currency: string;
+  items: Array<{
+    tax_class_code: string | null;
+    rate_bps: number;
+    taxable_sales_cents: string;
+    tax_collected_cents: string;
+    transactions: number;
+  }>;
+  totals: { taxable_sales_cents: string; tax_collected_cents: string; transactions: number };
+}): string {
+  // Amounts use the currency's true minor-unit count (KWD=3, JPY=0).
+  const dec = (cents: string) => minorToDecimalString(cents, report.currency);
   const header = "tax_class_code,rate_pct,taxable_sales,tax_collected,transactions";
   const rows = report.items.map((it) =>
     [
       csvEscape(it.tax_class_code ?? ""),
       (it.rate_bps / 100).toFixed(2),
-      centsToDecimal(it.taxable_sales_cents),
-      centsToDecimal(it.tax_collected_cents),
+      dec(it.taxable_sales_cents),
+      dec(it.tax_collected_cents),
       String(it.transactions),
     ].join(","),
   );
   const totalsRow = [
     "TOTAL",
     "",
-    centsToDecimal(report.totals.taxable_sales_cents),
-    centsToDecimal(report.totals.tax_collected_cents),
+    dec(report.totals.taxable_sales_cents),
+    dec(report.totals.tax_collected_cents),
     String(report.totals.transactions),
   ].join(",");
   return [header, ...rows, totalsRow].join("\r\n") + "\r\n";

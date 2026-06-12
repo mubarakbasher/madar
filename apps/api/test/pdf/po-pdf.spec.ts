@@ -137,12 +137,16 @@ describe("renderPurchaseOrderPdf", () => {
 });
 
 describe("formatMoney", () => {
-  it("formats integer cents without floats", () => {
+  it("formats integer minor units without floats, honoring each currency's precision", () => {
     expect(formatMoney("EGP", 0)).toBe("EGP 0.00");
     expect(formatMoney("EGP", 5)).toBe("EGP 0.05");
     expect(formatMoney("EGP", 1250)).toBe("EGP 12.50");
     expect(formatMoney("USD", 99_99_99)).toBe("USD 9,999.99");
-    expect(formatMoney("KWD", 100_00)).toBe("KWD 100.00");
+    // KWD has THREE minor units (fils): 100000 fils = 100 dinars.
+    expect(formatMoney("KWD", 100_000)).toBe("KWD 100.000");
+    expect(formatMoney("KWD", 1_500)).toBe("KWD 1.500");
+    // JPY has none.
+    expect(formatMoney("JPY", 1000)).toBe("JPY 1,000");
   });
 
   it("handles negative amounts", () => {

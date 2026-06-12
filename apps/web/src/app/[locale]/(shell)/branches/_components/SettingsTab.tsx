@@ -56,7 +56,7 @@ export function SettingsTab({ branch, locale }: { branch: ApiBranchDetail; local
         {t("hoursStub")}
       </div>
 
-      <div style={{ marginBlockStart: 14, display: "flex", gap: 8, flexWrap: "wrap" }}>
+      <div style={{ marginBlockStart: 14, display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
         <a className="br-btn" href={`/${locale}/branches/${branch.id}/edit`}>
           {t("editButton")}
         </a>

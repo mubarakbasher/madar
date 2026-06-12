@@ -12,6 +12,7 @@
  * the Arabic side is dropped at render time on purpose.
  */
 import { PDFDocument, StandardFonts, type PDFFont, type PDFPage, rgb } from "pdf-lib";
+import { currencyMinorUnits } from "../../common/currency";
 
 // ─── Public input shape ───────────────────────────────────────────────
 
@@ -308,20 +309,19 @@ function drawCell(
 // ─── Helpers ─────────────────────────────────────────────────────────
 
 /**
- * Format an integer-cents string as `{CCY} {N.NN}`. String arithmetic only —
- * avoids float-cents pitfalls. Accepts a string (decimal cents) input so the
- * wire-format `taxable_sales_cents: string` flows through without conversion.
- * Two-decimal output regardless of the currency's minor-unit count.
+ * Format an integer minor-units string as `{CCY} {N.NNN…}`. BigInt
+ * arithmetic only — avoids float-cents pitfalls — and uses the currency's
+ * REAL minor-unit count (KWD=3, JPY=0) via the shared lookup.
  */
 export function formatMoney(currencyCode: string, cents: string | number | bigint): string {
   const asBig = typeof cents === "bigint" ? cents : BigInt(cents);
   const negative = asBig < 0n;
   const abs = negative ? -asBig : asBig;
-  const major = abs / 100n;
-  const minor = abs % 100n;
-  const majorStr = Number(major).toLocaleString("en-US");
-  const minorStr = minor.toString().padStart(2, "0");
-  return `${currencyCode} ${negative ? "-" : ""}${majorStr}.${minorStr}`;
+  const digits = currencyMinorUnits(currencyCode);
+  const div = 10n ** BigInt(digits);
+  const majorStr = Number(abs / div).toLocaleString("en-US");
+  const minorStr = digits === 0 ? "" : `.${(abs % div).toString().padStart(digits, "0")}`;
+  return `${currencyCode} ${negative ? "-" : ""}${majorStr}${minorStr}`;
 }
 
 /** Format a basis-points rate as a percentage, e.g. 1500 -> "15.00%". */

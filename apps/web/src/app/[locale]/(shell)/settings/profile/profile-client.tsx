@@ -144,7 +144,7 @@ export function ProfileClient({ locale }: { locale: "en" | "ar" }) {
                   <CheckCircle2
                     size={12}
                     strokeWidth={1.5}
-                    style={{ verticalAlign: "middle", marginInlineEnd: 4 }}
+                    style={{ verticalAlign: "middle", marginInlineEnd: "var(--space-1)" }}
                   />
                   {t("identity.saved")}
                 </div>
@@ -178,7 +178,7 @@ export function ProfileClient({ locale }: { locale: "en" | "ar" }) {
                   <button
                     type="button"
                     className="prof-btn"
-                    style={{ marginBlockStart: 8 }}
+                    style={{ marginBlockStart: "var(--space-2)" }}
                     disabled={resendMut.isPending}
                     onClick={() => resendMut.mutate()}
                   >
@@ -215,7 +215,7 @@ export function ProfileClient({ locale }: { locale: "en" | "ar" }) {
                 {savedLocale && (
                   <span
                     className="prof-saved"
-                    style={{ alignSelf: "center", marginInlineStart: 8 }}
+                    style={{ alignSelf: "center", marginInlineStart: "var(--space-2)" }}
                   >
                     {t("identity.saved")}
                   </span>
@@ -246,7 +246,7 @@ export function ProfileClient({ locale }: { locale: "en" | "ar" }) {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 12,
+            gap: "var(--space-3)",
             marginBlockEnd: 14,
           }}
         >
@@ -254,7 +254,7 @@ export function ProfileClient({ locale }: { locale: "en" | "ar" }) {
             style={{
               width: 36,
               height: 36,
-              borderRadius: 10,
+              borderRadius: "var(--radius)",
               background: user.mfa_enabled
                 ? "color-mix(in oklab, var(--sage, #6e9b7f) 16%, transparent)"
                 : "color-mix(in oklab, var(--ink-3) 12%, transparent)",

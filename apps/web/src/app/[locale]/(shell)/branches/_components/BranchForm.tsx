@@ -187,7 +187,7 @@ export function BranchForm({
             {errors.code && <span className="br-field-error">{errors.code}</span>}
           </label>
 
-          <div className="br-tab-strip" style={{ marginBottom: 8 }}>
+          <div className="br-tab-strip" style={{ marginBottom: "var(--space-2)" }}>
             <button type="button" aria-pressed={tab === "en"} onClick={() => setTab("en")}>
               {t("tabs.en")}
             </button>
@@ -282,7 +282,7 @@ export function BranchForm({
 
         <section className="br-form-section">
           <h2 className="br-form-section-title">{t("sections.geo")}</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
             <label className="br-field">
               <span className="br-field-label">{t("fields.geoLat")}</span>
               <input

@@ -37,6 +37,7 @@ interface ProductSnapshot {
   name_i18n: unknown;
   price_cents: bigint;
   cost_cents: bigint;
+  currency_code: string;
   tax_class_id: string | null;
 }
 
@@ -125,12 +126,35 @@ export class SalesService {
         name_i18n: true,
         price_cents: true,
         cost_cents: true,
+        currency_code: true,
         tax_class_id: true,
       },
     })) as ProductSnapshot[];
     const productMap = new Map(products.map((p) => [p.id, p]));
     for (const line of input.lines) {
       if (!productMap.has(line.product_id)) {
+        // An offline sale referencing a since-deleted product can never sync —
+        // surface it on the manager's conflict screen before rejecting.
+        if (input.offline_completed) {
+          await scoped.syncConflict
+            .create({
+              data: {
+                tenant_id: ctx.tenantId,
+                conflict_kind: "product_unknown",
+                reference_table: "sales",
+                reference_id: input.client_uuid,
+                details: {
+                  product_id: line.product_id,
+                  client_uuid: input.client_uuid,
+                  device_id: input.device_id ?? null,
+                },
+                occurred_at: new Date(),
+              },
+            })
+            .catch((e) =>
+              this.logger.warn(`product_unknown conflict write failed: ${(e as Error).message}`),
+            );
+        }
         throw new UnprocessableEntityException({
           code: "unknown_product",
           message: `Product not found: ${line.product_id}`,
@@ -169,10 +193,37 @@ export class SalesService {
     }
 
     // Snapshot prices, compute line totals + per-line tax (slice 1).
+    //
+    // Pricing source (ADR 0005): online sales ALWAYS price from the current
+    // catalog. Offline-completed sales price from the client's snapshot when
+    // it differs — the customer already paid that amount at the till, so the
+    // server records the money reality and surfaces the catalog drift as a
+    // price_drift conflict for manager review instead of silently repricing.
+    const priceDrifts: Array<{
+      product_id: string;
+      sku: string;
+      client_price_cents: string;
+      catalog_price_cents: string;
+      qty: number;
+    }> = [];
     const prepared: PreparedLine[] = input.lines.map((l) => {
       const product = productMap.get(l.product_id)!;
       const qtyBig = BigInt(l.qty);
-      const grossLine = product.price_cents * qtyBig;
+      let unitPrice = product.price_cents;
+      if (input.offline_completed && l.unit_price_cents != null) {
+        const clientPrice = l.unit_price_cents;
+        if (clientPrice !== product.price_cents) {
+          priceDrifts.push({
+            product_id: product.id,
+            sku: product.sku,
+            client_price_cents: clientPrice.toString(),
+            catalog_price_cents: product.price_cents.toString(),
+            qty: l.qty,
+          });
+        }
+        unitPrice = clientPrice;
+      }
+      const grossLine = unitPrice * qtyBig;
       const discount = BigInt(l.line_discount_cents);
       const clampedDiscount = discount > grossLine ? grossLine : discount;
       const lineTotal = grossLine - clampedDiscount;
@@ -188,7 +239,7 @@ export class SalesService {
       return {
         product,
         qty: l.qty,
-        unit_price_cents: product.price_cents,
+        unit_price_cents: unitPrice,
         line_discount_cents: clampedDiscount,
         line_total_cents: lineTotal,
         tax_cents: lineTax,
@@ -327,6 +378,7 @@ export class SalesService {
               client_occurred_at: input.client_occurred_at
                 ? new Date(input.client_occurred_at)
                 : null,
+              device_id: input.device_id,
               has_negative_stock: false,
               offline_completed: offlineCompleted,
               occurred_at: saleOccurredAt,
@@ -362,6 +414,7 @@ export class SalesService {
                 kind: "sale",
                 qty_delta: -line.qty,
                 unit_cost_cents: line.product.cost_cents,
+                currency_code: line.product.currency_code,
                 reference_table: "sales",
                 reference_id: sale.id,
                 created_by: ctx.cashierId,
@@ -431,6 +484,64 @@ export class SalesService {
                     product_id: neg.product_id,
                     qty_on_hand_after: neg.qty_on_hand_after,
                     offline_completed: offlineCompleted,
+                  },
+                  occurred_at: saleOccurredAt,
+                },
+              });
+            }
+          }
+
+          // Offline-sync validation (ADR 0005, audit M-14).
+          // Price drift: the customer paid the client's cached price; the
+          // sale is recorded at that price (money reality) and the catalog
+          // mismatch is surfaced for manager review.
+          if (priceDrifts.length > 0) {
+            await tx.syncConflict.create({
+              data: {
+                tenant_id: ctx.tenantId,
+                conflict_kind: "price_drift",
+                reference_table: "sales",
+                reference_id: sale.id,
+                details: {
+                  device_id: input.device_id ?? null,
+                  client_uuid: input.client_uuid,
+                  lines: priceDrifts,
+                },
+                occurred_at: saleOccurredAt,
+              },
+            });
+          }
+
+          // Sequence validation: per device, client_sequence must arrive
+          // monotonic and gap-free. A gap means a sale may be LOST in the
+          // device's queue; out-of-order means a replayed/stale submission.
+          // Either way the sale itself completes — the conflict row is the
+          // manager's signal to reconcile against the till.
+          if (offlineCompleted && input.device_id && input.client_sequence != null) {
+            const prev = await tx.sale.findFirst({
+              where: {
+                tenant_id: ctx.tenantId,
+                device_id: input.device_id,
+                client_sequence: { not: null },
+                id: { not: sale.id },
+              },
+              orderBy: { client_sequence: "desc" },
+              select: { client_sequence: true },
+            });
+            const lastSeq = prev?.client_sequence ?? 0;
+            const expected = lastSeq + 1;
+            if (input.client_sequence !== expected) {
+              await tx.syncConflict.create({
+                data: {
+                  tenant_id: ctx.tenantId,
+                  conflict_kind: "sequence_gap",
+                  reference_table: "sales",
+                  reference_id: sale.id,
+                  details: {
+                    device_id: input.device_id,
+                    expected_sequence: expected,
+                    received_sequence: input.client_sequence,
+                    kind: input.client_sequence > expected ? "gap" : "out_of_order",
                   },
                   occurred_at: saleOccurredAt,
                 },

@@ -65,7 +65,7 @@ export function PrintLabelsSheet({
           insetBlockStart: 0,
           background: "var(--bg-elev)",
           borderBlockEnd: "1px solid var(--rule)",
-          padding: "12px 24px",
+          padding: "var(--space-3) var(--space-5)",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
@@ -75,12 +75,12 @@ export function PrintLabelsSheet({
         <h2 style={{ margin: 0, fontFamily: "var(--serif)", fontSize: 18 }}>
           {t("title", { count: rows.length })}
         </h2>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: "var(--space-2)" }}>
           <button
             type="button"
             onClick={() => window.print()}
             style={{
-              padding: "8px 14px",
+              padding: "var(--space-2) 14px",
               borderRadius: 8,
               fontSize: 13,
               border: "1px solid var(--accent)",
@@ -100,7 +100,7 @@ export function PrintLabelsSheet({
             type="button"
             onClick={onClose}
             style={{
-              padding: "8px 14px",
+              padding: "var(--space-2) 14px",
               borderRadius: 8,
               fontSize: 13,
               border: "1px solid var(--rule)",
@@ -119,12 +119,12 @@ export function PrintLabelsSheet({
         </div>
       </header>
 
-      <main style={{ padding: 24, maxWidth: 1200, margin: "0 auto" }}>
+      <main style={{ padding: "var(--space-5)", maxWidth: 1200, margin: "0 auto" }}>
         <div
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(3, 1fr)",
-            gap: 12,
+            gap: "var(--space-3)",
           }}
         >
           {rows.map((r) => (
@@ -133,8 +133,8 @@ export function PrintLabelsSheet({
               className="pl-tile"
               style={{
                 border: "1px solid var(--rule)",
-                borderRadius: 10,
-                padding: "16px 18px",
+                borderRadius: "var(--radius)",
+                padding: "var(--space-4) 18px",
                 background: "white",
                 color: "#000",
                 minHeight: 140,
@@ -159,7 +159,7 @@ export function PrintLabelsSheet({
                     fontFamily: "var(--serif)",
                     fontSize: 18,
                     fontWeight: 500,
-                    marginBlockStart: 4,
+                    marginBlockStart: "var(--space-1)",
                     lineHeight: 1.2,
                   }}
                 >
@@ -168,7 +168,7 @@ export function PrintLabelsSheet({
               </div>
               <div
                 style={{
-                  marginBlockStart: 12,
+                  marginBlockStart: "var(--space-3)",
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "baseline",
@@ -191,7 +191,7 @@ export function PrintLabelsSheet({
         </div>
         <p
           style={{
-            marginBlockStart: 24,
+            marginBlockStart: "var(--space-5)",
             fontSize: 11,
             color: "var(--ink-3)",
             textAlign: "center",

@@ -141,7 +141,7 @@ export function CustomerForm({
           maxLength={32}
           style={{ fontFamily: "var(--font-mono, monospace)" }}
         />
-        <div className="cu-muted" style={{ fontSize: 12, marginBlockStart: 4 }}>
+        <div className="cu-muted" style={{ fontSize: 12, marginBlockStart: "var(--space-1)" }}>
           {t("form.codeHelp")}
         </div>
         {errors.code && <div className="cu-field-error">{errors.code}</div>}

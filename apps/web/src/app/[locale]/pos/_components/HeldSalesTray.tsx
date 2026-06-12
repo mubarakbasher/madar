@@ -35,7 +35,7 @@ export function HeldSalesTray({
             <X size={14} strokeWidth={1.5} />
           </button>
         </header>
-        <div style={{ padding: "0 8px 8px" }}>
+        <div style={{ padding: "0 var(--space-2) var(--space-2)" }}>
           {held.length === 0 ? (
             <div style={{ padding: 40, textAlign: "center", color: "var(--ink-3)", fontSize: 13 }}>
               {t("empty")}
@@ -55,7 +55,7 @@ export function HeldSalesTray({
                   </div>
                   <div
                     className="serif tnum"
-                    style={{ fontSize: 22, fontWeight: 500, marginInlineEnd: 12 }}
+                    style={{ fontSize: 22, fontWeight: 500, marginInlineEnd: "var(--space-3)" }}
                   >
                     {totalDisplay} <span style={{ fontSize: 11, color: "var(--ink-3)" }}>{currency}</span>
                   </div>

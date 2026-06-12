@@ -160,7 +160,7 @@ export function EditUserModal({
               )}
             </label>
 
-            <label className="usr-check" style={{ marginBlockStart: 4 }}>
+            <label className="usr-check" style={{ marginBlockStart: "var(--space-1)" }}>
               <input
                 type="checkbox"
                 checked={isActive}

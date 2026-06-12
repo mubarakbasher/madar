@@ -52,6 +52,12 @@ const envSchema = z.object({
   CLAMAV_PORT: z.coerce.number().int().positive().default(3310),
   PLATFORM_BANK_ENCRYPTION_KEY: z.string().length(64).regex(/^[0-9a-f]+$/i).optional(),
   ADMIN_WEB_ORIGIN: z.string().default("http://localhost:3001"),
+  // Optional production hardening (CLAUDE.md): comma-separated IPs and/or
+  // IPv4 CIDRs allowed to reach /v1/admin/*. Empty/unset = allowlist off.
+  ADMIN_IP_ALLOWLIST: z
+    .string()
+    .default("")
+    .transform((s) => s.split(",").map((e) => e.trim()).filter(Boolean)),
   SIGNUP_ENABLED: z
     .union([z.string(), z.boolean()])
     .default("true")

@@ -392,7 +392,7 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
             <div className="rf-method-detail">
               <label className="rf-label">{t("method.customer")}</label>
               {customerId && customerName ? (
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
                   <span className="rf-customer-chip">{customerName}</span>
                   <button
                     type="button"
@@ -407,7 +407,7 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
                 </div>
               ) : customerId && !customerName ? (
                 // Customer attached from the original sale — show ID only as fallback.
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
                   <span className="rf-customer-chip">{t("method.attachedFromSale")}</span>
                   <button
                     type="button"
@@ -448,7 +448,7 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
           <h2 className="rf-card-title">{t("review.title")}</h2>
           <p className="rf-card-sub">{t("review.subtitle")}</p>
 
-          <div style={{ display: "grid", gap: 12, fontSize: 14 }}>
+          <div style={{ display: "grid", gap: "var(--space-3)", fontSize: 14 }}>
             <div className="rf-summary-row">
               <span style={{ color: "var(--ink-3)" }}>{t("review.sale")}</span>
               <span style={{ fontFamily: "var(--font-mono)" }}>{sale.code}</span>
@@ -647,13 +647,13 @@ function CustomerPicker({
           </button>
         </div>
 
-        <div style={{ position: "relative", marginBlockEnd: 12 }}>
+        <div style={{ position: "relative", marginBlockEnd: "var(--space-3)" }}>
           <Search
             size={16}
             strokeWidth={1.5}
             style={{
               position: "absolute",
-              insetInlineStart: 12,
+              insetInlineStart: "var(--space-3)",
               insetBlockStart: "50%",
               transform: "translateY(-50%)",
               color: "var(--ink-3)",
@@ -680,7 +680,7 @@ function CustomerPicker({
               <a
                 href={`/${locale}/customers/new`}
                 className="rf-btn"
-                style={{ marginBlockStart: 12, display: "inline-flex" }}
+                style={{ marginBlockStart: "var(--space-3)", display: "inline-flex" }}
               >
                 <UserPlus size={14} strokeWidth={1.5} />
                 {t("createNew")}
@@ -752,7 +752,7 @@ function ApprovalModal({
           </select>
         )}
 
-        <label className="rf-label" style={{ marginBlockStart: 12 }}>
+        <label className="rf-label" style={{ marginBlockStart: "var(--space-3)" }}>
           {t("passwordLabel")}
         </label>
         <input

@@ -61,13 +61,13 @@ export function CustomerPickerModal({
           </button>
         </div>
 
-        <div style={{ position: "relative", marginBlockEnd: 12 }}>
+        <div style={{ position: "relative", marginBlockEnd: "var(--space-3)" }}>
           <Search
             size={16}
             strokeWidth={1.5}
             style={{
               position: "absolute",
-              insetInlineStart: 12,
+              insetInlineStart: "var(--space-3)",
               insetBlockStart: "50%",
               transform: "translateY(-50%)",
               color: "var(--ink-3)",
@@ -101,7 +101,7 @@ export function CustomerPickerModal({
               <a
                 className="pos-link"
                 href={`/${locale}/customers/new`}
-                style={{ marginBlockStart: 12, display: "inline-flex", gap: 6 }}
+                style={{ marginBlockStart: "var(--space-3)", display: "inline-flex", gap: 6 }}
               >
                 <UserPlus size={14} strokeWidth={1.5} />
                 {t("createNew")}

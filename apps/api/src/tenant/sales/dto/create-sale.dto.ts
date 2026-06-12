@@ -13,6 +13,11 @@ const CartLineSchema = z.object({
   qty: z.number().int().positive(),
   line_discount_cents: z.number().int().nonnegative().default(0),
   note: z.string().max(280).nullable().optional(),
+  // Price the OFFLINE client actually charged (from its cached catalog).
+  // Honored only when offline_completed=true — the customer already paid
+  // this amount; a catalog change since is surfaced as a price_drift
+  // conflict, not silently repriced (ADR 0005). Ignored for online sales.
+  unit_price_cents: BigIntable.optional(),
 });
 
 const PaymentMethodEnum = z.enum([
@@ -39,6 +44,9 @@ export const CreateSaleSchema = z
     client_uuid: UuidSchema,
     client_sequence: z.number().int().positive().nullable().default(null),
     client_occurred_at: z.string().datetime().optional(),
+    // Stable per-installation id (persisted client-side) — subject for
+    // per-device monotonic sequence validation (ADR 0005).
+    device_id: UuidSchema.nullable().default(null),
     offline_completed: z.boolean().optional().default(false),
     lines: z.array(CartLineSchema).min(1, "At least one line is required"),
     cash_tendered_cents: z.number().int().nonnegative().nullable().optional(),

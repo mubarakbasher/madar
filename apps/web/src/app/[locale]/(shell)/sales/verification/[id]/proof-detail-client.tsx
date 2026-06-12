@@ -125,7 +125,7 @@ export function ProofDetailClient({ proofId }: { proofId: string }) {
           <Link
             href={`/${locale}/sales/verification`}
             className="vq-kicker"
-            style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}
+            style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "var(--space-1)" }}
           >
             <ArrowLeft size={12} strokeWidth={2} className="rtl:rotate-180" />
             {t("title")}

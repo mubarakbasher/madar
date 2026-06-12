@@ -151,15 +151,15 @@ export function BranchMapView({
         <aside className="br-map-dossier">
           <header className="br-map-dossier-head">
             <div>
-              <div className="br-kicker" style={{ marginBlockEnd: 4 }}>
+              <div className="br-kicker" style={{ marginBlockEnd: "var(--space-1)" }}>
                 {selected.code}
               </div>
               <h3 className="br-title" style={{ fontSize: 22, margin: 0 }}>
                 {dossierName}
               </h3>
               {dossierAddress && (
-                <p className="br-card-address" style={{ marginBlockStart: 4 }}>
-                  <MapPin size={11} strokeWidth={1.5} style={{ marginInlineEnd: 4 }} />
+                <p className="br-card-address" style={{ marginBlockStart: "var(--space-1)" }}>
+                  <MapPin size={11} strokeWidth={1.5} style={{ marginInlineEnd: "var(--space-1)" }} />
                   {dossierAddress}
                 </p>
               )}

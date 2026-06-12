@@ -44,7 +44,7 @@ export function BranchStrip({
   if (rows.length === 0) return null;
 
   return (
-    <section className="dash-card" style={{ marginBottom: 16 }}>
+    <section className="dash-card" style={{ marginBottom: "var(--space-4)" }}>
       <header className="dash-card-h">
         <div>
           <div className="dash-card-title">{t("title")}</div>

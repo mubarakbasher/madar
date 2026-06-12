@@ -6,6 +6,7 @@ import helmet from "helmet";
 import * as Sentry from "@sentry/node";
 import { AppModule } from "./app.module";
 import { assertProductionSafety, loadEnv } from "./env";
+import { adminIpAllowlistMiddleware } from "./common/ip-allowlist";
 import { initSentry } from "./sentry";
 
 // Default JSON.stringify can't serialize BigInt — make it emit strings so
@@ -27,6 +28,11 @@ async function bootstrap() {
 
   app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
   app.use(cookieParser());
+  // Optional admin-realm IP allowlist (off when ADMIN_IP_ALLOWLIST is empty).
+  // Mounted on the path prefix so it also covers the public admin login.
+  if (env.ADMIN_IP_ALLOWLIST.length > 0) {
+    app.use("/v1/admin", adminIpAllowlistMiddleware(env.ADMIN_IP_ALLOWLIST));
+  }
   app.enableCors({
     origin: env.API_CORS_ORIGIN,
     credentials: true,

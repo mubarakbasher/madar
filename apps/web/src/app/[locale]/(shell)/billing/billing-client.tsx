@@ -73,20 +73,20 @@ export function BillingClient({ locale }: { locale: "en" | "ar" }) {
   const invoices = invoicesQ.data?.items ?? [];
 
   return (
-    <div style={{ padding: "32px 0", maxWidth: 1080, marginInline: "auto" }}>
-      <header style={{ marginBottom: 24 }}>
+    <div style={{ padding: "var(--space-6) 0", maxWidth: 1080, marginInline: "auto" }}>
+      <header style={{ marginBottom: "var(--space-5)" }}>
         <span className="kicker">{t("kicker")}</span>
         <h1
           style={{
             fontFamily: "var(--serif)",
             fontSize: 36,
             letterSpacing: "-0.02em",
-            marginTop: 8,
+            marginTop: "var(--space-2)",
           }}
         >
           {t("title")}
         </h1>
-        <p style={{ color: "var(--ink-3)", fontSize: 14, marginTop: 4 }}>
+        <p style={{ color: "var(--ink-3)", fontSize: 14, marginTop: "var(--space-1)" }}>
           {t("subtitle", { tenant: sub.tenant.name })}
         </p>
       </header>
@@ -95,12 +95,12 @@ export function BillingClient({ locale }: { locale: "en" | "ar" }) {
         role="tablist"
         style={{
           display: "inline-flex",
-          gap: 4,
-          padding: 4,
+          gap: "var(--space-1)",
+          padding: "var(--space-1)",
           background: "var(--bg)",
           border: "1px solid var(--rule)",
-          borderRadius: 999,
-          marginBottom: 24,
+          borderRadius: "var(--radius-full)",
+          marginBottom: "var(--space-5)",
         }}
       >
         {(["plan", "invoices", "history"] as const).map((id) => (
@@ -111,8 +111,8 @@ export function BillingClient({ locale }: { locale: "en" | "ar" }) {
             aria-selected={tab === id}
             onClick={() => setTab(id)}
             style={{
-              padding: "8px 18px",
-              borderRadius: 999,
+              padding: "var(--space-2) 18px",
+              borderRadius: "var(--radius-full)",
               background: tab === id ? "var(--accent)" : "transparent",
               color: tab === id ? "white" : "var(--ink-2)",
               border: "none",
@@ -181,12 +181,12 @@ function PlanTab({
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 12,
-            padding: "12px 20px",
+            gap: "var(--space-3)",
+            padding: "var(--space-3) 20px",
             background: "color-mix(in oklab, var(--accent) 12%, transparent)",
             border: "1px solid color-mix(in oklab, var(--accent) 22%, transparent)",
             borderRadius: 12,
-            marginBottom: 24,
+            marginBottom: "var(--space-5)",
             fontSize: 14,
           }}
         >
@@ -215,12 +215,12 @@ function PlanTab({
           display: "grid",
           gridTemplateColumns: "minmax(0, 2fr) minmax(0, 1fr)",
           gap: 20,
-          marginBottom: 32,
+          marginBottom: "var(--space-6)",
         }}
       >
         <div className="billing-card">
           <span className="kicker">{t("currentPlan.kicker")}</span>
-          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginTop: 4 }}>
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginTop: "var(--space-1)" }}>
             <h2 style={{ fontFamily: "var(--serif)", fontSize: 28, letterSpacing: "-0.01em" }}>
               {sub.plan.name_i18n[locale] || sub.plan.name_i18n.en}
             </h2>
@@ -248,7 +248,7 @@ function PlanTab({
         <div className="billing-card">
           <span className="kicker">{t("nextInvoice.kicker")}</span>
           {!sub.next_invoice && (
-            <p style={{ marginTop: 8, fontSize: 14, color: "var(--ink-3)" }}>
+            <p style={{ marginTop: "var(--space-2)", fontSize: 14, color: "var(--ink-3)" }}>
               {t("nextInvoice.none")}
             </p>
           )}
@@ -259,7 +259,7 @@ function PlanTab({
                   fontFamily: "var(--serif)",
                   fontSize: 30,
                   letterSpacing: "-0.02em",
-                  marginTop: 4,
+                  marginTop: "var(--space-1)",
                 }}
               >
                 {formatCents(sub.next_invoice.amount_cents, sub.next_invoice.currency_code)}
@@ -272,21 +272,21 @@ function PlanTab({
                 >
                   ● {INVOICE_TONE[sub.next_invoice.status]?.label ?? sub.next_invoice.status}
                 </span>
-                <span style={{ color: "var(--ink-3)", marginInlineStart: 8 }}>
+                <span style={{ color: "var(--ink-3)", marginInlineStart: "var(--space-2)" }}>
                   {t("nextInvoice.due", { date: shortDate(sub.next_invoice.due_date) })}
                 </span>
               </div>
               <Link
                 href={`/billing/invoices/${sub.next_invoice.id}/pay`}
                 style={{
-                  marginTop: 16,
+                  marginTop: "var(--space-4)",
                   display: "inline-flex",
                   alignItems: "center",
                   gap: 6,
-                  padding: "10px 16px",
+                  padding: "10px var(--space-4)",
                   background: "var(--accent)",
                   color: "white",
-                  borderRadius: 10,
+                  borderRadius: "var(--radius)",
                   textDecoration: "none",
                   fontSize: 13,
                   fontWeight: 500,
@@ -301,7 +301,7 @@ function PlanTab({
       </section>
 
       <h2 className="billing-section-title">{t("plans.title")}</h2>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "var(--space-4)" }}>
         {plans.map((p) => {
           const isCurrent = p.id === sub.plan?.id;
           return (
@@ -320,7 +320,7 @@ function PlanTab({
                   fontFamily: "var(--serif)",
                   fontSize: 26,
                   letterSpacing: "-0.02em",
-                  marginTop: 4,
+                  marginTop: "var(--space-1)",
                 }}
               >
                 {formatCents(p.monthly_price_cents, p.currency_code)}
@@ -328,7 +328,7 @@ function PlanTab({
                   /{t("currentPlan.month")}
                 </small>
               </div>
-              <ul style={{ marginTop: 12, fontSize: 12, color: "var(--ink-2)", lineHeight: 1.7, paddingInlineStart: 16 }}>
+              <ul style={{ marginTop: "var(--space-3)", fontSize: 12, color: "var(--ink-2)", lineHeight: 1.7, paddingInlineStart: "var(--space-4)" }}>
                 {Object.entries(p.limits as Record<string, unknown>).slice(0, 4).map(([k, v]) => (
                   <li key={k}>
                     <strong>{String(v)}</strong> {k.replace("_", " ")}
@@ -348,20 +348,20 @@ function UsageBar({ label, current, cap }: { label: string; current: number; cap
   const warn = pct >= 90;
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--ink-3)", marginBottom: 4 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--ink-3)", marginBottom: "var(--space-1)" }}>
         <span>{label}</span>
         <span>
           <strong>{current.toLocaleString()}</strong>
           {cap ? ` / ${cap.toLocaleString()}` : ""}
         </span>
       </div>
-      <div style={{ height: 6, borderRadius: 999, background: "var(--rule)" }}>
+      <div style={{ height: 6, borderRadius: "var(--radius-full)", background: "var(--rule)" }}>
         <div
           style={{
             height: "100%",
             width: cap ? `${pct}%` : "0%",
             background: warn ? "var(--amber)" : "var(--accent)",
-            borderRadius: 999,
+            borderRadius: "var(--radius-full)",
             transition: "width 240ms ease",
           }}
         />
@@ -410,7 +410,7 @@ function InvoicesTab({ invoices, loading }: { invoices: ApiSubscriptionInvoice[]
                     color: tone?.color ?? "var(--ink-3)",
                     background: tone?.bg ?? "transparent",
                     padding: "2px 10px",
-                    borderRadius: 999,
+                    borderRadius: "var(--radius-full)",
                     fontSize: 11,
                   }}
                 >
@@ -457,13 +457,13 @@ function HistoryTab({ invoices }: { invoices: ApiSubscriptionInvoice[] }) {
   const currency = invoices[0]?.currency_code ?? "USD";
 
   return (
-    <section style={{ display: "grid", gridTemplateColumns: "minmax(0, 2fr) minmax(0, 1fr)", gap: 24 }}>
+    <section style={{ display: "grid", gridTemplateColumns: "minmax(0, 2fr) minmax(0, 1fr)", gap: "var(--space-5)" }}>
       <div>
         <h2 className="billing-section-title">{t("history.timeline")}</h2>
         {invoices.length === 0 && (
           <p style={{ color: "var(--ink-3)", fontSize: 13 }}>{t("history.empty")}</p>
         )}
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
           {invoices.map((inv) => (
             <div
               key={inv.id}
@@ -471,10 +471,10 @@ function HistoryTab({ invoices }: { invoices: ApiSubscriptionInvoice[] }) {
                 display: "flex",
                 alignItems: "center",
                 gap: 14,
-                padding: "12px 16px",
+                padding: "var(--space-3) var(--space-4)",
                 background: "var(--surface)",
                 border: "1px solid var(--rule)",
-                borderRadius: 10,
+                borderRadius: "var(--radius)",
               }}
             >
               <Clock size={16} strokeWidth={1.5} style={{ color: "var(--sage)", flexShrink: 0 }} />
@@ -507,7 +507,7 @@ function HistoryTab({ invoices }: { invoices: ApiSubscriptionInvoice[] }) {
               fontFamily: "var(--serif)",
               fontSize: 32,
               letterSpacing: "-0.02em",
-              marginTop: 4,
+              marginTop: "var(--space-1)",
             }}
           >
             {formatCents(String(lifetimeCents), currency)}
@@ -516,7 +516,7 @@ function HistoryTab({ invoices }: { invoices: ApiSubscriptionInvoice[] }) {
             {t("history.acrossPayments", { count: invoices.length })}
           </p>
         </div>
-        <div className="billing-card" style={{ marginTop: 16 }}>
+        <div className="billing-card" style={{ marginTop: "var(--space-4)" }}>
           <FileText size={16} strokeWidth={1.5} style={{ color: "var(--ink-3)" }} />
           <p style={{ fontSize: 12, color: "var(--ink-3)", marginTop: 6 }}>
             {t("history.receiptsNote")}

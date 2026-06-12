@@ -54,7 +54,7 @@ export function NotificationsClient({ locale }: { locale: "en" | "ar" }) {
   };
 
   return (
-    <div style={{ maxWidth: 720, padding: "24px 0", display: "grid", gap: 16 }}>
+    <div style={{ maxWidth: 720, padding: "var(--space-5) 0", display: "grid", gap: "var(--space-4)" }}>
       <header>
         <div
           style={{
@@ -134,7 +134,7 @@ export function NotificationsClient({ locale }: { locale: "en" | "ar" }) {
                 <th
                   style={{
                     textAlign: "start",
-                    padding: "12px 16px",
+                    padding: "var(--space-3) var(--space-4)",
                     fontSize: 11,
                     textTransform: "uppercase",
                     letterSpacing: "0.08em",
@@ -149,7 +149,7 @@ export function NotificationsClient({ locale }: { locale: "en" | "ar" }) {
                     key={c}
                     style={{
                       width: 110,
-                      padding: "12px 16px",
+                      padding: "var(--space-3) var(--space-4)",
                       fontSize: 11,
                       textTransform: "uppercase",
                       letterSpacing: "0.08em",
@@ -168,7 +168,7 @@ export function NotificationsClient({ locale }: { locale: "en" | "ar" }) {
                   key={event}
                   style={{ borderBlockStart: i === 0 ? "none" : "1px solid var(--line)" }}
                 >
-                  <td style={{ padding: "12px 16px" }}>
+                  <td style={{ padding: "var(--space-3) var(--space-4)" }}>
                     <div style={{ fontSize: 14, fontWeight: 500, color: "var(--ink-1)" }}>
                       {t(`events.${event}.label`)}
                     </div>
@@ -177,7 +177,7 @@ export function NotificationsClient({ locale }: { locale: "en" | "ar" }) {
                     </div>
                   </td>
                   {NOTIFICATION_CHANNELS.map((c) => (
-                    <td key={c} style={{ padding: "12px 16px", textAlign: "center" }}>
+                    <td key={c} style={{ padding: "var(--space-3) var(--space-4)", textAlign: "center" }}>
                       <label style={{ display: "inline-block", cursor: canEdit ? "pointer" : "not-allowed" }}>
                         <input
                           type="checkbox"

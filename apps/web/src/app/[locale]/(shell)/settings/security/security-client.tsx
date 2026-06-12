@@ -43,7 +43,7 @@ export function SecurityClient({ locale }: { locale: string }) {
           style={{
             fontFamily: "var(--serif, Fraunces, serif)",
             fontSize: 28,
-            margin: "4px 0 0",
+            margin: "var(--space-1) 0 0",
             color: "var(--ink-1)",
           }}
         >
@@ -67,7 +67,7 @@ export function SecurityClient({ locale }: { locale: string }) {
           style={{
             width: 40,
             height: 40,
-            borderRadius: 10,
+            borderRadius: "var(--radius)",
             background: on
               ? "color-mix(in oklab, var(--sage, #6e9b7f) 16%, transparent)"
               : "color-mix(in oklab, var(--ink-3) 12%, transparent)",
@@ -81,19 +81,19 @@ export function SecurityClient({ locale }: { locale: string }) {
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 500, color: "var(--ink-1)" }}>{t("mfaCardTitle")}</div>
-          <div style={{ marginTop: 4, fontSize: 13, color: "var(--ink-3)" }}>
+          <div style={{ marginTop: "var(--space-1)", fontSize: 13, color: "var(--ink-3)" }}>
             {on ? t("mfaOn") : t("mfaOff")}
           </div>
-          <div style={{ marginTop: 12 }}>
+          <div style={{ marginTop: "var(--space-3)" }}>
             {on ? (
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
                 <button
                   type="button"
                   style={{
                     background: "transparent",
                     border: "1px solid var(--rule)",
                     color: "var(--ink-1)",
-                    padding: "8px 14px",
+                    padding: "var(--space-2) 14px",
                     borderRadius: 8,
                     fontSize: 13,
                     cursor: "pointer",
@@ -110,7 +110,7 @@ export function SecurityClient({ locale }: { locale: string }) {
                     background: "transparent",
                     border: "1px solid var(--rose, #c45a5a)",
                     color: "var(--rose, #c45a5a)",
-                    padding: "8px 14px",
+                    padding: "var(--space-2) 14px",
                     borderRadius: 8,
                     fontSize: 13,
                     cursor: "pointer",
@@ -128,7 +128,7 @@ export function SecurityClient({ locale }: { locale: string }) {
                   background: "var(--accent)",
                   border: "1px solid var(--accent)",
                   color: "white",
-                  padding: "8px 14px",
+                  padding: "var(--space-2) 14px",
                   borderRadius: 8,
                   fontSize: 13,
                   cursor: "pointer",

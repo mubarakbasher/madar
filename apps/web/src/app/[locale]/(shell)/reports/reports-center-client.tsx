@@ -38,12 +38,12 @@ export function ReportsCenterClient({ locale: _locale }: { locale: string }): JS
 
   if (!READER_ROLES.has(role)) {
     return (
-      <section style={{ padding: "40px 24px", maxWidth: 640 }}>
+      <section style={{ padding: "40px var(--space-5)", maxWidth: 640 }}>
         <span className="kicker">{t("kicker")}</span>
         <h1 className="serif" style={{ fontSize: 32, fontWeight: 500, marginTop: 6 }}>
           {t("title")}
         </h1>
-        <p style={{ color: "var(--ink-2)", marginTop: 8 }}>
+        <p style={{ color: "var(--ink-2)", marginTop: "var(--space-2)" }}>
           {t("subtitle")}
         </p>
       </section>
@@ -51,12 +51,12 @@ export function ReportsCenterClient({ locale: _locale }: { locale: string }): JS
   }
 
   return (
-    <section style={{ padding: "32px 24px 80px", maxWidth: 1200 }}>
-      <header style={{ marginBottom: 24, maxWidth: 720 }}>
+    <section style={{ padding: "var(--space-6) var(--space-5) 80px", maxWidth: 1200 }}>
+      <header style={{ marginBottom: "var(--space-5)", maxWidth: 720 }}>
         <span className="kicker">{t("kicker")}</span>
         <h1
           className="serif"
-          style={{ fontSize: 36, fontWeight: 500, marginTop: 6, marginBottom: 8 }}
+          style={{ fontSize: 36, fontWeight: 500, marginTop: 6, marginBottom: "var(--space-2)" }}
         >
           {t("title")}
         </h1>
@@ -69,7 +69,7 @@ export function ReportsCenterClient({ locale: _locale }: { locale: string }): JS
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-          gap: 16,
+          gap: "var(--space-4)",
         }}
       >
         {visible.map((card) => {
@@ -81,7 +81,7 @@ export function ReportsCenterClient({ locale: _locale }: { locale: string }): JS
               style={{
                 display: "block",
                 padding: 20,
-                borderRadius: 14,
+                borderRadius: "var(--radius-lg)",
                 background: "var(--bg-elev)",
                 border: "1px solid var(--rule)",
                 textDecoration: "none",
@@ -99,7 +99,7 @@ export function ReportsCenterClient({ locale: _locale }: { locale: string }): JS
                   display: "inline-flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  marginBottom: 12,
+                  marginBottom: "var(--space-3)",
                   color: "var(--accent, var(--coral))",
                 }}
               >

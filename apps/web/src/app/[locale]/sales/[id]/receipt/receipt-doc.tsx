@@ -319,7 +319,7 @@ export function ReceiptDoc({
 
         {sale.payment_method === "bank_transfer" && bank_account && (
           <section className="receipt-bank">
-            <div style={{ fontWeight: 600, marginBottom: 4 }}>{t("bank.heading")}</div>
+            <div style={{ fontWeight: 600, marginBottom: "var(--space-1)" }}>{t("bank.heading")}</div>
             <div>
               {t("bank.bankName")}: {bank_account.bank_name}
             </div>
@@ -338,7 +338,7 @@ export function ReceiptDoc({
 
         <footer className="receipt-footer">
           <p className="receipt-thanks">{t("thanks")}</p>
-          <p style={{ marginTop: 8 }}>{t("footer.tagline")}</p>
+          <p style={{ marginTop: "var(--space-2)" }}>{t("footer.tagline")}</p>
         </footer>
       </article>
 
@@ -347,12 +347,12 @@ export function ReceiptDoc({
           {t("buttons.backToPos")}
         </a>
         <button type="button" onClick={() => window.print()}>
-          <Printer size={14} strokeWidth={1.5} style={{ verticalAlign: "middle", marginInlineEnd: 4 }} />
+          <Printer size={14} strokeWidth={1.5} style={{ verticalAlign: "middle", marginInlineEnd: "var(--space-1)" }} />
           {t("buttons.print")}
         </button>
         {sale.payment_status === "paid" && REFUND_ROLES.has(role) && (
           <a href={`/${locale}/sales/${id}/refund`} className="receipt-refund-link">
-            <Undo2 size={14} strokeWidth={1.5} style={{ verticalAlign: "middle", marginInlineEnd: 4 }} />
+            <Undo2 size={14} strokeWidth={1.5} style={{ verticalAlign: "middle", marginInlineEnd: "var(--space-1)" }} />
             {t("buttons.refund")}
           </a>
         )}
@@ -365,7 +365,7 @@ export function ReceiptDoc({
               drawer === "needs_pairing" ? void pairAndKick() : void triggerKick()
             }
           >
-            <Banknote size={14} strokeWidth={1.5} style={{ verticalAlign: "middle", marginInlineEnd: 4 }} />
+            <Banknote size={14} strokeWidth={1.5} style={{ verticalAlign: "middle", marginInlineEnd: "var(--space-1)" }} />
             {drawer === "kicking"
               ? t("buttons.popDrawerPending")
               : drawer === "kicked"

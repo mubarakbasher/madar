@@ -140,7 +140,7 @@ function SubscriptionBannerShell({
         padding: "10px 20px",
         display: "flex",
         alignItems: "center",
-        gap: 12,
+        gap: "var(--space-3)",
         fontSize: 13,
         position: "sticky",
         insetBlockStart: 0,

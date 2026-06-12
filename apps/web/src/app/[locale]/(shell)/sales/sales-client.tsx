@@ -167,7 +167,7 @@ export function SalesListClient({ locale }: { locale: "en" | "ar" }) {
         </div>
       </div>
 
-      <div className="sl-chips" style={{ marginBlockEnd: 16 }}>
+      <div className="sl-chips" style={{ marginBlockEnd: "var(--space-4)" }}>
         {(["all", "paid", "payment_pending", "disputed", "refunded"] as const).map(
           (s) => (
             <button

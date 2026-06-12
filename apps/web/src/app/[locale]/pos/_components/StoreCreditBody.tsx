@@ -37,7 +37,7 @@ export function StoreCreditBody({
       <div
         style={{
           padding: 14,
-          borderRadius: 10,
+          borderRadius: "var(--radius)",
           background: "var(--bg-sunk)",
           border: "1px solid var(--rule)",
           color: "var(--ink-2)",
@@ -58,14 +58,14 @@ export function StoreCreditBody({
 
   return (
     <div>
-      <div className="kicker" style={{ marginBottom: 8 }}>
+      <div className="kicker" style={{ marginBottom: "var(--space-2)" }}>
         {t("title")}
       </div>
 
       <div
         style={{
           padding: 14,
-          borderRadius: 10,
+          borderRadius: "var(--radius)",
           background: "var(--bg-sunk)",
           border: "1px solid var(--rule)",
           display: "flex",
@@ -90,7 +90,7 @@ export function StoreCreditBody({
           role="alert"
           style={{
             marginTop: 10,
-            padding: "10px 12px",
+            padding: "10px var(--space-3)",
             borderRadius: 8,
             background: "var(--rose-soft)",
             color: "var(--rose)",

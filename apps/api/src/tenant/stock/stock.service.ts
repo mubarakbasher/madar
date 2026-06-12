@@ -58,7 +58,7 @@ export class StockService {
     auditCtx: AuditCtx,
   ): Promise<ApiAdjustmentResult> {
     const scoped = tenantScoped(tenantId) as unknown as {
-      branch: { findUnique: (args: { where: { id: string } }) => Promise<{ id: string; deleted_at: Date | null } | null> };
+      branch: { findUnique: (args: { where: { id: string } }) => Promise<{ id: string; currency_code: string; deleted_at: Date | null } | null> };
       product: { findUnique: (args: { where: { id: string } }) => Promise<{ id: string; sku: string; deleted_at: Date | null } | null> };
     };
 
@@ -102,6 +102,7 @@ export class StockService {
           qty_delta: body.qty_delta,
           unit_cost_cents:
             body.unit_cost_cents !== undefined ? BigInt(body.unit_cost_cents) : null,
+          currency_code: branch.currency_code,
           note: body.note,
           created_by: actorId,
         },

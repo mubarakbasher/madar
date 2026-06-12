@@ -146,6 +146,7 @@ enum SyncConflictKind {
   duplicate_uuid
   product_unknown
   price_drift
+  sequence_gap
 }
 
 enum SyncConflictStatus {
@@ -634,6 +635,9 @@ model Sale {
   client_uuid         String            @db.Uuid
   client_sequence     Int?
   client_occurred_at  DateTime?         @db.Timestamptz
+  // Stable per-installation id (ADR 0005) — lets the server validate that a
+  // device's client_sequence stream is monotonic and gap-free.
+  device_id           String?           @db.Uuid
   has_negative_stock  Boolean           @default(false)
   offline_completed   Boolean           @default(false)
   refunded_amount_cents BigInt          @default(0)
@@ -651,6 +655,7 @@ model Sale {
   @@index([tenant_id, occurred_at(sort: Desc)])
   @@index([tenant_id, branch_id, occurred_at(sort: Desc)])
   @@index([tenant_id, payment_status])
+  @@index([tenant_id, device_id, client_sequence(sort: Desc)])
   @@map("sales")
 }
 

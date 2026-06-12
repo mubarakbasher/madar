@@ -48,7 +48,7 @@ export function DisableMfaModal({ onClose }: { onClose: (disabled: boolean) => v
         display: "grid",
         placeItems: "center",
         zIndex: 60,
-        padding: 16,
+        padding: "var(--space-4)",
       }}
     >
       <div
@@ -58,7 +58,7 @@ export function DisableMfaModal({ onClose }: { onClose: (disabled: boolean) => v
           maxWidth: "100%",
           background: "var(--bg-elev)",
           border: "1px solid var(--rule)",
-          borderRadius: 14,
+          borderRadius: "var(--radius-lg)",
           overflow: "hidden",
         }}
       >
@@ -84,13 +84,13 @@ export function DisableMfaModal({ onClose }: { onClose: (disabled: boolean) => v
           </button>
         </header>
         <div style={{ padding: 18 }}>
-          <p style={{ fontSize: 13, color: "var(--ink-3)", marginBlockEnd: 12 }}>{t("body")}</p>
+          <p style={{ fontSize: 13, color: "var(--ink-3)", marginBlockEnd: "var(--space-3)" }}>{t("body")}</p>
           <label
             style={{
               display: "block",
               fontSize: 12,
               color: "var(--ink-2)",
-              marginBlockEnd: 4,
+              marginBlockEnd: "var(--space-1)",
             }}
           >
             {t("passwordLabel")}
@@ -102,7 +102,7 @@ export function DisableMfaModal({ onClose }: { onClose: (disabled: boolean) => v
             onChange={(e) => setPassword(e.target.value)}
             style={{
               width: "100%",
-              padding: "8px 10px",
+              padding: "var(--space-2) 10px",
               border: "1px solid var(--rule)",
               borderRadius: 8,
               fontSize: 13,
@@ -111,13 +111,13 @@ export function DisableMfaModal({ onClose }: { onClose: (disabled: boolean) => v
               fontFamily: "inherit",
             }}
           />
-          {error && <div className="br-field-error" style={{ marginBlockStart: 8 }}>{error}</div>}
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginBlockStart: 16 }}>
+          {error && <div className="br-field-error" style={{ marginBlockStart: "var(--space-2)" }}>{error}</div>}
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "var(--space-2)", marginBlockStart: "var(--space-4)" }}>
             <button
               type="button"
               onClick={() => onClose(false)}
               style={{
-                padding: "8px 14px",
+                padding: "var(--space-2) 14px",
                 borderRadius: 8,
                 fontSize: 13,
                 border: "1px solid var(--rule)",
@@ -134,7 +134,7 @@ export function DisableMfaModal({ onClose }: { onClose: (disabled: boolean) => v
               onClick={onConfirm}
               disabled={submitting || password.length === 0}
               style={{
-                padding: "8px 14px",
+                padding: "var(--space-2) 14px",
                 borderRadius: 8,
                 fontSize: 13,
                 border: "1px solid var(--rose, #c45a5a)",

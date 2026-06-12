@@ -32,10 +32,10 @@ export function ShiftChip({
         display: "inline-flex",
         alignItems: "center",
         gap: 10,
-        padding: "4px 10px 4px 12px",
+        padding: "var(--space-1) 10px var(--space-1) var(--space-3)",
         background: "color-mix(in oklab, var(--accent) 10%, var(--bg-elev))",
         border: "1px solid color-mix(in oklab, var(--accent) 30%, var(--rule))",
-        borderRadius: 999,
+        borderRadius: "var(--radius-full)",
         fontSize: 12,
         color: "var(--ink-2)",
       }}
@@ -55,10 +55,10 @@ export function ShiftChip({
           cursor: "pointer",
           display: "inline-flex",
           alignItems: "center",
-          gap: 4,
+          gap: "var(--space-1)",
           fontSize: 12,
           padding: "2px 6px",
-          borderRadius: 6,
+          borderRadius: "var(--radius-sm)",
         }}
       >
         <LogOut size={12} strokeWidth={1.75} />

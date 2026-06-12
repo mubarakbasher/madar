@@ -18,14 +18,14 @@ export default async function OfflinePage({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: 24,
+        padding: "var(--space-5)",
         background: "var(--bg)",
       }}
     >
       <div
         style={{
           maxWidth: 480,
-          padding: "32px 28px",
+          padding: "var(--space-6) 28px",
           borderRadius: 16,
           background: "var(--bg-elev)",
           border: "1px solid var(--rule)",
@@ -38,8 +38,8 @@ export default async function OfflinePage({
           style={{
             fontSize: 32,
             fontWeight: 500,
-            marginTop: 8,
-            marginBottom: 12,
+            marginTop: "var(--space-2)",
+            marginBottom: "var(--space-3)",
             color: "var(--ink)",
             lineHeight: 1.15,
           }}
@@ -49,12 +49,12 @@ export default async function OfflinePage({
         <p style={{ color: "var(--ink-2)", fontSize: 14.5, lineHeight: 1.6, marginBottom: 20 }}>
           {t("body")}
         </p>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: "var(--space-2)" }}>
           <ReloadButton label={t("reload")} />
           <Link
             href={`/${locale}/pos`}
             style={{
-              padding: "10px 16px",
+              padding: "10px var(--space-4)",
               borderRadius: 8,
               background: "var(--bg-sunk)",
               color: "var(--ink)",

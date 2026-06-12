@@ -125,7 +125,7 @@ export function DocumentsTab({
 
       {canMutate && (
         <form className="sup-doc-upload" onSubmit={onSubmitUpload}>
-          <h4 style={{ fontSize: 13, margin: "0 0 8px 0", color: "var(--ink-2)" }}>
+          <h4 style={{ fontSize: 13, margin: "0 0 var(--space-2) 0", color: "var(--ink-2)" }}>
             {t("uploadTitle")}
           </h4>
           <div className="sup-doc-upload-row">
