@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-  <!-- Madar crescent-orbit mark, admin slate teal (--color-admin-accent). -->
+  <!-- Madar crescent-orbit mark, admin slate teal accent. -->
   <path d="M 24 9 A 15 15 0 1 0 39 24" fill="none" stroke="#4A6B7A" stroke-width="3" stroke-linecap="round"/>
   <circle cx="34.6" cy="13.4" r="4" fill="#4A6B7A"/>
   <circle cx="24" cy="24" r="5" fill="#4A6B7A"/>
