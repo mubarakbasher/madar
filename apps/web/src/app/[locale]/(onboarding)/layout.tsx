@@ -1,4 +1,5 @@
 import { setRequestLocale } from "next-intl/server";
+import { MadarMark } from "@madar/ui";
 import { requireAuth } from "../../../lib/auth/server";
 
 /**
@@ -27,13 +28,7 @@ export default async function OnboardingLayout({
         style={{ borderBottom: "1px solid var(--rule)" }}
       >
         <div className="flex items-center gap-3">
-          <div
-            className="grid h-9 w-9 place-items-center rounded-lg text-white"
-            style={{ background: "var(--accent)", fontFamily: "var(--serif)" }}
-            aria-hidden="true"
-          >
-            M
-          </div>
+          <MadarMark size={32} style={{ color: "var(--accent)" }} />
           <span
             style={{ fontFamily: "var(--serif)", fontSize: 20, letterSpacing: "-0.01em" }}
           >

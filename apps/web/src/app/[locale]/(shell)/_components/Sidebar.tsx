@@ -23,6 +23,7 @@ import {
   ClipboardList,
   type LucideIcon,
 } from "lucide-react";
+import { MadarMark } from "@madar/ui";
 import { Link, usePathname } from "../../../../../i18n/routing";
 import { useAuthStore } from "@/lib/auth/store";
 import { businessGetRequest } from "@/lib/api/business";
@@ -187,7 +188,9 @@ export function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sb-brand">
-        <div className="sb-mark">M</div>
+        <div className="sb-mark">
+          <MadarMark size={20} />
+        </div>
         <div className="sb-name">
           {tShell("brand")}
           <small>{tShell("brandSub")}</small>
