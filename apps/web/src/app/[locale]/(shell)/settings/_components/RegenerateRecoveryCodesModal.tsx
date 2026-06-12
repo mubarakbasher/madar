@@ -60,7 +60,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
         display: "grid",
         placeItems: "center",
         zIndex: 60,
-        padding: 16,
+        padding: "var(--space-4)",
       }}
     >
       <div
@@ -70,7 +70,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
           maxWidth: "100%",
           background: "var(--bg-elev)",
           border: "1px solid var(--rule)",
-          borderRadius: 14,
+          borderRadius: "var(--radius-lg)",
           overflow: "hidden",
         }}
       >
@@ -103,7 +103,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
         <div style={{ padding: 18 }}>
           {stage === "password" && (
             <>
-              <p style={{ fontSize: 13, color: "var(--ink-3)", marginBlockEnd: 12 }}>
+              <p style={{ fontSize: 13, color: "var(--ink-3)", marginBlockEnd: "var(--space-3)" }}>
                 {t("body")}
               </p>
               <label
@@ -111,7 +111,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                   display: "block",
                   fontSize: 12,
                   color: "var(--ink-2)",
-                  marginBlockEnd: 4,
+                  marginBlockEnd: "var(--space-1)",
                 }}
               >
                 {t("passwordLabel")}
@@ -123,7 +123,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                 onChange={(e) => setPassword(e.target.value)}
                 style={{
                   width: "100%",
-                  padding: "8px 10px",
+                  padding: "var(--space-2) 10px",
                   border: "1px solid var(--rule)",
                   borderRadius: 8,
                   fontSize: 13,
@@ -133,7 +133,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                 }}
               />
               {error && (
-                <div className="br-field-error" style={{ marginBlockStart: 8 }}>
+                <div className="br-field-error" style={{ marginBlockStart: "var(--space-2)" }}>
                   {error}
                 </div>
               )}
@@ -141,8 +141,8 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                 style={{
                   display: "flex",
                   justifyContent: "flex-end",
-                  gap: 8,
-                  marginBlockStart: 16,
+                  gap: "var(--space-2)",
+                  marginBlockStart: "var(--space-4)",
                 }}
               >
                 <button
@@ -150,7 +150,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                   onClick={onClose}
                   disabled={submitting}
                   style={{
-                    padding: "8px 14px",
+                    padding: "var(--space-2) 14px",
                     borderRadius: 8,
                     fontSize: 13,
                     border: "1px solid var(--rule)",
@@ -167,7 +167,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                   onClick={onConfirm}
                   disabled={submitting || password.length === 0}
                   style={{
-                    padding: "8px 14px",
+                    padding: "var(--space-2) 14px",
                     borderRadius: 8,
                     fontSize: 13,
                     border: "1px solid var(--accent)",
@@ -185,7 +185,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
 
           {stage === "codes" && (
             <>
-              <p style={{ fontSize: 13, color: "var(--ink-3)", marginBlockEnd: 12 }}>
+              <p style={{ fontSize: 13, color: "var(--ink-3)", marginBlockEnd: "var(--space-3)" }}>
                 {t("codesIntro")}
               </p>
               <ul
@@ -195,12 +195,12 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                   background: "var(--bg)",
                   border: "1px solid var(--rule)",
                   borderRadius: 8,
-                  padding: "12px 16px",
+                  padding: "var(--space-3) var(--space-4)",
                   listStyle: "none",
                   margin: 0,
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr",
-                  gap: "6px 16px",
+                  gap: "6px var(--space-4)",
                 }}
               >
                 {codes.map((code) => (
@@ -215,7 +215,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  marginBlockStart: 16,
+                  marginBlockStart: "var(--space-4)",
                 }}
               >
                 <button
@@ -225,7 +225,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                     background: "transparent",
                     border: "1px solid var(--rule)",
                     color: "var(--ink-1)",
-                    padding: "8px 12px",
+                    padding: "var(--space-2) var(--space-3)",
                     borderRadius: 8,
                     fontSize: 13,
                     cursor: "pointer",
@@ -242,7 +242,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                   type="button"
                   onClick={onClose}
                   style={{
-                    padding: "8px 14px",
+                    padding: "var(--space-2) 14px",
                     borderRadius: 8,
                     fontSize: 13,
                     border: "1px solid var(--accent)",

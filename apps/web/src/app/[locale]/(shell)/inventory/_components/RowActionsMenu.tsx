@@ -66,10 +66,10 @@ export function RowActionsMenu({ productId, productName }: { productId: string; 
             position: "absolute",
             insetInlineEnd: 0,
             top: "100%",
-            marginTop: 4,
+            marginTop: "var(--space-1)",
             background: "var(--surface)",
             border: "1px solid var(--rule)",
-            borderRadius: 10,
+            borderRadius: "var(--radius)",
             boxShadow: "0 12px 32px -16px rgba(0,0,0,0.25)",
             zIndex: 20,
             minWidth: 160,
@@ -99,8 +99,8 @@ export function RowActionsMenu({ productId, productName }: { productId: string; 
             </>
           )}
           {confirming && (
-            <div style={{ padding: 12 }}>
-              <p style={{ fontSize: 12, color: "var(--ink-2)", marginBottom: 8 }}>
+            <div style={{ padding: "var(--space-3)" }}>
+              <p style={{ fontSize: 12, color: "var(--ink-2)", marginBottom: "var(--space-2)" }}>
                 {t("confirmDelete", { name: productName })}
               </p>
               <div style={{ display: "flex", gap: 6 }}>
@@ -112,7 +112,7 @@ export function RowActionsMenu({ productId, productName }: { productId: string; 
                     height: 30,
                     background: "transparent",
                     border: "1px solid var(--rule)",
-                    borderRadius: 6,
+                    borderRadius: "var(--radius-sm)",
                     color: "var(--ink-2)",
                     fontSize: 12,
                     cursor: "pointer",
@@ -129,7 +129,7 @@ export function RowActionsMenu({ productId, productName }: { productId: string; 
                     height: 30,
                     background: "var(--rose)",
                     border: "none",
-                    borderRadius: 6,
+                    borderRadius: "var(--radius-sm)",
                     color: "white",
                     fontSize: 12,
                     cursor: deleteMutation.isPending ? "not-allowed" : "pointer",
@@ -150,8 +150,8 @@ function menuItemStyle(): React.CSSProperties {
   return {
     display: "flex",
     alignItems: "center",
-    gap: 8,
-    padding: "8px 12px",
+    gap: "var(--space-2)",
+    padding: "var(--space-2) var(--space-3)",
     fontSize: 13,
     color: "var(--ink)",
     background: "transparent",

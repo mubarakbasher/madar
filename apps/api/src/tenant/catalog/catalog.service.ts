@@ -489,6 +489,7 @@ export class CatalogService {
                   product_id: product.id,
                   kind: "adjustment",
                   qty_delta: entry.qty,
+                  currency_code: product.currency_code,
                   note: "initial_stock",
                   created_by: actorId,
                 },

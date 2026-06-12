@@ -34,6 +34,7 @@ import {
 } from "@/lib/api/held-sales";
 import { syncConflictsSummaryRequest } from "@/lib/api/sync-conflicts";
 import { minorToMajor } from "@/lib/currency";
+import { getDeviceUuid } from "@/lib/offline/device";
 import { dispatchSale } from "@/lib/offline/dispatch";
 import { startSyncEngine } from "@/lib/offline/sync";
 import { saveCatalogSnapshot } from "@/lib/offline/catalog-cache";
@@ -83,7 +84,7 @@ export function PosClient({ locale }: { locale: "en" | "ar" }) {
   if (productsQ.isError || categoriesQ.isError) {
     return (
       <PosShellMessage tone="error">
-        <p style={{ marginBottom: 12 }}>{t("catalog.loadError")}</p>
+        <p style={{ marginBottom: "var(--space-3)" }}>{t("catalog.loadError")}</p>
         <button
           type="button"
           className="pos-btn"
@@ -442,6 +443,11 @@ function PosView({
         qty: line.qty,
         line_discount_cents: lineDiscountCents,
         note: line.note ? line.note : null,
+        // Price snapshot the till actually charged. Ignored for online sales
+        // (server prices from the live catalog); for offline-synced sales the
+        // server honors it and records any catalog drift as a price_drift
+        // conflict (ADR 0005).
+        unit_price_cents: apiProd.price_cents,
       };
     });
     const uuid = ensureClientUuid();
@@ -451,6 +457,7 @@ function PosView({
       currency_code: currency,
       client_uuid: uuid,
       client_sequence: null,
+      device_id: getDeviceUuid() || null,
       lines,
       cash_tendered_cents: null,
     };
@@ -585,11 +592,11 @@ function PosView({
           style={{
             background: "color-mix(in oklab, var(--amber, #B07A2A) 12%, var(--bg))",
             color: "var(--ink-2)",
-            padding: "10px 16px",
+            padding: "10px var(--space-4)",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            gap: 12,
+            gap: "var(--space-3)",
             fontSize: 13,
             borderBottom: "1px solid var(--rule)",
             fontFamily: "var(--sans)",
@@ -599,8 +606,8 @@ function PosView({
           <Link
             href="/sales/sync-conflicts"
             style={{
-              padding: "6px 12px",
-              borderRadius: 6,
+              padding: "6px var(--space-3)",
+              borderRadius: "var(--radius-sm)",
               background: "var(--bg-elev)",
               color: "var(--ink)",
               border: "1px solid var(--rule)",
@@ -725,8 +732,8 @@ function PosView({
           style={{
             position: "fixed",
             bottom: 24,
-            insetInlineEnd: 24,
-            padding: "12px 16px",
+            insetInlineEnd: "var(--space-5)",
+            padding: "var(--space-3) var(--space-4)",
             background: "var(--ink)",
             color: "var(--bg-elev)",
             borderRadius: 8,
@@ -736,7 +743,7 @@ function PosView({
             zIndex: 1000,
             display: "inline-flex",
             alignItems: "center",
-            gap: 12,
+            gap: "var(--space-3)",
           }}
         >
           <span>{toast.message}</span>

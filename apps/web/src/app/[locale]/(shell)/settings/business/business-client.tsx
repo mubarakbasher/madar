@@ -410,7 +410,7 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
 
         <div className="bz-field">
           <label className="bz-label">{t("operations.defaultLocale")}</label>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ display: "flex", gap: "var(--space-2)" }}>
             {(["en", "ar"] as const).map((l) => (
               <label
                 key={l}
@@ -466,7 +466,7 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
           </label>
         </div>
 
-        <div className="bz-field" style={{ marginBlockStart: 12 }}>
+        <div className="bz-field" style={{ marginBlockStart: "var(--space-3)" }}>
           <label className="bz-label">{t("tax.defaultClass")}</label>
           <div className="bz-readonly">
             {snap.default_tax_class_id ? snap.default_tax_class_id : "—"}
@@ -647,7 +647,7 @@ function LogoSection({
             <span style={{ fontSize: 11, color: "var(--ink-3)" }}>{t("placeholder")}</span>
           )}
         </div>
-        <div style={{ display: "flex", gap: 8, flexDirection: "column" }}>
+        <div style={{ display: "flex", gap: "var(--space-2)", flexDirection: "column" }}>
           <label
             className="bz-btn bz-btn-primary"
             style={{ display: "inline-flex", cursor: isOwner ? "pointer" : "not-allowed", opacity: isOwner ? 1 : 0.5 }}

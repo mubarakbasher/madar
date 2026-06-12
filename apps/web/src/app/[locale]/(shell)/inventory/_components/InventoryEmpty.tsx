@@ -13,7 +13,7 @@ export function InventoryEmpty() {
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
-        padding: "96px 24px",
+        padding: "var(--space-9) var(--space-5)",
         gap: 20,
       }}
     >
@@ -58,7 +58,7 @@ export function InventoryEmpty() {
         href="/inventory/products/new"
         className="rounded-xl"
         style={{
-          marginTop: 8,
+          marginTop: "var(--space-2)",
           height: 44,
           paddingInline: 20,
           background: "var(--accent)",
@@ -67,7 +67,7 @@ export function InventoryEmpty() {
           fontWeight: 500,
           display: "inline-flex",
           alignItems: "center",
-          gap: 8,
+          gap: "var(--space-2)",
           textDecoration: "none",
           boxShadow: "0 6px 24px -14px color-mix(in oklab, var(--accent) 70%, transparent)",
         }}

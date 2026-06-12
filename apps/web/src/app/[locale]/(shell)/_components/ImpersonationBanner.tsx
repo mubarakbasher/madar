@@ -58,7 +58,7 @@ export function ImpersonationBanner() {
         padding: "10px 20px",
         display: "flex",
         alignItems: "center",
-        gap: 16,
+        gap: "var(--space-4)",
         fontSize: 13,
         position: "sticky",
         top: 0,

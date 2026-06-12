@@ -109,7 +109,7 @@ export function ProductDetailClient({ id, locale }: { id: string; locale: "en" |
   const p = detailQ.data;
 
   return (
-    <div style={{ padding: "24px 0 64px" }}>
+    <div style={{ padding: "var(--space-5) 0 var(--space-8)" }}>
       <Link
         href="/inventory"
         style={{
@@ -119,7 +119,7 @@ export function ProductDetailClient({ id, locale }: { id: string; locale: "en" |
           color: "var(--ink-3)",
           fontSize: 13,
           textDecoration: "none",
-          marginBottom: 16,
+          marginBottom: "var(--space-4)",
         }}
       >
         <ArrowLeft size={14} strokeWidth={1.5} className="rtl:rotate-180" />
@@ -127,7 +127,7 @@ export function ProductDetailClient({ id, locale }: { id: string; locale: "en" |
       </Link>
 
       {/* Header with image + name */}
-      <header style={{ display: "flex", gap: 24, alignItems: "flex-start", marginBottom: 24 }}>
+      <header style={{ display: "flex", gap: "var(--space-5)", alignItems: "flex-start", marginBottom: "var(--space-5)" }}>
         <ImageHeader
           imageUrl={imageUrl}
           color={detailQ.data.id}
@@ -147,11 +147,11 @@ export function ProductDetailClient({ id, locale }: { id: string; locale: "en" |
           >
             {p.name_i18n[locale] || p.name_i18n.en}
           </h1>
-          <p style={{ color: "var(--ink-3)", fontSize: 13, marginTop: 8 }}>
+          <p style={{ color: "var(--ink-3)", fontSize: 13, marginTop: "var(--space-2)" }}>
             <span style={{ color: p.is_active ? "var(--sage)" : "var(--ink-3)" }}>
               ● {p.is_active ? t("header.active") : t("header.inactive")}
             </span>
-            <span style={{ marginInline: 8 }}>·</span>
+            <span style={{ marginInline: "var(--space-2)" }}>·</span>
             <span>{t("header.branches", { count: p.per_branch_stock.length })}</span>
           </p>
         </div>
@@ -161,10 +161,10 @@ export function ProductDetailClient({ id, locale }: { id: string; locale: "en" |
             display: "inline-flex",
             alignItems: "center",
             gap: 6,
-            padding: "8px 14px",
+            padding: "var(--space-2) 14px",
             background: "var(--bg)",
             border: "1px solid var(--rule)",
-            borderRadius: 10,
+            borderRadius: "var(--radius)",
             color: "var(--ink-2)",
             fontSize: 13,
             textDecoration: "none",
@@ -176,18 +176,18 @@ export function ProductDetailClient({ id, locale }: { id: string; locale: "en" |
         </Link>
       </header>
 
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 280px", gap: 24 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 280px", gap: "var(--space-5)" }}>
         <div>
           {/* Tab strip */}
           <nav
             role="tablist"
             style={{
               display: "inline-flex",
-              gap: 4,
-              padding: 4,
+              gap: "var(--space-1)",
+              padding: "var(--space-1)",
               background: "var(--bg)",
               border: "1px solid var(--rule)",
-              borderRadius: 999,
+              borderRadius: "var(--radius-full)",
               marginBottom: 20,
             }}
           >
@@ -199,8 +199,8 @@ export function ProductDetailClient({ id, locale }: { id: string; locale: "en" |
                 aria-selected={tab === id}
                 onClick={() => setTab(id)}
                 style={{
-                  padding: "6px 16px",
-                  borderRadius: 999,
+                  padding: "6px var(--space-4)",
+                  borderRadius: "var(--radius-full)",
                   background: tab === id ? "var(--accent)" : "transparent",
                   color: tab === id ? "white" : "var(--ink-2)",
                   border: "none",
@@ -297,7 +297,7 @@ function KpiCard({ label, value }: { label: string; value: string }) {
         background: "var(--surface)",
         border: "1px solid var(--rule)",
         borderRadius: 12,
-        padding: 16,
+        padding: "var(--space-4)",
         marginBottom: 10,
       }}
     >
@@ -307,7 +307,7 @@ function KpiCard({ label, value }: { label: string; value: string }) {
           fontFamily: "var(--serif)",
           fontSize: 26,
           letterSpacing: "-0.02em",
-          marginTop: 4,
+          marginTop: "var(--space-1)",
         }}
       >
         {value}
@@ -333,17 +333,17 @@ function OverviewTab({
         style={{
           background: "var(--surface)",
           border: "1px solid var(--rule)",
-          borderRadius: 14,
+          borderRadius: "var(--radius-lg)",
           padding: 20,
         }}
       >
         <span className="kicker">{t("description")}</span>
-        <p style={{ marginTop: 8, fontSize: 14, color: "var(--ink)" }}>
+        <p style={{ marginTop: "var(--space-2)", fontSize: 14, color: "var(--ink)" }}>
           {description ?? <span style={{ color: "var(--ink-3)" }}>{t("noDescription")}</span>}
         </p>
       </section>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-4)" }}>
         <MiniCard label={t("category")} value={product.category_code ?? t("uncategorized")} />
         <MiniCard label={t("barcode")} value={product.barcode ?? t("noBarcode")} mono />
       </div>
@@ -352,12 +352,12 @@ function OverviewTab({
         style={{
           background: "var(--surface)",
           border: "1px solid var(--rule)",
-          borderRadius: 14,
+          borderRadius: "var(--radius-lg)",
           padding: 20,
         }}
       >
         <span className="kicker">{t("pricing")}</span>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, marginTop: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "var(--space-4)", marginTop: "var(--space-3)" }}>
           <PriceCell label={t("price")} value={formatMajor(product.price_cents.toString(), product.currency_code)} />
           <PriceCell label={t("cost")} value={formatMajor(product.cost_cents.toString(), product.currency_code)} />
           <PriceCell label={t("margin")} value={margin != null ? `${margin}%` : "—"} />
@@ -374,14 +374,14 @@ function MiniCard({ label, value, mono }: { label: string; value: string; mono?:
         background: "var(--surface)",
         border: "1px solid var(--rule)",
         borderRadius: 12,
-        padding: 16,
+        padding: "var(--space-4)",
       }}
     >
       <span className="kicker">{label}</span>
       <div
         style={{
           fontSize: 15,
-          marginTop: 4,
+          marginTop: "var(--space-1)",
           fontFamily: mono ? "var(--mono)" : "inherit",
           color: value.startsWith("—") || value === "(deleted)" ? "var(--ink-3)" : "var(--ink)",
         }}
@@ -401,7 +401,7 @@ function PriceCell({ label, value }: { label: string; value: string }) {
           fontFamily: "var(--serif)",
           fontSize: 22,
           letterSpacing: "-0.02em",
-          marginTop: 4,
+          marginTop: "var(--space-1)",
         }}
       >
         {value}
@@ -432,12 +432,12 @@ function StockTab({
   const t = useTranslations("inventory.detail.stock");
   const [adjustRow, setAdjustRow] = useState<ApiPerBranchStock | null>(null);
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
       <section
         style={{
           background: "var(--surface)",
           border: "1px solid var(--rule)",
-          borderRadius: 14,
+          borderRadius: "var(--radius-lg)",
           padding: 20,
         }}
       >
@@ -450,40 +450,40 @@ function StockTab({
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
               <tr style={{ textAlign: "start", color: "var(--ink-3)", fontSize: 11, textTransform: "uppercase" }}>
-                <th style={{ padding: "6px 8px", textAlign: "start" }}>{t("branch")}</th>
-                <th style={{ padding: "6px 8px", textAlign: "end" }}>{t("qty")}</th>
-                <th style={{ padding: "6px 8px", textAlign: "end" }}>{t("reorderPoint")}</th>
-                <th style={{ padding: "6px 8px", textAlign: "end" }}>{t("available")}</th>
-                <th style={{ padding: "6px 8px", textAlign: "end" }}>{t("lastMovement")}</th>
-                {canAdjust && <th style={{ padding: "6px 8px", textAlign: "end" }} />}
+                <th style={{ padding: "6px var(--space-2)", textAlign: "start" }}>{t("branch")}</th>
+                <th style={{ padding: "6px var(--space-2)", textAlign: "end" }}>{t("qty")}</th>
+                <th style={{ padding: "6px var(--space-2)", textAlign: "end" }}>{t("reorderPoint")}</th>
+                <th style={{ padding: "6px var(--space-2)", textAlign: "end" }}>{t("available")}</th>
+                <th style={{ padding: "6px var(--space-2)", textAlign: "end" }}>{t("lastMovement")}</th>
+                {canAdjust && <th style={{ padding: "6px var(--space-2)", textAlign: "end" }} />}
               </tr>
             </thead>
             <tbody>
               {perBranchStock.map((b) => (
                 <tr key={b.branch_id} style={{ borderTop: "1px solid var(--rule)" }}>
-                  <td style={{ padding: "10px 8px" }}>
+                  <td style={{ padding: "10px var(--space-2)" }}>
                     <code style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--ink-3)" }}>
                       {b.branch_code}
                     </code>{" "}
                     {b.branch_name_i18n[locale] || b.branch_name_i18n.en}
                   </td>
-                  <td style={{ padding: "10px 8px", textAlign: "end", fontVariantNumeric: "tabular-nums" }}>
+                  <td style={{ padding: "10px var(--space-2)", textAlign: "end", fontVariantNumeric: "tabular-nums" }}>
                     {b.qty_on_hand}
                   </td>
-                  <td style={{ padding: "10px 8px", textAlign: "end", color: "var(--ink-3)" }}>
+                  <td style={{ padding: "10px var(--space-2)", textAlign: "end", color: "var(--ink-3)" }}>
                     {b.reorder_point ?? "—"}
                   </td>
-                  <td style={{ padding: "10px 8px", textAlign: "end" }}>{b.available}</td>
-                  <td style={{ padding: "10px 8px", textAlign: "end", color: "var(--ink-3)", fontSize: 11 }}>
+                  <td style={{ padding: "10px var(--space-2)", textAlign: "end" }}>{b.available}</td>
+                  <td style={{ padding: "10px var(--space-2)", textAlign: "end", color: "var(--ink-3)", fontSize: 11 }}>
                     {relativeTime(b.last_movement_at)}
                   </td>
                   {canAdjust && (
-                    <td style={{ padding: "10px 8px", textAlign: "end" }}>
+                    <td style={{ padding: "10px var(--space-2)", textAlign: "end" }}>
                       <button
                         type="button"
                         onClick={() => setAdjustRow(b)}
                         style={{
-                          padding: "5px 12px",
+                          padding: "5px var(--space-3)",
                           borderRadius: 8,
                           fontSize: 12.5,
                           border: "1px solid var(--rule)",
@@ -508,7 +508,7 @@ function StockTab({
         style={{
           background: "var(--surface)",
           border: "1px solid var(--rule)",
-          borderRadius: 14,
+          borderRadius: "var(--radius-lg)",
           padding: 20,
         }}
       >
@@ -563,8 +563,8 @@ function MovementRow({
       style={{
         display: "flex",
         alignItems: "center",
-        gap: 12,
-        padding: "8px 12px",
+        gap: "var(--space-3)",
+        padding: "var(--space-2) var(--space-3)",
         background: "var(--bg)",
         border: "1px solid var(--rule)",
         borderRadius: 8,
@@ -573,7 +573,7 @@ function MovementRow({
       <span
         style={{
           padding: "2px 10px",
-          borderRadius: 999,
+          borderRadius: "var(--radius-full)",
           fontSize: 11,
           background: `color-mix(in oklab, ${tone} 14%, transparent)`,
           color: tone,
@@ -606,7 +606,7 @@ function ActivityTab({ items, loading }: { items: ApiActivityItem[]; loading: bo
       style={{
         background: "var(--surface)",
         border: "1px solid var(--rule)",
-        borderRadius: 14,
+        borderRadius: "var(--radius-lg)",
         padding: 20,
       }}
     >
@@ -618,15 +618,15 @@ function ActivityTab({ items, loading }: { items: ApiActivityItem[]; loading: bo
         <p style={{ fontSize: 13, color: "var(--ink-3)" }}>{t("empty")}</p>
       )}
       {items.length > 0 && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
           {items.map((item) => (
             <div
               key={item.id}
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 12,
-                padding: "10px 12px",
+                gap: "var(--space-3)",
+                padding: "10px var(--space-3)",
                 background: "var(--bg)",
                 border: "1px solid var(--rule)",
                 borderRadius: 8,

@@ -183,7 +183,7 @@ export function CategoriesClient({ locale }: { locale: "en" | "ar" }) {
               <button
                 type="button"
                 className="cat-btn cat-btn-primary"
-                style={{ marginBlockStart: 12 }}
+                style={{ marginBlockStart: "var(--space-3)" }}
                 onClick={() => setDialog({ kind: "create", parentId: null })}
               >
                 <Plus size={14} strokeWidth={1.5} />
@@ -290,7 +290,7 @@ export function CategoriesClient({ locale }: { locale: "en" | "ar" }) {
               </div>
 
               {actionError && (
-                <div className="cat-server-error" style={{ marginBlockStart: 12 }}>
+                <div className="cat-server-error" style={{ marginBlockStart: "var(--space-3)" }}>
                   {actionError}
                 </div>
               )}
@@ -519,7 +519,7 @@ function CategoryFormDialog({
           <button
             type="button"
             className="cat-btn"
-            style={{ padding: 4, border: 0 }}
+            style={{ padding: "var(--space-1)", border: 0 }}
             aria-label={t("dialog.close")}
             onClick={onClose}
           >
@@ -656,7 +656,7 @@ function ConfirmDeleteDialog({
           <button
             type="button"
             className="cat-btn"
-            style={{ padding: 4, border: 0 }}
+            style={{ padding: "var(--space-1)", border: 0 }}
             aria-label={t("dialog.close")}
             onClick={onCancel}
           >

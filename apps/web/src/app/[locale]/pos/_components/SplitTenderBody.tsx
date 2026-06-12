@@ -140,15 +140,15 @@ export function SplitTenderBody({
               key={s.key}
               style={{
                 border: "1px solid var(--rule)",
-                borderRadius: 10,
-                padding: 12,
+                borderRadius: "var(--radius)",
+                padding: "var(--space-3)",
                 background: "var(--bg-elev)",
                 display: "flex",
                 flexDirection: "column",
-                gap: 8,
+                gap: "var(--space-2)",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
                 <span
                   className="kicker"
                   style={{ flex: 1, display: "inline-flex", alignItems: "center", gap: 6 }}
@@ -177,7 +177,7 @@ export function SplitTenderBody({
               >
                 {t("methodLabel")}
               </label>
-              <div style={{ display: "flex", gap: 4 }}>
+              <div style={{ display: "flex", gap: "var(--space-1)" }}>
                 {(["cash", "card", "store_credit"] as const).map((m) => {
                   const disabled = m === "store_credit" && storeCreditDisabled;
                   return (
@@ -193,8 +193,8 @@ export function SplitTenderBody({
                       }
                       style={{
                         flex: 1,
-                        padding: "8px 6px",
-                        borderRadius: 6,
+                        padding: "var(--space-2) 6px",
+                        borderRadius: "var(--radius-sm)",
                         border: 0,
                         background: s.method === m ? "var(--bg-sunk)" : "transparent",
                         color: disabled
@@ -317,13 +317,13 @@ export function SplitTenderBody({
       <div
         style={{
           marginTop: 14,
-          padding: 12,
-          borderRadius: 10,
+          padding: "var(--space-3)",
+          borderRadius: "var(--radius)",
           background: "var(--bg-sunk)",
           border: "1px solid var(--rule)",
           display: "grid",
           gridTemplateColumns: "1fr 1fr 1fr",
-          gap: 8,
+          gap: "var(--space-2)",
           fontSize: 12,
         }}
       >
@@ -374,7 +374,7 @@ export function SplitTenderBody({
         className="pos-btn pos-btn-primary"
         disabled={!canSubmit}
         onClick={handleSubmit}
-        style={{ marginTop: 16, width: "100%", justifyContent: "center" }}
+        style={{ marginTop: "var(--space-4)", width: "100%", justifyContent: "center" }}
       >
         {submitting ? "…" : t("submit")}
       </button>

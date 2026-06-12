@@ -149,7 +149,7 @@ export function PayInvoiceClient({
   }
 
   return (
-    <div style={{ padding: "32px 0 96px", maxWidth: 720, marginInline: "auto" }}>
+    <div style={{ padding: "var(--space-6) 0 var(--space-9)", maxWidth: 720, marginInline: "auto" }}>
       <button
         type="button"
         onClick={() => router.push("/billing")}
@@ -162,7 +162,7 @@ export function PayInvoiceClient({
           background: "transparent",
           border: "none",
           cursor: "pointer",
-          marginBottom: 16,
+          marginBottom: "var(--space-4)",
         }}
       >
         <ArrowLeft size={14} strokeWidth={1.5} className="rtl:rotate-180" />
@@ -178,32 +178,32 @@ export function PayInvoiceClient({
       >
         {t("title")}
       </h1>
-      <p style={{ fontSize: 14, color: "var(--ink-3)", marginTop: 4 }}>
+      <p style={{ fontSize: 14, color: "var(--ink-3)", marginTop: "var(--space-1)" }}>
         {t("subtitle", { ref: invoice.reference_code })}
       </p>
 
       {/* Step indicators */}
-      <div style={{ display: "flex", gap: 8, marginTop: 24, marginBottom: 24 }}>
+      <div style={{ display: "flex", gap: "var(--space-2)", marginTop: "var(--space-5)", marginBottom: "var(--space-5)" }}>
         {([1, 2, 3] as const).map((s) => (
           <div
             key={s}
             style={{
               flex: 1,
               height: 4,
-              borderRadius: 999,
+              borderRadius: "var(--radius-full)",
               background: s <= step ? "var(--accent)" : "var(--rule)",
             }}
           />
         ))}
       </div>
-      <p style={{ fontSize: 12, color: "var(--ink-3)", marginBottom: 24 }}>
+      <p style={{ fontSize: 12, color: "var(--ink-3)", marginBottom: "var(--space-5)" }}>
         {step === 1 && t("step1.kicker")}
         {step === 2 && t("step2.kicker")}
         {step === 3 && t("step3.kicker")}
       </p>
 
       {step === 1 && (
-        <section style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <section style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
           <h2 style={{ fontFamily: "var(--serif)", fontSize: 22 }}>
             {t("step1.heading", {
               amount: formatCents(invoice.amount_cents, invoice.currency_code),
@@ -218,7 +218,7 @@ export function PayInvoiceClient({
             <div style={{ color: "var(--rose)", fontSize: 13 }}>{t("step1.noBanks")}</div>
           )}
           {banks.length > 1 && (
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
               {banks.map((b) => (
                 <button
                   key={b.id}
@@ -226,7 +226,7 @@ export function PayInvoiceClient({
                   onClick={() => setSelectedBankId(b.id)}
                   style={{
                     padding: "6px 14px",
-                    borderRadius: 999,
+                    borderRadius: "var(--radius-full)",
                     background: b.id === selectedBankId ? "var(--accent)" : "transparent",
                     color: b.id === selectedBankId ? "white" : "var(--ink-2)",
                     border:
@@ -244,20 +244,20 @@ export function PayInvoiceClient({
           )}
 
           {selectedBank && (
-            <div className="billing-card" style={{ marginTop: 8 }}>
+            <div className="billing-card" style={{ marginTop: "var(--space-2)" }}>
               <div
                 style={{
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  padding: "8px 0 16px",
-                  gap: 8,
+                  padding: "var(--space-2) 0 var(--space-4)",
+                  gap: "var(--space-2)",
                 }}
               >
                 <div
                   style={{
                     background: "white",
-                    padding: 12,
+                    padding: "var(--space-3)",
                     borderRadius: 12,
                     border: "1px solid var(--rule)",
                   }}
@@ -328,8 +328,8 @@ export function PayInvoiceClient({
               background: "color-mix(in oklab, var(--accent) 8%, transparent)",
               border: "1px solid color-mix(in oklab, var(--accent) 22%, transparent)",
               borderRadius: 12,
-              padding: 16,
-              marginTop: 4,
+              padding: "var(--space-4)",
+              marginTop: "var(--space-1)",
             }}
           >
             <span className="kicker" style={{ color: "var(--accent)" }}>
@@ -339,10 +339,10 @@ export function PayInvoiceClient({
               style={{
                 fontFamily: "var(--mono)",
                 fontSize: 18,
-                marginTop: 4,
+                marginTop: "var(--space-1)",
                 display: "flex",
                 alignItems: "center",
-                gap: 8,
+                gap: "var(--space-2)",
               }}
             >
               <span>{invoice.reference_code}</span>
@@ -365,17 +365,17 @@ export function PayInvoiceClient({
             </p>
           </div>
 
-          <div style={{ marginTop: 16, display: "flex", justifyContent: "flex-end" }}>
+          <div style={{ marginTop: "var(--space-4)", display: "flex", justifyContent: "flex-end" }}>
             <button
               type="button"
               onClick={() => setStep(2)}
               disabled={!selectedBank}
               style={{
-                padding: "12px 22px",
+                padding: "var(--space-3) 22px",
                 background: "var(--accent)",
                 color: "white",
                 border: "none",
-                borderRadius: 10,
+                borderRadius: "var(--radius)",
                 fontSize: 14,
                 fontWeight: 500,
                 cursor: selectedBank ? "pointer" : "not-allowed",
@@ -389,15 +389,15 @@ export function PayInvoiceClient({
       )}
 
       {step === 2 && (
-        <section style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <section style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
           <h2 style={{ fontFamily: "var(--serif)", fontSize: 22 }}>{t("step2.heading")}</h2>
 
           <label
             style={{
               display: "block",
-              padding: 24,
+              padding: "var(--space-5)",
               border: "2px dashed var(--rule)",
-              borderRadius: 14,
+              borderRadius: "var(--radius-lg)",
               textAlign: "center",
               cursor: "pointer",
               background: "var(--bg)",
@@ -410,15 +410,15 @@ export function PayInvoiceClient({
               style={{ display: "none" }}
             />
             <FileUp size={28} strokeWidth={1.25} style={{ color: "var(--ink-3)" }} />
-            <div style={{ fontSize: 14, marginTop: 8 }}>
+            <div style={{ fontSize: 14, marginTop: "var(--space-2)" }}>
               {file ? file.name : t("step2.upload")}
             </div>
-            <div style={{ fontSize: 11, color: "var(--ink-3)", marginTop: 4 }}>
+            <div style={{ fontSize: 11, color: "var(--ink-3)", marginTop: "var(--space-1)" }}>
               {t("step2.uploadHint")}
             </div>
           </label>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
             <FormField label={t("step2.payerName")}>
               <input
                 value={payerName}
@@ -458,7 +458,7 @@ export function PayInvoiceClient({
                 background: "color-mix(in oklab, var(--rose) 14%, transparent)",
                 color: "var(--rose)",
                 padding: "10px 14px",
-                borderRadius: 10,
+                borderRadius: "var(--radius)",
                 fontSize: 13,
               }}
             >
@@ -474,7 +474,7 @@ export function PayInvoiceClient({
                 padding: "10px 18px",
                 background: "transparent",
                 border: "1px solid var(--rule)",
-                borderRadius: 10,
+                borderRadius: "var(--radius)",
                 color: "var(--ink-2)",
                 fontSize: 13,
                 cursor: "pointer",
@@ -490,11 +490,11 @@ export function PayInvoiceClient({
                 submitMutation.mutate();
               }}
               style={{
-                padding: "12px 22px",
+                padding: "var(--space-3) 22px",
                 background: "var(--accent)",
                 color: "white",
                 border: "none",
-                borderRadius: 10,
+                borderRadius: "var(--radius)",
                 fontSize: 14,
                 fontWeight: 500,
                 cursor: submitMutation.isPending ? "not-allowed" : "pointer",
@@ -512,7 +512,7 @@ export function PayInvoiceClient({
       )}
 
       {step === 3 && (
-        <section style={{ textAlign: "center", paddingBlock: 32 }}>
+        <section style={{ textAlign: "center", paddingBlock: "var(--space-6)" }}>
           <div
             aria-hidden
             style={{
@@ -533,12 +533,12 @@ export function PayInvoiceClient({
               fontFamily: "var(--serif)",
               fontSize: 26,
               letterSpacing: "-0.02em",
-              marginTop: 16,
+              marginTop: "var(--space-4)",
             }}
           >
             {t("step3.heading")}
           </h2>
-          <p style={{ fontSize: 14, color: "var(--ink-3)", marginTop: 8, maxWidth: 480, marginInline: "auto" }}>
+          <p style={{ fontSize: 14, color: "var(--ink-3)", marginTop: "var(--space-2)", maxWidth: 480, marginInline: "auto" }}>
             {t("step3.body", {
               amount: formatCents(invoice.amount_cents, invoice.currency_code),
               ref: invoice.reference_code,
@@ -548,11 +548,11 @@ export function PayInvoiceClient({
             href="/billing"
             style={{
               display: "inline-block",
-              marginTop: 24,
+              marginTop: "var(--space-5)",
               padding: "10px 18px",
               background: "var(--accent)",
               color: "white",
-              borderRadius: 10,
+              borderRadius: "var(--radius)",
               textDecoration: "none",
               fontSize: 13,
             }}
@@ -585,12 +585,12 @@ function BankField({
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingBlock: 8,
+        paddingBlock: "var(--space-2)",
         borderBottom: "1px solid var(--rule)",
       }}
     >
       <span style={{ fontSize: 12, color: "var(--ink-3)" }}>{label}</span>
-      <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <span style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
         <span style={{ fontFamily: mono ? "var(--mono)" : "inherit", fontSize: 13 }}>{value}</span>
         {onCopy && (
           <button
@@ -601,7 +601,7 @@ function BankField({
               border: "none",
               cursor: "pointer",
               color: copied ? "var(--sage)" : "var(--ink-3)",
-              padding: 4,
+              padding: "var(--space-1)",
             }}
             aria-label={t("copy")}
           >
@@ -628,7 +628,7 @@ function inputStyle(): React.CSSProperties {
   return {
     width: "100%",
     height: 40,
-    padding: "0 12px",
+    padding: "0 var(--space-3)",
     borderRadius: 8,
     border: "1px solid var(--rule)",
     background: "var(--bg)",

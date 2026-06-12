@@ -56,10 +56,10 @@ export function SettingsShell({
       style={{
         display: "grid",
         gridTemplateColumns: "220px 1fr",
-        gap: 24,
+        gap: "var(--space-5)",
         maxWidth: 1100,
         margin: "0 auto",
-        padding: "24px",
+        padding: "var(--space-5)",
       }}
     >
       <aside>
@@ -67,7 +67,7 @@ export function SettingsShell({
           style={{
             fontFamily: "var(--serif, Fraunces, serif)",
             fontSize: 18,
-            marginBottom: 12,
+            marginBottom: "var(--space-3)",
             color: "var(--ink-1)",
           }}
         >
@@ -82,8 +82,8 @@ export function SettingsShell({
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 8,
-                  padding: "8px 10px",
+                  gap: "var(--space-2)",
+                  padding: "var(--space-2) 10px",
                   borderRadius: 8,
                   fontSize: 13,
                   color: active ? "var(--accent)" : "var(--ink-2)",

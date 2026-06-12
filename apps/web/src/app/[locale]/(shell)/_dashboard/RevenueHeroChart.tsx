@@ -46,7 +46,7 @@ export function RevenueHeroChart({
             display: "flex",
             justifyContent: "space-between",
             alignItems: "baseline",
-            marginBottom: 16,
+            marginBottom: "var(--space-4)",
           }}
         >
           <div>
@@ -99,7 +99,7 @@ export function RevenueHeroChart({
           display: "flex",
           justifyContent: "space-between",
           alignItems: "baseline",
-          marginBottom: 16,
+          marginBottom: "var(--space-4)",
         }}
       >
         <div>
@@ -110,7 +110,7 @@ export function RevenueHeroChart({
             {hasDelta && (
               <span
                 className={`delta ${deltaUp ? "up" : "dn"}`}
-                style={{ marginInlineStart: 12, fontSize: 14 }}
+                style={{ marginInlineStart: "var(--space-3)", fontSize: 14 }}
               >
                 {deltaUp ? (
                   <ArrowUp size={11} strokeWidth={1.75} />
@@ -126,7 +126,7 @@ export function RevenueHeroChart({
             style={{
               fontSize: 11,
               color: "var(--ink-3)",
-              marginTop: 4,
+              marginTop: "var(--space-1)",
             }}
           >
             {t("branchAll")}

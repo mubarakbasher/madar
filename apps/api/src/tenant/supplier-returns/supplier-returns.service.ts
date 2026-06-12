@@ -460,6 +460,7 @@ export class SupplierReturnsService {
             kind: "adjustment",
             qty_delta: -line.qty,
             unit_cost_cents: line.unit_cost_cents,
+            currency_code: current.currency_code,
             reference_table: "supplier_returns",
             reference_id: id,
             created_by: actorId,

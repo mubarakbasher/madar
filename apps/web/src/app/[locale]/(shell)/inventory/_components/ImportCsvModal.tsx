@@ -61,14 +61,14 @@ export function ImportCsvModal({ onClose }: { onClose: () => void }) {
         display: "grid",
         placeItems: "center",
         zIndex: 50,
-        padding: 16,
+        padding: "var(--space-4)",
       }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
           background: "var(--surface-1)",
-          borderRadius: 14,
+          borderRadius: "var(--radius-lg)",
           padding: "22px 26px",
           maxWidth: 640,
           width: "100%",
@@ -82,14 +82,14 @@ export function ImportCsvModal({ onClose }: { onClose: () => void }) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "flex-start",
-            marginBlockEnd: 16,
+            marginBlockEnd: "var(--space-4)",
           }}
         >
           <div>
             <h3 style={{ fontFamily: "var(--font-display)", fontSize: 22, margin: 0 }}>
               {t("title")}
             </h3>
-            <p style={{ fontSize: 13, color: "var(--ink-3)", marginBlockStart: 4 }}>
+            <p style={{ fontSize: 13, color: "var(--ink-3)", marginBlockStart: "var(--space-1)" }}>
               {t("subtitle")}
             </p>
           </div>
@@ -104,7 +104,7 @@ export function ImportCsvModal({ onClose }: { onClose: () => void }) {
           </button>
         </header>
 
-        <div style={{ display: "flex", gap: 12, marginBlockEnd: 16, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "var(--space-3)", marginBlockEnd: "var(--space-4)", flexWrap: "wrap" }}>
           <button
             type="button"
             className="inv-btn"
@@ -141,7 +141,7 @@ export function ImportCsvModal({ onClose }: { onClose: () => void }) {
               borderRadius: 8,
               color: "var(--rose)",
               fontSize: 13,
-              marginBlockEnd: 12,
+              marginBlockEnd: "var(--space-3)",
             }}
           >
             {error}
@@ -149,13 +149,13 @@ export function ImportCsvModal({ onClose }: { onClose: () => void }) {
         )}
 
         {result && (
-          <div style={{ marginBlockEnd: 16 }}>
+          <div style={{ marginBlockEnd: "var(--space-4)" }}>
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)",
-                gap: 12,
-                marginBlockEnd: 12,
+                gap: "var(--space-3)",
+                marginBlockEnd: "var(--space-3)",
               }}
             >
               <Stat label={t("created")} value={result.created} tone="sage" />
@@ -215,7 +215,7 @@ export function ImportCsvModal({ onClose }: { onClose: () => void }) {
                 {result.errors.length > 100 && (
                   <div
                     style={{
-                      padding: "8px 10px",
+                      padding: "var(--space-2) 10px",
                       textAlign: "center",
                       color: "var(--ink-3)",
                       borderBlockStart: "1px solid var(--line)",
@@ -233,9 +233,9 @@ export function ImportCsvModal({ onClose }: { onClose: () => void }) {
           style={{
             display: "flex",
             justifyContent: "flex-end",
-            gap: 8,
-            marginBlockStart: 16,
-            paddingBlockStart: 12,
+            gap: "var(--space-2)",
+            marginBlockStart: "var(--space-4)",
+            paddingBlockStart: "var(--space-3)",
             borderBlockStart: "1px solid var(--line)",
           }}
         >
@@ -281,8 +281,8 @@ function Stat({
       style={{
         background: "var(--surface-2)",
         border: "1px solid var(--line)",
-        borderRadius: 10,
-        padding: "10px 12px",
+        borderRadius: "var(--radius)",
+        padding: "10px var(--space-3)",
       }}
     >
       <div
@@ -300,7 +300,7 @@ function Stat({
           fontFamily: "var(--font-display)",
           fontSize: 26,
           color: colorMap[tone],
-          marginBlockStart: 4,
+          marginBlockStart: "var(--space-1)",
         }}
       >
         {value}

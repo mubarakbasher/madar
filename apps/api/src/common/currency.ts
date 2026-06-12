@@ -40,6 +40,22 @@ export function minorToMajor(amount: bigint | number | string, currencyCode: str
   return n / divisor;
 }
 
+/**
+ * Exact decimal string from integer minor units (no float, no locale) — for
+ * CSV/PDF exports. "1500" KWD → "1.500"; "1000" JPY → "1000".
+ */
+export function minorToDecimalString(amount: bigint | string, currencyCode: string): string {
+  const digits = currencyMinorUnits(currencyCode);
+  const big = typeof amount === "bigint" ? amount : BigInt(amount);
+  const neg = big < 0n;
+  const abs = neg ? -big : big;
+  if (digits === 0) return `${neg ? "-" : ""}${abs.toString()}`;
+  const div = 10n ** BigInt(digits);
+  return `${neg ? "-" : ""}${(abs / div).toString()}.${(abs % div)
+    .toString()
+    .padStart(digits, "0")}`;
+}
+
 /** Locale-aware money string from integer minor units. */
 export function formatMoney(
   amount: bigint | number | string,

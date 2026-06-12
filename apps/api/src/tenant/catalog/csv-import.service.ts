@@ -381,6 +381,7 @@ export class CsvImportService {
                 kind: "adjustment",
                 qty_delta: initialQty,
                 unit_cost_cents: data.cost_cents,
+                currency_code: product.currency_code,
                 note: "csv_import",
                 created_by: actorId,
               },

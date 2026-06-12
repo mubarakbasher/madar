@@ -334,7 +334,7 @@ export function ReturnForm({ locale, mode, editingId, initial }: ReturnFormProps
       <section className="rma-card">
         <h2 className="rma-card-title">{t("linesTitle")}</h2>
         {supplier && (
-          <div className="rma-field-hint" style={{ marginBlockEnd: 12 }}>
+          <div className="rma-field-hint" style={{ marginBlockEnd: "var(--space-3)" }}>
             <strong style={{ color: "var(--ink)" }}>
               {pickName(supplier.name_i18n, locale)}
             </strong>

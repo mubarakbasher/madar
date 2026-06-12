@@ -445,7 +445,7 @@ export function POWizard({
         <>
           <section className="po-card">
             <h2 className="po-card-title">{t("step2.title")}</h2>
-            <div className="po-field-hint" style={{ marginBlockEnd: 12 }}>
+            <div className="po-field-hint" style={{ marginBlockEnd: "var(--space-3)" }}>
               {supplier && (
                 <>
                   <strong style={{ color: "var(--ink)" }}>{pickName(supplier.name_i18n, locale)}</strong>
@@ -456,7 +456,7 @@ export function POWizard({
             </div>
 
             {prefillLowStock && !prefillRan && (
-              <div className="po-banner-warning" style={{ marginBlockEnd: 12 }}>
+              <div className="po-banner-warning" style={{ marginBlockEnd: "var(--space-3)" }}>
                 {t("step2.prefillLoading")}
               </div>
             )}
@@ -577,7 +577,7 @@ export function POWizard({
                     </div>
                   </div>
                 </div>
-                <div className="po-field-row" style={{ marginBlockStart: 12 }}>
+                <div className="po-field-row" style={{ marginBlockStart: "var(--space-3)" }}>
                   <div>
                     <div className="po-field-label">{t("step3.expectedAt")}</div>
                     <div style={{ fontSize: 14, color: "var(--ink)" }}>
@@ -590,7 +590,7 @@ export function POWizard({
                   </div>
                 </div>
 
-                <div style={{ marginBlockStart: 16 }}>
+                <div style={{ marginBlockStart: "var(--space-4)" }}>
                   <table className="po-lines-table">
                     <thead>
                       <tr>
@@ -627,7 +627,7 @@ export function POWizard({
                   </table>
                 </div>
 
-                <label className="po-field" style={{ marginBlockStart: 16 }}>
+                <label className="po-field" style={{ marginBlockStart: "var(--space-4)" }}>
                   <span className="po-field-label">{t("step3.notes")}</span>
                   <textarea
                     value={notes}

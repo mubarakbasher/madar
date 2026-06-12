@@ -38,11 +38,11 @@ export function ShiftDetailClient({ locale, shiftId }: { locale: "en" | "ar"; sh
     return (
       <div className="sh-page">
         <div className="sh-empty">
-          <div style={{ fontFamily: "var(--font-display)", fontSize: 22, marginBlockEnd: 8 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 22, marginBlockEnd: "var(--space-2)" }}>
             {t("notFoundTitle")}
           </div>
           <p>{t("notFoundBody")}</p>
-          <Link href="/shifts" className="cu-btn" style={{ marginBlockStart: 16 }}>
+          <Link href="/shifts" className="cu-btn" style={{ marginBlockStart: "var(--space-4)" }}>
             ← {t("backToList")}
           </Link>
         </div>
@@ -60,7 +60,7 @@ export function ShiftDetailClient({ locale, shiftId }: { locale: "en" | "ar"; sh
     <div className="sh-page">
       <header className="sh-header">
         <div className="sh-kicker">{t("detail.kicker")}</div>
-        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 16 }}>
+        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "var(--space-4)" }}>
           <div>
             <h1 className="sh-title">{t("detail.title")}</h1>
             <p className="sh-subtitle">
@@ -73,7 +73,7 @@ export function ShiftDetailClient({ locale, shiftId }: { locale: "en" | "ar"; sh
               type="button"
               onClick={() => window.print()}
               className="cu-btn"
-              style={{ display: "inline-flex", gap: 8, alignItems: "center" }}
+              style={{ display: "inline-flex", gap: "var(--space-2)", alignItems: "center" }}
             >
               <Printer size={14} strokeWidth={1.5} />
               {t("detail.print")}
@@ -114,15 +114,15 @@ export function ShiftDetailClient({ locale, shiftId }: { locale: "en" | "ar"; sh
             </div>
           </div>
 
-          <div className="sh-zr-card" style={{ marginBlockStart: 16 }}>
+          <div className="sh-zr-card" style={{ marginBlockStart: "var(--space-4)" }}>
             <div className="sh-zr-label">{t("detail.byPaymentHeader")}</div>
             {z.by_payment.length === 0 ? (
-              <p className="sh-empty" style={{ padding: 16, border: "none" }}>{t("detail.noPayments")}</p>
+              <p className="sh-empty" style={{ padding: "var(--space-4)", border: "none" }}>{t("detail.noPayments")}</p>
             ) : (
               z.by_payment.map((p) => (
                 <div key={p.method} className="sh-zr-row">
                   <span>{t(`detail.method.${p.method}`, { default: p.method })}</span>
-                  <span style={{ display: "inline-flex", gap: 16 }}>
+                  <span style={{ display: "inline-flex", gap: "var(--space-4)" }}>
                     <span className="sh-zr-label" style={{ alignSelf: "center" }}>
                       ×{p.count}
                     </span>
@@ -133,10 +133,10 @@ export function ShiftDetailClient({ locale, shiftId }: { locale: "en" | "ar"; sh
             )}
           </div>
 
-          <div className="sh-zr-card" style={{ marginBlockStart: 16 }}>
+          <div className="sh-zr-card" style={{ marginBlockStart: "var(--space-4)" }}>
             <div className="sh-zr-label">{t("detail.topProductsHeader")}</div>
             {z.top_products.length === 0 ? (
-              <p className="sh-empty" style={{ padding: 16, border: "none" }}>{t("detail.noTopProducts")}</p>
+              <p className="sh-empty" style={{ padding: "var(--space-4)", border: "none" }}>{t("detail.noTopProducts")}</p>
             ) : (
               z.top_products.map((p) => (
                 <div key={p.product_id} className="sh-zr-row">
@@ -144,7 +144,7 @@ export function ShiftDetailClient({ locale, shiftId }: { locale: "en" | "ar"; sh
                     <strong>{p.name_i18n[locale] || p.name_i18n.en}</strong>{" "}
                     <span className="sh-zr-label">{p.sku}</span>
                   </span>
-                  <span style={{ display: "inline-flex", gap: 16 }}>
+                  <span style={{ display: "inline-flex", gap: "var(--space-4)" }}>
                     <span className="sh-zr-label" style={{ alignSelf: "center" }}>
                       ×{p.units}
                     </span>
@@ -159,10 +159,10 @@ export function ShiftDetailClient({ locale, shiftId }: { locale: "en" | "ar"; sh
         <aside>
           <div className="sh-zr-card">
             <div className="sh-zr-label">{t("detail.summary")}</div>
-            <div className="sh-zr-amount" style={{ marginBlockStart: 8 }}>
+            <div className="sh-zr-amount" style={{ marginBlockStart: "var(--space-2)" }}>
               {fmtMoney(z.gross_revenue_cents, s.currency_code, locale)}
             </div>
-            <p className="sh-zr-label" style={{ marginBlockStart: 4 }}>
+            <p className="sh-zr-label" style={{ marginBlockStart: "var(--space-1)" }}>
               {t("detail.grossRevenue")}
             </p>
             <div className="sh-zr-row">
@@ -176,9 +176,9 @@ export function ShiftDetailClient({ locale, shiftId }: { locale: "en" | "ar"; sh
           </div>
 
           {s.notes && (
-            <div className="sh-zr-card" style={{ marginBlockStart: 16 }}>
+            <div className="sh-zr-card" style={{ marginBlockStart: "var(--space-4)" }}>
               <div className="sh-zr-label">{t("detail.notes")}</div>
-              <p style={{ whiteSpace: "pre-wrap", marginBlockStart: 8 }}>{s.notes}</p>
+              <p style={{ whiteSpace: "pre-wrap", marginBlockStart: "var(--space-2)" }}>{s.notes}</p>
             </div>
           )}
         </aside>

@@ -58,7 +58,7 @@ export function DashboardClient({ locale, id }: { locale: "en" | "ar"; id: strin
       </div>
 
       <section className="br-section" style={{ paddingBlock: 28 }}>
-        <div className="br-kpi-label" style={{ textAlign: "center", marginBlockEnd: 8 }}>
+        <div className="br-kpi-label" style={{ textAlign: "center", marginBlockEnd: "var(--space-2)" }}>
           {t("todayLabel")}
         </div>
         <div

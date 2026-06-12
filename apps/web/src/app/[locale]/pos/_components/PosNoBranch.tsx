@@ -23,7 +23,7 @@ export function PosNoBranch({ canManage }: { canManage: boolean }) {
           alignItems: "center",
           justifyContent: "center",
           textAlign: "center",
-          padding: "96px 24px",
+          padding: "var(--space-9) var(--space-5)",
           gap: 20,
         }}
       >
@@ -68,7 +68,7 @@ export function PosNoBranch({ canManage }: { canManage: boolean }) {
             href="/settings/users"
             className="rounded-xl"
             style={{
-              marginTop: 8,
+              marginTop: "var(--space-2)",
               height: 44,
               paddingInline: 20,
               background: "var(--accent)",

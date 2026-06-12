@@ -119,13 +119,13 @@ export function MfaEnrollWizard({
           <>
             <h3 style={{ fontSize: 14, fontWeight: 500, marginBlockEnd: 6 }}>{t("step1Title")}</h3>
             <p style={{ fontSize: 13, color: "var(--ink-3)" }}>{t("step1Body")}</p>
-            {startError && <div className="br-field-error" style={{ marginBlockStart: 8 }}>{startError}</div>}
+            {startError && <div className="br-field-error" style={{ marginBlockStart: "var(--space-2)" }}>{startError}</div>}
             {start && (
               <div style={{ marginBlockStart: 14, textAlign: "center" }}>
                 <div
                   style={{
                     display: "inline-block",
-                    padding: 12,
+                    padding: "var(--space-3)",
                     background: "white",
                     borderRadius: 12,
                   }}
@@ -138,11 +138,11 @@ export function MfaEnrollWizard({
                 <code
                   style={{
                     display: "inline-block",
-                    marginBlockStart: 4,
-                    padding: "4px 10px",
+                    marginBlockStart: "var(--space-1)",
+                    padding: "var(--space-1) 10px",
                     background: "var(--bg)",
                     border: "1px solid var(--rule)",
-                    borderRadius: 6,
+                    borderRadius: "var(--radius-sm)",
                     fontFamily: "var(--font-mono, ui-monospace, monospace)",
                     fontSize: 12,
                   }}
@@ -151,7 +151,7 @@ export function MfaEnrollWizard({
                 </code>
               </div>
             )}
-            <div style={{ marginBlockStart: 18, display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <div style={{ marginBlockStart: 18, display: "flex", justifyContent: "flex-end", gap: "var(--space-2)" }}>
               <button
                 type="button"
                 disabled={!start}
@@ -177,9 +177,9 @@ export function MfaEnrollWizard({
               onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
               placeholder="123456"
               style={{
-                marginBlockStart: 12,
+                marginBlockStart: "var(--space-3)",
                 width: 160,
-                padding: "10px 12px",
+                padding: "10px var(--space-3)",
                 fontSize: 22,
                 letterSpacing: 4,
                 textAlign: "center",
@@ -191,7 +191,7 @@ export function MfaEnrollWizard({
               }}
             />
             {verifyError && (
-              <div className="br-field-error" style={{ marginBlockStart: 8 }}>{verifyError}</div>
+              <div className="br-field-error" style={{ marginBlockStart: "var(--space-2)" }}>{verifyError}</div>
             )}
             <div style={{ marginBlockStart: 18, display: "flex", justifyContent: "space-between" }}>
               <button type="button" onClick={() => setStep("scan")} style={btn("ghost")}>
@@ -216,8 +216,8 @@ export function MfaEnrollWizard({
 
             <div
               style={{
-                marginBlockStart: 12,
-                padding: 12,
+                marginBlockStart: "var(--space-3)",
+                padding: "var(--space-3)",
                 background: "var(--bg)",
                 border: "1px solid var(--rule)",
                 borderRadius: 8,
@@ -233,7 +233,7 @@ export function MfaEnrollWizard({
               ))}
             </div>
 
-            <div style={{ marginBlockStart: 12, display: "flex", gap: 8 }}>
+            <div style={{ marginBlockStart: "var(--space-3)", display: "flex", gap: "var(--space-2)" }}>
               <button type="button" onClick={copyAll} style={btn("ghost")}>
                 <Copy size={12} strokeWidth={1.5} /> {t("copyAll")}
               </button>
@@ -246,8 +246,8 @@ export function MfaEnrollWizard({
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 8,
-                marginBlockStart: 16,
+                gap: "var(--space-2)",
+                marginBlockStart: "var(--space-4)",
                 fontSize: 13,
                 color: "var(--ink-2)",
               }}
@@ -290,7 +290,7 @@ function ModalShell({ onClose, children }: { onClose: () => void; children: Reac
         display: "grid",
         placeItems: "center",
         zIndex: 60,
-        padding: 16,
+        padding: "var(--space-4)",
       }}
     >
       <div
@@ -300,7 +300,7 @@ function ModalShell({ onClose, children }: { onClose: () => void; children: Reac
           maxWidth: "100%",
           background: "var(--bg-elev)",
           border: "1px solid var(--rule)",
-          borderRadius: 14,
+          borderRadius: "var(--radius-lg)",
           overflow: "hidden",
           boxShadow: "0 24px 80px -24px rgba(0,0,0,0.35)",
         }}
@@ -317,7 +317,7 @@ function btn(variant: "primary" | "ghost"): React.CSSProperties {
     display: "inline-flex",
     alignItems: "center",
     gap: 6,
-    padding: "8px 14px",
+    padding: "var(--space-2) 14px",
     borderRadius: 8,
     fontSize: 13,
     border: primary ? "1px solid var(--accent)" : "1px solid var(--rule)",

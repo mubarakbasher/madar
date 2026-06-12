@@ -604,6 +604,7 @@ export class PurchaseOrdersService {
               kind: "receive",
               qty_delta: r.qty_received,
               unit_cost_cents: sourceLine.unit_cost_cents,
+              currency_code: existing.currency_code,
               reference_table: "purchase_orders",
               reference_id: id,
               created_by: actorId,

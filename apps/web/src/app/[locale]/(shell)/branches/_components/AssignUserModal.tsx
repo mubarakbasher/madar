@@ -136,7 +136,7 @@ export function AssignUserModal({
               type="button"
               className="br-link"
               onClick={() => void q.refetch()}
-              style={{ marginInlineStart: 8 }}
+              style={{ marginInlineStart: "var(--space-2)" }}
             >
               {t("retry")}
             </button>

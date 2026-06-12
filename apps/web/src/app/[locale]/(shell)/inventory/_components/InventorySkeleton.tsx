@@ -6,7 +6,7 @@ export function InventorySkeleton() {
   return (
     <div
       className="inv-skeleton"
-      style={{ padding: "24px 0" }}
+      style={{ padding: "var(--space-5) 0" }}
       aria-busy="true"
       aria-live="polite"
     >
@@ -26,8 +26,8 @@ export function InventorySkeleton() {
             style={{
               display: "grid",
               gridTemplateColumns: "32px 1fr 1fr 80px 80px 80px 120px 60px",
-              gap: 16,
-              padding: "16px 20px",
+              gap: "var(--space-4)",
+              padding: "var(--space-4) 20px",
               borderBottom: i < 5 ? "1px solid var(--rule)" : "none",
               alignItems: "center",
             }}
@@ -49,7 +49,7 @@ function Bar({ width }: { width: string }) {
         height: 12,
         width,
         background: "var(--bg-elev)",
-        borderRadius: 6,
+        borderRadius: "var(--radius-sm)",
         opacity: 0.7,
       }}
     />

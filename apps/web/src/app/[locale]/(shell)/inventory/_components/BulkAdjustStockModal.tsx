@@ -128,7 +128,7 @@ export function BulkAdjustStockModal({
         display: "grid",
         placeItems: "center",
         zIndex: 60,
-        padding: 16,
+        padding: "var(--space-4)",
       }}
     >
       <div
@@ -138,7 +138,7 @@ export function BulkAdjustStockModal({
           maxWidth: "100%",
           background: "var(--bg-elev)",
           border: "1px solid var(--rule)",
-          borderRadius: 14,
+          borderRadius: "var(--radius-lg)",
           overflow: "hidden",
         }}
       >
@@ -172,7 +172,7 @@ export function BulkAdjustStockModal({
         <div style={{ padding: 18 }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <div>
-              <label style={{ display: "block", fontSize: 12, color: "var(--ink-2)", marginBlockEnd: 4 }}>
+              <label style={{ display: "block", fontSize: 12, color: "var(--ink-2)", marginBlockEnd: "var(--space-1)" }}>
                 {t("branchLabel")}
               </label>
               <select
@@ -181,7 +181,7 @@ export function BulkAdjustStockModal({
                 disabled={busy || branchesQ.isPending}
                 style={{
                   width: "100%",
-                  padding: "8px 10px",
+                  padding: "var(--space-2) 10px",
                   border: "1px solid var(--rule)",
                   borderRadius: 8,
                   fontSize: 13,
@@ -198,7 +198,7 @@ export function BulkAdjustStockModal({
               </select>
             </div>
             <div>
-              <label style={{ display: "block", fontSize: 12, color: "var(--ink-2)", marginBlockEnd: 4 }}>
+              <label style={{ display: "block", fontSize: 12, color: "var(--ink-2)", marginBlockEnd: "var(--space-1)" }}>
                 {t("deltaLabel")}
               </label>
               <input
@@ -211,7 +211,7 @@ export function BulkAdjustStockModal({
                 placeholder="-5 or +10"
                 style={{
                   width: "100%",
-                  padding: "8px 10px",
+                  padding: "var(--space-2) 10px",
                   border: "1px solid var(--rule)",
                   borderRadius: 8,
                   fontSize: 13,
@@ -223,7 +223,7 @@ export function BulkAdjustStockModal({
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: 8, marginBlockStart: 14 }}>
+          <div style={{ display: "flex", gap: "var(--space-2)", marginBlockStart: 14 }}>
             {(["adjustment", "waste"] as const).map((k) => (
               <button
                 key={k}
@@ -232,8 +232,8 @@ export function BulkAdjustStockModal({
                 aria-pressed={kind === k}
                 disabled={busy}
                 style={{
-                  padding: "6px 12px",
-                  borderRadius: 999,
+                  padding: "6px var(--space-3)",
+                  borderRadius: "var(--radius-full)",
                   fontSize: 12.5,
                   border: `1px solid ${kind === k ? "var(--accent)" : "var(--rule)"}`,
                   background: kind === k ? "var(--accent-soft)" : "transparent",
@@ -247,7 +247,7 @@ export function BulkAdjustStockModal({
             ))}
           </div>
 
-          <label style={{ display: "block", fontSize: 12, color: "var(--ink-2)", marginBlockEnd: 4, marginBlockStart: 14 }}>
+          <label style={{ display: "block", fontSize: 12, color: "var(--ink-2)", marginBlockEnd: "var(--space-1)", marginBlockStart: 14 }}>
             {t("noteLabel")}
           </label>
           <input
@@ -259,7 +259,7 @@ export function BulkAdjustStockModal({
             placeholder={t("notePlaceholder")}
             style={{
               width: "100%",
-              padding: "8px 10px",
+              padding: "var(--space-2) 10px",
               border: "1px solid var(--rule)",
               borderRadius: 8,
               fontSize: 13,
@@ -278,12 +278,12 @@ export function BulkAdjustStockModal({
           {error && (
             <div
               style={{
-                marginBlockStart: 12,
+                marginBlockStart: "var(--space-3)",
                 background: "color-mix(in oklab, var(--rose, #c45a5a) 12%, transparent)",
                 border: "1px solid var(--rose, #c45a5a)",
                 color: "var(--rose, #c45a5a)",
                 fontSize: 12.5,
-                padding: "8px 10px",
+                padding: "var(--space-2) 10px",
                 borderRadius: 8,
               }}
             >
@@ -291,13 +291,13 @@ export function BulkAdjustStockModal({
             </div>
           )}
 
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginBlockStart: 16 }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "var(--space-2)", marginBlockStart: "var(--space-4)" }}>
             <button
               type="button"
               onClick={onClose}
               disabled={busy}
               style={{
-                padding: "8px 14px",
+                padding: "var(--space-2) 14px",
                 borderRadius: 8,
                 fontSize: 13,
                 border: "1px solid var(--rule)",
@@ -314,7 +314,7 @@ export function BulkAdjustStockModal({
               onClick={submit}
               disabled={busy || !branchId || !delta || !note.trim()}
               style={{
-                padding: "8px 14px",
+                padding: "var(--space-2) 14px",
                 borderRadius: 8,
                 fontSize: 13,
                 border: "1px solid var(--accent)",

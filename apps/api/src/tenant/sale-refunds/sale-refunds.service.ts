@@ -462,6 +462,7 @@ export class SaleRefundsService {
                   product_id: ln.product_id,
                   kind: "return_in",
                   qty_delta: ln.qty,
+                  currency_code: sale.currency_code,
                   reference_table: "sale_refunds",
                   reference_id: refund.id,
                   occurred_at: new Date(),

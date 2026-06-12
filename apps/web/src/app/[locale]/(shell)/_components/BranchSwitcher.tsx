@@ -83,7 +83,7 @@ export function BranchSwitcher({ locale }: { locale: string }) {
               <Globe size={14} strokeWidth={1.5} />
               <span style={{ flex: 1 }}>{t("allBranches")}</span>
             </button>
-            <div style={{ height: 1, background: "var(--rule)", margin: "4px 0" }} />
+            <div style={{ height: 1, background: "var(--rule)", margin: "var(--space-1) 0" }} />
             {branches.map((b) => {
               const cents = Number(b.today_revenue_cents);
               return (

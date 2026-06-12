@@ -274,7 +274,7 @@ export function PnlClient({ locale }: { locale: string }): JSX.Element {
       {reportQ.isError && (
         <div className="pnl-error">
           <div className="pnl-error-title">{t("error.title")}</div>
-          <p style={{ color: "var(--ink-2)", fontSize: 13, marginBottom: 12 }}>
+          <p style={{ color: "var(--ink-2)", fontSize: 13, marginBottom: "var(--space-3)" }}>
             {reportQ.error instanceof ApiError
               ? translateError(t, reportQ.error.code)
               : t("error.body")}
@@ -325,7 +325,7 @@ export function PnlClient({ locale }: { locale: string }): JSX.Element {
               <span
                 style={{
                   display: "inline-block",
-                  marginInlineStart: 8,
+                  marginInlineStart: "var(--space-2)",
                   fontSize: 12,
                   color: "var(--ink-3)",
                   fontWeight: 400,

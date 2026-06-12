@@ -309,6 +309,11 @@ export class StockTransfersService {
       });
     }
 
+    const fromBranch = await scoped.branch.findUnique({
+      where: { id: existing.from_branch_id },
+      select: { currency_code: true },
+    });
+
     await withTenantTx(tenantId, async (tx) => {
       // Guarded status transition: only the first concurrent send() wins.
       // Must run BEFORE any stock writes so a loser does no stock work.
@@ -330,6 +335,7 @@ export class StockTransfersService {
             product_id: line.product_id,
             kind: "transfer_out",
             qty_delta: -line.qty_sent,
+            currency_code: fromBranch?.currency_code ?? null,
             reference_table: "stock_transfers",
             reference_id: id,
             created_by: actorId,
@@ -417,6 +423,11 @@ export class StockTransfersService {
       });
     }
 
+    const toBranch = await scoped.branch.findUnique({
+      where: { id: existing.to_branch_id },
+      select: { currency_code: true },
+    });
+
     await withTenantTx(tenantId, async (tx) => {
       // Guarded status transition: only the first concurrent receive() wins.
       // Must run BEFORE any stock writes so a loser does no stock work.
@@ -448,6 +459,7 @@ export class StockTransfersService {
               product_id: sourceLine.product_id,
               kind: "transfer_in",
               qty_delta: r.qty_received,
+              currency_code: toBranch?.currency_code ?? null,
               reference_table: "stock_transfers",
               reference_id: id,
               created_by: actorId,

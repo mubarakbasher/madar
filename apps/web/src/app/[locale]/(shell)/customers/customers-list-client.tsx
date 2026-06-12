@@ -114,7 +114,7 @@ export function CustomersListClient({ locale }: { locale: "en" | "ar" }) {
         <div className="cu-empty">
           <div className="cu-empty-title">{t("emptyTitle")}</div>
           <p>{t("emptyBody")}</p>
-          <Link href="/customers/new" className="cu-btn cu-btn-primary" style={{ marginBlockStart: 16 }}>
+          <Link href="/customers/new" className="cu-btn cu-btn-primary" style={{ marginBlockStart: "var(--space-4)" }}>
             <Plus size={16} strokeWidth={1.5} />
             {t("addCustomer")}
           </Link>

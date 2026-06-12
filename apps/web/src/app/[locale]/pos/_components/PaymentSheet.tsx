@@ -181,9 +181,9 @@ export function PaymentSheet({
             <span className="kicker">{t("kicker", { id: "2848" })}</span>
             <div
               className="serif tnum"
-              style={{ fontSize: 42, fontWeight: 500, marginTop: 4, letterSpacing: "-0.025em", lineHeight: 1 }}
+              style={{ fontSize: 42, fontWeight: 500, marginTop: "var(--space-1)", letterSpacing: "-0.025em", lineHeight: 1 }}
             >
-              <span style={{ fontSize: "0.5em", color: "var(--ink-3)", marginInlineEnd: 4 }}>
+              <span style={{ fontSize: "0.5em", color: "var(--ink-3)", marginInlineEnd: "var(--space-1)" }}>
                 {currency === "EGP" ? "£" : currency}
               </span>
               {Math.round(total)}
@@ -227,11 +227,11 @@ export function PaymentSheet({
               <div
                 style={{
                   display: "flex",
-                  gap: 4,
+                  gap: "var(--space-1)",
                   background: "var(--bg-sunk)",
                   padding: 3,
                   borderRadius: 8,
-                  marginBottom: 16,
+                  marginBottom: "var(--space-4)",
                 }}
               >
                 {(["cash", "card", "tx", "sc", "split"] as const).map((m) => {
@@ -248,7 +248,7 @@ export function PaymentSheet({
                       style={{
                         flex: 1,
                         padding: "10px 6px",
-                        borderRadius: 6,
+                        borderRadius: "var(--radius-sm)",
                         border: 0,
                         background: method === m ? "var(--bg-elev)" : "transparent",
                         color: disabled
@@ -306,7 +306,7 @@ export function PaymentSheet({
                           onClick={() => setCashTendered(c.v)}
                         >
                           {c.l}
-                          <span className="tnum" style={{ color: "var(--ink-3)", marginInlineStart: 4 }}>
+                          <span className="tnum" style={{ color: "var(--ink-3)", marginInlineStart: "var(--space-1)" }}>
                             {c.v} {currency}
                           </span>
                         </button>
@@ -316,7 +316,7 @@ export function PaymentSheet({
                     <div
                       style={{
                         marginTop: 10,
-                        padding: 12,
+                        padding: "var(--space-3)",
                         borderRadius: 8,
                         background: "var(--sage-soft)",
                         color: "var(--sage)",
@@ -380,8 +380,8 @@ export function PaymentSheet({
                 <div
                   role="alert"
                   style={{
-                    marginTop: 12,
-                    padding: "10px 12px",
+                    marginTop: "var(--space-3)",
+                    padding: "10px var(--space-3)",
                     borderRadius: 8,
                     background: "var(--rose-soft)",
                     color: "var(--rose)",
@@ -394,7 +394,7 @@ export function PaymentSheet({
               )}
 
               {useBottomRow && (
-                <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+                <div style={{ display: "flex", gap: "var(--space-2)", marginTop: "var(--space-4)" }}>
                   <button
                     type="button"
                     className="pos-btn"
@@ -425,7 +425,7 @@ export function PaymentSheet({
 
           {stage === "receipt" && (
             <>
-              <div className="kicker" style={{ marginBottom: 4 }}>
+              <div className="kicker" style={{ marginBottom: "var(--space-1)" }}>
                 {t("bankReceiptTitle")}
               </div>
               <p
@@ -445,8 +445,8 @@ export function PaymentSheet({
                   fontSize: 11.5,
                   color: "var(--ink-3)",
                   display: "block",
-                  marginTop: 12,
-                  marginBottom: 4,
+                  marginTop: "var(--space-3)",
+                  marginBottom: "var(--space-1)",
                   fontWeight: 500,
                 }}
               >
@@ -464,8 +464,8 @@ export function PaymentSheet({
                   fontSize: 11.5,
                   color: "var(--ink-3)",
                   display: "block",
-                  marginTop: 12,
-                  marginBottom: 4,
+                  marginTop: "var(--space-3)",
+                  marginBottom: "var(--space-1)",
                   fontWeight: 500,
                 }}
               >
@@ -478,7 +478,7 @@ export function PaymentSheet({
                 className="pos-input"
               />
 
-              <div style={{ marginTop: 12 }}>
+              <div style={{ marginTop: "var(--space-3)" }}>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -492,8 +492,8 @@ export function PaymentSheet({
                   onClick={() => fileInputRef.current?.click()}
                   style={{
                     width: "100%",
-                    padding: 16,
-                    borderRadius: 10,
+                    padding: "var(--space-4)",
+                    borderRadius: "var(--radius)",
                     border: receiptFile
                       ? "1.5px solid var(--sage)"
                       : "1.5px dashed var(--rule)",
@@ -506,7 +506,7 @@ export function PaymentSheet({
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    gap: 8,
+                    gap: "var(--space-2)",
                     fontFamily: "inherit",
                   }}
                 >
@@ -529,7 +529,7 @@ export function PaymentSheet({
                   <div
                     role="alert"
                     style={{
-                      marginTop: 8,
+                      marginTop: "var(--space-2)",
                       fontSize: 12,
                       color: "var(--rose)",
                       fontFamily: "var(--sans)",
@@ -544,9 +544,9 @@ export function PaymentSheet({
                 style={{
                   background: "var(--bg-sunk)",
                   border: "1px solid var(--rule)",
-                  borderRadius: 10,
-                  padding: 12,
-                  marginTop: 12,
+                  borderRadius: "var(--radius)",
+                  padding: "var(--space-3)",
+                  marginTop: "var(--space-3)",
                   display: "flex",
                   gap: 10,
                   fontSize: 12,
@@ -561,8 +561,8 @@ export function PaymentSheet({
                 <div
                   role="alert"
                   style={{
-                    marginTop: 12,
-                    padding: "10px 12px",
+                    marginTop: "var(--space-3)",
+                    padding: "10px var(--space-3)",
                     borderRadius: 8,
                     background: "var(--rose-soft)",
                     color: "var(--rose)",
@@ -574,7 +574,7 @@ export function PaymentSheet({
                 </div>
               )}
 
-              <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+              <div style={{ display: "flex", gap: "var(--space-2)", marginTop: "var(--space-4)" }}>
                 <button
                   type="button"
                   className="pos-btn"

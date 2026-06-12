@@ -108,7 +108,7 @@ export function BulkEditPriceModal({
         display: "grid",
         placeItems: "center",
         zIndex: 60,
-        padding: 16,
+        padding: "var(--space-4)",
       }}
     >
       <div
@@ -118,7 +118,7 @@ export function BulkEditPriceModal({
           maxWidth: "100%",
           background: "var(--bg-elev)",
           border: "1px solid var(--rule)",
-          borderRadius: 14,
+          borderRadius: "var(--radius-lg)",
           overflow: "hidden",
         }}
       >
@@ -150,7 +150,7 @@ export function BulkEditPriceModal({
           </button>
         </header>
         <div style={{ padding: 18 }}>
-          <div style={{ display: "flex", gap: 8, marginBlockEnd: 14 }}>
+          <div style={{ display: "flex", gap: "var(--space-2)", marginBlockEnd: 14 }}>
             <ModeChip active={mode === "set"} onClick={() => setMode("set")}>
               {t("modes.set")}
             </ModeChip>
@@ -159,7 +159,7 @@ export function BulkEditPriceModal({
             </ModeChip>
           </div>
 
-          <label style={{ display: "block", fontSize: 12, color: "var(--ink-2)", marginBlockEnd: 4 }}>
+          <label style={{ display: "block", fontSize: 12, color: "var(--ink-2)", marginBlockEnd: "var(--space-1)" }}>
             {mode === "set" ? t("setLabel") : t("pctLabel")}
           </label>
           <input
@@ -172,7 +172,7 @@ export function BulkEditPriceModal({
             placeholder={mode === "set" ? "0.00" : "+10"}
             style={{
               width: "100%",
-              padding: "8px 10px",
+              padding: "var(--space-2) 10px",
               border: "1px solid var(--rule)",
               borderRadius: 8,
               fontSize: 14,
@@ -193,7 +193,7 @@ export function BulkEditPriceModal({
           )}
 
           {progress && (
-            <p style={{ marginBlockStart: 8, fontSize: 12, color: "var(--ink-3)", fontVariantNumeric: "tabular-nums" }}>
+            <p style={{ marginBlockStart: "var(--space-2)", fontSize: 12, color: "var(--ink-3)", fontVariantNumeric: "tabular-nums" }}>
               {t("progress", { done: progress.done, total: progress.total })}
             </p>
           )}
@@ -201,12 +201,12 @@ export function BulkEditPriceModal({
           {error && (
             <div
               style={{
-                marginBlockStart: 12,
+                marginBlockStart: "var(--space-3)",
                 background: "color-mix(in oklab, var(--rose, #c45a5a) 12%, transparent)",
                 border: "1px solid var(--rose, #c45a5a)",
                 color: "var(--rose, #c45a5a)",
                 fontSize: 12.5,
-                padding: "8px 10px",
+                padding: "var(--space-2) 10px",
                 borderRadius: 8,
               }}
             >
@@ -214,13 +214,13 @@ export function BulkEditPriceModal({
             </div>
           )}
 
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginBlockStart: 16 }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "var(--space-2)", marginBlockStart: "var(--space-4)" }}>
             <button
               type="button"
               onClick={onClose}
               disabled={busy}
               style={{
-                padding: "8px 14px",
+                padding: "var(--space-2) 14px",
                 borderRadius: 8,
                 fontSize: 13,
                 border: "1px solid var(--rule)",
@@ -237,7 +237,7 @@ export function BulkEditPriceModal({
               onClick={submit}
               disabled={busy || value.length === 0}
               style={{
-                padding: "8px 14px",
+                padding: "var(--space-2) 14px",
                 borderRadius: 8,
                 fontSize: 13,
                 border: "1px solid var(--accent)",
@@ -271,8 +271,8 @@ function ModeChip({
       onClick={onClick}
       aria-pressed={active}
       style={{
-        padding: "6px 12px",
-        borderRadius: 999,
+        padding: "6px var(--space-3)",
+        borderRadius: "var(--radius-full)",
         fontSize: 12.5,
         border: `1px solid ${active ? "var(--accent)" : "var(--rule)"}`,
         background: active ? "var(--accent-soft)" : "transparent",

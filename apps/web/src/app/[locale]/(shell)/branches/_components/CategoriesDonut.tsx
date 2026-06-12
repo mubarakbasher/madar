@@ -44,7 +44,7 @@ export function CategoriesDonut({
   const opacities = [0.95, 0.78, 0.62, 0.48, 0.34, 0.22];
 
   return (
-    <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
+    <div style={{ display: "flex", gap: "var(--space-4)", alignItems: "center", flexWrap: "wrap" }}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-label={label}>
         <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--rule)" strokeWidth={stroke} />
         {slices.map(({ d, i, startAngle, endAngle }) => {
@@ -78,7 +78,7 @@ export function CategoriesDonut({
           return (
             <li
               key={d.category_id ?? `uncat-${i}`}
-              style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}
+              style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", fontSize: 13 }}
             >
               <span
                 style={{

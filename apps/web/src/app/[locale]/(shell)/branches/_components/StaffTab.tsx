@@ -82,7 +82,7 @@ export function StaffTab({ branch, locale }: { branch: ApiBranchDetail; locale: 
     <section className="br-section">
       <div className="br-staff-head">
         <div>
-          <h3 className="br-section-title" style={{ marginBlockEnd: 4 }}>
+          <h3 className="br-section-title" style={{ marginBlockEnd: "var(--space-1)" }}>
             {t("title", { branch: branchName })}
           </h3>
           <p className="br-staff-sub">{t("countChip", { count })}</p>

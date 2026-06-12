@@ -40,12 +40,12 @@ export function ReconcileClient({ locale }: { locale: "en" | "ar" }) {
   return (
     <div
       style={{
-        padding: "28px 40px 64px",
+        padding: "28px 40px var(--space-8)",
         maxWidth: 1180,
         margin: "0 auto",
       }}
     >
-      <header style={{ marginBlockEnd: 24 }}>
+      <header style={{ marginBlockEnd: "var(--space-5)" }}>
         <div
           style={{
             textTransform: "uppercase",
@@ -72,9 +72,9 @@ export function ReconcileClient({ locale }: { locale: "en" | "ar" }) {
         className="no-print"
         style={{
           display: "flex",
-          gap: 12,
+          gap: "var(--space-3)",
           alignItems: "flex-end",
-          marginBlockEnd: 24,
+          marginBlockEnd: "var(--space-5)",
         }}
       >
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -95,7 +95,7 @@ export function ReconcileClient({ locale }: { locale: "en" | "ar" }) {
             value={date}
             onChange={(e) => setDate(e.target.value)}
             style={{
-              padding: "9px 12px",
+              padding: "9px var(--space-3)",
               border: "1px solid var(--line)",
               borderRadius: 8,
               background: "var(--surface-1)",
@@ -111,9 +111,9 @@ export function ReconcileClient({ locale }: { locale: "en" | "ar" }) {
           style={{
             display: "inline-flex",
             alignItems: "center",
-            gap: 8,
-            padding: "9px 16px",
-            borderRadius: 10,
+            gap: "var(--space-2)",
+            padding: "9px var(--space-4)",
+            borderRadius: "var(--radius)",
             background: "var(--surface-1)",
             border: "1px solid var(--line)",
             color: "var(--ink-1)",
@@ -127,11 +127,11 @@ export function ReconcileClient({ locale }: { locale: "en" | "ar" }) {
       </div>
 
       {q.isPending ? (
-        <div style={{ padding: 48, textAlign: "center", color: "var(--ink-3)" }}>
+        <div style={{ padding: "var(--space-7)", textAlign: "center", color: "var(--ink-3)" }}>
           {t("loading")}
         </div>
       ) : q.isError || !q.data ? (
-        <div style={{ padding: 48, textAlign: "center", color: "var(--rose)" }}>
+        <div style={{ padding: "var(--space-7)", textAlign: "center", color: "var(--rose)" }}>
           {t("error")}
         </div>
       ) : (
@@ -177,7 +177,7 @@ function ChainCard({
         background: "var(--surface-1)",
         border: "1px solid var(--line)",
         borderRadius: 12,
-        padding: "20px 24px",
+        padding: "20px var(--space-5)",
         marginBlockEnd: 20,
       }}
     >
@@ -242,8 +242,8 @@ function BranchPanel({
         background: "var(--surface-1)",
         border: "1px solid var(--line)",
         borderRadius: 12,
-        padding: "20px 24px",
-        marginBlockEnd: 16,
+        padding: "20px var(--space-5)",
+        marginBlockEnd: "var(--space-4)",
       }}
     >
       <div
@@ -264,8 +264,8 @@ function BranchPanel({
         </div>
         <span
           style={{
-            padding: "4px 12px",
-            borderRadius: 999,
+            padding: "var(--space-1) var(--space-3)",
+            borderRadius: "var(--radius-full)",
             fontSize: 12,
             background:
               variance === 0n
@@ -293,8 +293,8 @@ function BranchPanel({
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-          gap: 12,
-          marginBlockEnd: 16,
+          gap: "var(--space-3)",
+          marginBlockEnd: "var(--space-4)",
         }}
       >
         <Stat label={t("totals.gross")} value={fmtMoney(branch.totals.gross_revenue_cents, currency, locale)} />
@@ -306,7 +306,7 @@ function BranchPanel({
       </div>
 
       {branch.totals.by_payment.length > 0 && (
-        <div style={{ marginBlockEnd: 12 }}>
+        <div style={{ marginBlockEnd: "var(--space-3)" }}>
           <div
             style={{
               fontSize: 11,
@@ -324,19 +324,19 @@ function BranchPanel({
                 <tr key={p.method}>
                   <td
                     style={{
-                      padding: "4px 0",
+                      padding: "var(--space-1) 0",
                       textTransform: "capitalize",
                       color: "var(--ink-2)",
                     }}
                   >
                     {p.method.replace("_", " ")}
                   </td>
-                  <td style={{ padding: "4px 0", textAlign: "end", color: "var(--ink-3)" }}>
+                  <td style={{ padding: "var(--space-1) 0", textAlign: "end", color: "var(--ink-3)" }}>
                     × {p.count}
                   </td>
                   <td
                     style={{
-                      padding: "4px 0",
+                      padding: "var(--space-1) 0",
                       textAlign: "end",
                       fontVariantNumeric: "tabular-nums",
                     }}
@@ -454,7 +454,7 @@ function Stat({
           fontFamily: "var(--font-display)",
           fontSize: 22,
           color,
-          marginBlockStart: 4,
+          marginBlockStart: "var(--space-1)",
           fontVariantNumeric: "tabular-nums",
           whiteSpace: "nowrap",
         }}

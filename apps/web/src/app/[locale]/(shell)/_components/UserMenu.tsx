@@ -75,9 +75,9 @@ export function UserMenu({ locale }: { locale: string }) {
           {user && (
             <div
               style={{
-                padding: "8px 10px 10px",
+                padding: "var(--space-2) 10px 10px",
                 borderBottom: "1px solid var(--rule)",
-                marginBottom: 4,
+                marginBottom: "var(--space-1)",
               }}
             >
               <div style={{ fontSize: 13, fontWeight: 500, color: "var(--ink)" }}>
@@ -109,7 +109,7 @@ export function UserMenu({ locale }: { locale: string }) {
             {t("settings")}
           </button>
 
-          <div style={{ height: 1, background: "var(--rule)", margin: "4px 0" }} />
+          <div style={{ height: 1, background: "var(--rule)", margin: "var(--space-1) 0" }} />
 
           <button
             type="button"

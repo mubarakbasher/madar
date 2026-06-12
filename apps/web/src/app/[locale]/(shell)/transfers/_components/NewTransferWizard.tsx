@@ -261,11 +261,11 @@ export function NewTransferWizard({ locale }: { locale: string }) {
               />
             </label>
 
-            <div style={{ maxHeight: 220, overflowY: "auto", border: "1px solid var(--rule)", borderRadius: 6 }}>
+            <div style={{ maxHeight: 220, overflowY: "auto", border: "1px solid var(--rule)", borderRadius: "var(--radius-sm)" }}>
               {productsQ.isPending ? (
-                <div style={{ padding: 12, fontSize: 13, color: "var(--ink-3)" }}>…</div>
+                <div style={{ padding: "var(--space-3)", fontSize: 13, color: "var(--ink-3)" }}>…</div>
               ) : filteredProducts.length === 0 ? (
-                <div style={{ padding: 12, fontSize: 13, color: "var(--ink-3)" }}>{t("step2.noResults")}</div>
+                <div style={{ padding: "var(--space-3)", fontSize: 13, color: "var(--ink-3)" }}>{t("step2.noResults")}</div>
               ) : (
                 filteredProducts.map((p) => {
                   const inLines = lines.some((l) => l.product_id === p.id);
@@ -277,7 +277,7 @@ export function NewTransferWizard({ locale }: { locale: string }) {
                         display: "flex",
                         justifyContent: "space-between",
                         width: "100%",
-                        padding: "8px 12px",
+                        padding: "var(--space-2) var(--space-3)",
                         border: "none",
                         borderBottom: "1px solid var(--rule)",
                         background: inLines ? "var(--bg-elev)" : "transparent",
@@ -364,15 +364,15 @@ export function NewTransferWizard({ locale }: { locale: string }) {
               <strong>{t("step3.from")}:</strong>{" "}
               {pickName(branches.find((b) => b.id === fromBranch)?.name_i18n, locale)}
             </div>
-            <div style={{ fontSize: 13, color: "var(--ink-2)", marginBlockStart: 4 }}>
+            <div style={{ fontSize: 13, color: "var(--ink-2)", marginBlockStart: "var(--space-1)" }}>
               <strong>{t("step3.to")}:</strong>{" "}
               {pickName(branches.find((b) => b.id === toBranch)?.name_i18n, locale)}
             </div>
-            <div style={{ fontSize: 13, color: "var(--ink-2)", marginBlockStart: 4 }}>
+            <div style={{ fontSize: 13, color: "var(--ink-2)", marginBlockStart: "var(--space-1)" }}>
               <strong>{t("step3.lines")}:</strong> {lines.length} ·{" "}
               {lines.reduce((s, l) => s + l.qty_sent, 0)} {t("step3.units")}
             </div>
-            <label className="xfer-field" style={{ marginBlockStart: 12 }}>
+            <label className="xfer-field" style={{ marginBlockStart: "var(--space-3)" }}>
               <span className="xfer-field-label">{t("step3.notes")}</span>
               <textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
             </label>
@@ -382,7 +382,7 @@ export function NewTransferWizard({ locale }: { locale: string }) {
             <button type="button" className="xfer-btn xfer-btn-ghost" onClick={() => setStep(2)}>
               {t("actions.back")}
             </button>
-            <div style={{ display: "flex", gap: 8 }}>
+            <div style={{ display: "flex", gap: "var(--space-2)" }}>
               <button
                 type="button"
                 className="xfer-btn"

@@ -89,7 +89,7 @@ export function CustomerDetailClient({
         <div className="cu-empty">
           <div className="cu-empty-title">{t("notFoundTitle")}</div>
           <p>{t("notFoundBody")}</p>
-          <Link href="/customers" className="cu-btn" style={{ marginBlockStart: 16 }}>
+          <Link href="/customers" className="cu-btn" style={{ marginBlockStart: "var(--space-4)" }}>
             ← {t("backToList")}
           </Link>
         </div>
@@ -180,7 +180,7 @@ export function CustomerDetailClient({
               {t("confirmDeleteBody", { name: c.name })}
             </div>
             {deleteError && (
-              <div className="cu-form-error" style={{ marginBlockEnd: 16 }}>
+              <div className="cu-form-error" style={{ marginBlockEnd: "var(--space-4)" }}>
                 {deleteError}
               </div>
             )}
@@ -213,7 +213,7 @@ function OverviewTab({ c, locale }: { c: ApiCustomerDetail; locale: "en" | "ar" 
   const t = useTranslations("customers");
   return (
     <>
-      <div className="cu-grid" style={{ marginBlockEnd: 24 }}>
+      <div className="cu-grid" style={{ marginBlockEnd: "var(--space-5)" }}>
         <div className="cu-card">
           <div className="cu-card-label">{t("kpi.balance")}</div>
           <div className="cu-card-value">
@@ -235,7 +235,7 @@ function OverviewTab({ c, locale }: { c: ApiCustomerDetail; locale: "en" | "ar" 
       {c.notes && (
         <div className="cu-card">
           <div className="cu-card-label">{t("notes")}</div>
-          <p style={{ marginBlockStart: 8, whiteSpace: "pre-wrap" }}>{c.notes}</p>
+          <p style={{ marginBlockStart: "var(--space-2)", whiteSpace: "pre-wrap" }}>{c.notes}</p>
         </div>
       )}
     </>
@@ -250,13 +250,13 @@ function CreditTab({ c, locale }: { c: ApiCustomerDetail; locale: "en" | "ar" })
       <div className="cu-card-value">
         {fmtMoney(c.store_credit_balance_minor, c.store_credit_currency_code, locale)}
       </div>
-      <p className="cu-muted" style={{ marginBlockStart: 16 }}>
+      <p className="cu-muted" style={{ marginBlockStart: "var(--space-4)" }}>
         {t("credit.body")}
       </p>
       <Link
         href={`/customers/${c.id}/store-credit`}
         className="cu-btn"
-        style={{ marginBlockStart: 16 }}
+        style={{ marginBlockStart: "var(--space-4)" }}
       >
         <Wallet size={16} strokeWidth={1.5} />
         {t("credit.openLedger")}

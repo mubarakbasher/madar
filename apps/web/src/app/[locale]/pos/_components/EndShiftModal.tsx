@@ -61,13 +61,13 @@ export function EndShiftModal({
     <div className="pos-modal-bg" role="dialog" aria-modal>
       <div
         className="pos-modal"
-        style={{ width: 480, padding: "22px 24px" }}
+        style={{ width: 480, padding: "22px var(--space-5)" }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="pos-modal-head" style={{ padding: 0, borderBottom: "none", marginBlockEnd: 10 }}>
           <h3 className="serif" style={{ margin: 0 }}>{t("title")}</h3>
         </div>
-        <p style={{ color: "var(--ink-3)", fontSize: 13, marginBlockEnd: 16 }}>{t("subtitle")}</p>
+        <p style={{ color: "var(--ink-3)", fontSize: 13, marginBlockEnd: "var(--space-4)" }}>{t("subtitle")}</p>
         <form onSubmit={submit}>
           <label
             htmlFor="close-shift-cash"
@@ -104,7 +104,7 @@ export function EndShiftModal({
               letterSpacing: "0.1em",
               color: "var(--ink-3)",
               marginBlockEnd: 6,
-              marginBlockStart: 16,
+              marginBlockStart: "var(--space-4)",
             }}
           >
             {t("notesLabel")}
@@ -123,17 +123,17 @@ export function EndShiftModal({
               role="alert"
               style={{
                 marginBlockStart: 10,
-                padding: "8px 10px",
+                padding: "var(--space-2) 10px",
                 background: "color-mix(in oklab, var(--rose) 10%, transparent)",
                 color: "var(--rose)",
-                borderRadius: 6,
+                borderRadius: "var(--radius-sm)",
                 fontSize: 13,
               }}
             >
               {error}
             </div>
           )}
-          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginBlockStart: 20 }}>
+          <div style={{ display: "flex", gap: "var(--space-2)", justifyContent: "flex-end", marginBlockStart: 20 }}>
             <button type="button" className="pos-link" onClick={onCancel} disabled={m.isPending}>
               {t("cancel")}
             </button>

@@ -94,7 +94,7 @@ export function PosHeader({
         <button
           type="button"
           className="pos-btn"
-          style={{ marginInlineStart: 8 }}
+          style={{ marginInlineStart: "var(--space-2)" }}
           onClick={handleEndShift}
           disabled={endingShift}
         >

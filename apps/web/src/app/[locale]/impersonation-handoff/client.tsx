@@ -120,15 +120,15 @@ export function ImpersonationHandoffClient({ code }: { code: string }) {
         display: "grid",
         placeItems: "center",
         background: "var(--bg)",
-        padding: 24,
+        padding: "var(--space-5)",
       }}
     >
       <div style={{ maxWidth: 440, textAlign: "center", color: "var(--ink-2)" }}>
-        <h1 style={{ fontFamily: "var(--serif)", fontSize: 28, marginBlockEnd: 12 }}>
+        <h1 style={{ fontFamily: "var(--serif)", fontSize: 28, marginBlockEnd: "var(--space-3)" }}>
           {t("title")}
         </h1>
         <p style={{ color: "var(--ink-3)", fontSize: 14 }}>{t("subtitle")}</p>
-        <p style={{ color: "var(--ink-3)", fontSize: 13, marginBlockStart: 8 }}>
+        <p style={{ color: "var(--ink-3)", fontSize: 13, marginBlockStart: "var(--space-2)" }}>
           {t("warning")}
         </p>
 
@@ -137,10 +137,10 @@ export function ImpersonationHandoffClient({ code }: { code: string }) {
             role="alert"
             style={{
               marginBlockStart: 20,
-              padding: "12px 16px",
+              padding: "var(--space-3) var(--space-4)",
               background: "var(--rose-soft)",
               color: "var(--rose)",
-              borderRadius: 10,
+              borderRadius: "var(--radius)",
               fontSize: 13,
             }}
           >
@@ -151,7 +151,7 @@ export function ImpersonationHandoffClient({ code }: { code: string }) {
         {code && (
           <div
             style={{
-              marginBlockStart: 24,
+              marginBlockStart: "var(--space-5)",
               display: "flex",
               gap: 10,
               justifyContent: "center",
@@ -165,7 +165,7 @@ export function ImpersonationHandoffClient({ code }: { code: string }) {
                 padding: "10px 18px",
                 background: "transparent",
                 border: "1px solid var(--rule)",
-                borderRadius: 10,
+                borderRadius: "var(--radius)",
                 color: "var(--ink-2)",
                 fontSize: 13,
                 cursor: "pointer",
@@ -181,7 +181,7 @@ export function ImpersonationHandoffClient({ code }: { code: string }) {
                 padding: "10px 18px",
                 background: "var(--rose)",
                 border: "none",
-                borderRadius: 10,
+                borderRadius: "var(--radius)",
                 color: "white",
                 fontSize: 13,
                 fontWeight: 500,
@@ -199,10 +199,10 @@ export function ImpersonationHandoffClient({ code }: { code: string }) {
             role="alert"
             style={{
               marginBlockStart: 20,
-              padding: "12px 16px",
+              padding: "var(--space-3) var(--space-4)",
               background: "var(--rose-soft)",
               color: "var(--rose)",
-              borderRadius: 10,
+              borderRadius: "var(--radius)",
               fontSize: 13,
             }}
           >

@@ -60,9 +60,9 @@ export function CardPaymentBody({
         style={{
           background: "var(--bg-sunk)",
           border: "1px solid var(--rule)",
-          borderRadius: 10,
-          padding: 12,
-          marginTop: 12,
+          borderRadius: "var(--radius)",
+          padding: "var(--space-3)",
+          marginTop: "var(--space-3)",
           display: "flex",
           gap: 10,
           fontSize: 12,
@@ -78,7 +78,7 @@ export function CardPaymentBody({
         className="pos-btn pos-btn-primary"
         disabled={!canSubmit}
         onClick={handleClick}
-        style={{ marginTop: 16, width: "100%", justifyContent: "center" }}
+        style={{ marginTop: "var(--space-4)", width: "100%", justifyContent: "center" }}
       >
         {submitting ? "…" : t("submit")}
       </button>
