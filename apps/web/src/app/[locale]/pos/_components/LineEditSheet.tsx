@@ -70,7 +70,7 @@ export function LineEditSheet({
             {t("lineDiscount")}
           </div>
           <div style={{ display: "flex", gap: 6 }}>
-            {[0, 5, 10, 15, 20].map((d) => (
+            {[0, 3, 5].map((d) => (
               <button
                 key={d}
                 type="button"
