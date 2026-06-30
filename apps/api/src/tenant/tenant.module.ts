@@ -7,6 +7,7 @@ import { BranchesModule } from "./branches/branches.module";
 import { CatalogModule } from "./catalog/catalog.module";
 import { CustomersModule } from "./customers/customers.module";
 import { DashboardModule } from "./dashboard/dashboard.module";
+import { FixedAssetsModule } from "./fixed-assets/fixed-assets.module";
 import { HeldSalesModule } from "./held-sales/held-sales.module";
 import { NotificationsModule } from "./notifications/notifications.module";
 import { OnboardingModule } from "./onboarding/onboarding.module";
@@ -33,6 +34,7 @@ import { UsersModule } from "./users/users.module";
     AuthModule,
     CatalogModule,
     CustomersModule,
+    FixedAssetsModule,
     SalesModule,
     SaleRefundsModule,
     TenantPaymentProofsModule,

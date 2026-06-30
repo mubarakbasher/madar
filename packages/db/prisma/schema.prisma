@@ -454,6 +454,27 @@ model Customer {
   @@map("customers")
 }
 
+model FixedAsset {
+  id         String    @id @default(uuid()) @db.Uuid
+  tenant_id  String    @db.Uuid
+  branch_id  String    @db.Uuid
+  name_i18n  Json
+  quantity   Int       @default(0)
+  notes      String?
+  created_at DateTime  @default(now()) @db.Timestamptz
+  updated_at DateTime  @default(now()) @db.Timestamptz
+  created_by String?   @db.Uuid
+  deleted_at DateTime? @db.Timestamptz
+
+  // One asset line per (tenant_id, branch_id, lower(name_i18n->>'en')) via a
+  // partial expression unique index WHERE deleted_at IS NULL — hand-written in
+  // the migration (Prisma can't express expression/partial uniques). Re-adding
+  // the same name to a branch surfaces as 409 asset_exists.
+  @@index([tenant_id, deleted_at])
+  @@index([tenant_id, branch_id])
+  @@map("fixed_assets")
+}
+
 model TenantBankAccount {
   id                       String    @id @default(uuid()) @db.Uuid
   tenant_id                String    @db.Uuid

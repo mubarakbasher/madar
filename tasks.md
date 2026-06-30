@@ -833,6 +833,15 @@ Cross-phase slice driven by the user's request to trial Madar in a real shop. Pl
 - [x] **Tests** — extended `packages/db/test/rls.test.ts` "Append-only audit logs": added `platform_audit_log` UPDATE/DELETE blocked + TRUNCATE blocked on both tables. RLS suite **86/86** green against the throwaway `madar_test` DB.
 - [x] **Verified** — migration deployed to dev `madar`; `madar_app` now holds only SELECT+INSERT on the audit tables; superuser `TRUNCATE audit_log` raises `audit log tables are append-only (operation: TRUNCATE)`. Security-review doc (`docs/security-review-2026-05-30.md`) corrected (MEDIUM-1 → resolved, verdict now 0 medium).
 
+### B3 — Fixed assets register (DONE — backend + UI)
+- [x] **Data model** — new tenant-scoped table `fixed_assets` (migration `20260630182842_fixed_assets`): `branch_id` FK (RESTRICT), bilingual `name_i18n {en,ar}`, `quantity` int (`CHECK >= 0`), optional `notes`, soft-delete + audit columns. Role-scoped RLS (ADR 0004 pattern: `tenant_isolation TO madar_app`, `admin_full_access TO madar_admin` — not the obsolete `is_super_admin` style). Soft-delete-aware partial unique on `(tenant_id, branch_id, lower(name_i18n->>'en'))` → one asset line per name per branch.
+- [x] **Backend** — `apps/api/src/tenant/fixed-assets/` (module/controller/service + zod DTOs), `@Controller("v1/assets")`. CRUD: list (search + `branch_id` filter + pagination), get, create (idempotent), patch, soft-delete. Owner/manager write, all roles read; delete blocked during impersonation. Prisma P2002 → `409 asset_exists`; unknown branch → `422 unknown_branch`. Audit on every mutation. Registered in `tenant.module.ts`.
+- [x] **Frontend** — `apps/web/…/(shell)/assets/` (list + `new` + `[id]/edit`), `AssetForm` (bilingual name, branch `<select>`, quantity, notes — plain `useState` + `validate()`), `lib/api/assets.ts`. Sidebar "Assets" nav (owner/manager) under Network. New `assets` i18n namespace EN+AR + `shell.nav.assets`.
+- [x] **Tests** — `apps/api/test/fixed-assets/fixed-assets.spec.ts` **8/8** (create + audit, dup name → 409, unknown branch → 422, manager patch + audit before/after, RLS cross-tenant 404, cashier read-only 403, soft-delete frees the name, branch filter). RLS suite **91/91** with the new `fixedAsset` model + per-tenant fixture in `setup.ts`/`rls.test.ts`.
+- [x] **Glossary** — `docs/i18n-glossary.md` §2.1: Fixed asset → أصل ثابت, Quantity → الكمية, Chairs → كراسي, Tables → طاولات.
+- [x] **Verified** — api + web typecheck clean; `pnpm i18n:check` 2615 keys EN/AR lockstep; fixed-assets spec + `pnpm test:rls` green.
+- [ ] **Follow-up (deferred)** — asset value/depreciation, asset tags/serials, CSV import/export, admin-app visibility.
+
 ## Phase 4 — Ecosystem
 
 - [ ] Public REST API + webhooks

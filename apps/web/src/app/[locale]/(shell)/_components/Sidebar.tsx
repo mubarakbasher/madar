@@ -21,6 +21,7 @@ import {
   HelpCircle,
   Users,
   ClipboardList,
+  Armchair,
   type LucideIcon,
 } from "lucide-react";
 import { MadarMark } from "@madar/ui";
@@ -88,6 +89,13 @@ const SECTIONS: NavSection[] = [
       },
       { id: "branches", href: "/branches", icon: MapPin, enabled: true },
       { id: "customers", href: "/customers", icon: Users, enabled: true },
+      {
+        id: "assets",
+        href: "/assets",
+        icon: Armchair,
+        enabled: true,
+        roleGuard: (role) => role === "owner" || role === "manager",
+      },
     ],
   },
   {
@@ -241,6 +249,7 @@ export function Sidebar() {
                         | "/returns"
                         | "/branches"
                         | "/customers"
+                        | "/assets"
                         | "/shifts"
                         | "/sales/verification"
                         | "/sales/sync-conflicts"

@@ -47,6 +47,8 @@ const TENANT_SCOPED_MODELS = [
   "syncConflict",
   // Phase 3 — scheduled email reports
   "scheduledReport",
+  // Fixed assets — per-branch furniture/equipment register
+  "fixedAsset",
 ] as const;
 
 type ModelName = (typeof TENANT_SCOPED_MODELS)[number];

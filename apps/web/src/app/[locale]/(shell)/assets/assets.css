@@ -1,0 +1,300 @@
+/* assets — tenant fixed-asset list/form (chairs, tables, etc. per branch).
+   All tokens from packages/ui/tokens.css; logical CSS only. */
+
+.as-page {
+  padding: 32px 40px 64px;
+  max-width: 1180px;
+  margin-inline: auto;
+}
+
+.as-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-block-end: 28px;
+}
+
+.as-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 11px;
+  color: var(--ink-3);
+  margin-block-end: 8px;
+}
+
+.as-title {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--ink-1);
+  margin: 0;
+}
+
+.as-subtitle {
+  color: var(--ink-3);
+  font-size: 14px;
+  margin-block-start: 8px;
+  max-width: 56ch;
+}
+
+.as-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.as-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  color: var(--ink-1);
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 120ms, border-color 120ms;
+}
+
+.as-btn:hover {
+  background: var(--surface-2);
+}
+
+.as-btn-primary {
+  background: var(--accent);
+  color: var(--accent-on);
+  border-color: var(--accent);
+}
+
+.as-btn-primary:hover {
+  background: var(--accent-strong);
+}
+
+.as-btn-danger {
+  background: var(--surface-1);
+  color: var(--rose);
+  border-color: var(--line);
+}
+
+.as-btn-danger:hover {
+  background: color-mix(in oklab, var(--rose) 8%, var(--surface-1));
+}
+
+.as-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.as-toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+  margin-block-end: 16px;
+}
+
+.as-search,
+.as-filter {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-1);
+  color: var(--ink-1);
+}
+
+.as-search:focus,
+.as-filter:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.as-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.as-table th,
+.as-table td {
+  padding: 12px 16px;
+  text-align: start;
+  font-size: 13px;
+  border-block-end: 1px solid var(--line);
+}
+
+.as-table th {
+  font-weight: 500;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+  background: var(--surface-2);
+}
+
+.as-table tbody tr:last-child td {
+  border-block-end: none;
+}
+
+.as-table tbody tr:hover {
+  background: var(--surface-2);
+}
+
+.as-name {
+  font-weight: 500;
+  color: var(--ink-1);
+}
+
+.as-muted {
+  color: var(--ink-3);
+}
+
+.as-qty {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  color: var(--ink-1);
+}
+
+.as-row-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.as-iconbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.as-iconbtn:hover {
+  background: var(--surface-2);
+  color: var(--ink-1);
+}
+
+.as-iconbtn-danger:hover {
+  color: var(--rose);
+  border-color: color-mix(in oklab, var(--rose) 30%, var(--line));
+}
+
+.as-empty {
+  text-align: center;
+  padding: 64px 32px;
+  background: var(--surface-1);
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  color: var(--ink-3);
+}
+
+.as-empty-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--ink-1);
+  margin-block-end: 8px;
+}
+
+/* form */
+
+.as-form {
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 760px;
+}
+
+.as-field {
+  margin-block-end: 20px;
+}
+
+.as-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.as-field-label {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+  margin-block-end: 8px;
+}
+
+.as-field-required::after {
+  content: " *";
+  color: var(--rose);
+}
+
+.as-input,
+.as-select,
+.as-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-1);
+  color: var(--ink-1);
+  font-family: inherit;
+}
+
+.as-input:focus,
+.as-select:focus,
+.as-textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.as-textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+
+.as-field-error {
+  margin-block-start: 6px;
+  font-size: 12px;
+  color: var(--rose);
+}
+
+.as-field-hint {
+  margin-block-start: 6px;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.as-form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-block-start: 32px;
+  padding-block-start: 24px;
+  border-block-start: 1px solid var(--line);
+}
+
+.as-form-error {
+  background: color-mix(in oklab, var(--rose) 10%, var(--surface-1));
+  border: 1px solid color-mix(in oklab, var(--rose) 30%, var(--line));
+  color: var(--rose);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-block-end: 16px;
+  font-size: 14px;
+}
