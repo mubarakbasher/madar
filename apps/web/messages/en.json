@@ -632,6 +632,7 @@
       "returns": "Supplier returns",
       "branches": "Branches",
       "customers": "Customers",
+      "assets": "Fixed assets",
       "shifts": "Shifts",
       "verification": "Verification",
       "syncConflicts": "Sync conflicts",
@@ -3225,6 +3226,57 @@
       "not_draft": "This return is no longer a draft.",
       "not_sent": "This return is no longer in the sent state.",
       "not_deletable": "This return can't be deleted in its current state."
+    }
+  },
+  "assets": {
+    "kicker": "Fixed assets",
+    "listTitle": "Fixed assets",
+    "listSubtitle": "Track furniture and equipment — like chairs and tables — for each branch.",
+    "newTitle": "Add an asset",
+    "newSubtitle": "Record what you own at a branch and how many.",
+    "editTitle": "Edit asset",
+    "addAsset": "Add asset",
+    "searchPlaceholder": "Search assets…",
+    "filterBranch": "Filter by branch",
+    "allBranches": "All branches",
+    "colName": "Asset",
+    "colBranch": "Branch",
+    "colQuantity": "Quantity",
+    "colActions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Delete \"{name}\"? This can't be undone.",
+    "loading": "Loading assets…",
+    "errorTitle": "Couldn't load assets",
+    "errorBody": "The server didn't answer. Try again in a moment.",
+    "retry": "Retry",
+    "emptyTitle": "No assets yet",
+    "emptyBody": "Start by recording chairs, tables, or equipment for a branch.",
+    "notFoundBody": "This asset may have been deleted or never existed.",
+    "form": {
+      "nameEn": "Name (English)",
+      "nameAr": "Name (Arabic)",
+      "branch": "Branch",
+      "branchPlaceholder": "Select a branch",
+      "quantity": "Quantity",
+      "notes": "Notes",
+      "save": "Save changes",
+      "create": "Add asset",
+      "cancel": "Cancel",
+      "saving": "Saving…",
+      "errors": {
+        "nameRequired": "Name is required.",
+        "branchRequired": "Choose a branch.",
+        "quantityInvalid": "Enter a whole number of 0 or more."
+      }
+    },
+    "errors": {
+      "assetExists": "This asset already exists in this branch — edit its quantity instead.",
+      "unknownBranch": "That branch no longer exists.",
+      "forbiddenRole": "Your role can't perform this action.",
+      "validationFailed": "Check the highlighted fields and try again.",
+      "generic": "Something went wrong. Try again.",
+      "network": "Network error. Check your connection and try again."
     }
   },
   "customers": {

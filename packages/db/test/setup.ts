@@ -128,6 +128,15 @@ async function seedTenantFixtures() {
       },
     });
 
+    await adminPrisma.fixedAsset.create({
+      data: {
+        tenant_id: tenantId,
+        branch_id: branch.id,
+        name_i18n: { en: `Chairs ${suffix}`, ar: `كراسي ${suffix}` },
+        quantity: 12,
+      },
+    });
+
     const tba = await adminPrisma.tenantBankAccount.create({
       data: {
         tenant_id: tenantId,

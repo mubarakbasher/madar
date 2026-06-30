@@ -87,6 +87,19 @@ The canonical English-to-Arabic glossary for domain terms used throughout the pl
 | Batch | دفعة | |
 | Serial number | الرقم التسلسلي | |
 
+### 2.1 Fixed Assets / Equipment
+
+Distinct from inventory (المخزون), which is stock held for resale. Fixed assets are
+furniture and equipment the business owns and uses (chairs, tables, fridges), tracked
+per branch with a quantity.
+
+| English | Arabic | Notes |
+|---|---|---|
+| Fixed asset | أصل ثابت | Plural: أصول ثابتة. Owned equipment/furniture, not for resale — distinct from inventory المخزون. |
+| Quantity | الكمية | Count of identical assets at a branch. Reuses كمية from "Reorder quantity". |
+| Chairs | كراسي | Singular: كرسي. |
+| Tables (furniture) | طاولات | Singular: طاولة. Disambiguate from a database "table" (جدول). |
+
 ---
 
 ## 3. Branches and Suppliers
