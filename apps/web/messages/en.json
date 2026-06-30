@@ -433,7 +433,6 @@
       "errors": {
         "invalid_credentials": "Email or password is incorrect.",
         "inactive": "This account is disabled. Contact your owner.",
-        "tenant_inactive": "Your shop is not currently active.",
         "rate_limited": "Too many attempts. Try again in a minute.",
         "validation_failed": "Please check the fields and try again.",
         "network": "Network error — please try again.",

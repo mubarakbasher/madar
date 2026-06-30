@@ -164,6 +164,34 @@ describe("Billing lifecycle remediation (H-2, H-3, M-12)", () => {
     expect(t!.status).toBe("active");
   });
 
+  // ─── verify also restores a cancelled tenant (pre-archival recovery) ────
+
+  it("verifying the last unpaid invoice restores a cancelled tenant to active", async () => {
+    const tenant = await makeTenant({ slugPrefix: "lc-restore-canc" });
+    const plan = await seedStarterPlan();
+    const invoice = await makeSubscriptionInvoice(tenant.tenantId, plan.id, {
+      status: "overdue",
+      dueDate: new Date(Date.now() - 35 * 86_400_000),
+    });
+    const proofId = await submitSubscriptionProof(tenant, invoice.id);
+    await adminPrisma.tenant.update({
+      where: { id: tenant.tenantId },
+      data: { status: "cancelled" },
+    });
+
+    const { token } = await mintAdminToken("owner");
+    const res = await request(booted.http)
+      .post(`/v1/admin/payment-proofs/${proofId}/verify`)
+      .set("Authorization", `Bearer ${token}`);
+    expect(res.status).toBe(200);
+
+    const inv = await adminPrisma.subscriptionInvoice.findUnique({ where: { id: invoice.id } });
+    expect(inv!.status).toBe("paid");
+
+    const t = await adminPrisma.tenant.findUnique({ where: { id: tenant.tenantId } });
+    expect(t!.status).toBe("active");
+  });
+
   // ─── H-2: manual override endpoint ──────────────────────────────────────
 
   it("platform owner can override tenant status with a reason; support role cannot", async () => {
