@@ -73,7 +73,7 @@ describe("POST /v1/auth/login", () => {
     expect(res.body).toMatchObject({ code: "invalid_credentials" });
   });
 
-  it("returns 403 tenant_inactive when the tenant is suspended", async () => {
+  it("lets a suspended tenant log in (read-only) so they can pay to reactivate", async () => {
     const t = await makeTenant({ slugPrefix: "loginsusp" });
     await setTenantStatus(t.tenantId, "suspended");
 
@@ -81,12 +81,34 @@ describe("POST /v1/auth/login", () => {
       .post("/v1/auth/login")
       .send({ email: t.email, password: t.password, remember: false });
 
-    expect(res.status).toBe(403);
-    expect(res.body).toMatchObject({ code: "tenant_inactive" });
+    expect(res.status).toBe(200);
+    expect(res.body.access_token).toEqual(expect.any(String));
+    expect(res.body.tenant).toMatchObject({ slug: t.slug, status: "suspended" });
 
-    const audit = await readAuditLog(t.tenantId, "login_blocked_tenant_status");
-    expect(audit).toHaveLength(1);
-    expect(audit[0]!.after).toMatchObject({ status: "suspended" });
+    // The read-only state is recorded on the login_success entry, and no
+    // blocking audit is written anymore.
+    const success = await readAuditLog(t.tenantId, "login_success");
+    expect(success).toHaveLength(1);
+    expect(success[0]!.after).toMatchObject({ tenant_status: "suspended" });
+    const blocked = await readAuditLog(t.tenantId, "login_blocked_tenant_status");
+    expect(blocked).toHaveLength(0);
+  });
+
+  it("lets a cancelled tenant log in (read-only) within the retention window", async () => {
+    const t = await makeTenant({ slugPrefix: "logincanc" });
+    await setTenantStatus(t.tenantId, "cancelled");
+
+    const res = await request(booted.http)
+      .post("/v1/auth/login")
+      .send({ email: t.email, password: t.password, remember: false });
+
+    expect(res.status).toBe(200);
+    expect(res.body.access_token).toEqual(expect.any(String));
+    expect(res.body.tenant).toMatchObject({ slug: t.slug, status: "cancelled" });
+
+    const success = await readAuditLog(t.tenantId, "login_success");
+    expect(success).toHaveLength(1);
+    expect(success[0]!.after).toMatchObject({ tenant_status: "cancelled" });
   });
 
   it("enforces the 10/min per-email rate limit when NODE_ENV=production", async () => {

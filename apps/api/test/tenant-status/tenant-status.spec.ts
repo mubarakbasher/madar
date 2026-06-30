@@ -96,6 +96,32 @@ describe("Tenant subscription-status gate (A3)", () => {
     expect(logout.status).not.toBe(423);
   });
 
+  // ─── 3b. cancelled tenant: same read-open / write-blocked gate ──────────
+
+  it("cancelled tenant: writes 423 but reads + /v1/auth/me stay 200", async () => {
+    await setStatus(tenant.tenantId, "cancelled", redis);
+
+    const write = await request(booted.http)
+      .post("/v1/customers")
+      .set("Authorization", `Bearer ${ownerToken}`)
+      .set("Idempotency-Key", randomUUID())
+      .send({ name: "Cancelled-state customer" });
+    expect(write.status).toBe(423);
+    expect(write.body.code).toBe("tenant_suspended");
+    expect(write.body.status).toBe("cancelled");
+
+    const list = await request(booted.http)
+      .get("/v1/customers")
+      .set("Authorization", `Bearer ${ownerToken}`);
+    expect(list.status).toBe(200);
+
+    const me = await request(booted.http)
+      .get("/v1/auth/me")
+      .set("Authorization", `Bearer ${ownerToken}`);
+    expect(me.status).toBe(200);
+    expect(me.body.tenant.status).toBe("cancelled");
+  });
+
   // ─── 4. invalidate via billing-tracker path: restore unblocks writes ───
 
   it("after status flips back to active and cache is invalidated, writes unblock", async () => {

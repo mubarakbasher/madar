@@ -372,7 +372,9 @@ export class PaymentProofsService {
         }
         // The lifecycle tick only ever moves FORWARD (grace → suspended →
         // cancelled); paying must be the road back. When this was the last
-        // unpaid invoice, restore a grace/suspended tenant to active.
+        // unpaid invoice, restore the tenant to active. A successful payment at
+        // any stage before archival reactivates the shop, so cancelled is
+        // included here alongside grace_period/suspended.
         const unpaidLeft = await tx.subscriptionInvoice.count({
           where: {
             tenant_id: proof.tenant_id,
@@ -382,7 +384,10 @@ export class PaymentProofsService {
         });
         if (unpaidLeft === 0) {
           await tx.tenant.updateMany({
-            where: { id: proof.tenant_id, status: { in: ["grace_period", "suspended"] } },
+            where: {
+              id: proof.tenant_id,
+              status: { in: ["grace_period", "suspended", "cancelled"] },
+            },
             data: { status: "active" },
           });
         }

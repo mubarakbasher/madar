@@ -287,23 +287,11 @@ export class AuthService {
       include: { plan: true },
     });
 
-    if (tenant.status === "suspended" || tenant.status === "cancelled") {
-      await this.audit
-        .writeTenantScoped(
-          { tenantId: tenant.id, userId: user.id, ip: ctx.ip, userAgent: ctx.userAgent },
-          {
-            action: "login_blocked_tenant_status",
-            entity: "user",
-            entityId: user.id,
-            after: { status: tenant.status },
-          },
-        )
-        .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));
-      throw new ForbiddenException({
-        code: "tenant_inactive",
-        message: "This shop is not currently active",
-      });
-    }
+    // A suspended/cancelled tenant is read-only, NOT locked out: the owner
+    // must be able to log in, reach Billing, and upload a payment receipt to
+    // reactivate (TenantAuthGuard enforces read-only + the /v1/payment-proofs
+    // allowlist). Blocking login here would deadlock self-service recovery.
+    // The read-only state is recorded on the login_success audit entry below.
 
     if (!user.is_active) {
       throw new ForbiddenException({
@@ -361,7 +349,7 @@ export class AuthService {
           action: "login_success",
           entity: "user",
           entityId: user.id,
-          after: { remember: input.remember },
+          after: { remember: input.remember, tenant_status: tenant.status },
         },
       )
       .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));
@@ -397,10 +385,9 @@ export class AuthService {
       where: { id: claims.tenant_id },
       include: { plan: true },
     });
-    if (tenant.status === "suspended" || tenant.status === "cancelled") {
-      await this.tokens.revokeRefresh(claims.user_id, claims.jti);
-      throw new ForbiddenException({ code: "tenant_inactive", message: "Shop is not active" });
-    }
+    // Suspended/cancelled tenants keep a valid (read-only) session so they can
+    // pay their way back — mirrors login(). The guard, not refresh, enforces
+    // read-only. Do not revoke or block here.
 
     await this.tokens.revokeRefresh(claims.user_id, claims.jti);
     const tokens = await this.tokens.mintPair({
