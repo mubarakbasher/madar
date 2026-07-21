@@ -22,6 +22,7 @@ export function RefundDialog({
   pending: boolean;
 }) {
   const t = useTranslations("returns.refundDialog");
+  const tCommon = useTranslations("common");
   const [notes, setNotes] = useState("");
 
   useEffect(() => {
@@ -51,7 +52,7 @@ export function RefundDialog({
             onChange={(e) => setNotes(e.target.value.slice(0, 2000))}
             placeholder={t("notesPlaceholder")}
           />
-          <div className="rma-field-hint">{notes.length} / 2000</div>
+          <div className="rma-field-hint">{tCommon("charCount", { used: notes.length, max: 2000 })}</div>
         </label>
 
         <div className="rma-modal-foot">

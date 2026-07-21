@@ -1,6 +1,6 @@
 "use client";
 import { useMutation } from "@tanstack/react-query";
-import { ArrowRight, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Link } from "../../../../../i18n/routing";
@@ -45,7 +45,8 @@ export function ResetPasswordClient({ token }: { token: string }) {
           className="mt-7 inline-flex h-12 items-center justify-center gap-2 rounded-xl px-6 text-[15px] font-medium"
           style={{ background: "var(--accent)", color: "white" }}
         >
-          ← Back to sign in
+          <ArrowLeft size={16} strokeWidth={1.5} className="rtl:rotate-180" />
+          {t("backToLogin")}
         </Link>
       </div>
     );

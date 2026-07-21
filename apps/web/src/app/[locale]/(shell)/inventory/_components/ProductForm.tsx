@@ -777,6 +777,7 @@ function Field({
   error?: string;
   children: React.ReactNode;
 }) {
+  const t = useTranslations("inventory.form");
   return (
     <label style={{ display: "block" }}>
       {label && (
@@ -790,7 +791,7 @@ function Field({
           }}
         >
           <span style={{ fontWeight: 500 }}>{label}</span>
-          {optional && <span style={{ fontStyle: "italic" }}>optional</span>}
+          {optional && <span style={{ fontStyle: "italic" }}>{t("optionalTag")}</span>}
         </div>
       )}
       {children}

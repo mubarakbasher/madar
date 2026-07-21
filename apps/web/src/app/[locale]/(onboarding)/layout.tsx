@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { MadarMark } from "@madar/ui";
 import { requireAuth } from "../../../lib/auth/server";
 
@@ -17,6 +17,7 @@ export default async function OnboardingLayout({
   const { locale } = await params;
   setRequestLocale(locale);
   requireAuth(locale);
+  const tBrand = await getTranslations("brand");
 
   return (
     <div
@@ -32,7 +33,7 @@ export default async function OnboardingLayout({
           <span
             style={{ fontFamily: "var(--serif)", fontSize: 20, letterSpacing: "-0.01em" }}
           >
-            Madar
+            {tBrand("name")}
           </span>
         </div>
       </header>

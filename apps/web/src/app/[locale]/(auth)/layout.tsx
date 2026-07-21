@@ -19,6 +19,7 @@ export default async function AuthLayout({
     redirect(`/${locale}`);
   }
   const t = await getTranslations("auth");
+  const tBrand = await getTranslations("brand");
 
   return (
     <div
@@ -38,7 +39,7 @@ export default async function AuthLayout({
           <div className="flex items-center gap-3">
             <MadarMark size={36} style={{ color: "var(--accent)" }} />
             <span style={{ fontFamily: "var(--serif)", fontSize: 22, letterSpacing: "-0.01em" }}>
-              Madar
+              {tBrand("name")}
             </span>
           </div>
 
@@ -72,9 +73,9 @@ export default async function AuthLayout({
                 boxShadow: "0 14px 40px -28px rgba(15,15,15,0.35)",
               }}
             >
-              <div style={{ fontFamily: "var(--serif)", fontSize: 18 }}>كافيه بيت</div>
+              <div style={{ fontFamily: "var(--serif)", fontSize: 18 }}>{t("layout.demoShopName")}</div>
               <div className="mt-3" style={{ fontSize: 12, color: "var(--ink-3)" }}>
-                Maadi · 5 branches · 21 SKUs
+                {t("layout.demoShopMeta")}
               </div>
             </div>
           </div>
@@ -95,7 +96,7 @@ export default async function AuthLayout({
               style={{ fontFamily: "var(--serif)", fontSize: 20, letterSpacing: "-0.01em" }}
             >
               <MadarMark size={22} style={{ color: "var(--accent)" }} />
-              Madar
+              {tBrand("name")}
             </span>
             <span className="hidden lg:block" />
             <LocaleToggle />

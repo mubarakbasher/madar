@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { QRCodeSVG } from "qrcode.react";
-import { Copy, Download, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Copy, Download, X } from "lucide-react";
 import {
   mfaEnrollStartRequest,
   mfaEnrollVerifyRequest,
@@ -158,7 +158,8 @@ export function MfaEnrollWizard({
                 onClick={() => setStep("verify")}
                 style={btn("primary")}
               >
-                Continue →
+                {tCommon("continue")}
+                <ArrowRight size={13} strokeWidth={1.5} className="rtl:rotate-180" style={{ verticalAlign: "-2px", marginInlineStart: 4 }} />
               </button>
             </div>
           </>
@@ -195,7 +196,8 @@ export function MfaEnrollWizard({
             )}
             <div style={{ marginBlockStart: 18, display: "flex", justifyContent: "space-between" }}>
               <button type="button" onClick={() => setStep("scan")} style={btn("ghost")}>
-                ← Back
+                <ArrowLeft size={13} strokeWidth={1.5} className="rtl:rotate-180" style={{ verticalAlign: "-2px", marginInlineEnd: 4 }} />
+                {tCommon("back")}
               </button>
               <button
                 type="button"

@@ -86,11 +86,6 @@ export function PosHeader({
           {heldCount > 0 && <span className="pos-pill-badge tnum">{heldCount}</span>}
         </button>
         <span className="pos-clock tnum">{time}</span>
-        <span className="pos-sep">·</span>
-        <span className="text-xs text-ink-3">
-          <strong className="tnum text-ink-2">38</strong> {t("tickets")} ·{" "}
-          <strong className="tnum text-ink-2">£8,420</strong>
-        </span>
         <button
           type="button"
           className="pos-btn"

@@ -54,7 +54,7 @@ export function ProductsTable({
     return (
       <div className="inv-table-wrap">
         <div className="inv-empty">
-          <p>No products match your filters.</p>
+          <p>{t("tableNoMatch")}</p>
         </div>
       </div>
     );

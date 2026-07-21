@@ -297,7 +297,7 @@ function ParamsBlock({
       <div className="sch-field">
         <span className="sch-label">{t("modal.fields.params")}</span>
         <label className="sch-field">
-          <span className="sch-label">Currency</span>
+          <span className="sch-label">{t("modal.fields.currency")}</span>
           <input
             type="text"
             className="sch-input"
@@ -308,7 +308,7 @@ function ParamsBlock({
           />
         </label>
         <label className="sch-field">
-          <span className="sch-label">Branch ID (optional)</span>
+          <span className="sch-label">{t("modal.fields.branchIdOptional")}</span>
           <input
             type="text"
             className="sch-input"
@@ -325,19 +325,19 @@ function ParamsBlock({
     <div className="sch-field">
       <span className="sch-label">{t("modal.fields.params")}</span>
       <label className="sch-field">
-        <span className="sch-label">Metric</span>
+        <span className="sch-label">{t("modal.fields.metric")}</span>
         <select
           className="sch-select"
           value={params.metric ?? "revenue"}
           onChange={(e) => set("metric", e.target.value)}
         >
-          <option value="revenue">revenue</option>
-          <option value="transactions">transactions</option>
-          <option value="gross_profit">gross_profit</option>
+          <option value="revenue">{t("modal.metricOptions.revenue")}</option>
+          <option value="transactions">{t("modal.metricOptions.transactions")}</option>
+          <option value="gross_profit">{t("modal.metricOptions.gross_profit")}</option>
         </select>
       </label>
       <label className="sch-field">
-        <span className="sch-label">Window (days)</span>
+        <span className="sch-label">{t("modal.fields.windowDays")}</span>
         <select
           className="sch-select"
           value={params.window ?? "30"}
@@ -349,7 +349,7 @@ function ParamsBlock({
         </select>
       </label>
       <label className="sch-field">
-        <span className="sch-label">Currency</span>
+        <span className="sch-label">{t("modal.fields.currency")}</span>
         <input
           type="text"
           className="sch-input"

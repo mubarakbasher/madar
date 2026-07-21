@@ -291,8 +291,8 @@ export function PaymentSheet({
                   <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                     {[
                       { v: total, l: t("exact") },
-                      { v: Math.ceil(total / 50) * 50, l: "↑50" },
-                      { v: Math.ceil(total / 100) * 100, l: "↑100" },
+                      { v: Math.ceil(total / 50) * 50, l: t("roundUp", { amount: 50 }) },
+                      { v: Math.ceil(total / 100) * 100, l: t("roundUp", { amount: 100 }) },
                       { v: 200, l: "200" },
                       { v: 500, l: "500" },
                     ]

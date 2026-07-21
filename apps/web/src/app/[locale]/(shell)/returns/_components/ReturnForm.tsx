@@ -74,6 +74,7 @@ export interface ReturnFormProps {
  */
 export function ReturnForm({ locale, mode, editingId, initial }: ReturnFormProps) {
   const t = useTranslations("returns.form");
+  const tCommon = useTranslations("common");
   const tHeader = useTranslations("returns");
   const tErr = useTranslations("returns.errors");
   const role = useAuthStore((s) => s.user?.role ?? "");
@@ -316,7 +317,7 @@ export function ReturnForm({ locale, mode, editingId, initial }: ReturnFormProps
             onChange={(e) => setReason(e.target.value.slice(0, 500))}
             placeholder={t("reasonPlaceholder")}
           />
-          <div className="rma-field-hint">{reasonLen} / 500</div>
+          <div className="rma-field-hint">{tCommon("charCount", { used: reasonLen, max: 500 })}</div>
         </label>
 
         <label className="rma-field">
@@ -326,7 +327,7 @@ export function ReturnForm({ locale, mode, editingId, initial }: ReturnFormProps
             onChange={(e) => setNotes(e.target.value.slice(0, 2000))}
             placeholder={t("notesPlaceholder")}
           />
-          <div className="rma-field-hint">{notes.length} / 2000</div>
+          <div className="rma-field-hint">{tCommon("charCount", { used: notes.length, max: 2000 })}</div>
         </label>
       </section>
 

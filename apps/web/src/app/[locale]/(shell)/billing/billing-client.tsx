@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { CreditCard, FileText, Clock, Sparkles } from "lucide-react";
+import { ArrowRight, CreditCard, FileText, Clock, Sparkles } from "lucide-react";
 import { Link } from "../../../../../i18n/routing";
 import "./billing.css";
 import {
@@ -204,7 +204,8 @@ function PlanTab({
                 textDecoration: "none",
               }}
             >
-              {t("trial.cta")} →
+              {t("trial.cta")}{" "}
+              <ArrowRight size={13} strokeWidth={1.5} className="rtl:rotate-180" style={{ verticalAlign: "-2px" }} />
             </Link>
           )}
         </div>
@@ -270,7 +271,19 @@ function PlanTab({
                     color: INVOICE_TONE[sub.next_invoice.status]?.color ?? "var(--ink-3)",
                   }}
                 >
-                  ● {INVOICE_TONE[sub.next_invoice.status]?.label ?? sub.next_invoice.status}
+                  <span
+                    aria-hidden="true"
+                    style={{
+                      display: "inline-block",
+                      width: 6,
+                      height: 6,
+                      borderRadius: "50%",
+                      background: "currentColor",
+                      marginInlineEnd: 4,
+                      verticalAlign: "1px",
+                    }}
+                  />
+                  {INVOICE_TONE[sub.next_invoice.status]?.label ?? sub.next_invoice.status}
                 </span>
                 <span style={{ color: "var(--ink-3)", marginInlineStart: "var(--space-2)" }}>
                   {t("nextInvoice.due", { date: shortDate(sub.next_invoice.due_date) })}
@@ -428,7 +441,8 @@ function InvoicesTab({ invoices, loading }: { invoices: ApiSubscriptionInvoice[]
                       fontSize: 13,
                     }}
                   >
-                    {t("invoices.payCta")} →
+                    {t("invoices.payCta")}{" "}
+                    <ArrowRight size={13} strokeWidth={1.5} className="rtl:rotate-180" style={{ verticalAlign: "-2px" }} />
                   </Link>
                 )}
                 {inv.status === "in_review" && (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { LogOut } from "lucide-react";
 import { apiFetch, ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/auth/store";
@@ -18,6 +19,7 @@ const ADMIN_ORIGIN =
   "http://localhost:3001";
 
 export function ImpersonationBanner() {
+  const t = useTranslations("shell.impersonation");
   const [state, setState] = useState<ImpersonationState | null>(null);
   const [exiting, setExiting] = useState(false);
 
@@ -75,10 +77,13 @@ export function ImpersonationBanner() {
           boxShadow: "0 0 0 4px color-mix(in oklab, white 30%, transparent)",
         }}
       />
-      <strong>Impersonating</strong>
+      <strong>{t("label")}</strong>
       <span style={{ opacity: 0.9 }}>
-        You are viewing Madar as <strong>{state.target_tenant_name}</strong> — logged in
-        as <strong>{state.admin_email}</strong>. Every action is logged.
+        {t.rich("body", {
+          strong: (chunks) => <strong>{chunks}</strong>,
+          tenant: state.target_tenant_name,
+          admin: state.admin_email,
+        })}
       </span>
       <span style={{ flex: 1 }} />
       <button

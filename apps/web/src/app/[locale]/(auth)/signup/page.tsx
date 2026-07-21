@@ -202,8 +202,8 @@ export default function SignupPage() {
               style={inputStyle()}
               {...register("default_locale")}
             >
-              <option value="en">English</option>
-              <option value="ar">العربية</option>
+              <option value="en">{t("localeOptionEn")}</option>
+              <option value="ar">{t("localeOptionAr")}</option>
             </select>
           </Field>
         </div>

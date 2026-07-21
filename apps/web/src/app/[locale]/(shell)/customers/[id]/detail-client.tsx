@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Trash2, Wallet } from "lucide-react";
+import { ArrowLeft, Pencil, Trash2, Wallet } from "lucide-react";
 import { Link, useRouter } from "../../../../../../i18n/routing";
 import { useAuthStore } from "@/lib/auth/store";
 import { ApiError } from "@/lib/api/client";
@@ -90,7 +90,8 @@ export function CustomerDetailClient({
           <div className="cu-empty-title">{t("notFoundTitle")}</div>
           <p>{t("notFoundBody")}</p>
           <Link href="/customers" className="cu-btn" style={{ marginBlockStart: "var(--space-4)" }}>
-            ← {t("backToList")}
+            <ArrowLeft size={14} strokeWidth={1.5} className="rtl:rotate-180" />
+            {t("backToList")}
           </Link>
         </div>
       </div>
