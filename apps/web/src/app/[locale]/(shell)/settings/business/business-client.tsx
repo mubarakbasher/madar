@@ -642,6 +642,8 @@ function LogoSection({
               src={url}
               alt={t("preview")}
               style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
+              loading="lazy"
+              decoding="async"
             />
           ) : (
             <span style={{ fontSize: 11, color: "var(--ink-3)" }}>{t("placeholder")}</span>

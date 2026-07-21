@@ -294,6 +294,7 @@ function ImageHeader({ imageUrl, color }: { imageUrl: string | null; color: stri
           src={imageUrl}
           alt=""
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          decoding="async"
         />
       ) : (
         <ImageIcon size={32} strokeWidth={1.25} style={{ color: "rgba(255,255,255,0.5)" }} />

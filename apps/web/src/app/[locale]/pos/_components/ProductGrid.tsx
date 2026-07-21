@@ -116,6 +116,8 @@ export function ProductGrid({
                         src={imgSrc}
                         alt=""
                         style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit" }}
+                        loading="lazy"
+                        decoding="async"
                       />
                     ) : (
                       <div className="pos-tile-mark serif">{mark}</div>

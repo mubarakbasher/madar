@@ -151,6 +151,8 @@ export function ProductsTable({
                         alt=""
                         className="inv-swatch"
                         style={{ objectFit: "cover" }}
+                        loading="lazy"
+                        decoding="async"
                       />
                     ) : (
                       <div

@@ -85,7 +85,7 @@ export function ReceiptViewer({ proofId }: { proofId: string | null }) {
             onClick={() => setFullscreen(true)}
             aria-label={t("proofs.receipt.openFullscreen")}
           >
-            <img src={url} alt={t("proofs.receipt.altReceipt")} className="admin-receipt-img" />
+            <img src={url} alt={t("proofs.receipt.altReceipt")} className="admin-receipt-img" loading="lazy" decoding="async" />
             <span className="admin-receipt-fullscreen-hint">
               <Maximize2 size={14} strokeWidth={1.5} />
             </span>
@@ -109,7 +109,7 @@ export function ReceiptViewer({ proofId }: { proofId: string | null }) {
           >
             <X size={20} strokeWidth={1.5} />
           </button>
-          <img src={url} alt={t("proofs.receipt.altFullscreen")} className="admin-receipt-fullscreen-img" />
+          <img src={url} alt={t("proofs.receipt.altFullscreen")} className="admin-receipt-fullscreen-img" decoding="async" />
         </div>
       )}
     </>
