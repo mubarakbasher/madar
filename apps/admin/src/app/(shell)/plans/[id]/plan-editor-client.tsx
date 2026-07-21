@@ -269,7 +269,7 @@ export function PlanEditorClient({ id }: { id: string }) {
             {t("plans.editor.cancel")}
           </Link>
           <button type="submit" className="admin-btn admin-btn-primary" disabled={mutation.isPending}>
-            <Save size={16} strokeWidth={1.75} />
+            <Save size={16} strokeWidth={1.5} />
             <span>{mutation.isPending ? t("plans.editor.saving") : isNew ? t("plans.editor.createPlan") : t("plans.editor.saveChanges")}</span>
           </button>
         </div>

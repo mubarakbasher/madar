@@ -2,7 +2,7 @@
 
 The authoritative visual specification for both `apps/web` (tenant app) and `apps/admin` (super-admin app). Implemented in `packages/ui/`.
 
-> **Source of truth:** the design tokens in `packages/ui/tokens.css` and the component implementations in `packages/ui/components/`. This document describes intent; the code enforces it.
+> **Source of truth:** the design tokens in `packages/ui/src/tokens.css` (+ the Tailwind mapping in `theme.css`). Components currently live per app (`apps/web`, `apps/admin`); extraction into `packages/ui` is planned once the visual-regression harness exists. This document describes intent; the code enforces it.
 
 ---
 
@@ -30,96 +30,45 @@ Subtle, purposeful, never decorative. Motion guides attention; it doesn't show o
 
 ## 2. Color Tokens
 
-All colors live in `packages/ui/tokens.css` as CSS variables. **Never hardcode colors in components.**
+All colors live in `packages/ui/src/tokens.css` as CSS variables — that file is the single source of truth (ported 1:1 from the design prototype `docs/design/project/design-tokens.css`; change values only by ADR). **Never hardcode colors in components, and never invent token names: if it isn't in `tokens.css`, it doesn't exist.** An undefined `var(--…)` fails silently — transparent backgrounds, inherited text color, `currentColor` borders — which is exactly how ~430 broken references shipped before the 2026-07-22 sweep.
 
-### Light theme (default)
+### Naming
 
-```css
-:root {
-  /* Surfaces — warm paper tones */
-  --color-bg:           #FAF9F5;
-  --color-surface:      #FFFFFF;
-  --color-surface-alt:  #F4F2EB;
-  --color-surface-sunk: #EDEAE0;
+The shipping scheme uses short semantic names (an earlier draft of this document described a `--color-*` scheme that never shipped — this table is the real vocabulary):
 
-  /* Ink — warm darks, never pure black */
-  --color-ink:          #2B2B27;
-  --color-ink-muted:    #6B6B63;
-  --color-ink-subtle:   #98968D;
+| Token | Role |
+|---|---|
+| `--bg` / `--bg-elev` / `--bg-sunk` / `--paper` | page background / raised cards / sunken wells / sidebar & paper surfaces |
+| `--ink` / `--ink-2` / `--ink-3` / `--ink-4` | primary text → progressively muted |
+| `--rule` / `--rule-2` | hairlines and borders |
+| `--accent` / `--accent-soft` / `--accent-ink` | brand accent (terracotta `#C8553D` tenant default), its tint, and its darker readable companion |
+| `--sage` / `--rose` / `--amber` (+ `-soft` tints) | success / danger / warning |
+| `--swatch-1..8`, `--swatch-mix-base` | deterministic decorative product/category colors (same in dark) |
+| `--scrim` | modal/drawer overlay dim (45% ink light / 60% black dark) |
+| `--shadow-sm` / `--shadow` / `--shadow-lg` / `--shadow-focus` | elevation + focus ring |
+| `--space-1..9`, `--radius-sm/-/-lg/-xl/-full` | spacing scale (4→96px), radii (6/10/14/24/pill) |
+| `--serif` / `--sans` / `--mono` / `--font-arabic` | type stacks (see §3) |
+| `--ease`, `--duration-1/2/3` | motion (120/200/320ms; global `prefers-reduced-motion` guard in tokens.css) |
 
-  /* Tenant app primary accent — warm terracotta */
-  --color-accent:        #C96442;
-  --color-accent-hover:  #B5552F;
-  --color-accent-soft:   #F2DDD2;
-
-  /* Admin app primary accent — slate teal */
-  --color-admin-accent:        #4A6B7A;
-  --color-admin-accent-hover:  #3D5A68;
-  --color-admin-accent-soft:   #DEE7EB;
-
-  /* Semantic — muted, never saturated */
-  --color-success:      #5C7A4A;
-  --color-success-soft: #E4EBDA;
-  --color-warning:      #B8893E;
-  --color-warning-soft: #F5E9D3;
-  --color-danger:       #A8453C;
-  --color-danger-soft:  #F2DAD7;
-  --color-info:         #4A6B7A;
-  --color-info-soft:    #DEE7EB;
-
-  /* Lines — barely visible */
-  --color-line:         #E5E2D7;
-  --color-line-strong:  #C9C5B6;
-}
-```
+Tailwind utilities map to these via the `@theme inline` block in `packages/ui/src/theme.css` (`bg-bg-elev`, `text-ink-3`, `rounded-lg`, `shadow-md`…). In hand-written CSS and inline styles, consume the raw names (`var(--rule)`), never the Tailwind-generated `--color-*`/`--spacing-*` aliases.
 
 ### Dark theme
 
-```css
-[data-theme="dark"] {
-  --color-bg:           #1F1E1A;
-  --color-surface:      #28261F;
-  --color-surface-alt:  #322F28;
-  --color-surface-sunk: #1A1814;
-  --color-ink:          #EFEDE3;
-  --color-ink-muted:    #B5B2A4;
-  --color-ink-subtle:   #807D70;
-  --color-accent:       #D97757;
-  --color-accent-hover: #E48865;
-  --color-accent-soft:  #3A2A22;
-  --color-admin-accent: #6B8A99;
-  --color-admin-accent-hover: #8AA4B1;
-  --color-admin-accent-soft:  #2A3A42;
-  --color-success:      #7A9866;
-  --color-success-soft: #2A3522;
-  --color-warning:      #D4A85A;
-  --color-warning-soft: #3D3220;
-  --color-danger:       #C26259;
-  --color-danger-soft:  #3D2422;
-  --color-info:         #6B8A99;
-  --color-info-soft:    #2A3A42;
-  --color-line:         #3D3A32;
-  --color-line-strong:  #565249;
-}
-```
+`[data-theme="dark"]` on `<html>` overrides surfaces, inks, rules, the accent trio, the base semantic hues, the `-soft` tints, and `--scrim`. The tenant app resolves the stored preference (`madar_theme` in localStorage: light/dark/system) or `prefers-color-scheme` in a pre-paint inline script; Settings → Appearance switches it. The admin topbar has its own toggle (`madar_admin_theme`), defaulting to the system preference.
+
+### Accent variants
+
+`[data-accent]` on `<html>` selects terracotta (default) / ink / forest / cobalt, each with light + dark values.
 
 ### Theme switching for admin app
 
-The admin app remaps the accent variable via a single HTML class:
+The admin app remaps the accent trio via a single HTML class:
 
 ```html
 <html class="theme-admin">
 ```
 
-```css
-html.theme-admin {
-  --color-accent:       var(--color-admin-accent);
-  --color-accent-hover: var(--color-admin-accent-hover);
-  --color-accent-soft:  var(--color-admin-accent-soft);
-}
-```
-
-No component code differs between apps. The component reads `--color-accent`; the HTML class decides which physical color that points to.
+No component code differs between apps. Components read `--accent`; the HTML class decides which physical color that points to.
 
 ---
 
@@ -129,22 +78,22 @@ No component code differs between apps. The component reads `--color-accent`; th
 
 ```css
 :root {
-  --font-display: "Fraunces", Georgia, serif;
-  --font-body:    "Geist", -apple-system, sans-serif;
-  --font-arabic:  "IBM Plex Sans Arabic", system-ui, sans-serif;
-  --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+  --serif: var(--font-fraunces), "GT Sectra", "Source Serif 4", Georgia, serif;  /* display */
+  --sans: var(--font-inter-tight), "Söhne", "Inter", -apple-system, sans-serif;  /* body */
+  --mono: var(--font-jetbrains-mono), "IBM Plex Mono", ui-monospace, monospace;  /* codes, tabular data */
+  --font-arabic: var(--font-plex-arabic), system-ui, sans-serif;                 /* lang="ar" body + headings */
 }
 
-html[lang="ar"] {
-  --font-body: var(--font-arabic);
-  --font-display: "IBM Plex Serif Arabic", var(--font-arabic);
-}
+html[lang="ar"] body { font-family: var(--font-arabic); }
+html[lang="ar"] .serif { font-family: var(--font-arabic); }
 ```
+
+Fonts are self-hosted via `next/font` in `packages/ui/src/fonts.ts` (`display: swap`; the Arabic family loads with `preload: false` so EN sessions never fetch it).
 
 **Why these fonts:**
 - **Fraunces** — variable serif, free on Google Fonts, exceptional in display sizes, supports a wide range of optical sizes.
-- **Geist** — Vercel's open-source sans, free, highly legible at small sizes, modern.
-- **IBM Plex Sans Arabic / Serif Arabic** — IBM's open-source Arabic family. Pairs well with Geist. Best free option for production-grade Arabic typography.
+- **Inter Tight** — free, highly legible at small sizes, modern. (An earlier draft specified Geist; Inter Tight is what the prototype and `packages/ui` actually ship.)
+- **IBM Plex Sans Arabic** — IBM's open-source Arabic family; production-grade free Arabic typography. Arabic headings currently use the *sans* (no Arabic serif is shipped); adopting IBM Plex Serif Arabic for display is an open design decision.
 
 ### Type scale
 
@@ -166,7 +115,7 @@ html[lang="ar"] {
 
 ### Weight usage
 
-- **Geist:** 400 (regular), 500 (medium for emphasis), 600 (semibold for buttons), 700 (bold rare, only for table totals)
+- **Inter Tight:** 400 (regular), 500 (medium for emphasis), 600 (semibold for buttons), 700 (bold rare, only for table totals)
 - **Fraunces:** 400 (body of long-form), 500 (display body), 600 (display headlines)
 - **Don't:** use 800/900 weights. They feel aggressive.
 
@@ -218,7 +167,7 @@ Tailwind's default scale aligns: `p-4` = 16px = `--space-4`. Prefer the Tailwind
 
 ```css
 --radius-sm:   6px;   /* Inline: badges, small inputs */
---radius-md:   10px;  /* Buttons, small cards */
+--radius:   10px;  /* Buttons, small cards */
 --radius-lg:   16px;  /* Cards, modals */
 --radius-xl:   24px;  /* Hero panels, prominent containers */
 --radius-full: 9999px;
@@ -239,8 +188,8 @@ Shadows are **soft, low, warm** — never harsh. Tinted with the ink color, not 
 
 ```css
 .card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   padding: var(--space-5);
@@ -253,7 +202,7 @@ The combination of border + shadow is intentional. Border alone reads cheap; sha
 
 ## 6. Components
 
-The component library is built on **shadcn/ui** as a structural base, with **every primitive restyled** to match these tokens. Out-of-the-box shadcn looks like every other AI-built app. Ours does not.
+Components are **bespoke, token-driven CSS** — shadcn/ui is not used (see ADR 0006). The specs below describe the shared visual contract each app's implementation follows. The anti-pattern still stands: if a primitive ever *is* imported from a kit, restyle it to tokens before it ships.
 
 ### Button
 
@@ -262,10 +211,10 @@ The component library is built on **shadcn/ui** as a structural base, with **eve
 ```
 
 **Variants:**
-- `primary` — filled `--color-accent`, white text, `--radius-md`, semibold.
-- `secondary` — `--color-surface`, 1px line border, ink text.
+- `primary` — filled `--accent`, white text, `--radius`, semibold.
+- `secondary` — `--bg-elev`, 1px line border, ink text.
 - `ghost` — no background, ink-muted text, accent on hover.
-- `destructive` — `--color-danger` background, used only after explicit confirmation patterns.
+- `destructive` — `--rose` background, used only after explicit confirmation patterns.
 - `link` — accent text, underline on hover, no background.
 
 **Sizes:**
@@ -290,9 +239,9 @@ The component library is built on **shadcn/ui** as a structural base, with **eve
 
 **Structure:**
 - Label above input, `text-small` weight 500, ink-muted color.
-- Input: 1px border `--color-line`, `--color-surface` background, `--radius-md`, 12–16px padding, 40px default height.
-- Focus: border darkens to `--color-line-strong`, `--shadow-focus` accent ring.
-- Validation error: border becomes `--color-danger`, error message below in `text-small` danger color.
+- Input: 1px border `--rule`, `--bg-elev` background, `--radius`, 12–16px padding, 40px default height.
+- Focus: border darkens to `--ink-4`, `--shadow-focus` accent ring.
+- Validation error: border becomes `--rose`, error message below in `text-small` danger color.
 - Helper text below input in `text-small` ink-muted.
 
 **Do not use floating placeholders for required fields.** Floating labels make scanning forms harder.
@@ -309,7 +258,7 @@ The component library is built on **shadcn/ui** as a structural base, with **eve
 </Card>
 ```
 
-- `--color-surface` background, 1px line, `--radius-lg`, `--shadow-sm`.
+- `--bg-elev` background, 1px line, `--radius-lg`, `--shadow-sm`.
 - Internal padding `--space-5` to `--space-6`.
 - Header uses **display serif** at `text-h3` for title.
 - Description in body font, `text-small`, ink-muted.
@@ -317,8 +266,8 @@ The component library is built on **shadcn/ui** as a structural base, with **eve
 ### Table
 
 - No vertical lines.
-- Horizontal lines in `--color-line`, only between rows (not above first row, not below last).
-- Row hover: `--color-surface-alt` background.
+- Horizontal lines in `--rule`, only between rows (not above first row, not below last).
+- Row hover: `--paper` background.
 - Headers: `text-small`, uppercase, `+0.04em` tracking, ink-muted, weight 500.
 - Cells: `text-body`, `--space-3` to `--space-4` padding.
 - Numbers right-aligned in LTR, automatically flips in RTL via `text-end` class.
@@ -334,28 +283,28 @@ The component library is built on **shadcn/ui** as a structural base, with **eve
 
 - `--radius-full`, `--space-1` vertical, `--space-3` horizontal padding.
 - `text-tiny`, weight 500.
-- Variants: `success`, `warning`, `danger`, `info`, `neutral` — each uses `--color-{variant}-soft` background and `--color-{variant}` text.
+- Variants: `success` (`--sage`), `warning` (`--amber`), `danger` (`--rose`), `neutral` (`--ink-3`) — each uses the hue for text and its `-soft` tint for the background.
 
 ### Modal / Sheet
 
 - Backdrop: `rgba(43, 43, 39, 0.3)` with 4px blur.
-- Modal: `--color-surface`, `--radius-xl`, `--shadow-lg`, max-width 600px (small), 900px (medium), 1200px (large).
+- Modal: `--bg-elev`, `--radius-xl`, `--shadow-lg`, max-width 600px (small), 900px (medium), 1200px (large).
 - Sheet (slide-in from end): full-height, 480px wide on desktop, full-screen mobile.
-- Header: 64px tall, padding `--space-5`, bottom border `--color-line`. Title in display serif `text-h3`, close icon end-side.
+- Header: 64px tall, padding `--space-5`, bottom border `--rule`. Title in display serif `text-h3`, close icon end-side.
 - Content: padding `--space-5`.
 - Footer (if action buttons): 72px tall, top border, padding `--space-5`, primary action end-aligned.
 
 ### Tabs
 
-- Tab list: bottom border `--color-line`, gap `--space-2` between tabs.
+- Tab list: bottom border `--rule`, gap `--space-2` between tabs.
 - Tab: `--space-3` horizontal, `--space-2` vertical padding, body weight 500, ink-muted.
-- Active tab: ink color, 2px bottom border in `--color-accent`, slightly extending below the list border.
+- Active tab: ink color, 2px bottom border in `--accent`, slightly extending below the list border.
 
 ### Toast
 
 - Position: bottom-end on desktop, bottom on mobile.
 - Width: 360px max.
-- `--color-surface` background, 1px line, `--radius-md`, `--shadow-lg`.
+- `--bg-elev` background, 1px line, `--radius`, `--shadow-lg`.
 - Padding: `--space-4`.
 - Icon + title (weight 500) + body (ink-muted).
 - Variants color the left border (4px) with semantic color.
@@ -364,7 +313,7 @@ The component library is built on **shadcn/ui** as a structural base, with **eve
 
 ### Skeleton (loading)
 
-- `--color-surface-sunk` background, `--radius-md`.
+- `--bg-sunk` background, `--radius`.
 - Subtle shimmer animation: linear gradient sweeping through, 1.5s, infinite.
 - Match the shape of the eventual content: a card skeleton is card-shaped, a text skeleton is line-shaped.
 - **No spinners** at page level. Skeletons only.
@@ -377,10 +326,10 @@ Highest-density screen in the product. Different rules apply:
 
 - **No top nav, no sidebar.** A 48px slim header only: branch · cashier · time · End shift button.
 - **Tap targets minimum 56px.** Cashier uses fingers on a tablet.
-- **Product tiles:** square, `--radius-md`, image + name (2-line max) + price in display serif at `text-h3`. **No icons cluttering tiles.**
-- **Cart panel:** fixed to inline-end (auto-flips in RTL), `--color-surface-alt` background, full height.
+- **Product tiles:** square, `--radius`, image + name (2-line max) + price in display serif at `text-h3`. **No icons cluttering tiles.**
+- **Cart panel:** fixed to inline-end (auto-flips in RTL), `--paper` background, full height.
 - **Total amount:** display serif at **56–72px** with currency code. The hero of the screen. Tabular numerals.
-- **Pay button:** full width of cart panel, **64px tall**, `--color-accent`, display serif text.
+- **Pay button:** full width of cart panel, **64px tall**, `--accent`, display serif text.
 - **Number pad** (for manual amount entry): monospaced, large keys in grid with `--space-2` gaps.
 - **Empty cart:** big muted illustration (shopping basket outline), one-line prompt.
 
@@ -390,12 +339,12 @@ Highest-density screen in the product. Different rules apply:
 
 Use Recharts, restyled.
 
-- **Single accent color** for primary series — `--color-accent` (or `--color-admin-accent` in admin app).
-- **Comparison series** desaturated to `--color-ink-muted`.
+- **Single accent color** for primary series — `--accent` (or `--accent (remapped by theme-admin)` in admin app).
+- **Comparison series** desaturated to `--ink-3`.
 - **No 3D**, no glossy fills.
 - **Solid fills at 20% opacity** over the stroke for area charts.
-- **Gridlines:** dashed, `--color-line`, only on Y-axis (not X-axis).
-- **Tooltips:** `--color-surface`, 1px line, `--radius-md`, no arrow.
+- **Gridlines:** dashed, `--rule`, only on Y-axis (not X-axis).
+- **Tooltips:** `--bg-elev`, 1px line, `--radius`, no arrow.
 - **Axis labels:** `text-small`, ink-muted.
 - **Legend:** below chart, body font, weight 500.
 
@@ -456,7 +405,7 @@ Respect `prefers-reduced-motion`. When set, replace transitions with instant cha
 
 Every list, table, or data view has a designed empty state. Pattern:
 
-1. **Quiet illustration or oversized Lucide icon** — `--color-ink-subtle`, 48–64px.
+1. **Quiet illustration or oversized Lucide icon** — `--ink-4`, 48–64px.
 2. **Headline** — display serif `text-h3`, ink color. Explains *what's missing*.
 3. **Body** — `text-body`, ink-muted, max 1 sentence. Explains *why this might be*.
 4. **One CTA** — primary accent button. The most obvious next action.
@@ -479,14 +428,14 @@ If users genuinely cannot create the missing thing here (e.g., audit log), the C
 - **Inline:** small Lucide loader, 16px, accent color, smooth rotation.
 - **Button:** keeps its size; content swaps to spinner + gerund label; button disabled.
 - **Table:** show 5 skeleton rows with realistic column widths.
-- **Image:** soft gray block in `--color-surface-sunk`, no spinner.
+- **Image:** soft gray block in `--bg-sunk`, no spinner.
 
 ---
 
 ## 13. Error States
 
-- **Field error:** inline below field, `--color-danger`, `text-small`, with small alert icon.
-- **Form error:** banner at top of form, `--color-danger-soft` background, danger icon, message.
+- **Field error:** inline below field, `--rose`, `text-small`, with small alert icon.
+- **Form error:** banner at top of form, `--rose-soft` background, danger icon, message.
 - **Section error:** card with alert icon centered, "Couldn't load [thing]", "Try again" button.
 - **Full-page error:** centered card pattern like 404, with helpful actions.
 - **Toast error:** appears bottom-end, danger left border, sticky (no auto-dismiss).

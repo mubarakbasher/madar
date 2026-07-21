@@ -188,7 +188,8 @@
       "filteredTitle": "No tenants match those filters",
       "filteredBody": "Try widening the filters or clearing the search.",
       "defaultTitle": "No tenants yet",
-      "defaultBody": "Tenants appear here as they sign up."
+      "defaultBody": "Tenants appear here as they sign up.",
+      "clearFilters": "Clear filters"
     },
     "error": {
       "title": "Couldn't load tenants",

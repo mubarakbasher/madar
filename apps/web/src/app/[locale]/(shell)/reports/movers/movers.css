@@ -155,7 +155,7 @@ html[lang="ar"] .mvr-title { font-family: var(--font-arabic); }
   align-items: center;
 }
 .mvr-sku {
-  font-family: var(--mono, ui-monospace, SFMono-Regular, monospace);
+  font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.04em;
 }

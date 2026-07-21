@@ -38,7 +38,7 @@ export function PosNoBranch({ canManage }: { canManage: boolean }) {
             color: "var(--accent)",
           }}
         >
-          <Store size={36} strokeWidth={1.4} />
+          <Store size={36} strokeWidth={1.5} />
         </div>
         <h2
           style={{

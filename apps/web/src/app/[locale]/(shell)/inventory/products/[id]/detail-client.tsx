@@ -297,7 +297,7 @@ function ImageHeader({ imageUrl, color }: { imageUrl: string | null; color: stri
           decoding="async"
         />
       ) : (
-        <ImageIcon size={32} strokeWidth={1.25} style={{ color: "rgba(255,255,255,0.5)" }} />
+        <ImageIcon size={32} strokeWidth={1.5} style={{ color: "rgba(255,255,255,0.5)" }} />
       )}
     </div>
   );

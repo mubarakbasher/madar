@@ -931,7 +931,7 @@ function ImageBlock({
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
         ) : (
-          <ImageIcon size={28} strokeWidth={1.25} style={{ color: "var(--ink-3)" }} />
+          <ImageIcon size={28} strokeWidth={1.5} style={{ color: "var(--ink-3)" }} />
         )}
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>

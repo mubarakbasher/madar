@@ -58,7 +58,7 @@ export function PlansClient() {
         </div>
         {isOwner ? (
           <Link href="/plans/new" className="admin-btn admin-btn-primary">
-            <Plus size={16} strokeWidth={1.75} />
+            <Plus size={16} strokeWidth={1.5} />
             <span>{t("plans.newPlan")}</span>
           </Link>
         ) : null}
@@ -156,7 +156,7 @@ export function PlansClient() {
 function EmptyPlans({ isOwner }: { isOwner: boolean }) {
   return (
     <div className="admin-empty-block">
-      <Package size={32} strokeWidth={1.25} />
+      <Package size={32} strokeWidth={1.5} />
       <h2>{t("plans.empty.title")}</h2>
       <p>
         {t("plans.empty.body")}

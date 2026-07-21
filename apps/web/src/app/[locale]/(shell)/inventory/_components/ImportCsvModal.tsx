@@ -271,7 +271,7 @@ function Stat({
   tone: "sage" | "accent" | "rose" | "muted";
 }) {
   const colorMap = {
-    sage: "var(--sage, #4d7359)",
+    sage: "var(--sage)",
     accent: "var(--accent)",
     rose: "var(--rose)",
     muted: "var(--ink-3)",

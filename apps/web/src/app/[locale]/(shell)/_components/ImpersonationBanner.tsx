@@ -104,7 +104,7 @@ export function ImpersonationBanner() {
           gap: 6,
         }}
       >
-        <LogOut size={13} strokeWidth={1.75} />
+        <LogOut size={13} strokeWidth={1.5} />
         {exiting ? "Exiting…" : "Exit impersonation"}
       </button>
     </div>

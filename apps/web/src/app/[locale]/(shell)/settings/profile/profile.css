@@ -20,7 +20,7 @@
 }
 
 .prof-title {
-  font-family: var(--serif, Fraunces, serif);
+  font-family: var(--serif);
   font-size: 28px;
   font-weight: 500;
   line-height: 1.1;
@@ -42,7 +42,7 @@
 }
 
 .prof-card-title {
-  font-family: var(--serif, Fraunces, serif);
+  font-family: var(--serif);
   font-size: 18px;
   font-weight: 500;
   margin: 0 0 4px;
@@ -68,7 +68,7 @@
   border-radius: 16px;
   background: linear-gradient(135deg, var(--accent), color-mix(in oklab, var(--accent) 60%, var(--ink)));
   color: #fff;
-  font-family: var(--serif, Fraunces, serif);
+  font-family: var(--serif);
   font-size: 30px;
   display: inline-flex;
   align-items: center;
@@ -140,13 +140,13 @@
 }
 
 .prof-pill-sage {
-  background: color-mix(in oklab, var(--sage, #6e9b7f) 16%, var(--bg-elev));
-  color: var(--sage, #4d7359);
+  background: color-mix(in oklab, var(--sage) 16%, var(--bg-elev));
+  color: var(--sage);
 }
 
 .prof-pill-amber {
-  background: color-mix(in oklab, var(--amber, #c08a2f) 16%, var(--bg-elev));
-  color: var(--amber, #8a6418);
+  background: color-mix(in oklab, var(--amber) 16%, var(--bg-elev));
+  color: var(--amber);
 }
 
 .prof-radio-row {
@@ -216,7 +216,7 @@
 
 .prof-saved {
   font-size: 12px;
-  color: var(--sage, #4d7359);
+  color: var(--sage);
 }
 
 .prof-field-error {
@@ -254,7 +254,7 @@
 }
 
 .prof-modal h3 {
-  font-family: var(--serif, Fraunces, serif);
+  font-family: var(--serif);
   font-size: 20px;
   font-weight: 500;
   margin: 0 0 14px;

@@ -187,7 +187,7 @@ export function SingleAdjustStockModal({
               style={{
                 marginBlockStart: "var(--space-2)",
                 fontSize: 12.5,
-                color: wouldGoNegative ? "var(--rose, #c45a5a)" : "var(--ink-3)",
+                color: wouldGoNegative ? "var(--rose)" : "var(--ink-3)",
                 fontVariantNumeric: "tabular-nums",
               }}
             >
@@ -237,9 +237,9 @@ export function SingleAdjustStockModal({
             <div
               style={{
                 marginBlockStart: "var(--space-3)",
-                background: "color-mix(in oklab, var(--rose, #c45a5a) 12%, transparent)",
-                border: "1px solid var(--rose, #c45a5a)",
-                color: "var(--rose, #c45a5a)",
+                background: "color-mix(in oklab, var(--rose) 12%, transparent)",
+                border: "1px solid var(--rose)",
+                color: "var(--rose)",
                 fontSize: 12.5,
                 padding: "var(--space-2) 10px",
                 borderRadius: 8,

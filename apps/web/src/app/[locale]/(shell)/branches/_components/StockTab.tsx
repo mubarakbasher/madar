@@ -60,7 +60,7 @@ export function StockTab({ branchId, locale }: { branchId: string; locale: strin
       {q.isPending ? (
         <p style={{ color: "var(--ink-3)", fontSize: 13, margin: 0 }}>…</p>
       ) : q.isError ? (
-        <p style={{ color: "var(--rose, #c45a5a)", fontSize: 13, margin: 0 }}>{t("error")}</p>
+        <p style={{ color: "var(--rose)", fontSize: 13, margin: 0 }}>{t("error")}</p>
       ) : q.data.items.length === 0 ? (
         <p style={{ color: "var(--ink-3)", fontSize: 13, margin: 0 }}>
           {lowOnly ? t("lowEmpty") : t("empty")}

@@ -83,7 +83,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
             borderBlockEnd: "1px solid var(--rule)",
           }}
         >
-          <h2 style={{ fontFamily: "var(--serif, Fraunces, serif)", fontSize: 18, margin: 0 }}>
+          <h2 style={{ fontFamily: "var(--serif)", fontSize: 18, margin: 0 }}>
             {t("title")}
           </h2>
           <button
@@ -190,7 +190,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
               </p>
               <ul
                 style={{
-                  fontFamily: "var(--mono, ui-monospace, SFMono-Regular, monospace)",
+                  fontFamily: "var(--mono)",
                   fontSize: 14,
                   background: "var(--bg)",
                   border: "1px solid var(--rule)",
@@ -207,7 +207,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                   <li key={code}>{code}</li>
                 ))}
               </ul>
-              <p style={{ fontSize: 12, color: "var(--rose, #c45a5a)", marginBlockStart: 10 }}>
+              <p style={{ fontSize: 12, color: "var(--rose)", marginBlockStart: 10 }}>
                 {t("codesWarning")}
               </p>
               <div

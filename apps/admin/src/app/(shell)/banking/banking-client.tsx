@@ -72,7 +72,7 @@ export function BankingClient() {
         </div>
         {isOwner ? (
           <button type="button" className="admin-btn admin-btn-primary" onClick={openCreate}>
-            <Plus size={16} strokeWidth={1.75} />
+            <Plus size={16} strokeWidth={1.5} />
             <span>{t("banking.addAccount")}</span>
           </button>
         ) : null}
@@ -174,7 +174,7 @@ function BankAccountCard({
       style={{
         opacity: account.is_active ? 1 : 0.55,
         padding: "var(--space-5)",
-        borderRadius: "var(--radius-lg, 12px)",
+        borderRadius: "var(--radius-lg)",
         border: "1px solid var(--rule)",
         position: "relative",
       }}
@@ -306,7 +306,7 @@ function BankAccountCard({
 function EmptyBanking({ isOwner, onCreate }: { isOwner: boolean; onCreate: () => void }) {
   return (
     <div className="admin-empty-block">
-      <Building2 size={32} strokeWidth={1.25} />
+      <Building2 size={32} strokeWidth={1.5} />
       <h2>{t("banking.empty.title")}</h2>
       <p>
         {t("banking.empty.body")}

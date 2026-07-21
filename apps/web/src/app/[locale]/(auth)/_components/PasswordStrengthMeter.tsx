@@ -23,10 +23,10 @@ export function PasswordStrengthMeter({ password }: { password: string }) {
   const filled = value;
   const labelKey = LABELS[value];
   const color = ((): string => {
-    if (value <= 1) return "var(--rose, #c45a5a)";
-    if (value === 2) return "var(--amber, #d49a36)";
-    if (value === 3) return "var(--amber, #d49a36)";
-    return "var(--sage, #6e9b7f)";
+    if (value <= 1) return "var(--rose)";
+    if (value === 2) return "var(--amber)";
+    if (value === 3) return "var(--amber)";
+    return "var(--sage)";
   })();
 
   return (

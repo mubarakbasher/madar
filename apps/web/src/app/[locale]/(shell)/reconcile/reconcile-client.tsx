@@ -269,16 +269,16 @@ function BranchPanel({
             fontSize: 12,
             background:
               variance === 0n
-                ? "color-mix(in oklab, var(--sage, #6e9b7f) 16%, var(--bg-elev))"
+                ? "color-mix(in oklab, var(--sage) 16%, var(--bg-elev))"
                 : variance < 0n
                   ? "color-mix(in oklab, var(--rose) 14%, var(--bg-elev))"
-                  : "color-mix(in oklab, var(--amber, #c08a2f) 14%, var(--bg-elev))",
+                  : "color-mix(in oklab, var(--amber) 14%, var(--bg-elev))",
             color:
               variance === 0n
-                ? "var(--sage, #4d7359)"
+                ? "var(--sage)"
                 : variance < 0n
                   ? "var(--rose)"
-                  : "var(--amber, #8a6418)",
+                  : "var(--amber)",
           }}
         >
           {variance === 0n
@@ -406,7 +406,7 @@ function BranchPanel({
                       ? BigInt(s.variance_cents) < 0n
                         ? "var(--rose)"
                         : BigInt(s.variance_cents) > 0n
-                          ? "var(--sage, #4d7359)"
+                          ? "var(--sage)"
                           : "var(--ink-2)"
                       : "var(--ink-3)",
                   }}
@@ -433,7 +433,7 @@ function Stat({
 }) {
   const color =
     tone === "sage"
-      ? "var(--sage, #4d7359)"
+      ? "var(--sage)"
       : tone === "rose"
         ? "var(--rose)"
         : "var(--ink)";

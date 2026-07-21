@@ -185,6 +185,16 @@ html[lang="ar"] .serif { font-family: var(--font-arabic); }
     radial-gradient(rgba(255,255,255,0.008) 1px, transparent 1px);
 }
 
+/* Honest motion — none at all for users who asked for less */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* loading skeleton */
 .skel {
   background: linear-gradient(90deg, var(--paper), var(--bg-elev), var(--paper));

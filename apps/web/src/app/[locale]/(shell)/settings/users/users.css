@@ -20,7 +20,7 @@
 }
 
 .usr-title {
-  font-family: var(--serif, Fraunces, serif);
+  font-family: var(--serif);
   font-size: 28px;
   line-height: 1.1;
   font-weight: 500;
@@ -49,7 +49,7 @@
   padding: 8px 12px;
   border: 1px solid var(--rule);
   background: var(--bg-elev);
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm);
   font-size: 13px;
   width: 280px;
   color: var(--ink);
@@ -76,7 +76,7 @@
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm);
   border: 1px solid var(--rule);
   background: var(--bg-elev);
   font-size: 13px;
@@ -92,7 +92,7 @@
 
 .usr-btn-primary {
   background: var(--accent);
-  color: var(--accent-ink, #fff);
+  color: var(--accent-ink);
   border-color: var(--accent);
 }
 
@@ -113,8 +113,8 @@
 }
 
 .usr-btn-danger {
-  border-color: color-mix(in oklab, var(--rose, #c45a5a) 30%, var(--rule));
-  color: var(--rose, #c45a5a);
+  border-color: color-mix(in oklab, var(--rose) 30%, var(--rule));
+  color: var(--rose);
   background: transparent;
 }
 
@@ -128,7 +128,7 @@
 .usr-table-wrap {
   border: 1px solid var(--rule);
   background: var(--bg-elev);
-  border-radius: var(--radius, 12px);
+  border-radius: var(--radius);
   overflow: hidden;
 }
 
@@ -156,7 +156,7 @@
   letter-spacing: 0.05em;
   color: var(--ink-3);
   font-weight: 500;
-  background: var(--bg-sunk, transparent);
+  background: var(--bg-sunk);
 }
 
 .usr-cell-name {
@@ -192,7 +192,7 @@
   align-items: center;
   font-size: 10.5px;
   padding: 2px 8px;
-  border-radius: var(--radius-full, 100px);
+  border-radius: var(--radius-full);
   font-weight: 500;
   letter-spacing: 0.02em;
   border: 1px solid var(--rule);
@@ -204,7 +204,7 @@
   align-items: center;
   font-size: 11px;
   padding: 2px 8px;
-  border-radius: var(--radius-full, 100px);
+  border-radius: var(--radius-full);
   font-weight: 500;
   letter-spacing: 0.02em;
   border: 1px solid var(--rule);
@@ -217,15 +217,15 @@
 }
 
 .usr-role-manager {
-  background: color-mix(in oklab, var(--sage, #6e9b7f) 14%, transparent);
-  color: var(--sage, #4d7359);
-  border-color: color-mix(in oklab, var(--sage, #6e9b7f) 30%, var(--rule));
+  background: color-mix(in oklab, var(--sage) 14%, transparent);
+  color: var(--sage);
+  border-color: color-mix(in oklab, var(--sage) 30%, var(--rule));
 }
 
 .usr-role-cashier {
-  background: color-mix(in oklab, var(--amber, #b88438) 14%, transparent);
-  color: var(--amber, #b88438);
-  border-color: color-mix(in oklab, var(--amber, #b88438) 30%, var(--rule));
+  background: color-mix(in oklab, var(--amber) 14%, transparent);
+  color: var(--amber);
+  border-color: color-mix(in oklab, var(--amber) 30%, var(--rule));
 }
 
 .usr-role-accountant {
@@ -240,21 +240,21 @@
 
 /* Status pills */
 .usr-status-active {
-  background: color-mix(in oklab, var(--sage, #6e9b7f) 18%, transparent);
-  color: var(--sage, #4d7359);
-  border-color: color-mix(in oklab, var(--sage, #6e9b7f) 30%, var(--rule));
+  background: color-mix(in oklab, var(--sage) 18%, transparent);
+  color: var(--sage);
+  border-color: color-mix(in oklab, var(--sage) 30%, var(--rule));
 }
 
 .usr-status-inactive {
-  background: color-mix(in oklab, var(--rose, #c45a5a) 14%, transparent);
-  color: var(--rose, #c45a5a);
-  border-color: color-mix(in oklab, var(--rose, #c45a5a) 30%, var(--rule));
+  background: color-mix(in oklab, var(--rose) 14%, transparent);
+  color: var(--rose);
+  border-color: color-mix(in oklab, var(--rose) 30%, var(--rule));
 }
 
 .usr-status-pending {
-  background: color-mix(in oklab, var(--amber, #b88438) 16%, transparent);
-  color: var(--amber, #b88438);
-  border-color: color-mix(in oklab, var(--amber, #b88438) 30%, var(--rule));
+  background: color-mix(in oklab, var(--amber) 16%, transparent);
+  color: var(--amber);
+  border-color: color-mix(in oklab, var(--amber) 30%, var(--rule));
 }
 
 .usr-you-badge {
@@ -262,7 +262,7 @@
   align-items: center;
   font-size: 10.5px;
   padding: 2px 8px;
-  border-radius: var(--radius-full, 100px);
+  border-radius: var(--radius-full);
   font-weight: 500;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -275,13 +275,13 @@
 .usr-empty {
   margin-block-start: 12px;
   border: 1px dashed var(--rule);
-  border-radius: var(--radius, 12px);
+  border-radius: var(--radius);
   padding: 48px 24px;
   text-align: center;
 }
 
 .usr-empty-title {
-  font-family: var(--serif, Fraunces, serif);
+  font-family: var(--serif);
   font-size: 22px;
   margin-block-end: 6px;
   color: var(--ink);
@@ -302,13 +302,13 @@
 .usr-error {
   margin-block-start: 24px;
   border: 1px solid var(--rule);
-  border-radius: var(--radius, 12px);
+  border-radius: var(--radius);
   padding: 32px 24px;
   text-align: center;
 }
 
 .usr-error h2 {
-  font-family: var(--serif, Fraunces, serif);
+  font-family: var(--serif);
   font-size: 20px;
   margin: 0 0 6px;
   color: var(--ink);
@@ -325,13 +325,13 @@
   margin-block-start: 24px;
   border: 1px solid var(--rule);
   background: var(--bg-elev);
-  border-radius: var(--radius, 12px);
+  border-radius: var(--radius);
   padding: 48px 24px;
   text-align: center;
 }
 
 .usr-denied h1 {
-  font-family: var(--serif, Fraunces, serif);
+  font-family: var(--serif);
   font-size: 22px;
   margin: 0 0 8px;
   color: var(--ink);
@@ -358,7 +358,7 @@
 .usr-modal {
   background: var(--bg-elev);
   border: 1px solid var(--rule);
-  border-radius: var(--radius, 12px);
+  border-radius: var(--radius);
   max-width: 480px;
   width: 100%;
   box-shadow: var(--shadow-lg, 0 24px 60px -20px rgba(0, 0, 0, 0.25));
@@ -377,7 +377,7 @@
 }
 
 .usr-modal-title {
-  font-family: var(--serif, Fraunces, serif);
+  font-family: var(--serif);
   font-size: 18px;
   margin: 0;
   color: var(--ink);
@@ -413,7 +413,7 @@
   gap: 8px;
   padding: 14px 18px;
   border-block-start: 1px solid var(--rule);
-  background: var(--bg, transparent);
+  background: var(--bg);
 }
 
 .usr-modal-note {
@@ -442,8 +442,8 @@
   width: 100%;
   padding: 8px 10px;
   border: 1px solid var(--rule);
-  background: var(--bg, var(--bg-elev));
-  border-radius: var(--radius-sm, 8px);
+  background: var(--bg);
+  border-radius: var(--radius-sm);
   font-size: 13px;
   color: var(--ink);
   font-family: inherit;
@@ -464,17 +464,17 @@
 .usr-field-error {
   margin-block-start: 4px;
   font-size: 12px;
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
 }
 
 .usr-general-error {
   margin-block-end: 12px;
   padding: 10px 12px;
-  border: 1px solid color-mix(in oklab, var(--rose, #c45a5a) 30%, var(--rule));
-  background: color-mix(in oklab, var(--rose, #c45a5a) 10%, transparent);
-  border-radius: var(--radius-sm, 8px);
+  border: 1px solid color-mix(in oklab, var(--rose) 30%, var(--rule));
+  background: color-mix(in oklab, var(--rose) 10%, transparent);
+  border-radius: var(--radius-sm);
   font-size: 12.5px;
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
 }
 
 .usr-check {
@@ -497,8 +497,8 @@
   padding: 12px 18px;
   background: var(--ink);
   color: var(--bg-elev);
-  border-radius: var(--radius, 10px);
-  font-family: var(--sans, inherit);
+  border-radius: var(--radius);
+  font-family: var(--sans);
   font-size: 13px;
   box-shadow: var(--shadow-lg, 0 24px 60px -20px rgba(0, 0, 0, 0.25));
   z-index: 110;
@@ -506,11 +506,11 @@
 }
 
 .usr-toast--ok {
-  background: var(--sage, #4d7359);
+  background: var(--sage);
   color: #fff;
 }
 
 .usr-toast--bad {
-  background: var(--rose, #c45a5a);
+  background: var(--rose);
   color: #fff;
 }

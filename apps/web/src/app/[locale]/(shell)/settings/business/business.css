@@ -21,7 +21,7 @@
 }
 
 .bz-title {
-  font-family: var(--serif, Fraunces, serif);
+  font-family: var(--serif);
   font-size: 28px;
   font-weight: 500;
   line-height: 1.1;
@@ -43,7 +43,7 @@
 }
 
 .bz-card-title {
-  font-family: var(--serif, Fraunces, serif);
+  font-family: var(--serif);
   font-size: 18px;
   font-weight: 500;
   margin: 0 0 14px;
@@ -206,7 +206,7 @@
 }
 
 .bz-meta-value {
-  font-family: var(--serif, Fraunces, serif);
+  font-family: var(--serif);
   font-size: 18px;
   color: var(--ink);
 }
@@ -221,13 +221,13 @@
 }
 
 .bz-pill-sage {
-  background: color-mix(in oklab, var(--sage, #6e9b7f) 16%, var(--bg-elev));
-  color: var(--sage, #4d7359);
+  background: color-mix(in oklab, var(--sage) 16%, var(--bg-elev));
+  color: var(--sage);
 }
 
 .bz-pill-amber {
-  background: color-mix(in oklab, var(--amber, #c08a2f) 16%, var(--bg-elev));
-  color: var(--amber, #8a6418);
+  background: color-mix(in oklab, var(--amber) 16%, var(--bg-elev));
+  color: var(--amber);
 }
 
 .bz-pill-rose {
@@ -320,8 +320,8 @@
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 12px;
-  background: color-mix(in oklab, var(--sage, #6e9b7f) 14%, var(--bg-elev));
-  color: var(--sage, #4d7359);
+  background: color-mix(in oklab, var(--sage) 14%, var(--bg-elev));
+  color: var(--sage);
 }
 
 .bz-loading {

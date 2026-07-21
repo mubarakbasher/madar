@@ -96,7 +96,7 @@ export function ReorderClient({ locale }: { locale: "en" | "ar" }) {
         <>
           {q.data.at_risk_count === 0 ? (
             <div className="ro-empty">
-              <Sparkles size={28} strokeWidth={1.25} style={{ color: "var(--accent)" }} />
+              <Sparkles size={28} strokeWidth={1.5} style={{ color: "var(--accent)" }} />
               <h2 className="ro-empty-title">{t("empty.title")}</h2>
               <p className="ro-empty-sub">{t("empty.sub")}</p>
             </div>

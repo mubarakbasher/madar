@@ -60,7 +60,7 @@ export function SubscriptionBanner() {
   ) {
     return (
       <SubscriptionBannerShell tone="coral">
-        <AlertTriangle size={14} strokeWidth={1.75} aria-hidden />
+        <AlertTriangle size={14} strokeWidth={1.5} aria-hidden />
         <span style={{ flex: 1 }}>
           {t("trialEndingBody", { days: trialDaysLeft })}
         </span>
@@ -73,7 +73,7 @@ export function SubscriptionBanner() {
   if (status === "grace_period") {
     return (
       <SubscriptionBannerShell tone="amber">
-        <AlertTriangle size={14} strokeWidth={1.75} aria-hidden />
+        <AlertTriangle size={14} strokeWidth={1.5} aria-hidden />
         <span style={{ flex: 1 }}>{t("graceBody")}</span>
         <BannerCta href="/billing" label={t("payNow")} tone="amber" />
       </SubscriptionBannerShell>
@@ -84,7 +84,7 @@ export function SubscriptionBanner() {
   if (status === "suspended") {
     return (
       <SubscriptionBannerShell tone="rose">
-        <AlertTriangle size={14} strokeWidth={1.75} aria-hidden />
+        <AlertTriangle size={14} strokeWidth={1.5} aria-hidden />
         <span style={{ flex: 1 }}>
           <strong>{t("suspendedTitle")}</strong> — {t("suspendedBody")}
         </span>
@@ -97,7 +97,7 @@ export function SubscriptionBanner() {
   if (status === "cancelled") {
     return (
       <SubscriptionBannerShell tone="rose">
-        <AlertTriangle size={14} strokeWidth={1.75} aria-hidden />
+        <AlertTriangle size={14} strokeWidth={1.5} aria-hidden />
         <span style={{ flex: 1 }}>
           <strong>{t("cancelledTitle")}</strong> — {t("cancelledBody")}
         </span>
@@ -122,7 +122,7 @@ function SubscriptionBannerShell({
       fg: "white",
     },
     amber: {
-      bg: "linear-gradient(90deg, var(--amber, #c08a3e) 0%, color-mix(in oklab, var(--amber, #c08a3e) 80%, #000) 100%)",
+      bg: "linear-gradient(90deg, var(--amber) 0%, color-mix(in oklab, var(--amber) 80%, #000) 100%)",
       fg: "white",
     },
     rose: {
@@ -163,7 +163,7 @@ function BannerCta({
 }) {
   const ctaFg = {
     coral: "var(--accent-ink)",
-    amber: "var(--amber, #c08a3e)",
+    amber: "var(--amber)",
     rose: "var(--rose)",
   }[tone];
   return (
@@ -182,7 +182,7 @@ function BannerCta({
         gap: 6,
       }}
     >
-      <CreditCard size={13} strokeWidth={1.75} />
+      <CreditCard size={13} strokeWidth={1.5} />
       {label}
     </Link>
   );

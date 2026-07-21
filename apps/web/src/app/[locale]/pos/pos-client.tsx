@@ -590,7 +590,7 @@ function PosView({
         <div
           role="status"
           style={{
-            background: "color-mix(in oklab, var(--amber, #B07A2A) 12%, var(--bg))",
+            background: "color-mix(in oklab, var(--amber) 12%, var(--bg))",
             color: "var(--ink-2)",
             padding: "10px var(--space-4)",
             display: "flex",

@@ -85,7 +85,7 @@ export function NotificationsClient({ locale }: { locale: "en" | "ar" }) {
         <div
           style={{
             padding: "10px 14px",
-            background: "color-mix(in oklab, var(--amber, #c08a2f) 12%, var(--bg-elev))",
+            background: "color-mix(in oklab, var(--amber) 12%, var(--bg-elev))",
             border: "1px solid var(--rule)",
             borderRadius: 8,
             color: "var(--ink-2)",

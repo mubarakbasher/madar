@@ -157,7 +157,15 @@ export function TenantsClient() {
       </div>
 
       {data.items.length === 0 ? (
-        <TenantsEmpty filtered={filtered} />
+        <TenantsEmpty
+          filtered={filtered}
+          onClearFilters={() => {
+            setStatus("all");
+            setCountry("");
+            setSearchInput("");
+            setPage(1);
+          }}
+        />
       ) : (
         <>
           <table className="admin-table">

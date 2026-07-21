@@ -101,7 +101,7 @@ export function MfaEnrollWizard({
           borderBlockEnd: "1px solid var(--rule)",
         }}
       >
-        <h2 style={{ fontFamily: "var(--serif, Fraunces, serif)", fontSize: 18, margin: 0 }}>
+        <h2 style={{ fontFamily: "var(--serif)", fontSize: 18, margin: 0 }}>
           {t("title")}
         </h2>
         <button
@@ -184,7 +184,7 @@ export function MfaEnrollWizard({
                 fontSize: 22,
                 letterSpacing: 4,
                 textAlign: "center",
-                fontFamily: "var(--serif, Fraunces, serif)",
+                fontFamily: "var(--serif)",
                 border: "1px solid var(--rule)",
                 background: "var(--bg)",
                 color: "var(--ink)",

@@ -183,7 +183,7 @@ export function SyncConflictsClient({ locale: _locale }: { locale: string }): JS
                 >
                   {t(`kinds.${c.conflict_kind}`)}
                 </span>
-                <span style={{ fontSize: 13, color: "var(--ink)", fontFamily: "var(--mono, monospace)" }}>
+                <span style={{ fontSize: 13, color: "var(--ink)", fontFamily: "var(--mono)" }}>
                   {c.reference_id.slice(0, 8)}
                 </span>
                 <span style={{ fontSize: 11.5, color: "var(--ink-3)" }}>

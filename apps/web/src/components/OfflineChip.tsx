@@ -30,7 +30,7 @@ export function OfflineChip(): JSX.Element {
     tone === "danger"
       ? "var(--rose)"
       : tone === "warning"
-        ? "var(--amber, #B07A2A)"
+        ? "var(--amber)"
         : "var(--sage)";
 
   return (

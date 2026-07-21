@@ -93,8 +93,8 @@
 }
 
 .br-pill-open {
-  background: color-mix(in oklab, var(--sage, #6e9b7f) 18%, transparent);
-  color: var(--sage, #4d7359);
+  background: color-mix(in oklab, var(--sage) 18%, transparent);
+  color: var(--sage);
 }
 
 .br-pill-inactive {
@@ -234,7 +234,7 @@
 
 .br-btn-primary {
   background: var(--accent);
-  color: var(--accent-ink, white);
+  color: var(--accent-ink);
   border-color: var(--accent);
 }
 
@@ -243,8 +243,8 @@
 }
 
 .br-btn-danger {
-  border-color: var(--rose, #c45a5a);
-  color: var(--rose, #c45a5a);
+  border-color: var(--rose);
+  color: var(--rose);
   background: transparent;
 }
 
@@ -406,7 +406,7 @@
 }
 
 .br-stock-low {
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
   font-weight: 500;
 }
 
@@ -498,7 +498,7 @@
 .br-field-error {
   margin-block-start: 4px;
   font-size: 12px;
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
 }
 
 .br-form-foot {
@@ -531,7 +531,7 @@
 
 .br-tab-strip button[aria-pressed="true"] {
   background: var(--accent);
-  color: var(--accent-ink, white);
+  color: var(--accent-ink);
 }
 
 .br-checkbox {
@@ -639,7 +639,7 @@
 
 .br-btn-primary {
   background: var(--accent);
-  color: var(--accent-ink, white);
+  color: var(--accent-ink);
   border-color: var(--accent);
 }
 
@@ -748,7 +748,7 @@
 
 .br-view-toggle button.br-view-toggle-active {
   background: var(--accent);
-  color: var(--accent-ink, white);
+  color: var(--accent-ink);
 }
 
 .br-map-shell {
@@ -880,7 +880,7 @@
 
 .br-staff-empty {
   border: 1px dashed var(--rule);
-  border-radius: var(--radius, 12px);
+  border-radius: var(--radius);
   padding: 40px 24px;
   text-align: center;
   color: var(--ink-3);
@@ -920,7 +920,7 @@
   align-items: center;
   padding: 12px 14px;
   border: 1px solid var(--rule);
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm);
   background: var(--bg-elev);
   position: relative;
 }
@@ -972,7 +972,7 @@
   align-items: center;
   font-size: 10.5px;
   padding: 2px 8px;
-  border-radius: var(--radius-full, 100px);
+  border-radius: var(--radius-full);
   font-weight: 500;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -996,7 +996,7 @@
   align-items: center;
   font-size: 11px;
   padding: 2px 8px;
-  border-radius: var(--radius-full, 100px);
+  border-radius: var(--radius-full);
   font-weight: 500;
   letter-spacing: 0.02em;
   border: 1px solid var(--rule);
@@ -1010,15 +1010,15 @@
 }
 
 .br-role-manager {
-  background: color-mix(in oklab, var(--sage, #6e9b7f) 14%, transparent);
-  color: var(--sage, #4d7359);
-  border-color: color-mix(in oklab, var(--sage, #6e9b7f) 30%, var(--rule));
+  background: color-mix(in oklab, var(--sage) 14%, transparent);
+  color: var(--sage);
+  border-color: color-mix(in oklab, var(--sage) 30%, var(--rule));
 }
 
 .br-role-cashier {
-  background: color-mix(in oklab, var(--amber, #b88438) 14%, transparent);
-  color: var(--amber, #b88438);
-  border-color: color-mix(in oklab, var(--amber, #b88438) 30%, var(--rule));
+  background: color-mix(in oklab, var(--amber) 14%, transparent);
+  color: var(--amber);
+  border-color: color-mix(in oklab, var(--amber) 30%, var(--rule));
 }
 
 .br-role-accountant {
@@ -1039,12 +1039,12 @@
   gap: 5px;
   font-size: 11px;
   padding: 2px 8px;
-  border-radius: var(--radius-full, 100px);
+  border-radius: var(--radius-full);
   font-weight: 500;
   letter-spacing: 0.02em;
-  background: color-mix(in oklab, var(--sage, #6e9b7f) 16%, transparent);
-  color: var(--sage, #4d7359);
-  border: 1px solid color-mix(in oklab, var(--sage, #6e9b7f) 30%, var(--rule));
+  background: color-mix(in oklab, var(--sage) 16%, transparent);
+  color: var(--sage);
+  border: 1px solid color-mix(in oklab, var(--sage) 30%, var(--rule));
 }
 
 .br-on-shift-dot {
@@ -1066,7 +1066,7 @@
   justify-content: center;
   width: 30px;
   height: 30px;
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm);
   background: transparent;
   border: 1px solid transparent;
   color: var(--ink-3);
@@ -1093,7 +1093,7 @@
   min-width: 200px;
   background: var(--bg-elev);
   border: 1px solid var(--rule);
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm);
   box-shadow: 0 8px 24px color-mix(in oklab, #000 12%, transparent);
   padding: 4px;
   display: flex;
@@ -1119,7 +1119,7 @@
 }
 
 .br-staff-menu-danger {
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
 }
 
 /* ─── Modal (assign + confirm) ─────────────────────────────────── */
@@ -1138,7 +1138,7 @@
 .br-modal {
   background: var(--bg);
   border: 1px solid var(--rule);
-  border-radius: var(--radius, 12px);
+  border-radius: var(--radius);
   padding: 22px;
   max-width: 440px;
   width: 100%;
@@ -1173,7 +1173,7 @@
 
 .br-modal-error {
   font-size: 13px;
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
   margin-block: 0 12px;
 }
 
@@ -1208,7 +1208,7 @@
   gap: 8px;
   padding: 8px 10px;
   border: 1px solid var(--rule);
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm);
   background: var(--bg-elev);
   margin-block-end: 12px;
   color: var(--ink-3);
@@ -1230,7 +1230,7 @@
 }
 
 .br-modal-status.br-modal-error {
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
 }
 
 /* ─── Assign-modal candidate list ──────────────────────────────── */
@@ -1259,7 +1259,7 @@
   gap: 12px;
   padding: 10px 12px;
   border: 1px solid var(--rule);
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm);
   background: var(--bg-elev);
   cursor: pointer;
   text-align: start;
@@ -1296,5 +1296,5 @@
   margin: 0;
   padding-inline-start: 12px;
   font-size: 12px;
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
 }

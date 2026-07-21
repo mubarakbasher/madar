@@ -38,7 +38,7 @@ export function LocaleToggle() {
             style={{
               background: active ? "var(--accent)" : "transparent",
               color: active ? "white" : "var(--ink-2)",
-              fontFamily: loc === "ar" ? "var(--font-arabic, var(--sans))" : "var(--sans)",
+              fontFamily: loc === "ar" ? "var(--font-arabic)" : "var(--sans)",
             }}
           >
             {labels[loc]}

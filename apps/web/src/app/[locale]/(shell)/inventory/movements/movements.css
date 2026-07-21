@@ -158,7 +158,7 @@
 }
 
 .sm-num-positive {
-  color: var(--sage, #4d7359);
+  color: var(--sage);
 }
 
 .sm-num-negative {
@@ -182,8 +182,8 @@
 
 .sm-kind-return_in,
 .sm-kind-receive {
-  background: color-mix(in oklab, var(--sage, #6e9b7f) 16%, var(--bg-elev));
-  color: var(--sage, #4d7359);
+  background: color-mix(in oklab, var(--sage) 16%, var(--bg-elev));
+  color: var(--sage);
 }
 
 .sm-kind-transfer_in,
@@ -193,8 +193,8 @@
 }
 
 .sm-kind-adjustment {
-  background: color-mix(in oklab, var(--amber, #c08a2f) 16%, var(--bg-elev));
-  color: var(--amber, #8a6418);
+  background: color-mix(in oklab, var(--amber) 16%, var(--bg-elev));
+  color: var(--amber);
 }
 
 .sm-kind-waste {

@@ -80,7 +80,7 @@
 
 .xfer-btn-primary {
   background: var(--accent);
-  color: var(--accent-ink, white);
+  color: var(--accent-ink);
   border-color: var(--accent);
 }
 
@@ -89,8 +89,8 @@
 }
 
 .xfer-btn-danger {
-  border-color: var(--rose, #c45a5a);
-  color: var(--rose, #c45a5a);
+  border-color: var(--rose);
+  color: var(--rose);
 }
 
 .xfer-btn-ghost {
@@ -165,13 +165,13 @@
 }
 
 .xfer-pill-received {
-  background: color-mix(in oklab, var(--sage, #6e9b7f) 18%, transparent);
-  color: var(--sage, #4d7359);
+  background: color-mix(in oklab, var(--sage) 18%, transparent);
+  color: var(--sage);
 }
 
 .xfer-pill-cancelled {
-  background: color-mix(in oklab, var(--rose, #c45a5a) 14%, transparent);
-  color: var(--rose, #c45a5a);
+  background: color-mix(in oklab, var(--rose) 14%, transparent);
+  color: var(--rose);
 }
 
 .xfer-empty {
@@ -238,7 +238,7 @@
 }
 
 .xfer-step-done {
-  color: var(--sage, #4d7359);
+  color: var(--sage);
 }
 
 .xfer-step-num {
@@ -295,7 +295,7 @@
 .xfer-field-error {
   margin-block-start: 4px;
   font-size: 12px;
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
 }
 
 .xfer-field-hint {
@@ -369,7 +369,7 @@
 }
 
 .xfer-line-discrepancy {
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
 }
 
 .xfer-detail-head {
@@ -408,5 +408,5 @@
 }
 
 .xfer-status-banner-discrepancy {
-  background: color-mix(in oklab, var(--rose, #c45a5a) 10%, transparent);
+  background: color-mix(in oklab, var(--rose) 10%, transparent);
 }

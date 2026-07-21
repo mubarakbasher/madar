@@ -1152,9 +1152,9 @@
 }
 
 .admin-error-block {
-  background: var(--rose-soft, #fbeaea);
+  background: var(--rose-soft);
   color: var(--rose);
-  border: 1px solid var(--rose-soft, #fbeaea);
+  border: 1px solid var(--rose-soft);
   border-radius: 10px;
   padding: 14px 18px;
   font-family: var(--sans);
@@ -1198,7 +1198,7 @@
   letter-spacing: 0.01em;
 }
 .admin-chip-active {
-  background: var(--sage-soft, #e7efe6);
+  background: var(--sage-soft);
   color: var(--sage);
 }
 .admin-chip-inactive {
@@ -1290,5 +1290,5 @@
   cursor: not-allowed;
 }
 .admin-input-mono {
-  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-family: var(--mono);
 }

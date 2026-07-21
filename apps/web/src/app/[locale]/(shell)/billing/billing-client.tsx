@@ -23,8 +23,8 @@ const INVOICE_TONE: Record<string, { color: string; bg: string; label: string }>
   awaiting_payment: { color: "var(--amber)", bg: "color-mix(in oklab, var(--amber) 14%, transparent)", label: "Awaiting transfer" },
   in_review: { color: "var(--accent)", bg: "color-mix(in oklab, var(--accent) 14%, transparent)", label: "In review" },
   overdue: { color: "var(--rose)", bg: "color-mix(in oklab, var(--rose) 14%, transparent)", label: "Overdue" },
-  draft: { color: "var(--ink-3)", bg: "var(--bg-sunk, transparent)", label: "Draft" },
-  cancelled: { color: "var(--ink-3)", bg: "var(--bg-sunk, transparent)", label: "Cancelled" },
+  draft: { color: "var(--ink-3)", bg: "var(--bg-sunk)", label: "Draft" },
+  cancelled: { color: "var(--ink-3)", bg: "var(--bg-sunk)", label: "Cancelled" },
 };
 
 function formatCents(cents: string, currency: string): string {

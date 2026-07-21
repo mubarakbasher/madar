@@ -256,9 +256,9 @@ export function ProfileClient({ locale }: { locale: "en" | "ar" }) {
               height: 36,
               borderRadius: "var(--radius)",
               background: user.mfa_enabled
-                ? "color-mix(in oklab, var(--sage, #6e9b7f) 16%, transparent)"
+                ? "color-mix(in oklab, var(--sage) 16%, transparent)"
                 : "color-mix(in oklab, var(--ink-3) 12%, transparent)",
-              color: user.mfa_enabled ? "var(--sage, #4d7359)" : "var(--ink-2)",
+              color: user.mfa_enabled ? "var(--sage)" : "var(--ink-2)",
               display: "inline-flex",
               alignItems: "center",
               justifyContent: "center",

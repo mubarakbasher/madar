@@ -73,7 +73,7 @@ export function SettingsShell({
       <aside>
         <h2
           style={{
-            fontFamily: "var(--serif, Fraunces, serif)",
+            fontFamily: "var(--serif)",
             fontSize: 18,
             marginBottom: "var(--space-3)",
             color: "var(--ink)",

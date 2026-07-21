@@ -409,7 +409,7 @@ export function PayInvoiceClient({
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
               style={{ display: "none" }}
             />
-            <FileUp size={28} strokeWidth={1.25} style={{ color: "var(--ink-3)" }} />
+            <FileUp size={28} strokeWidth={1.5} style={{ color: "var(--ink-3)" }} />
             <div style={{ fontSize: 14, marginTop: "var(--space-2)" }}>
               {file ? file.name : t("step2.upload")}
             </div>

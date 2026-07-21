@@ -36,9 +36,9 @@ export function ProductsTable({
   const SortIcon = ({ k }: { k: SortKey }) => {
     if (sort.key !== k) return null;
     return sort.dir === "asc" ? (
-      <ArrowUp size={10} strokeWidth={1.75} />
+      <ArrowUp size={10} strokeWidth={1.5} />
     ) : (
-      <ArrowDown size={10} strokeWidth={1.75} />
+      <ArrowDown size={10} strokeWidth={1.5} />
     );
   };
 
