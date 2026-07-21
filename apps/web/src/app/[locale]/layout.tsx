@@ -5,6 +5,12 @@ import { fontVariables } from "@madar/ui";
 import { routing, type Locale } from "../../../i18n/routing";
 import { QueryProvider } from "../../lib/query/provider";
 import { AuthBootstrap } from "../../lib/auth/bootstrap";
+import { ThemeWatcher } from "../../lib/theme/theme";
+
+/* Runs before first paint: resolves stored preference (madar_theme) or the
+   OS setting onto <html data-theme> so a dark-preference user never sees a
+   light flash. Mirrors lib/theme/theme.ts (keep in sync). */
+const THEME_INIT = `(function(){try{var s=localStorage.getItem("madar_theme");var t=(s==="light"||s==="dark")?s:(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","light");}})();`;
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -25,10 +31,18 @@ export default async function LocaleLayout({
   const dir = locale === "ar" ? "rtl" : "ltr";
 
   return (
-    <html lang={locale} dir={dir} data-theme="light" data-accent="terracotta" className={fontVariables}>
+    <html
+      lang={locale}
+      dir={dir}
+      data-accent="terracotta"
+      className={fontVariables}
+      suppressHydrationWarning
+    >
       <body>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
         <NextIntlClientProvider messages={messages}>
           <QueryProvider>
+            <ThemeWatcher />
             <AuthBootstrap>{children}</AuthBootstrap>
           </QueryProvider>
         </NextIntlClientProvider>

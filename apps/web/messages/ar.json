@@ -2239,7 +2239,16 @@
       "business": "العمل",
       "users": "المستخدمون",
       "taxClasses": "الفئات الضريبية",
-      "notifications": "الإشعارات"
+      "notifications": "الإشعارات",
+      "appearance": "المظهر"
+    },
+    "appearance": {
+      "title": "المظهر",
+      "description": "اختر كيف يبدو مدار على هذا الجهاز.",
+      "light": "فاتح",
+      "dark": "داكن",
+      "system": "حسب النظام",
+      "systemHint": "خيار «حسب النظام» يتبع إعداد الوضع الفاتح أو الداكن في جهازك."
     },
     "security": {
       "kicker": "الحساب",

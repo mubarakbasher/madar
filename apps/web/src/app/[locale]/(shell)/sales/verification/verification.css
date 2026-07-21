@@ -232,7 +232,7 @@
   inset-inline-end: 10px;
   padding: 6px;
   border-radius: 6px;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--scrim);
   color: #fff;
   display: inline-flex;
 }
@@ -429,7 +429,7 @@
   position: absolute;
   inset-block-start: 24px;
   inset-inline-end: 24px;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--scrim);
   color: #fff;
   border: 0;
   padding: 8px;

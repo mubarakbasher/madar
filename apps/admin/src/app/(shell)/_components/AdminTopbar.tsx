@@ -24,7 +24,12 @@ function useTheme(): [Theme, () => void] {
   const [theme, setTheme] = useState<Theme>("light");
   useEffect(() => {
     const stored = (typeof window !== "undefined" ? localStorage.getItem(THEME_KEY) : null) as Theme | null;
-    const initial: Theme = stored === "dark" ? "dark" : "light";
+    const initial: Theme =
+      stored === "dark" || stored === "light"
+        ? stored
+        : window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
     setTheme(initial);
     document.documentElement.setAttribute("data-theme", initial);
   }, []);

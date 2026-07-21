@@ -44,7 +44,7 @@ export function DisableMfaModal({ onClose }: { onClose: (disabled: boolean) => v
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0,0,0,0.45)",
+        background: "var(--scrim)",
         display: "grid",
         placeItems: "center",
         zIndex: 60,

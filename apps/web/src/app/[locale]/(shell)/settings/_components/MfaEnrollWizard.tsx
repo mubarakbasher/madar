@@ -286,7 +286,7 @@ function ModalShell({ onClose, children }: { onClose: () => void; children: Reac
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0,0,0,0.45)",
+        background: "var(--scrim)",
         display: "grid",
         placeItems: "center",
         zIndex: 60,
@@ -302,7 +302,7 @@ function ModalShell({ onClose, children }: { onClose: () => void; children: Reac
           border: "1px solid var(--rule)",
           borderRadius: "var(--radius-lg)",
           overflow: "hidden",
-          boxShadow: "0 24px 80px -24px rgba(0,0,0,0.35)",
+          boxShadow: "var(--shadow-lg)",
         }}
       >
         {children}

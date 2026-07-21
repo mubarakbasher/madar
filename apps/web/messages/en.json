@@ -2239,7 +2239,16 @@
       "business": "Business",
       "users": "Users",
       "taxClasses": "Tax classes",
-      "notifications": "Notifications"
+      "notifications": "Notifications",
+      "appearance": "Appearance"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how Madar looks on this device.",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System",
+      "systemHint": "System follows your device's light or dark setting."
     },
     "security": {
       "kicker": "Account",

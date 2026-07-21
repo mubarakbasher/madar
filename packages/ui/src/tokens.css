@@ -74,6 +74,9 @@
   --shadow-lg: 0 1px 0 rgba(26, 23, 20, 0.05), 0 12px 32px rgba(26, 23, 20, 0.08);
   --shadow-focus: 0 0 0 4px color-mix(in oklab, var(--accent) 18%, transparent);
 
+  /* Modal/drawer overlay dim — 40–60% per the a11y checklist */
+  --scrim: rgba(26, 23, 20, 0.45);
+
   /* Motion */
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --duration-1: 120ms;
@@ -96,9 +99,16 @@
   --accent: #E27A60;
   --accent-soft: #3A211B;
   --accent-ink: #F6BEB0;
+  /* Base semantic hues lift toward the light end so they keep ≥3:1 against
+     the dark surfaces (same treatment as the accent above). */
+  --sage: #97A48B;
   --sage-soft: #2A2E26;
+  --rose: #D08080;
   --rose-soft: #2E1F1F;
+  --amber: #D3A75C;
   --amber-soft: #322818;
+
+  --scrim: rgba(0, 0, 0, 0.6);
 }
 
 /* Accent variants applied via [data-accent] */

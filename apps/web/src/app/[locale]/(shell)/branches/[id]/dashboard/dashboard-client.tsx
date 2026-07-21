@@ -75,7 +75,7 @@ export function DashboardClient({ locale, id }: { locale: "en" | "ar"; id: strin
               gap: 6,
               alignItems: "center",
               marginBlockStart: 6,
-              color: positive ? "#1f7a4d" : "#b03a2e",
+              color: positive ? "var(--sage)" : "var(--rose)",
               fontSize: 13,
             }}
           >

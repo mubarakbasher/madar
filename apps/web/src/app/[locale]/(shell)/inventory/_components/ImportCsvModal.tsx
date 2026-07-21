@@ -74,7 +74,7 @@ export function ImportCsvModal({ onClose }: { onClose: () => void }) {
           width: "100%",
           maxHeight: "85vh",
           overflowY: "auto",
-          boxShadow: "0 24px 64px -16px rgba(0, 0, 0, 0.32)",
+          boxShadow: "var(--shadow-lg)",
         }}
       >
         <header

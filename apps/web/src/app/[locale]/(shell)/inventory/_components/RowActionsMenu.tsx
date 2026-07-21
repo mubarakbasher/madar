@@ -70,7 +70,7 @@ export function RowActionsMenu({ productId, productName }: { productId: string; 
             background: "var(--bg-elev)",
             border: "1px solid var(--rule)",
             borderRadius: "var(--radius)",
-            boxShadow: "0 12px 32px -16px rgba(0,0,0,0.25)",
+            boxShadow: "var(--shadow-lg)",
             zIndex: 20,
             minWidth: 160,
             overflow: "hidden",
