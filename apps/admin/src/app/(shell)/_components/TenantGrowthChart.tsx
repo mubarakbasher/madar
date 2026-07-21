@@ -45,10 +45,10 @@ export function TenantGrowthChart({ data }: Props) {
           <Line
             type="monotone"
             dataKey="count"
-            stroke="#4A6B7A"
+            stroke="var(--accent)"
             strokeWidth={2}
             dot={false}
-            activeDot={{ r: 4, fill: "#4A6B7A" }}
+            activeDot={{ r: 4, fill: "var(--accent)" }}
           />
         </LineChart>
       </ResponsiveContainer>

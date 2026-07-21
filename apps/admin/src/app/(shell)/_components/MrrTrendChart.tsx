@@ -43,8 +43,8 @@ export function MrrTrendChart({ data }: Props) {
         <AreaChart data={chartData}>
           <defs>
             <linearGradient id="mrrGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#4A6B7A" stopOpacity={0.3} />
-              <stop offset="100%" stopColor="#4A6B7A" stopOpacity={0.05} />
+              <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.3} />
+              <stop offset="100%" stopColor="var(--accent)" stopOpacity={0.05} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="5 5" stroke="var(--rule)" />
@@ -77,7 +77,7 @@ export function MrrTrendChart({ data }: Props) {
           <Area
             type="monotone"
             dataKey="amount"
-            stroke="#4A6B7A"
+            stroke="var(--accent)"
             strokeWidth={2}
             fill="url(#mrrGrad)"
           />
