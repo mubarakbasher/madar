@@ -40,7 +40,7 @@ html[lang="ar"] .dash-error h2 { font-family: var(--font-arabic); }
   align-items: center;
   padding: 10px 14px;
   margin-bottom: 16px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   background: var(--amber-soft);
   color: var(--amber);
   font-size: 12.5px;

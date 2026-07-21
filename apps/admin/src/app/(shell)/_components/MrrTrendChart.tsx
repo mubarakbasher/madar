@@ -47,7 +47,7 @@ export function MrrTrendChart({ data }: Props) {
               <stop offset="100%" stopColor="#4A6B7A" stopOpacity={0.05} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="5 5" stroke="var(--border)" />
+          <CartesianGrid strokeDasharray="5 5" stroke="var(--rule)" />
           <XAxis
             dataKey="date"
             tick={{ fontSize: 10, fontFamily: "var(--sans)", fill: "var(--ink-3)" }}
@@ -66,7 +66,7 @@ export function MrrTrendChart({ data }: Props) {
               fontFamily: "var(--sans)",
               fontSize: 12,
               background: "var(--bg)",
-              border: "1px solid var(--border)",
+              border: "1px solid var(--rule)",
               borderRadius: 8,
             }}
             formatter={(v) => [

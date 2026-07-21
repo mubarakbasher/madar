@@ -186,7 +186,7 @@ export function BulkAdjustStockModal({
                   borderRadius: 8,
                   fontSize: 13,
                   background: "var(--bg)",
-                  color: "var(--ink-1)",
+                  color: "var(--ink)",
                   fontFamily: "inherit",
                 }}
               >
@@ -216,8 +216,8 @@ export function BulkAdjustStockModal({
                   borderRadius: 8,
                   fontSize: 13,
                   background: "var(--bg)",
-                  color: "var(--ink-1)",
-                  fontFamily: "var(--mono, monospace)",
+                  color: "var(--ink)",
+                  fontFamily: "var(--mono)",
                 }}
               />
             </div>
@@ -237,7 +237,7 @@ export function BulkAdjustStockModal({
                   fontSize: 12.5,
                   border: `1px solid ${kind === k ? "var(--accent)" : "var(--rule)"}`,
                   background: kind === k ? "var(--accent-soft)" : "transparent",
-                  color: kind === k ? "var(--accent-ink, var(--ink-1))" : "var(--ink-2)",
+                  color: kind === k ? "var(--accent-ink)" : "var(--ink-2)",
                   cursor: "pointer",
                   fontFamily: "inherit",
                 }}
@@ -264,7 +264,7 @@ export function BulkAdjustStockModal({
               borderRadius: 8,
               fontSize: 13,
               background: "var(--bg)",
-              color: "var(--ink-1)",
+              color: "var(--ink)",
               fontFamily: "inherit",
             }}
           />
@@ -302,7 +302,7 @@ export function BulkAdjustStockModal({
                 fontSize: 13,
                 border: "1px solid var(--rule)",
                 background: "transparent",
-                color: "var(--ink-1)",
+                color: "var(--ink)",
                 cursor: "pointer",
                 fontFamily: "inherit",
               }}

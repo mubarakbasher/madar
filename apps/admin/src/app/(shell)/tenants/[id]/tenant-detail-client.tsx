@@ -235,7 +235,7 @@ export function TenantDetailClient({ tenantId }: { tenantId: string }) {
                   alignItems: "center",
                   justifyContent: "space-between",
                   padding: "10px 12px",
-                  background: "var(--surface)",
+                  background: "var(--bg-elev)",
                   border: "1px solid var(--rule)",
                   borderRadius: 10,
                 }}
@@ -308,7 +308,7 @@ function KpiBlock({ label, value }: { label: string; value: string }) {
   return (
     <div
       style={{
-        background: "var(--surface)",
+        background: "var(--bg-elev)",
         border: "1px solid var(--rule)",
         borderRadius: 14,
         padding: 16,

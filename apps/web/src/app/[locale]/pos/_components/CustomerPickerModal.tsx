@@ -88,7 +88,7 @@ export function CustomerPickerModal({
             maxHeight: 360,
             overflowY: "auto",
             borderRadius: 8,
-            border: "1px solid var(--line)",
+            border: "1px solid var(--rule)",
           }}
         >
           {q.isPending ? (

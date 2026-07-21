@@ -294,7 +294,7 @@ function KpiCard({ label, value }: { label: string; value: string }) {
   return (
     <div
       style={{
-        background: "var(--surface)",
+        background: "var(--bg-elev)",
         border: "1px solid var(--rule)",
         borderRadius: 12,
         padding: "var(--space-4)",
@@ -331,7 +331,7 @@ function OverviewTab({
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <section
         style={{
-          background: "var(--surface)",
+          background: "var(--bg-elev)",
           border: "1px solid var(--rule)",
           borderRadius: "var(--radius-lg)",
           padding: 20,
@@ -350,7 +350,7 @@ function OverviewTab({
 
       <section
         style={{
-          background: "var(--surface)",
+          background: "var(--bg-elev)",
           border: "1px solid var(--rule)",
           borderRadius: "var(--radius-lg)",
           padding: 20,
@@ -371,7 +371,7 @@ function MiniCard({ label, value, mono }: { label: string; value: string; mono?:
   return (
     <div
       style={{
-        background: "var(--surface)",
+        background: "var(--bg-elev)",
         border: "1px solid var(--rule)",
         borderRadius: 12,
         padding: "var(--space-4)",
@@ -435,7 +435,7 @@ function StockTab({
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
       <section
         style={{
-          background: "var(--surface)",
+          background: "var(--bg-elev)",
           border: "1px solid var(--rule)",
           borderRadius: "var(--radius-lg)",
           padding: 20,
@@ -506,7 +506,7 @@ function StockTab({
 
       <section
         style={{
-          background: "var(--surface)",
+          background: "var(--bg-elev)",
           border: "1px solid var(--rule)",
           borderRadius: "var(--radius-lg)",
           padding: 20,
@@ -604,7 +604,7 @@ function ActivityTab({ items, loading }: { items: ApiActivityItem[]; loading: bo
   return (
     <section
       style={{
-        background: "var(--surface)",
+        background: "var(--bg-elev)",
         border: "1px solid var(--rule)",
         borderRadius: "var(--radius-lg)",
         padding: 20,

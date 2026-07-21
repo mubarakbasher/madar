@@ -67,7 +67,7 @@ export function ImportCsvModal({ onClose }: { onClose: () => void }) {
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: "var(--surface-1)",
+          background: "var(--bg-elev)",
           borderRadius: "var(--radius-lg)",
           padding: "22px 26px",
           maxWidth: 640,
@@ -86,7 +86,7 @@ export function ImportCsvModal({ onClose }: { onClose: () => void }) {
           }}
         >
           <div>
-            <h3 style={{ fontFamily: "var(--font-display)", fontSize: 22, margin: 0 }}>
+            <h3 style={{ fontFamily: "var(--serif)", fontSize: 22, margin: 0 }}>
               {t("title")}
             </h3>
             <p style={{ fontSize: 13, color: "var(--ink-3)", marginBlockStart: "var(--space-1)" }}>
@@ -136,8 +136,8 @@ export function ImportCsvModal({ onClose }: { onClose: () => void }) {
           <div
             style={{
               padding: "10px 14px",
-              background: "color-mix(in oklab, var(--rose) 10%, var(--surface-1))",
-              border: "1px solid color-mix(in oklab, var(--rose) 30%, var(--line))",
+              background: "color-mix(in oklab, var(--rose) 10%, var(--bg-elev))",
+              border: "1px solid color-mix(in oklab, var(--rose) 30%, var(--rule))",
               borderRadius: 8,
               color: "var(--rose)",
               fontSize: 13,
@@ -169,7 +169,7 @@ export function ImportCsvModal({ onClose }: { onClose: () => void }) {
             {result.errors.length > 0 && (
               <div
                 style={{
-                  border: "1px solid var(--line)",
+                  border: "1px solid var(--rule)",
                   borderRadius: 8,
                   maxHeight: 240,
                   overflowY: "auto",
@@ -178,7 +178,7 @@ export function ImportCsvModal({ onClose }: { onClose: () => void }) {
               >
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                   <thead>
-                    <tr style={{ background: "var(--surface-2)" }}>
+                    <tr style={{ background: "var(--bg-sunk)" }}>
                       <th style={{ padding: "6px 10px", textAlign: "start" }}>
                         {t("col.row")}
                       </th>
@@ -192,14 +192,14 @@ export function ImportCsvModal({ onClose }: { onClose: () => void }) {
                   </thead>
                   <tbody>
                     {result.errors.slice(0, 100).map((e, i) => (
-                      <tr key={i} style={{ borderBlockStart: "1px solid var(--line)" }}>
+                      <tr key={i} style={{ borderBlockStart: "1px solid var(--rule)" }}>
                         <td style={{ padding: "6px 10px", color: "var(--ink-3)" }}>
                           {e.row}
                         </td>
                         <td
                           style={{
                             padding: "6px 10px",
-                            fontFamily: "var(--font-mono)",
+                            fontFamily: "var(--mono)",
                             fontSize: 11,
                           }}
                         >
@@ -218,7 +218,7 @@ export function ImportCsvModal({ onClose }: { onClose: () => void }) {
                       padding: "var(--space-2) 10px",
                       textAlign: "center",
                       color: "var(--ink-3)",
-                      borderBlockStart: "1px solid var(--line)",
+                      borderBlockStart: "1px solid var(--rule)",
                     }}
                   >
                     {t("moreErrors", { count: result.errors.length - 100 })}
@@ -236,7 +236,7 @@ export function ImportCsvModal({ onClose }: { onClose: () => void }) {
             gap: "var(--space-2)",
             marginBlockStart: "var(--space-4)",
             paddingBlockStart: "var(--space-3)",
-            borderBlockStart: "1px solid var(--line)",
+            borderBlockStart: "1px solid var(--rule)",
           }}
         >
           <button
@@ -279,8 +279,8 @@ function Stat({
   return (
     <div
       style={{
-        background: "var(--surface-2)",
-        border: "1px solid var(--line)",
+        background: "var(--bg-sunk)",
+        border: "1px solid var(--rule)",
         borderRadius: "var(--radius)",
         padding: "10px var(--space-3)",
       }}
@@ -297,7 +297,7 @@ function Stat({
       </div>
       <div
         style={{
-          fontFamily: "var(--font-display)",
+          fontFamily: "var(--serif)",
           fontSize: 26,
           color: colorMap[tone],
           marginBlockStart: "var(--space-1)",

@@ -67,7 +67,7 @@ export function RowActionsMenu({ productId, productName }: { productId: string; 
             insetInlineEnd: 0,
             top: "100%",
             marginTop: "var(--space-1)",
-            background: "var(--surface)",
+            background: "var(--bg-elev)",
             border: "1px solid var(--rule)",
             borderRadius: "var(--radius)",
             boxShadow: "0 12px 32px -16px rgba(0,0,0,0.25)",

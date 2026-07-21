@@ -70,7 +70,7 @@ export function LoginAsModal({
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: "var(--surface)",
+          background: "var(--bg-elev)",
           borderRadius: 14,
           padding: 24,
           width: "min(520px, calc(100vw - 32px))",

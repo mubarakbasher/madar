@@ -143,7 +143,7 @@ export function MfaEnrollWizard({
                     background: "var(--bg)",
                     border: "1px solid var(--rule)",
                     borderRadius: "var(--radius-sm)",
-                    fontFamily: "var(--font-mono, ui-monospace, monospace)",
+                    fontFamily: "var(--mono)",
                     fontSize: 12,
                   }}
                 >
@@ -186,7 +186,7 @@ export function MfaEnrollWizard({
                 fontFamily: "var(--serif, Fraunces, serif)",
                 border: "1px solid var(--rule)",
                 background: "var(--bg)",
-                color: "var(--ink-1)",
+                color: "var(--ink)",
                 borderRadius: 8,
               }}
             />
@@ -224,7 +224,7 @@ export function MfaEnrollWizard({
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gap: 6,
-                fontFamily: "var(--font-mono, ui-monospace, monospace)",
+                fontFamily: "var(--mono)",
                 fontSize: 13,
               }}
             >
@@ -322,7 +322,7 @@ function btn(variant: "primary" | "ghost"): React.CSSProperties {
     fontSize: 13,
     border: primary ? "1px solid var(--accent)" : "1px solid var(--rule)",
     background: primary ? "var(--accent)" : "transparent",
-    color: primary ? "white" : "var(--ink-1)",
+    color: primary ? "white" : "var(--ink)",
     cursor: "pointer",
     fontFamily: "inherit",
   };

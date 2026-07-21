@@ -742,7 +742,7 @@ function Section({
   return (
     <section
       style={{
-        background: "var(--surface)",
+        background: "var(--bg-elev)",
         border: "1px solid var(--rule)",
         borderRadius: 16,
         padding: "var(--space-5)",

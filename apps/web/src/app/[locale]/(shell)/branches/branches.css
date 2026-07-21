@@ -18,11 +18,11 @@
 }
 
 .br-title {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 32px;
   line-height: 1.1;
   font-weight: 500;
-  color: var(--ink-1);
+  color: var(--ink);
   margin: 0;
 }
 
@@ -45,7 +45,7 @@
   gap: 14px;
   border: 1px solid var(--rule);
   background: var(--bg-elev);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 18px;
   text-decoration: none;
   color: inherit;
@@ -69,11 +69,11 @@
 }
 
 .br-card-name {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 20px;
   line-height: 1.2;
   margin: 0;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-card-address {
@@ -127,17 +127,17 @@
 
 .br-stat-value {
   margin-block-start: 4px;
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 22px;
   line-height: 1.1;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-stat-value-sm {
   margin-block-start: 4px;
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 18px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-card-foot {
@@ -149,7 +149,7 @@
 }
 
 .br-card-code {
-  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-family: var(--mono);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -179,7 +179,7 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: var(--bg-pop, rgba(0, 0, 0, 0.04));
+  background: var(--bg-sunk);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -187,9 +187,9 @@
 }
 
 .br-add-title {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 18px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-add-sub {
@@ -200,13 +200,13 @@
 .br-empty {
   margin-block-start: 40px;
   border: 1px dashed var(--rule);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 48px 24px;
   text-align: center;
 }
 
 .br-empty-title {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 22px;
   margin-block-end: 6px;
 }
@@ -226,7 +226,7 @@
   border: 1px solid var(--rule);
   background: var(--bg-elev);
   font-size: 13px;
-  color: var(--ink-1);
+  color: var(--ink);
   cursor: pointer;
   text-decoration: none;
   font-family: inherit;
@@ -261,7 +261,7 @@
 .br-error {
   margin-block-start: 24px;
   border: 1px solid var(--rule);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 32px 24px;
   text-align: center;
 }
@@ -311,7 +311,7 @@
 }
 
 .br-tab-active {
-  color: var(--ink-1);
+  color: var(--ink);
   border-block-end-color: var(--accent);
 }
 
@@ -324,7 +324,7 @@
 
 .br-kpi {
   border: 1px solid var(--rule);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 14px 16px;
   background: var(--bg-elev);
 }
@@ -338,24 +338,24 @@
 
 .br-kpi-value {
   margin-block-start: 6px;
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 26px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-section {
   border: 1px solid var(--rule);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   background: var(--bg-elev);
   padding: 14px 16px;
   margin-block-end: 14px;
 }
 
 .br-section-title {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 16px;
   margin-block-end: 8px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-list {
@@ -424,7 +424,7 @@
   border-radius: var(--radius-sm);
   font-size: 13px;
   width: 240px;
-  color: var(--ink-1);
+  color: var(--ink);
   font-family: inherit;
 }
 
@@ -447,16 +447,16 @@
 .br-form-section {
   border: 1px solid var(--rule);
   background: var(--bg-elev);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 18px;
   margin-block-end: 14px;
 }
 
 .br-form-section-title {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 16px;
   margin-block-end: 12px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-field {
@@ -480,7 +480,7 @@
   background: var(--bg);
   border-radius: var(--radius-sm);
   font-size: 13px;
-  color: var(--ink-1);
+  color: var(--ink);
   font-family: inherit;
 }
 
@@ -539,7 +539,7 @@
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-status-bar {
@@ -575,7 +575,7 @@
 
 .br-hours-day {
   font-size: 14px;
-  color: var(--ink-1);
+  color: var(--ink);
   font-weight: 500;
 }
 
@@ -594,7 +594,7 @@
   border: 1px solid var(--rule);
   border-radius: var(--radius-sm);
   background: var(--bg);
-  color: var(--ink-1);
+  color: var(--ink);
   font-size: 14px;
 }
 
@@ -678,7 +678,7 @@
 .br-bank-name {
   font-size: 14px;
   font-weight: 500;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-bank-meta {
@@ -843,7 +843,7 @@
 
 .br-map-stats dd {
   font-size: 15px;
-  color: var(--ink-1);
+  color: var(--ink);
   margin: 0;
   font-weight: 500;
 }
@@ -891,10 +891,10 @@
 }
 
 .br-staff-empty-title {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 20px;
   font-weight: 500;
-  color: var(--ink-1);
+  color: var(--ink);
   margin: 0;
 }
 
@@ -932,7 +932,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 15px;
   font-weight: 500;
   color: #fff;
@@ -948,7 +948,7 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: var(--ink-1);
+  color: var(--ink);
   font-weight: 500;
 }
 
@@ -1076,7 +1076,7 @@
 .br-staff-kebab:hover {
   background: var(--bg-sunk, color-mix(in oklab, var(--ink-3) 6%, transparent));
   border-color: var(--rule);
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-staff-menu-scrim {
@@ -1108,7 +1108,7 @@
   border: 0;
   background: transparent;
   font: inherit;
-  color: var(--ink-1);
+  color: var(--ink);
   text-align: start;
   border-radius: 6px;
   cursor: pointer;
@@ -1158,10 +1158,10 @@
 }
 
 .br-modal-title {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 20px;
   font-weight: 500;
-  color: var(--ink-1);
+  color: var(--ink);
   margin: 0;
 }
 
@@ -1199,7 +1199,7 @@
 .br-modal-close:hover {
   border-color: var(--rule);
   background: var(--bg-sunk, color-mix(in oklab, var(--ink-3) 6%, transparent));
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-modal-search {
@@ -1220,7 +1220,7 @@
   border: 0;
   outline: none;
   font: inherit;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-modal-status {

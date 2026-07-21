@@ -44,7 +44,7 @@ export function SecurityClient({ locale }: { locale: string }) {
             fontFamily: "var(--serif, Fraunces, serif)",
             fontSize: 28,
             margin: "var(--space-1) 0 0",
-            color: "var(--ink-1)",
+            color: "var(--ink)",
           }}
         >
           {t("title")}
@@ -80,7 +80,7 @@ export function SecurityClient({ locale }: { locale: string }) {
           {on ? <ShieldCheck size={18} /> : <ShieldOff size={18} />}
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 500, color: "var(--ink-1)" }}>{t("mfaCardTitle")}</div>
+          <div style={{ fontWeight: 500, color: "var(--ink)" }}>{t("mfaCardTitle")}</div>
           <div style={{ marginTop: "var(--space-1)", fontSize: 13, color: "var(--ink-3)" }}>
             {on ? t("mfaOn") : t("mfaOff")}
           </div>
@@ -92,7 +92,7 @@ export function SecurityClient({ locale }: { locale: string }) {
                   style={{
                     background: "transparent",
                     border: "1px solid var(--rule)",
-                    color: "var(--ink-1)",
+                    color: "var(--ink)",
                     padding: "var(--space-2) 14px",
                     borderRadius: 8,
                     fontSize: 13,

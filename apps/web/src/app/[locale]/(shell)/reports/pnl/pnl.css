@@ -15,7 +15,7 @@
 }
 
 .pnl-title {
-  font-family: var(--font-serif, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 32px;
   font-weight: 500;
   margin: 6px 0 0;
@@ -92,7 +92,7 @@
   padding: 10px 14px;
   border-radius: 10px;
   border: 1px solid var(--rule);
-  background: var(--bg-warn-soft, var(--bg-elev));
+  background: var(--amber-soft);
   color: var(--ink-2);
   font-size: 13px;
 }
@@ -118,7 +118,7 @@
 
 .pnl-statement-period {
   grid-column: 1 / -1;
-  font-family: var(--font-serif, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 22px;
   font-weight: 500;
   margin-bottom: 6px;
@@ -149,7 +149,7 @@
 
 .pnl-row-net .pnl-row-label,
 .pnl-row-net .pnl-row-value {
-  font-family: var(--font-serif, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 22px;
   font-weight: 500;
 }
@@ -172,7 +172,7 @@
 }
 
 .pnl-breakdown-title {
-  font-family: var(--font-serif, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 18px;
   font-weight: 500;
 }
@@ -232,7 +232,7 @@
 }
 
 .pnl-empty-title {
-  font-family: var(--font-serif, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 20px;
   font-weight: 500;
   color: var(--ink);
@@ -247,7 +247,7 @@
 }
 
 .pnl-error-title {
-  font-family: var(--font-serif, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 20px;
   font-weight: 500;
   color: var(--ink);

@@ -116,7 +116,7 @@ export function PlansClient() {
                 <td>
                   <Link
                     href={`/plans/${p.id}`}
-                    style={{ textDecoration: "none", color: "inherit", fontFamily: "var(--font-mono, monospace)" }}
+                    style={{ textDecoration: "none", color: "inherit", fontFamily: "var(--mono)" }}
                   >
                     {p.code}
                   </Link>
@@ -124,7 +124,7 @@ export function PlansClient() {
                 <td>{p.name_i18n.en || <span className="admin-muted">—</span>}</td>
                 <td className="right">{formatCents(p.monthly_price_cents, p.currency_code)}</td>
                 <td>
-                  <span style={{ fontFamily: "var(--font-mono, monospace)", fontSize: 13 }}>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: 13 }}>
                     {formatLimit(p.limits.txns)} · {formatLimit(p.limits.users)} ·{" "}
                     {formatLimit(p.limits.branches)} · {formatLimit(p.limits.storage_gb)}
                   </span>

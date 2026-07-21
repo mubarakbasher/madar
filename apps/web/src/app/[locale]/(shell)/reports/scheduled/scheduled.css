@@ -70,7 +70,7 @@
 }
 
 .sch-btn-primary:hover {
-  background: var(--accent-strong);
+  background: var(--accent-ink);
 }
 
 .sch-btn-ghost {
@@ -78,7 +78,7 @@
 }
 
 .sch-btn-danger {
-  color: var(--danger);
+  color: var(--rose);
 }
 
 /* ─── Table ──────────────────────────────────────────────────────── */
@@ -148,7 +148,7 @@
 
 .sch-chip-kind {
   background: color-mix(in oklab, var(--accent) 12%, transparent);
-  color: var(--accent-strong);
+  color: var(--accent-ink);
   border-color: color-mix(in oklab, var(--accent) 30%, transparent);
 }
 
@@ -163,13 +163,13 @@
 }
 
 .sch-pill-sent {
-  background: color-mix(in oklab, var(--success, #4a7a4d) 14%, transparent);
-  color: var(--success, #4a7a4d);
+  background: color-mix(in oklab, var(--sage) 14%, transparent);
+  color: var(--sage);
 }
 
 .sch-pill-failed {
-  background: color-mix(in oklab, var(--danger) 14%, transparent);
-  color: var(--danger);
+  background: color-mix(in oklab, var(--rose) 14%, transparent);
+  color: var(--rose);
 }
 
 .sch-pill-pending {
@@ -256,7 +256,7 @@
   background: var(--bg-elev);
   border: 1px solid var(--rule);
   border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow);
   min-width: 160px;
   z-index: 10;
   padding: 4px;
@@ -280,7 +280,7 @@
 }
 
 .sch-kebab-item.is-danger {
-  color: var(--danger);
+  color: var(--rose);
 }
 
 /* ─── States ─────────────────────────────────────────────────────── */
@@ -479,7 +479,7 @@
 
 .sch-form-error {
   font-size: 12px;
-  color: var(--danger);
+  color: var(--rose);
 }
 
 /* ─── Confirm dialog ─────────────────────────────────────────────── */

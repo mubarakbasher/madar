@@ -139,7 +139,7 @@ export function CustomerForm({
           value={code}
           onChange={(e) => setCode(e.target.value.toUpperCase())}
           maxLength={32}
-          style={{ fontFamily: "var(--font-mono, monospace)" }}
+          style={{ fontFamily: "var(--mono)" }}
         />
         <div className="cu-muted" style={{ fontSize: 12, marginBlockStart: "var(--space-1)" }}>
           {t("form.codeHelp")}

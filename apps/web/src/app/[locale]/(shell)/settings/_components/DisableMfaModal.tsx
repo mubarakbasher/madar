@@ -107,7 +107,7 @@ export function DisableMfaModal({ onClose }: { onClose: (disabled: boolean) => v
               borderRadius: 8,
               fontSize: 13,
               background: "var(--bg)",
-              color: "var(--ink-1)",
+              color: "var(--ink)",
               fontFamily: "inherit",
             }}
           />
@@ -122,7 +122,7 @@ export function DisableMfaModal({ onClose }: { onClose: (disabled: boolean) => v
                 fontSize: 13,
                 border: "1px solid var(--rule)",
                 background: "transparent",
-                color: "var(--ink-1)",
+                color: "var(--ink)",
                 cursor: "pointer",
                 fontFamily: "inherit",
               }}

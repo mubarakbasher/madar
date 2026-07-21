@@ -118,7 +118,7 @@ function SubscriptionBannerShell({
 }) {
   const tones: Record<typeof tone, { bg: string; fg: string }> = {
     coral: {
-      bg: "linear-gradient(90deg, var(--accent) 0%, var(--accent-strong) 100%)",
+      bg: "linear-gradient(90deg, var(--accent) 0%, var(--accent-ink) 100%)",
       fg: "white",
     },
     amber: {
@@ -162,7 +162,7 @@ function BannerCta({
   tone: "coral" | "amber" | "rose";
 }) {
   const ctaFg = {
-    coral: "var(--accent-strong)",
+    coral: "var(--accent-ink)",
     amber: "var(--amber, #c08a3e)",
     rose: "var(--rose)",
   }[tone];

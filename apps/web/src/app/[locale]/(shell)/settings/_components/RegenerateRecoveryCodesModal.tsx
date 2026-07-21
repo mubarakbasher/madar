@@ -128,7 +128,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                   borderRadius: 8,
                   fontSize: 13,
                   background: "var(--bg)",
-                  color: "var(--ink-1)",
+                  color: "var(--ink)",
                   fontFamily: "inherit",
                 }}
               />
@@ -155,7 +155,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                     fontSize: 13,
                     border: "1px solid var(--rule)",
                     background: "transparent",
-                    color: "var(--ink-1)",
+                    color: "var(--ink)",
                     cursor: "pointer",
                     fontFamily: "inherit",
                   }}
@@ -224,7 +224,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                   style={{
                     background: "transparent",
                     border: "1px solid var(--rule)",
-                    color: "var(--ink-1)",
+                    color: "var(--ink)",
                     padding: "var(--space-2) var(--space-3)",
                     borderRadius: 8,
                     fontSize: 13,

@@ -68,7 +68,7 @@ export function SettingsShell({
             fontFamily: "var(--serif, Fraunces, serif)",
             fontSize: 18,
             marginBottom: "var(--space-3)",
-            color: "var(--ink-1)",
+            color: "var(--ink)",
           }}
         >
           {t("title")}

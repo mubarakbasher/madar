@@ -25,7 +25,7 @@
   line-height: 1.1;
   font-weight: 500;
   letter-spacing: -0.01em;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
   margin: 4px 0 0;
 }
 
@@ -52,7 +52,7 @@
   border-radius: var(--radius-sm, 8px);
   font-size: 13px;
   width: 280px;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
   font-family: inherit;
 }
 
@@ -80,7 +80,7 @@
   border: 1px solid var(--rule);
   background: var(--bg-elev);
   font-size: 13px;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
   cursor: pointer;
   text-decoration: none;
   font-family: inherit;
@@ -161,12 +161,12 @@
 
 .usr-cell-name {
   font-weight: 500;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
 }
 
 .usr-cell-email {
   color: var(--ink-2);
-  font-family: var(--mono, ui-monospace, monospace);
+  font-family: var(--mono);
   font-size: 12.5px;
 }
 
@@ -284,7 +284,7 @@
   font-family: var(--serif, Fraunces, serif);
   font-size: 22px;
   margin-block-end: 6px;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
 }
 
 .usr-empty-body {
@@ -311,7 +311,7 @@
   font-family: var(--serif, Fraunces, serif);
   font-size: 20px;
   margin: 0 0 6px;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
 }
 
 .usr-error p {
@@ -334,7 +334,7 @@
   font-family: var(--serif, Fraunces, serif);
   font-size: 22px;
   margin: 0 0 8px;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
 }
 
 .usr-denied p {
@@ -380,7 +380,7 @@
   font-family: var(--serif, Fraunces, serif);
   font-size: 18px;
   margin: 0;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
 }
 
 .usr-modal-close {
@@ -445,7 +445,7 @@
   background: var(--bg, var(--bg-elev));
   border-radius: var(--radius-sm, 8px);
   font-size: 13px;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
   font-family: inherit;
 }
 
@@ -482,7 +482,7 @@
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
   cursor: pointer;
 }
 
@@ -495,7 +495,7 @@
   margin-inline: auto;
   max-width: 480px;
   padding: 12px 18px;
-  background: var(--ink, var(--ink-1));
+  background: var(--ink);
   color: var(--bg-elev);
   border-radius: var(--radius, 10px);
   font-family: var(--sans, inherit);

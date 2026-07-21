@@ -20,11 +20,11 @@
 }
 
 .prof-title {
-  font-family: var(--font-display, Fraunces, serif);
+  font-family: var(--serif, Fraunces, serif);
   font-size: 28px;
   font-weight: 500;
   line-height: 1.1;
-  color: var(--ink-1);
+  color: var(--ink);
   margin: 0;
 }
 
@@ -35,18 +35,18 @@
 }
 
 .prof-card {
-  background: var(--surface-1);
-  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
   border-radius: 12px;
   padding: 20px 22px;
 }
 
 .prof-card-title {
-  font-family: var(--font-display, Fraunces, serif);
+  font-family: var(--serif, Fraunces, serif);
   font-size: 18px;
   font-weight: 500;
   margin: 0 0 4px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .prof-card-sub {
@@ -66,9 +66,9 @@
   width: 64px;
   height: 64px;
   border-radius: 16px;
-  background: linear-gradient(135deg, var(--accent), color-mix(in oklab, var(--accent) 60%, var(--ink-1)));
-  color: var(--accent-on);
-  font-family: var(--font-display, Fraunces, serif);
+  background: linear-gradient(135deg, var(--accent), color-mix(in oklab, var(--accent) 60%, var(--ink)));
+  color: #fff;
+  font-family: var(--serif, Fraunces, serif);
   font-size: 30px;
   display: inline-flex;
   align-items: center;
@@ -96,11 +96,11 @@
 
 .prof-input {
   padding: 9px 12px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--rule);
   border-radius: 8px;
-  background: var(--surface-1);
+  background: var(--bg-elev);
   font-size: 14px;
-  color: var(--ink-1);
+  color: var(--ink);
   width: 100%;
 }
 
@@ -121,9 +121,9 @@
 
 .prof-readonly {
   padding: 9px 12px;
-  border: 1px dashed var(--line);
+  border: 1px dashed var(--rule);
   border-radius: 8px;
-  background: var(--surface-2);
+  background: var(--bg-sunk);
   font-size: 14px;
   color: var(--ink-2);
   flex: 1;
@@ -140,12 +140,12 @@
 }
 
 .prof-pill-sage {
-  background: color-mix(in oklab, var(--sage, #6e9b7f) 16%, var(--surface-1));
+  background: color-mix(in oklab, var(--sage, #6e9b7f) 16%, var(--bg-elev));
   color: var(--sage, #4d7359);
 }
 
 .prof-pill-amber {
-  background: color-mix(in oklab, var(--amber, #c08a2f) 16%, var(--surface-1));
+  background: color-mix(in oklab, var(--amber, #c08a2f) 16%, var(--bg-elev));
   color: var(--amber, #8a6418);
 }
 
@@ -159,16 +159,16 @@
   align-items: center;
   gap: 8px;
   padding: 9px 14px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--rule);
   border-radius: 999px;
-  background: var(--surface-1);
+  background: var(--bg-elev);
   cursor: pointer;
   font-size: 13px;
   color: var(--ink-2);
 }
 
 .prof-radio:hover {
-  background: var(--surface-2);
+  background: var(--bg-sunk);
 }
 
 .prof-radio input[type="radio"] {
@@ -177,7 +177,7 @@
 
 .prof-radio-active {
   border-color: var(--accent);
-  background: color-mix(in oklab, var(--accent) 8%, var(--surface-1));
+  background: color-mix(in oklab, var(--accent) 8%, var(--bg-elev));
   color: var(--accent);
 }
 
@@ -187,16 +187,16 @@
   gap: 8px;
   padding: 9px 16px;
   border-radius: 10px;
-  background: var(--surface-1);
-  border: 1px solid var(--line);
-  color: var(--ink-1);
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  color: var(--ink);
   font-size: 13px;
   cursor: pointer;
   text-decoration: none;
 }
 
 .prof-btn:hover:not(:disabled) {
-  background: var(--surface-2);
+  background: var(--bg-sunk);
 }
 
 .prof-btn:disabled {
@@ -206,12 +206,12 @@
 
 .prof-btn-primary {
   background: var(--accent);
-  color: var(--accent-on);
+  color: #fff;
   border-color: var(--accent);
 }
 
 .prof-btn-primary:hover:not(:disabled) {
-  background: var(--accent-strong, var(--accent));
+  background: var(--accent-ink);
 }
 
 .prof-saved {
@@ -226,8 +226,8 @@
 
 .prof-error {
   padding: 10px 14px;
-  background: color-mix(in oklab, var(--rose) 10%, var(--surface-1));
-  border: 1px solid color-mix(in oklab, var(--rose) 30%, var(--line));
+  background: color-mix(in oklab, var(--rose) 10%, var(--bg-elev));
+  border: 1px solid color-mix(in oklab, var(--rose) 30%, var(--rule));
   border-radius: 8px;
   color: var(--rose);
   font-size: 13px;
@@ -245,7 +245,7 @@
 }
 
 .prof-modal {
-  background: var(--surface-1);
+  background: var(--bg-elev);
   border-radius: 14px;
   padding: 22px 24px;
   max-width: 440px;
@@ -254,7 +254,7 @@
 }
 
 .prof-modal h3 {
-  font-family: var(--font-display, Fraunces, serif);
+  font-family: var(--serif, Fraunces, serif);
   font-size: 20px;
   font-weight: 500;
   margin: 0 0 14px;

@@ -417,13 +417,13 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
                 className="bz-name-tab"
                 style={{
                   background:
-                    form.default_locale === l ? "var(--accent)" : "var(--surface-1)",
+                    form.default_locale === l ? "var(--accent)" : "var(--bg-elev)",
                   color:
                     form.default_locale === l
-                      ? "var(--accent-on)"
+                      ? "#fff"
                       : "var(--ink-2)",
                   borderColor:
-                    form.default_locale === l ? "var(--accent)" : "var(--line)",
+                    form.default_locale === l ? "var(--accent)" : "var(--rule)",
                   cursor: isOwner ? "pointer" : "not-allowed",
                   opacity: isOwner ? 1 : 0.6,
                 }}
@@ -629,8 +629,8 @@ function LogoSection({
             width: 96,
             height: 96,
             borderRadius: 12,
-            background: "var(--surface-2)",
-            border: "1px dashed var(--line)",
+            background: "var(--bg-sunk)",
+            border: "1px dashed var(--rule)",
             display: "grid",
             placeItems: "center",
             overflow: "hidden",

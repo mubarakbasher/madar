@@ -100,7 +100,7 @@ export function ReportsCenterClient({ locale: _locale }: { locale: string }): JS
                   alignItems: "center",
                   justifyContent: "center",
                   marginBottom: "var(--space-3)",
-                  color: "var(--accent, var(--coral))",
+                  color: "var(--accent)",
                 }}
               >
                 <Icon size={18} strokeWidth={1.5} />

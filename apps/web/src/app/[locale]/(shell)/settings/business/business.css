@@ -21,11 +21,11 @@
 }
 
 .bz-title {
-  font-family: var(--font-display, Fraunces, serif);
+  font-family: var(--serif, Fraunces, serif);
   font-size: 28px;
   font-weight: 500;
   line-height: 1.1;
-  color: var(--ink-1);
+  color: var(--ink);
   margin: 0;
 }
 
@@ -36,18 +36,18 @@
 }
 
 .bz-card {
-  background: var(--surface-1);
-  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
   border-radius: 12px;
   padding: 20px 22px;
 }
 
 .bz-card-title {
-  font-family: var(--font-display, Fraunces, serif);
+  font-family: var(--serif, Fraunces, serif);
   font-size: 18px;
   font-weight: 500;
   margin: 0 0 14px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .bz-field {
@@ -76,11 +76,11 @@
 .bz-input,
 .bz-select {
   padding: 9px 12px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--rule);
   border-radius: 8px;
-  background: var(--surface-1);
+  background: var(--bg-elev);
   font-size: 14px;
-  color: var(--ink-1);
+  color: var(--ink);
   width: 100%;
 }
 
@@ -92,9 +92,9 @@
 
 .bz-readonly {
   padding: 9px 12px;
-  border: 1px dashed var(--line);
+  border: 1px dashed var(--rule);
   border-radius: 8px;
-  background: var(--surface-2);
+  background: var(--bg-sunk);
   font-size: 14px;
   color: var(--ink-2);
 }
@@ -108,8 +108,8 @@
 .bz-name-tab {
   padding: 5px 14px;
   border-radius: 6px;
-  border: 1px solid var(--line);
-  background: var(--surface-1);
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
   color: var(--ink-2);
   font-size: 12px;
   cursor: pointer;
@@ -117,7 +117,7 @@
 
 .bz-name-tab-active {
   background: var(--accent);
-  color: var(--accent-on);
+  color: #fff;
   border-color: var(--accent);
 }
 
@@ -134,7 +134,7 @@
 
 .bz-toggle-label {
   font-size: 14px;
-  color: var(--ink-1);
+  color: var(--ink);
   font-weight: 500;
 }
 
@@ -162,7 +162,7 @@
   position: absolute;
   cursor: pointer;
   inset: 0;
-  background: var(--line);
+  background: var(--rule);
   border-radius: 999px;
   transition: 160ms;
 }
@@ -174,7 +174,7 @@
   width: 16px;
   inset-inline-start: 3px;
   inset-block-start: 3px;
-  background: var(--surface-1);
+  background: var(--bg-elev);
   border-radius: 50%;
   transition: 160ms;
 }
@@ -206,9 +206,9 @@
 }
 
 .bz-meta-value {
-  font-family: var(--font-display, Fraunces, serif);
+  font-family: var(--serif, Fraunces, serif);
   font-size: 18px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .bz-pill {
@@ -221,31 +221,31 @@
 }
 
 .bz-pill-sage {
-  background: color-mix(in oklab, var(--sage, #6e9b7f) 16%, var(--surface-1));
+  background: color-mix(in oklab, var(--sage, #6e9b7f) 16%, var(--bg-elev));
   color: var(--sage, #4d7359);
 }
 
 .bz-pill-amber {
-  background: color-mix(in oklab, var(--amber, #c08a2f) 16%, var(--surface-1));
+  background: color-mix(in oklab, var(--amber, #c08a2f) 16%, var(--bg-elev));
   color: var(--amber, #8a6418);
 }
 
 .bz-pill-rose {
-  background: color-mix(in oklab, var(--rose) 14%, var(--surface-1));
+  background: color-mix(in oklab, var(--rose) 14%, var(--bg-elev));
   color: var(--rose);
 }
 
 .bz-pill-muted {
-  background: var(--surface-2);
+  background: var(--bg-sunk);
   color: var(--ink-3);
 }
 
 .bz-saveBar {
   position: sticky;
   inset-block-end: 0;
-  background: color-mix(in oklab, var(--surface-1) 92%, transparent);
+  background: color-mix(in oklab, var(--bg-elev) 92%, transparent);
   backdrop-filter: blur(8px);
-  border-block-start: 1px solid var(--line);
+  border-block-start: 1px solid var(--rule);
   padding: 12px 22px;
   margin-block-start: 4px;
   border-radius: 12px;
@@ -271,16 +271,16 @@
   gap: 8px;
   padding: 9px 16px;
   border-radius: 10px;
-  background: var(--surface-1);
-  border: 1px solid var(--line);
-  color: var(--ink-1);
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  color: var(--ink);
   font-size: 13px;
   cursor: pointer;
   text-decoration: none;
 }
 
 .bz-btn:hover:not(:disabled) {
-  background: var(--surface-2);
+  background: var(--bg-sunk);
 }
 
 .bz-btn:disabled {
@@ -290,12 +290,12 @@
 
 .bz-btn-primary {
   background: var(--accent);
-  color: var(--accent-on);
+  color: #fff;
   border-color: var(--accent);
 }
 
 .bz-btn-primary:hover:not(:disabled) {
-  background: var(--accent-strong, var(--accent));
+  background: var(--accent-ink);
 }
 
 .bz-field-error {
@@ -305,8 +305,8 @@
 
 .bz-error {
   padding: 10px 14px;
-  background: color-mix(in oklab, var(--rose) 10%, var(--surface-1));
-  border: 1px solid color-mix(in oklab, var(--rose) 30%, var(--line));
+  background: color-mix(in oklab, var(--rose) 10%, var(--bg-elev));
+  border: 1px solid color-mix(in oklab, var(--rose) 30%, var(--rule));
   border-radius: 8px;
   color: var(--rose);
   font-size: 13px;
@@ -320,7 +320,7 @@
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 12px;
-  background: color-mix(in oklab, var(--sage, #6e9b7f) 14%, var(--surface-1));
+  background: color-mix(in oklab, var(--sage, #6e9b7f) 14%, var(--bg-elev));
   color: var(--sage, #4d7359);
 }
 

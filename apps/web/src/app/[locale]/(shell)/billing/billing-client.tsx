@@ -472,7 +472,7 @@ function HistoryTab({ invoices }: { invoices: ApiSubscriptionInvoice[] }) {
                 alignItems: "center",
                 gap: 14,
                 padding: "var(--space-3) var(--space-4)",
-                background: "var(--surface)",
+                background: "var(--bg-elev)",
                 border: "1px solid var(--rule)",
                 borderRadius: "var(--radius)",
               }}
