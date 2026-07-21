@@ -1,5 +1,17 @@
 import { z } from "zod";
 
+const intParam = (def: number, min: number, max: number) =>
+  z
+    .preprocess((v) => {
+      if (typeof v === "number") return v;
+      if (typeof v === "string" && v.trim().length > 0) {
+        const n = Number(v);
+        if (Number.isFinite(n)) return n;
+      }
+      return def;
+    }, z.number().int().min(min).max(max))
+    .default(def);
+
 export const ListProductsQuerySchema = z.object({
   search: z.string().max(120).optional(),
   category_id: z.string().uuid().optional(),
@@ -12,7 +24,13 @@ export const ListProductsQuerySchema = z.object({
       return v;
     }, z.boolean())
     .default(false),
-  limit: z.coerce.number().int().min(1).max(500).default(500),
+  // POS loads its offline catalog snapshot through this endpoint with no
+  // args, so the default stays "first 500" — inventory passes page + limit=50.
+  page: intParam(1, 1, 10_000),
+  limit: intParam(500, 1, 500),
+  sort: z.enum(["sku", "name", "price", "cost", "stock", "vel"]).default("sku"),
+  dir: z.enum(["asc", "desc"]).default("asc"),
+  name_locale: z.enum(["en", "ar"]).default("en"),
 });
 
 export type ListProductsQuery = z.infer<typeof ListProductsQuerySchema>;

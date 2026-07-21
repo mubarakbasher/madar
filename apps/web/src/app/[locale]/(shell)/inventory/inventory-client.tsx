@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import "./inventory.css";
 import type { Product } from "@/lib/mock-data/products";
 import type { Category } from "@/lib/mock-data/categories";
@@ -9,6 +9,8 @@ import { categoriesListRequest, productsListRequest } from "@/lib/api/catalog";
 import { adaptCategory, adaptProduct } from "@/lib/api/catalog-adapter";
 import { branchScopeParam, useBranchScopeStore } from "@/lib/branch-scope/store";
 import { useAuthStore } from "@/lib/auth/store";
+import { useDebouncedValue } from "@/lib/hooks/use-debounced-value";
+import { currencyMinorUnits } from "@/lib/currency";
 import { InventoryHeader } from "./_components/InventoryHeader";
 import { AiReorderNudge } from "./_components/AiReorderNudge";
 import { FilterBar } from "./_components/FilterBar";
@@ -26,11 +28,13 @@ type BulkModal = null | "editPrice" | "adjustStock" | "printLabels";
 
 type StockFilter = "all" | "low";
 
+const PAGE_SIZE = 50;
+
 /**
- * Data-fetching boundary for the inventory page. The view logic
- * (filters/sort/pagination/bulk-edit UI) lives in `InventoryView` below and
- * stays identical to the pre-1.8 mock-data world — we only change where the
- * `Product[]` + `Category[]` come from.
+ * Inventory page. Filtering, sorting, and pagination are server-side
+ * (`GET /v1/products` with page/limit/sort) — the client holds only the
+ * control state and the current page of adapted rows, so large catalogs
+ * never ship to the browser in full.
  */
 export function InventoryClient({ locale }: { locale: "en" | "ar" }) {
   const tenantCurrency = useAuthStore((s) => s.tenant?.default_currency_code ?? "EGP");
@@ -42,16 +46,73 @@ export function InventoryClient({ locale }: { locale: "en" | "ar" }) {
   }, [hydrated, hydrate]);
   const branchParam = branchScopeParam(selectedBranchId);
 
-  const productsQ = useQuery({
-    queryKey: ["catalog", "products", { branch_id: branchParam ?? "all" }],
-    queryFn: () => productsListRequest({ branch_id: branchParam }),
-    staleTime: 30_000,
-  });
+  const [cat, setCat] = useState<string>("all");
+  const [stockFilter, setStockFilter] = useState<StockFilter>("all");
+  const [sort, setSort] = useState<SortState>({ key: "name", dir: "asc" });
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [selected, setSelected] = useState<string[]>([]);
+  const debouncedSearch = useDebouncedValue(search, 300);
+
+  // Any filter/sort/branch change restarts from page 1 and drops the
+  // selection (selected ids may no longer be on the visible page).
+  useEffect(() => {
+    setPage(1);
+    setSelected([]);
+  }, [debouncedSearch, cat, stockFilter, branchParam, sort.key, sort.dir]);
+
   const categoriesQ = useQuery({
     queryKey: ["catalog", "categories"],
     queryFn: () => categoriesListRequest(),
     staleTime: 60_000,
   });
+
+  // FilterBar chips carry category *codes* (adaptCategory maps id → code);
+  // the API filters by uuid, so resolve through the raw categories response.
+  const categoryIdByCode = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const c of categoriesQ.data?.items ?? []) m.set(c.code, c.id);
+    return m;
+  }, [categoriesQ.data]);
+  const categoryId = cat === "all" ? undefined : categoryIdByCode.get(cat);
+
+  const productsQ = useQuery({
+    queryKey: [
+      "catalog",
+      "products",
+      {
+        branch_id: branchParam ?? "all",
+        page,
+        search: debouncedSearch,
+        cat,
+        stockFilter,
+        sort: sort.key,
+        dir: sort.dir,
+        locale,
+      },
+    ],
+    queryFn: () =>
+      productsListRequest({
+        branch_id: branchParam,
+        page,
+        limit: PAGE_SIZE,
+        search: debouncedSearch || undefined,
+        category_id: categoryId,
+        only_low_stock: stockFilter === "low",
+        sort: sort.key,
+        dir: sort.dir,
+        name_locale: locale,
+      }),
+    staleTime: 30_000,
+    placeholderData: keepPreviousData,
+  });
+
+  // If the dataset shrinks under us (deletes on another device), an
+  // out-of-range page returns zero rows — snap back to the first page.
+  const pageEmpty = (productsQ.data?.items.length ?? 0) === 0;
+  useEffect(() => {
+    if (pageEmpty && page > 1 && !productsQ.isFetching) setPage(1);
+  }, [pageEmpty, page, productsQ.isFetching]);
 
   if (productsQ.isPending || categoriesQ.isPending) return <InventorySkeleton />;
   if (productsQ.isError || categoriesQ.isError) {
@@ -65,75 +126,97 @@ export function InventoryClient({ locale }: { locale: "en" | "ar" }) {
     );
   }
 
-  const products = productsQ.data.items.map((p) => adaptProduct(p, locale, tenantCurrency));
+  const data = productsQ.data;
+  const products = data.items.map((p) => adaptProduct(p, locale, tenantCurrency));
   const categories = categoriesQ.data.items.map((c) => adaptCategory(c, locale));
 
-  if (products.length === 0) return <InventoryEmpty />;
+  const noFilters = !debouncedSearch && cat === "all" && stockFilter === "all";
+  if (noFilters && data.total === 0) return <InventoryEmpty />;
+
+  const onHandValue =
+    Number(BigInt(data.summary.on_hand_value_cents)) /
+    10 ** currencyMinorUnits(tenantCurrency);
 
   return (
     <InventoryView
-      products={products}
+      rows={products}
       categories={categories}
       locale={locale}
       branchId={branchParam ?? null}
+      skuCount={data.summary.sku_count}
+      onHandValue={onHandValue}
+      lowCount={data.summary.low_count}
+      total={data.total}
+      page={page}
+      totalPages={Math.max(1, Math.ceil(data.total / data.limit))}
+      onPage={setPage}
+      cat={cat}
+      setCat={setCat}
+      stockFilter={stockFilter}
+      setStockFilter={setStockFilter}
+      search={search}
+      setSearch={setSearch}
+      sort={sort}
+      setSort={setSort}
+      selected={selected}
+      setSelected={setSelected}
+      isRefreshing={productsQ.isFetching && !productsQ.isPending}
     />
   );
 }
 
 function InventoryView({
-  products,
+  rows,
   categories,
   locale,
   branchId,
+  skuCount,
+  onHandValue,
+  lowCount,
+  total,
+  page,
+  totalPages,
+  onPage,
+  cat,
+  setCat,
+  stockFilter,
+  setStockFilter,
+  search,
+  setSearch,
+  sort,
+  setSort,
+  selected,
+  setSelected,
+  isRefreshing,
 }: {
-  products: Product[];
+  rows: Product[];
   categories: Category[];
   locale: string;
   branchId: string | null;
+  skuCount: number;
+  onHandValue: number;
+  lowCount: number;
+  total: number;
+  page: number;
+  totalPages: number;
+  onPage: (p: number) => void;
+  cat: string;
+  setCat: (c: string) => void;
+  stockFilter: StockFilter;
+  setStockFilter: (s: StockFilter) => void;
+  search: string;
+  setSearch: (s: string) => void;
+  sort: SortState;
+  setSort: (updater: (current: SortState) => SortState) => void;
+  selected: string[];
+  setSelected: (ids: string[]) => void;
+  isRefreshing: boolean;
 }) {
-  const [cat, setCat] = useState<string>("all");
-  const [stockFilter, setStockFilter] = useState<StockFilter>("all");
-  const [sort, setSort] = useState<SortState>({ key: "name", dir: "asc" });
-  const [selected, setSelected] = useState<string[]>([]);
-  const [search, setSearch] = useState("");
   const [openModal, setOpenModal] = useState<BulkModal>(null);
   const qc = useQueryClient();
   const tenant = useAuthStore((s) => s.tenant);
   const role = useAuthStore((s) => s.user?.role ?? "");
   const canReorder = role === "owner" || role === "manager";
-
-  const rows = useMemo(() => {
-    const filtered = products.filter((p) => {
-      if (cat !== "all" && p.cat !== cat) return false;
-      if (stockFilter === "low" && p.stock >= p.low) return false;
-      if (search) {
-        const q = search.toLowerCase();
-        if (!p.name.toLowerCase().includes(q) && !p.sku.toLowerCase().includes(q)) {
-          return false;
-        }
-      }
-      return true;
-    });
-    return [...filtered].sort((a, b) => {
-      const av = a[sort.key];
-      const bv = b[sort.key];
-      if (typeof av === "number" && typeof bv === "number") {
-        return sort.dir === "asc" ? av - bv : bv - av;
-      }
-      const asv = String(av);
-      const bsv = String(bv);
-      return sort.dir === "asc" ? asv.localeCompare(bsv) : bsv.localeCompare(asv);
-    });
-  }, [products, cat, stockFilter, search, sort]);
-
-  const totalValue = useMemo(
-    () => products.reduce((s, p) => s + p.cost * p.stock, 0),
-    [products],
-  );
-  const lowCount = useMemo(
-    () => products.filter((p) => p.stock < p.low).length,
-    [products],
-  );
 
   const sortBy = (key: SortKey) => {
     setSort((current) =>
@@ -153,10 +236,10 @@ function InventoryView({
   };
 
   return (
-    <div className="inv">
+    <div className="inv" data-refreshing={isRefreshing || undefined}>
       <InventoryHeader
-        skuCount={products.length}
-        onHandValue={totalValue}
+        skuCount={skuCount}
+        onHandValue={onHandValue}
         lowCount={lowCount}
         locale={locale}
         branchId={branchId}
@@ -200,7 +283,13 @@ function InventoryView({
         locale={locale}
       />
 
-      <Pagination shown={rows.length} total={products.length} />
+      <Pagination
+        shown={rows.length}
+        total={total}
+        page={page}
+        totalPages={totalPages}
+        onPage={onPage}
+      />
 
       {openModal === "editPrice" && (
         <BulkEditPriceModal

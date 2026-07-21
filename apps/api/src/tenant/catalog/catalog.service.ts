@@ -27,6 +27,13 @@ import type { UpdateCategoryBody } from "./dto/update-category.dto";
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 const ALLOWED_IMAGE_MIMES: SupportedMime[] = ["image/jpeg", "image/png", "image/webp"];
 
+interface InventorySummary {
+  sku_count: number;
+  /** SUM(cost_cents × qty_on_hand) over active products, stringified bigint. */
+  on_hand_value_cents: string;
+  low_count: number;
+}
+
 interface ApiProduct {
   id: string;
   sku: string;
@@ -159,52 +166,108 @@ export class CatalogService {
   async listProducts(
     tenantId: string,
     q: ListProductsQuery,
-  ): Promise<{ items: ApiProduct[]; total: number; limit: number }> {
+  ): Promise<{
+    items: ApiProduct[];
+    total: number;
+    page: number;
+    limit: number;
+    summary: InventorySummary;
+  }> {
     const client = tenantScoped(tenantId) as unknown as {
       product: { findMany: (args: unknown) => Promise<RawProduct[]> };
       category: { findMany: (args: unknown) => Promise<Array<{ id: string; code: string }>> };
       $queryRawUnsafe: <T = unknown>(q: string, ...params: unknown[]) => Promise<T>;
     };
 
-    const where: Record<string, unknown> = {
-      deleted_at: null,
-      is_active: true,
-    };
-    if (q.category_id) where.category_id = q.category_id;
-
-    // Search expansion: SKU + name_i18n->>'en' + name_i18n->>'ar'. Prisma's
-    // JSON `string_contains` is case-sensitive, so we prefilter to matching
-    // IDs with a raw ILIKE query, then let findMany pull the typed rows.
+    // One windowed id-select does filtering (search/category/low-stock),
+    // sorting, and pagination in SQL, with COUNT(*) OVER() as the true total.
+    // The stock/velocity CTEs exist for the low-stock filter and the
+    // stock/vel sort keys; the page's rows are then enriched below as before.
+    // Search stays raw ILIKE over SKU + name_i18n because Prisma's JSON
+    // `string_contains` is case-sensitive.
+    const branchScoped = Boolean(q.branch_id);
+    const params: unknown[] = [];
+    const conds: string[] = ["p.deleted_at IS NULL", "p.is_active = TRUE"];
+    if (q.category_id) {
+      params.push(q.category_id);
+      conds.push(`p.category_id = $${params.length}::uuid`);
+    }
     if (q.search) {
-      const pattern = `%${q.search.replace(/[\\%_]/g, "\\$&")}%`;
-      const matched = await client.$queryRawUnsafe<Array<{ id: string }>>(
-        `SELECT id FROM products
-         WHERE deleted_at IS NULL
-           AND is_active = TRUE
-           AND (
-             sku ILIKE $1
-             OR name_i18n->>'en' ILIKE $1
-             OR name_i18n->>'ar' ILIKE $1
-           )
-         LIMIT $2`,
-        pattern,
-        q.limit,
+      params.push(`%${q.search.replace(/[\\%_]/g, "\\$&")}%`);
+      const i = params.length;
+      conds.push(
+        `(p.sku ILIKE $${i} OR p.name_i18n->>'en' ILIKE $${i} OR p.name_i18n->>'ar' ILIKE $${i})`,
       );
-      if (matched.length === 0) {
-        return { items: [], total: 0, limit: q.limit };
-      }
-      where.id = { in: matched.map((r) => r.id) };
+    }
+    let windowStockCte: string;
+    if (branchScoped) {
+      params.push(q.branch_id);
+      windowStockCte = `SELECT product_id,
+                COALESCE(qty_on_hand, 0)::bigint AS qty,
+                reorder_point AS reorder
+         FROM branch_stock
+         WHERE branch_id = $${params.length}::uuid
+           AND deleted_at IS NULL`;
+    } else {
+      windowStockCte = `SELECT product_id,
+                COALESCE(SUM(qty_on_hand), 0)::bigint AS qty,
+                MIN(reorder_point) FILTER (WHERE reorder_point IS NOT NULL) AS reorder
+         FROM branch_stock
+         GROUP BY product_id`;
+    }
+    if (q.only_low_stock) {
+      conds.push("s.reorder IS NOT NULL AND COALESCE(s.qty, 0) < s.reorder");
+    }
+    // Sort expressions are mapped from the zod enum — never interpolated from
+    // raw user input.
+    const nameKey = q.name_locale === "ar" ? "ar" : "en";
+    const sortExpr: Record<ListProductsQuery["sort"], string> = {
+      sku: "p.sku",
+      name: `p.name_i18n->>'${nameKey}'`,
+      price: "p.price_cents",
+      cost: "p.cost_cents",
+      stock: "COALESCE(s.qty, 0)",
+      vel: "COALESCE(v.qty, 0)",
+    };
+    const sortDir = q.dir === "desc" ? "DESC" : "ASC";
+    params.push(q.limit);
+    const pLimit = params.length;
+    params.push((q.page - 1) * q.limit);
+    const pOffset = params.length;
+
+    const pageRows = await client.$queryRawUnsafe<
+      Array<{ id: string; full_count: bigint | number }>
+    >(
+      `WITH stock AS (${windowStockCte}),
+            velocity AS (
+              SELECT product_id, COALESCE(SUM(ABS(qty_delta)), 0)::bigint AS qty
+              FROM stock_movements
+              WHERE kind = 'sale'
+                AND occurred_at > now() - INTERVAL '7 days'
+              GROUP BY product_id
+            )
+       SELECT p.id, COUNT(*) OVER()::bigint AS full_count
+       FROM products p
+       LEFT JOIN stock s ON s.product_id = p.id
+       LEFT JOIN velocity v ON v.product_id = p.id
+       WHERE ${conds.join(" AND ")}
+       ORDER BY ${sortExpr[q.sort]} ${sortDir}, p.sku ASC
+       LIMIT $${pLimit} OFFSET $${pOffset}`,
+      ...params,
+    );
+
+    const total = pageRows.length > 0 ? Number(pageRows[0].full_count) : 0;
+    const summary = await this.inventorySummary(client, q.branch_id);
+
+    if (pageRows.length === 0) {
+      return { items: [], total, page: q.page, limit: q.limit, summary };
     }
 
-    const products = await client.product.findMany({
-      where,
-      orderBy: [{ sku: "asc" }],
-      take: q.limit,
-    });
-
-    if (products.length === 0) {
-      return { items: [], total: 0, limit: q.limit };
-    }
+    const pageIds = pageRows.map((r) => r.id);
+    const orderIndex = new Map(pageIds.map((id, i) => [id, i]));
+    const products = (
+      await client.product.findMany({ where: { id: { in: pageIds } } })
+    ).sort((a, b) => (orderIndex.get(a.id) ?? 0) - (orderIndex.get(b.id) ?? 0));
 
     const categoryIds = Array.from(
       new Set(products.map((p) => p.category_id).filter((id): id is string => id !== null)),
@@ -222,7 +285,6 @@ export class CatalogService {
     const productIds = products.map((p) => p.id);
     // When q.branch_id is set, scope stock aggregation to a single branch (no SUM, no MIN);
     // otherwise return chain-wide aggregates for the topbar's "All branches" selection.
-    const branchScoped = Boolean(q.branch_id);
     const stockSql = branchScoped
       ? `SELECT product_id,
                 COALESCE(qty_on_hand, 0)::bigint AS qty,
@@ -276,7 +338,7 @@ export class CatalogService {
       products.map((p) => ({ id: p.id, tax_class_id: p.tax_class_id })),
     );
 
-    let items: ApiProduct[] = products.map((p) => {
+    const items: ApiProduct[] = products.map((p) => {
       const stock = stockByProduct.get(p.id);
       return {
         id: p.id,
@@ -299,13 +361,52 @@ export class CatalogService {
       };
     });
 
-    if (q.only_low_stock) {
-      items = items.filter(
-        (p) => p.reorder_point !== null && p.qty_on_hand < p.reorder_point,
-      );
-    }
+    return { items, total, page: q.page, limit: q.limit, summary };
+  }
 
-    return { items, total: items.length, limit: q.limit };
+  /** Branch-scoped (or chain-wide) inventory KPIs, independent of the list's
+   *  search/category/low-stock filters — powers the inventory page header. */
+  private async inventorySummary(
+    client: {
+      $queryRawUnsafe: <T = unknown>(q: string, ...params: unknown[]) => Promise<T>;
+    },
+    branchId?: string,
+  ): Promise<InventorySummary> {
+    const stockCte = branchId
+      ? `SELECT product_id,
+                COALESCE(qty_on_hand, 0)::bigint AS qty,
+                reorder_point AS reorder
+         FROM branch_stock
+         WHERE branch_id = $1::uuid
+           AND deleted_at IS NULL`
+      : `SELECT product_id,
+                COALESCE(SUM(qty_on_hand), 0)::bigint AS qty,
+                MIN(reorder_point) FILTER (WHERE reorder_point IS NOT NULL) AS reorder
+         FROM branch_stock
+         GROUP BY product_id`;
+    const rows = await client.$queryRawUnsafe<
+      Array<{
+        sku_count: bigint | number;
+        on_hand_value_cents: bigint | number;
+        low_count: bigint | number;
+      }>
+    >(
+      `WITH stock AS (${stockCte})
+       SELECT COUNT(*)::bigint AS sku_count,
+              COALESCE(SUM(p.cost_cents * COALESCE(s.qty, 0)), 0)::bigint AS on_hand_value_cents,
+              COUNT(*) FILTER (WHERE s.reorder IS NOT NULL AND COALESCE(s.qty, 0) < s.reorder)::bigint AS low_count
+       FROM products p
+       LEFT JOIN stock s ON s.product_id = p.id
+       WHERE p.deleted_at IS NULL
+         AND p.is_active = TRUE`,
+      ...(branchId ? [branchId] : []),
+    );
+    const r = rows[0];
+    return {
+      sku_count: Number(r?.sku_count ?? 0),
+      on_hand_value_cents: String(r?.on_hand_value_cents ?? 0),
+      low_count: Number(r?.low_count ?? 0),
+    };
   }
 
   async getProduct(tenantId: string, productId: string): Promise<ApiProduct> {
