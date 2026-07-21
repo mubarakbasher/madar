@@ -1,8 +1,10 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { setRequestLocale, getTranslations } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, setRequestLocale, getTranslations } from "next-intl/server";
 import { MadarMark } from "@madar/ui";
 import { LocaleToggle } from "./_components/LocaleToggle";
+import { pickMessages } from "../../../lib/i18n/pick-messages";
 
 export default async function AuthLayout({
   children,
@@ -20,8 +22,10 @@ export default async function AuthLayout({
   }
   const t = await getTranslations("auth");
   const tBrand = await getTranslations("brand");
+  const messages = pickMessages(await getMessages(), ["auth", "brand", "common"]);
 
   return (
+    <NextIntlClientProvider messages={messages}>
     <div
       className="min-h-dvh"
       style={{ background: "var(--bg)", color: "var(--ink)" }}
@@ -107,5 +111,6 @@ export default async function AuthLayout({
         </main>
       </div>
     </div>
+    </NextIntlClientProvider>
   );
 }

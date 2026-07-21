@@ -5,6 +5,7 @@ import { fontVariables } from "@madar/ui";
 import { routing, type Locale } from "../../../i18n/routing";
 import { QueryProvider } from "../../lib/query/provider";
 import { AuthBootstrap } from "../../lib/auth/bootstrap";
+import { pickMessages } from "../../lib/i18n/pick-messages";
 import { ThemeWatcher } from "../../lib/theme/theme";
 
 /* Runs before first paint: resolves stored preference (madar_theme) or the
@@ -40,7 +41,10 @@ export default async function LocaleLayout({
     >
       <body>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
-        <NextIntlClientProvider messages={messages}>
+        {/* Root provider carries only what root-level client components
+            (error boundary) need; each route group layers its own provider
+            with its namespaces — (shell) passes the full dictionary. */}
+        <NextIntlClientProvider messages={pickMessages(messages, ["common", "brand"])}>
           <QueryProvider>
             <ThemeWatcher />
             <AuthBootstrap>{children}</AuthBootstrap>

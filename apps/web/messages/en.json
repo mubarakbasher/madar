@@ -3409,6 +3409,12 @@
         "amount_zero": "The amount can't be zero.",
         "generic": "Something went wrong. Please try again."
       }
+    },
+    "pagination": {
+      "summary": "{shown} of {total}",
+      "page": "Page {page} of {total}",
+      "prev": "Previous",
+      "next": "Next"
     }
   },
   "refunds": {

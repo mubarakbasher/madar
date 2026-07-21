@@ -12,8 +12,19 @@ import {
 } from "@/lib/api/admin-dashboard";
 import { KpiCard } from "./_components/KpiCard";
 import { DashboardSkeleton } from "./_components/DashboardSkeleton";
-import { TenantGrowthChart } from "./_components/TenantGrowthChart";
-import { MrrTrendChart } from "./_components/MrrTrendChart";
+import dynamic from "next/dynamic";
+
+// recharts (+d3) is ~90 KB gz — keep it out of the admin landing bundle and
+// stream the charts in after the KPIs paint.
+const chartFallback = <div className="admin-skel" style={{ height: 240 }} />;
+const TenantGrowthChart = dynamic(
+  () => import("./_components/TenantGrowthChart").then((m) => m.TenantGrowthChart),
+  { ssr: false, loading: () => chartFallback },
+);
+const MrrTrendChart = dynamic(
+  () => import("./_components/MrrTrendChart").then((m) => m.MrrTrendChart),
+  { ssr: false, loading: () => chartFallback },
+);
 import { t } from "@/lib/i18n";
 
 const ACTIVITY_DOT_COLOR: Record<ActivityItem["kind"], string> = {

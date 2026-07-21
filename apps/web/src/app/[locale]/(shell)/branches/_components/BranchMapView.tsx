@@ -1,6 +1,5 @@
 "use client";
 
-import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { ExternalLink, MapPin, Package, TrendingUp } from "lucide-react";
@@ -46,7 +45,13 @@ export function BranchMapView({
     let markers: Marker[] = [];
 
     void (async () => {
-      const maplibre = await import("maplibre-gl");
+      const [maplibre] = await Promise.all([
+        import("maplibre-gl"),
+        // Stylesheet rides the same lazy chunk — branches pages that never
+        // mount the map never load maplibre CSS either.
+        // @ts-expect-error side-effect CSS import has no type declarations
+        import("maplibre-gl/dist/maplibre-gl.css"),
+      ]);
       if (cancelled || !mapEl.current) return;
 
       const center: LngLatLike = geocoded.length

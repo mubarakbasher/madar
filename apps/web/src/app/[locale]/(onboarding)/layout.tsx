@@ -1,6 +1,8 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { MadarMark } from "@madar/ui";
 import { requireAuth } from "../../../lib/auth/server";
+import { pickMessages } from "../../../lib/i18n/pick-messages";
 
 /**
  * Minimal layout for the post-signup onboarding step. requireAuth gate +
@@ -18,8 +20,10 @@ export default async function OnboardingLayout({
   setRequestLocale(locale);
   requireAuth(locale);
   const tBrand = await getTranslations("brand");
+  const messages = pickMessages(await getMessages(), ["onboarding", "brand", "common"]);
 
   return (
+    <NextIntlClientProvider messages={messages}>
     <div
       className="min-h-dvh"
       style={{ background: "var(--bg)", color: "var(--ink)" }}
@@ -41,5 +45,6 @@ export default async function OnboardingLayout({
         {children}
       </main>
     </div>
+    </NextIntlClientProvider>
   );
 }

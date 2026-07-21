@@ -22,12 +22,17 @@ export const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
 });
 
-// Arabic — body + headings when lang="ar"
+// Arabic — body + headings when lang="ar". preload:false keeps the Arabic
+// woff2 files off EN sessions entirely: the @font-face is only *used* when
+// html[lang="ar"] applies --font-arabic, and browsers fetch unused faces
+// never. AR sessions fetch on first paint with display:swap. Weight 300 was
+// unused app-wide and is dropped.
 export const plexArabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic", "latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
   variable: "--font-plex-arabic",
+  preload: false,
 });
 
 export const fontVariables = [

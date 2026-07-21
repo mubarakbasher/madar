@@ -25,9 +25,11 @@
     "next-env.d.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "..\\..\\..\\..\\.madar-cache\\admin\\.next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "C:/Users/mubar/.madar-cache/**"
   ]
 }

@@ -3409,6 +3409,12 @@
         "amount_zero": "المبلغ لا يمكن أن يكون صفراً.",
         "generic": "حدث خطأ. يرجى المحاولة مرة أخرى."
       }
+    },
+    "pagination": {
+      "summary": "{shown} من {total}",
+      "page": "صفحة {page} من {total}",
+      "prev": "السابق",
+      "next": "التالي"
     }
   },
   "refunds": {
