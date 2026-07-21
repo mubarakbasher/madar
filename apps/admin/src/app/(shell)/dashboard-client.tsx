@@ -1,5 +1,7 @@
 "use client";
 
+import { formatMoney } from "@madar/ui";
+
 import { useQuery } from "@tanstack/react-query";
 import { useAdminAuthStore } from "@/lib/auth/store";
 import {
@@ -21,12 +23,7 @@ const ACTIVITY_DOT_COLOR: Record<ActivityItem["kind"], string> = {
 };
 
 function formatCents(cents: string, currency: string): string {
-  const major = Number(BigInt(cents)) / 100;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency || "USD",
-    maximumFractionDigits: 0,
-  }).format(major);
+  return formatMoney(cents, currency || "USD", "en-US", { min: 0, max: 0 });
 }
 
 function relativeTime(iso: string): string {

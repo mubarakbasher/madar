@@ -1,5 +1,7 @@
 "use client";
 
+import { majorToMinor, minorToMajor } from "@madar/ui";
+
 import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -63,7 +65,7 @@ function planToForm(p: PlanResponse): FormValues {
     code: p.code,
     name_en: p.name_i18n.en,
     name_ar: p.name_i18n.ar,
-    monthly_price_major: Number(BigInt(p.monthly_price_cents)) / 100,
+    monthly_price_major: minorToMajor(p.monthly_price_cents, p.currency_code),
     currency_code: (CURRENCIES as readonly string[]).includes(p.currency_code)
       ? (p.currency_code as (typeof CURRENCIES)[number])
       : "USD",
@@ -104,7 +106,7 @@ export function PlanEditorClient({ id }: { id: string }) {
       const body = {
         name_en: values.name_en,
         name_ar: values.name_ar,
-        monthly_price_cents: Math.round(values.monthly_price_major * 100),
+        monthly_price_cents: majorToMinor(values.monthly_price_major, values.currency_code),
         currency_code: values.currency_code,
         limits: {
           txns: values.limit_txns,

@@ -1,5 +1,7 @@
 "use client";
 
+import { formatMoney } from "@madar/ui";
+
 import { useState } from "react";
 import Link from "next/link";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -13,12 +15,7 @@ import { useAdminAuthStore } from "@/lib/auth/store";
 import { t } from "@/lib/i18n";
 
 function formatCents(cents: string, currency: string): string {
-  const major = Number(BigInt(cents)) / 100;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency || "USD",
-    maximumFractionDigits: major % 1 === 0 ? 0 : 2,
-  }).format(major);
+  return formatMoney(cents, currency || "USD", "en-US", { min: 0 });
 }
 
 function formatLimit(n: number): string {
