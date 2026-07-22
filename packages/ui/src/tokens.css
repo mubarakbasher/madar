@@ -128,6 +128,9 @@
   --accent-soft: #DEE7EB;
   --accent-ink: #25404C;
 }
+/* Compound selector — data-theme and .theme-admin sit on the same <html>
+   element, so a descendant combinator here would never match. */
+[data-theme="dark"].theme-admin,
 [data-theme="dark"] .theme-admin {
   --accent: #6B8A99;
   --accent-soft: #1E2E36;
