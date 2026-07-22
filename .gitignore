@@ -52,3 +52,6 @@ next-env.d.ts
 apps/api/var/
 
 apps/api/test/var/
+
+# Machine-local compose overrides (port remaps etc.)
+docker-compose.override.yml
