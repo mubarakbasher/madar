@@ -29,12 +29,15 @@ interface FetchOptions extends Omit<RequestInit, "body" | "headers"> {
   noRetryOn401?: boolean;
 }
 
-// Singleton mutex — concurrent 401s share one /admin/auth/refresh call.
-// Module-scoped to apps/admin only, so a tenant 401 cannot block this one
-// and vice versa.
+// Singleton mutex — ALL refresh attempts (401 retries, the boot-time gate
+// below, and AdminAuthBootstrap) share one /admin/auth/refresh call. Two
+// parallel refreshes with the same cookie would trip the API's rotation
+// replay detection and revoke the whole token family, killing the session
+// on every hard reload. Module-scoped to apps/admin only, so a tenant 401
+// cannot block this one and vice versa.
 let inflightRefresh: Promise<boolean> | null = null;
 
-async function tryRefresh(): Promise<boolean> {
+export async function refreshAdminSession(): Promise<boolean> {
   if (inflightRefresh) return inflightRefresh;
   inflightRefresh = (async () => {
     try {
@@ -70,6 +73,23 @@ export async function adminApiFetch<T>(path: string, opts: FetchOptions = {}): P
     finalHeaders["Content-Type"] = "application/json";
   }
 
+  // Boot-time gate: on a hard reload the page's queries mount before the
+  // session is restored. Instead of firing tokenless requests that 401 and
+  // then retry, wait for the (single-flight) cookie exchange first. After
+  // the first attempt resolves, `bootstrapped` is true and this never runs
+  // again.
+  {
+    const state = useAdminAuthStore.getState();
+    if (
+      !state.accessToken &&
+      !state.bootstrapped &&
+      !noRetryOn401 &&
+      path !== "/v1/admin/auth/refresh"
+    ) {
+      await refreshAdminSession();
+    }
+  }
+
   const token = useAdminAuthStore.getState().accessToken;
   if (token && !finalHeaders.Authorization) {
     finalHeaders.Authorization = `Bearer ${token}`;
@@ -91,7 +111,7 @@ export async function adminApiFetch<T>(path: string, opts: FetchOptions = {}): P
 
   let res = await doFetch();
   if (res.status === 401 && !noRetryOn401 && path !== "/v1/admin/auth/refresh") {
-    const refreshed = await tryRefresh();
+    const refreshed = await refreshAdminSession();
     if (refreshed) {
       const next = useAdminAuthStore.getState().accessToken;
       if (next) finalHeaders.Authorization = `Bearer ${next}`;
