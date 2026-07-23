@@ -7,9 +7,13 @@ import { useAuthStore } from "./store";
 /**
  * Sibling to useRedirectOnAuthCleared: once auth bootstrap has settled and the
  * user has a session, check whether their tenant has picked a plan. If not,
- * push them to /[locale]/onboarding/select-plan. Skips the redirect when the
- * user is already on an onboarding route (would loop) or when no tenant is
- * loaded (the auth-cleared hook handles that path).
+ * push them to /[locale]/select-plan. Skips the redirect when the user is
+ * already on the picker (would loop) or when no tenant is loaded (the
+ * auth-cleared hook handles that path).
+ *
+ * NOTE: the picker lives in the `(onboarding)` route GROUP — parentheses
+ * never appear in URLs, so the route is `/select-plan`, not
+ * `/onboarding/select-plan`. Getting this wrong 404s every new signup.
  */
 export function useRedirectOnNoPlan(locale: string): void {
   const router = useRouter();
@@ -25,8 +29,8 @@ export function useRedirectOnNoPlan(locale: string): void {
 
     const prefix = `/${locale}/`;
     const sub = path.startsWith(prefix) ? path.slice(prefix.length) : path;
-    if (sub.startsWith("onboarding")) return;
+    if (sub.startsWith("select-plan")) return;
 
-    router.replace(`/${locale}/onboarding/select-plan`);
+    router.replace(`/${locale}/select-plan`);
   }, [bootstrapped, tenant, path, locale, router]);
 }

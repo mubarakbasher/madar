@@ -77,7 +77,9 @@ export default function SignupPage() {
         user: session.user,
         tenant: session.tenant,
       });
-      router.replace("/", { locale });
+      // Straight to the plan picker — landing on "/" first just flashes the
+      // shell before useRedirectOnNoPlan bounces here anyway.
+      router.replace("/select-plan", { locale });
     },
   });
 

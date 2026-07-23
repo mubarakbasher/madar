@@ -143,7 +143,7 @@ function PlanTab({
   locale: "en" | "ar";
 }) {
   const t = useTranslations("billing");
-  // The (shell) layout redirects no-plan tenants to /onboarding/select-plan,
+  // The (shell) layout redirects no-plan tenants to /select-plan,
   // so by the time PlanTab renders, sub.plan is guaranteed to be set. The
   // null check is a TypeScript narrowing — render nothing during the brief
   // flash before the redirect fires, rather than crashing.
