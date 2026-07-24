@@ -24,7 +24,7 @@ Build phase by phase per `tasks.md`. Each numbered item ends with tests + commit
 | Layer | Choice |
 |---|---|
 | Monorepo | Turborepo + pnpm workspaces |
-| Frontend (both apps) | Next.js 14 App Router + TS + Tailwind + shadcn/ui (restyled) |
+| Frontend (both apps) | Next.js 14 App Router + TS + Tailwind; bespoke token-driven components (no shadcn — ADR 0006) |
 | State | TanStack Query + Zustand |
 | Backend API | NestJS + TS (one API, two auth realms) |
 | Database | PostgreSQL 16 with RLS |
@@ -389,6 +389,7 @@ When sources disagree: **PRD wins on *what*, this file wins on *how*, design pro
 **Decisions**
 - `docs/0001-modular-monolith.md` (adopted)
 - `docs/0002-bank-transfer-payments.md` (adopted)
+- `docs/0006-bespoke-css-over-shadcn.md` (adopted)
 - New ADRs: `docs/NNNN-<title>.md`, immutable.
 
 **Index**

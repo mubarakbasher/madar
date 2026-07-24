@@ -29,9 +29,9 @@ export function KPICard({
         {hasDelta ? (
           <span className={`delta ${up ? "up" : "dn"}`}>
             {up ? (
-              <ArrowUp size={11} strokeWidth={1.75} />
+              <ArrowUp size={11} strokeWidth={1.5} />
             ) : (
-              <ArrowDown size={11} strokeWidth={1.75} />
+              <ArrowDown size={11} strokeWidth={1.5} />
             )}
             {Math.abs(delta as number).toFixed(1)}%
             <span className="delta-sub">{deltaLabel}</span>

@@ -24,7 +24,7 @@ const inputStyle: React.CSSProperties = {
   borderRadius: 8,
   fontSize: 13,
   background: "var(--bg)",
-  color: "var(--ink-1)",
+  color: "var(--ink)",
   fontFamily: "inherit",
 };
 
@@ -103,7 +103,7 @@ export function SingleAdjustStockModal({
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0,0,0,0.45)",
+        background: "var(--scrim)",
         display: "grid",
         placeItems: "center",
         zIndex: 60,
@@ -164,7 +164,7 @@ export function SingleAdjustStockModal({
             </span>
             <span style={{ color: "var(--ink-3)" }}>
               {t("currentLabel")}{" "}
-              <strong style={{ color: "var(--ink-1)", fontVariantNumeric: "tabular-nums" }}>{currentQty}</strong>
+              <strong style={{ color: "var(--ink)", fontVariantNumeric: "tabular-nums" }}>{currentQty}</strong>
             </span>
           </div>
 
@@ -179,7 +179,7 @@ export function SingleAdjustStockModal({
             onChange={(e) => setDelta(e.target.value)}
             disabled={busy}
             placeholder="-5 or +10"
-            style={{ ...inputStyle, fontFamily: "var(--mono, monospace)" }}
+            style={{ ...inputStyle, fontFamily: "var(--mono)" }}
           />
 
           {deltaValid && (
@@ -187,7 +187,7 @@ export function SingleAdjustStockModal({
               style={{
                 marginBlockStart: "var(--space-2)",
                 fontSize: 12.5,
-                color: wouldGoNegative ? "var(--rose, #c45a5a)" : "var(--ink-3)",
+                color: wouldGoNegative ? "var(--rose)" : "var(--ink-3)",
                 fontVariantNumeric: "tabular-nums",
               }}
             >
@@ -210,7 +210,7 @@ export function SingleAdjustStockModal({
                   fontSize: 12.5,
                   border: `1px solid ${kind === k ? "var(--accent)" : "var(--rule)"}`,
                   background: kind === k ? "var(--accent-soft)" : "transparent",
-                  color: kind === k ? "var(--accent-ink, var(--ink-1))" : "var(--ink-2)",
+                  color: kind === k ? "var(--accent-ink)" : "var(--ink-2)",
                   cursor: "pointer",
                   fontFamily: "inherit",
                 }}
@@ -237,9 +237,9 @@ export function SingleAdjustStockModal({
             <div
               style={{
                 marginBlockStart: "var(--space-3)",
-                background: "color-mix(in oklab, var(--rose, #c45a5a) 12%, transparent)",
-                border: "1px solid var(--rose, #c45a5a)",
-                color: "var(--rose, #c45a5a)",
+                background: "color-mix(in oklab, var(--rose) 12%, transparent)",
+                border: "1px solid var(--rose)",
+                color: "var(--rose)",
                 fontSize: 12.5,
                 padding: "var(--space-2) 10px",
                 borderRadius: 8,
@@ -260,7 +260,7 @@ export function SingleAdjustStockModal({
                 fontSize: 13,
                 border: "1px solid var(--rule)",
                 background: "transparent",
-                color: "var(--ink-1)",
+                color: "var(--ink)",
                 cursor: "pointer",
                 fontFamily: "inherit",
               }}

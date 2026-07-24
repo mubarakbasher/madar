@@ -257,7 +257,7 @@
   background: var(--bg-elev);
   border-radius: var(--radius);
   border: 1px solid var(--rule);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow);
   width: 100%;
   max-width: 460px;
   max-height: calc(100vh - 48px);

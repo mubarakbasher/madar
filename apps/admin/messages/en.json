@@ -188,7 +188,8 @@
       "filteredTitle": "No tenants match those filters",
       "filteredBody": "Try widening the filters or clearing the search.",
       "defaultTitle": "No tenants yet",
-      "defaultBody": "Tenants appear here as they sign up."
+      "defaultBody": "Tenants appear here as they sign up.",
+      "clearFilters": "Clear filters"
     },
     "error": {
       "title": "Couldn't load tenants",
@@ -648,6 +649,17 @@
     "dAgo": "{count} d ago",
     "moAgo": "{count} mo ago",
     "never": "Never",
-    "noData": "—"
+    "noData": "—",
+    "errorBoundary": {
+      "title": "Something went wrong",
+      "body": "An unexpected error occurred. Your data is safe — try again, or head back to the dashboard.",
+      "retry": "Try again",
+      "backHome": "Back to dashboard"
+    },
+    "notFound": {
+      "title": "Page not found",
+      "body": "The page you are looking for does not exist or has moved.",
+      "backHome": "Back to dashboard"
+    }
   }
 }

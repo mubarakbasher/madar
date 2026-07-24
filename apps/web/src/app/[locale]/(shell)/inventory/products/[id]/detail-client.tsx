@@ -149,7 +149,19 @@ export function ProductDetailClient({ id, locale }: { id: string; locale: "en" |
           </h1>
           <p style={{ color: "var(--ink-3)", fontSize: 13, marginTop: "var(--space-2)" }}>
             <span style={{ color: p.is_active ? "var(--sage)" : "var(--ink-3)" }}>
-              ● {p.is_active ? t("header.active") : t("header.inactive")}
+              <span
+                aria-hidden="true"
+                style={{
+                  display: "inline-block",
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  background: "currentColor",
+                  marginInlineEnd: 4,
+                  verticalAlign: "1px",
+                }}
+              />
+              {p.is_active ? t("header.active") : t("header.inactive")}
             </span>
             <span style={{ marginInline: "var(--space-2)" }}>·</span>
             <span>{t("header.branches", { count: p.per_branch_stock.length })}</span>
@@ -282,9 +294,10 @@ function ImageHeader({ imageUrl, color }: { imageUrl: string | null; color: stri
           src={imageUrl}
           alt=""
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          decoding="async"
         />
       ) : (
-        <ImageIcon size={32} strokeWidth={1.25} style={{ color: "rgba(255,255,255,0.5)" }} />
+        <ImageIcon size={32} strokeWidth={1.5} style={{ color: "rgba(255,255,255,0.5)" }} />
       )}
     </div>
   );
@@ -294,7 +307,7 @@ function KpiCard({ label, value }: { label: string; value: string }) {
   return (
     <div
       style={{
-        background: "var(--surface)",
+        background: "var(--bg-elev)",
         border: "1px solid var(--rule)",
         borderRadius: 12,
         padding: "var(--space-4)",
@@ -331,7 +344,7 @@ function OverviewTab({
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <section
         style={{
-          background: "var(--surface)",
+          background: "var(--bg-elev)",
           border: "1px solid var(--rule)",
           borderRadius: "var(--radius-lg)",
           padding: 20,
@@ -350,7 +363,7 @@ function OverviewTab({
 
       <section
         style={{
-          background: "var(--surface)",
+          background: "var(--bg-elev)",
           border: "1px solid var(--rule)",
           borderRadius: "var(--radius-lg)",
           padding: 20,
@@ -371,7 +384,7 @@ function MiniCard({ label, value, mono }: { label: string; value: string; mono?:
   return (
     <div
       style={{
-        background: "var(--surface)",
+        background: "var(--bg-elev)",
         border: "1px solid var(--rule)",
         borderRadius: 12,
         padding: "var(--space-4)",
@@ -430,12 +443,13 @@ function StockTab({
   onAdjusted: () => void;
 }) {
   const t = useTranslations("inventory.detail.stock");
+  const tc = useTranslations("common");
   const [adjustRow, setAdjustRow] = useState<ApiPerBranchStock | null>(null);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
       <section
         style={{
-          background: "var(--surface)",
+          background: "var(--bg-elev)",
           border: "1px solid var(--rule)",
           borderRadius: "var(--radius-lg)",
           padding: 20,
@@ -506,7 +520,7 @@ function StockTab({
 
       <section
         style={{
-          background: "var(--surface)",
+          background: "var(--bg-elev)",
           border: "1px solid var(--rule)",
           borderRadius: "var(--radius-lg)",
           padding: 20,
@@ -516,7 +530,7 @@ function StockTab({
           {t("movements")}
         </h2>
         {movementsLoading && (
-          <p style={{ fontSize: 13, color: "var(--ink-3)" }}>Loading…</p>
+          <p style={{ fontSize: 13, color: "var(--ink-3)" }}>{tc("loading")}</p>
         )}
         {!movementsLoading && movements.length === 0 && (
           <p style={{ fontSize: 13, color: "var(--ink-3)" }}>{t("movementsEmpty")}</p>
@@ -601,10 +615,11 @@ function MovementRow({
 
 function ActivityTab({ items, loading }: { items: ApiActivityItem[]; loading: boolean }) {
   const t = useTranslations("inventory.detail.activity");
+  const tc = useTranslations("common");
   return (
     <section
       style={{
-        background: "var(--surface)",
+        background: "var(--bg-elev)",
         border: "1px solid var(--rule)",
         borderRadius: "var(--radius-lg)",
         padding: 20,
@@ -613,7 +628,7 @@ function ActivityTab({ items, loading }: { items: ApiActivityItem[]; loading: bo
       <h2 style={{ fontFamily: "var(--serif)", fontSize: 18, marginBottom: 14 }}>
         {t("title")}
       </h2>
-      {loading && <p style={{ fontSize: 13, color: "var(--ink-3)" }}>Loading…</p>}
+      {loading && <p style={{ fontSize: 13, color: "var(--ink-3)" }}>{tc("loading")}</p>}
       {!loading && items.length === 0 && (
         <p style={{ fontSize: 13, color: "var(--ink-3)" }}>{t("empty")}</p>
       )}
@@ -642,7 +657,7 @@ function ActivityTab({ items, loading }: { items: ApiActivityItem[]; loading: bo
                   </span>
                 </div>
                 {item.impersonator_id && (
-                  <div style={{ fontSize: 11, color: "var(--rose)" }}>via impersonation</div>
+                  <div style={{ fontSize: 11, color: "var(--rose)" }}>{t("viaImpersonation")}</div>
                 )}
               </div>
               <span style={{ fontSize: 11, color: "var(--ink-3)" }}>

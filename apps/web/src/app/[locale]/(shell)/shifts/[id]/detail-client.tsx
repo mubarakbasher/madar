@@ -38,7 +38,7 @@ export function ShiftDetailClient({ locale, shiftId }: { locale: "en" | "ar"; sh
     return (
       <div className="sh-page">
         <div className="sh-empty">
-          <div style={{ fontFamily: "var(--font-display)", fontSize: 22, marginBlockEnd: "var(--space-2)" }}>
+          <div style={{ fontFamily: "var(--serif)", fontSize: 22, marginBlockEnd: "var(--space-2)" }}>
             {t("notFoundTitle")}
           </div>
           <p>{t("notFoundBody")}</p>

@@ -29,7 +29,7 @@ export function InventoryEmpty() {
           color: "var(--accent)",
         }}
       >
-        <PackageOpen size={36} strokeWidth={1.4} />
+        <PackageOpen size={36} strokeWidth={1.5} />
       </div>
       <h2
         style={{

@@ -45,7 +45,7 @@
 }
 .pos-exit:hover {
   background: color-mix(in oklab, var(--accent-soft) 50%, var(--paper));
-  color: var(--ink-1);
+  color: var(--ink);
 }
 .pos-exit-label { font-weight: 500; }
 /* Flip the back arrow in RTL — directionally meaningful icon. */

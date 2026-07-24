@@ -742,7 +742,7 @@ function Section({
   return (
     <section
       style={{
-        background: "var(--surface)",
+        background: "var(--bg-elev)",
         border: "1px solid var(--rule)",
         borderRadius: 16,
         padding: "var(--space-5)",
@@ -777,6 +777,7 @@ function Field({
   error?: string;
   children: React.ReactNode;
 }) {
+  const t = useTranslations("inventory.form");
   return (
     <label style={{ display: "block" }}>
       {label && (
@@ -790,7 +791,7 @@ function Field({
           }}
         >
           <span style={{ fontWeight: 500 }}>{label}</span>
-          {optional && <span style={{ fontStyle: "italic" }}>optional</span>}
+          {optional && <span style={{ fontStyle: "italic" }}>{t("optionalTag")}</span>}
         </div>
       )}
       {children}
@@ -930,7 +931,7 @@ function ImageBlock({
             style={{ width: "100%", height: "100%", objectFit: "cover" }}
           />
         ) : (
-          <ImageIcon size={28} strokeWidth={1.25} style={{ color: "var(--ink-3)" }} />
+          <ImageIcon size={28} strokeWidth={1.5} style={{ color: "var(--ink-3)" }} />
         )}
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>

@@ -10,7 +10,7 @@ export function ReloadButton({ label }: { label: string }): JSX.Element {
       style={{
         padding: "10px var(--space-4)",
         borderRadius: 8,
-        background: "var(--coral)",
+        background: "var(--accent)",
         color: "var(--bg)",
         border: 0,
         fontSize: 14,

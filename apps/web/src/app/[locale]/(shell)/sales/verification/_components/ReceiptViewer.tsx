@@ -86,7 +86,7 @@ export function ReceiptViewer({ proofId }: { proofId: string | null }) {
             className="vq-receipt-img-button"
             onClick={() => setFullscreen(true)}
           >
-            <img src={url} alt={t("receipt.imageAlt")} className="vq-receipt-img" />
+            <img src={url} alt={t("receipt.imageAlt")} className="vq-receipt-img" loading="lazy" decoding="async" />
             <span className="vq-receipt-fullscreen-hint">
               <Maximize2 size={14} strokeWidth={1.5} />
             </span>
@@ -109,7 +109,7 @@ export function ReceiptViewer({ proofId }: { proofId: string | null }) {
           >
             <X size={20} strokeWidth={1.5} />
           </button>
-          <img src={url} alt={t("receipt.fullscreenAlt")} className="vq-receipt-fullscreen-img" />
+          <img src={url} alt={t("receipt.fullscreenAlt")} className="vq-receipt-fullscreen-img" decoding="async" />
         </div>
       )}
     </>

@@ -90,7 +90,7 @@ export function CategoriesDonut({
                   borderRadius: 2,
                 }}
               />
-              <span style={{ color: "var(--ink-1)" }}>{name}</span>
+              <span style={{ color: "var(--ink)" }}>{name}</span>
               <span style={{ color: "var(--ink-3)" }}>· {pct}%</span>
             </li>
           );

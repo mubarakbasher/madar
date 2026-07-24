@@ -327,9 +327,7 @@ export function ReceiptDoc({
               {t("bank.holder")}: {bank_account.account_holder}
             </div>
             {bank_account.iban_last4 && (
-              <div>
-                {t("bank.iban")}: •••• {bank_account.iban_last4}
-              </div>
+              <div>{t("bank.ibanLine", { last4: bank_account.iban_last4 })}</div>
             )}
           </section>
         )}

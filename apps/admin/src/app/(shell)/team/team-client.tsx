@@ -142,7 +142,7 @@ function MembersTab() {
             className="admin-btn admin-btn-primary"
             onClick={() => setModal({ type: "invite" })}
           >
-            <Plus size={16} strokeWidth={1.75} />
+            <Plus size={16} strokeWidth={1.5} />
             <span>{t("team.inviteMember")}</span>
           </button>
         </div>
@@ -280,12 +280,12 @@ function MembersTab() {
 function EmptyTeam({ onInvite, isOwner }: { onInvite: () => void; isOwner: boolean }) {
   return (
     <div className="admin-empty-block">
-      <Users size={32} strokeWidth={1.25} />
+      <Users size={32} strokeWidth={1.5} />
       <h2>{t("team.empty.title")}</h2>
       <p>{t("team.empty.body")}</p>
       {isOwner ? (
         <button type="button" className="admin-btn admin-btn-primary" onClick={onInvite}>
-          <UserPlus size={16} strokeWidth={1.75} />
+          <UserPlus size={16} strokeWidth={1.5} />
           {t("team.empty.inviteFirst")}
         </button>
       ) : (

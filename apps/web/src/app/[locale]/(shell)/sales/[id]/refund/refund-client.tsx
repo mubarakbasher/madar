@@ -294,7 +294,7 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
                 const picked = picks[line.id]?.qty ?? 0;
                 return (
                   <tr key={line.id}>
-                    <td style={{ fontFamily: "var(--font-mono)", fontSize: 12 }}>{line.sku}</td>
+                    <td style={{ fontFamily: "var(--mono)", fontSize: 12 }}>{line.sku}</td>
                     <td>{pickName(line.name_i18n, locale)}</td>
                     <td className="rf-num">{fmt(bi(line.unit_price_cents))}</td>
                     <td className="rf-num">{remaining}</td>
@@ -451,7 +451,7 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
           <div style={{ display: "grid", gap: "var(--space-3)", fontSize: 14 }}>
             <div className="rf-summary-row">
               <span style={{ color: "var(--ink-3)" }}>{t("review.sale")}</span>
-              <span style={{ fontFamily: "var(--font-mono)" }}>{sale.code}</span>
+              <span style={{ fontFamily: "var(--mono)" }}>{sale.code}</span>
             </div>
             <div className="rf-summary-row">
               <span style={{ color: "var(--ink-3)" }}>{t("review.lines")}</span>
@@ -470,7 +470,7 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
             {method === "card" && (
               <div className="rf-summary-row">
                 <span style={{ color: "var(--ink-3)" }}>{t("method.approvalCode")}</span>
-                <span style={{ fontFamily: "var(--font-mono)" }}>
+                <span style={{ fontFamily: "var(--mono)" }}>
                   {approvalCode || "—"}
                 </span>
               </div>

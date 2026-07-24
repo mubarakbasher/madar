@@ -1,5 +1,7 @@
 "use client";
 
+import { formatMoney as formatMoneyShared, minorToMajor } from "@madar/ui";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -19,15 +21,10 @@ import { RejectModal, type RejectSubmit } from "../../_components/RejectModal";
 import { RequestInfoModal, type RequestInfoSubmit } from "../../_components/RequestInfoModal";
 
 function formatMoney(cents: string, currency: string): string {
-  const major = Number(BigInt(cents)) / 100;
   try {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: currency || "USD",
-      maximumFractionDigits: 2,
-    }).format(major);
+    return formatMoneyShared(cents, currency || "USD", "en-US");
   } catch {
-    return `${major.toFixed(2)} ${currency}`;
+    return `${minorToMajor(cents, currency || "USD").toFixed(2)} ${currency}`;
   }
 }
 

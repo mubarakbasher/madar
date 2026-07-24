@@ -36,9 +36,9 @@ export function ProductsTable({
   const SortIcon = ({ k }: { k: SortKey }) => {
     if (sort.key !== k) return null;
     return sort.dir === "asc" ? (
-      <ArrowUp size={10} strokeWidth={1.75} />
+      <ArrowUp size={10} strokeWidth={1.5} />
     ) : (
-      <ArrowDown size={10} strokeWidth={1.75} />
+      <ArrowDown size={10} strokeWidth={1.5} />
     );
   };
 
@@ -54,7 +54,7 @@ export function ProductsTable({
     return (
       <div className="inv-table-wrap">
         <div className="inv-empty">
-          <p>No products match your filters.</p>
+          <p>{t("tableNoMatch")}</p>
         </div>
       </div>
     );
@@ -151,6 +151,8 @@ export function ProductsTable({
                         alt=""
                         className="inv-swatch"
                         style={{ objectFit: "cover" }}
+                        loading="lazy"
+                        decoding="async"
                       />
                     ) : (
                       <div

@@ -19,12 +19,12 @@
 }
 
 .tcl-title {
-  font-family: var(--serif, Fraunces, serif);
+  font-family: var(--serif);
   font-size: 28px;
   line-height: 1.1;
   font-weight: 500;
   letter-spacing: -0.01em;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
   margin: 4px 0 0;
 }
 
@@ -46,10 +46,10 @@
   padding: 8px 12px;
   border: 1px solid var(--rule);
   background: var(--bg-elev);
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm);
   font-size: 13px;
   width: 280px;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
   font-family: inherit;
 }
 
@@ -62,11 +62,11 @@
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm);
   border: 1px solid var(--rule);
   background: var(--bg-elev);
   font-size: 13px;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
   cursor: pointer;
   text-decoration: none;
   font-family: inherit;
@@ -78,7 +78,7 @@
 
 .tcl-btn-primary {
   background: var(--accent);
-  color: var(--accent-ink, #fff);
+  color: var(--accent-ink);
   border-color: var(--accent);
 }
 
@@ -98,8 +98,8 @@
 }
 
 .tcl-btn-danger {
-  border-color: color-mix(in oklab, var(--rose, #c45a5a) 30%, var(--rule));
-  color: var(--rose, #c45a5a);
+  border-color: color-mix(in oklab, var(--rose) 30%, var(--rule));
+  color: var(--rose);
   background: transparent;
 }
 
@@ -111,7 +111,7 @@
 .tcl-table-wrap {
   border: 1px solid var(--rule);
   background: var(--bg-elev);
-  border-radius: var(--radius, 12px);
+  border-radius: var(--radius);
   overflow: hidden;
 }
 
@@ -139,24 +139,24 @@
   letter-spacing: 0.05em;
   color: var(--ink-3);
   font-weight: 500;
-  background: var(--bg-sunk, transparent);
+  background: var(--bg-sunk);
 }
 
 .tcl-cell-code {
-  font-family: var(--mono, ui-monospace, monospace);
+  font-family: var(--mono);
   font-size: 12.5px;
   color: var(--ink-2);
 }
 
 .tcl-cell-name {
   font-weight: 500;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
 }
 
 .tcl-cell-rate {
-  font-family: var(--mono, ui-monospace, monospace);
+  font-family: var(--mono);
   font-size: 12.5px;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
 }
 
 .tcl-row-actions {
@@ -170,22 +170,22 @@
   align-items: center;
   font-size: 10.5px;
   padding: 2px 8px;
-  border-radius: var(--radius-full, 100px);
+  border-radius: var(--radius-full);
   font-weight: 500;
   letter-spacing: 0.02em;
   border: 1px solid var(--rule);
 }
 
 .tcl-status-active {
-  background: color-mix(in oklab, var(--sage, #6e9b7f) 18%, transparent);
-  color: var(--sage, #4d7359);
-  border-color: color-mix(in oklab, var(--sage, #6e9b7f) 30%, var(--rule));
+  background: color-mix(in oklab, var(--sage) 18%, transparent);
+  color: var(--sage);
+  border-color: color-mix(in oklab, var(--sage) 30%, var(--rule));
 }
 
 .tcl-status-inactive {
-  background: color-mix(in oklab, var(--rose, #c45a5a) 14%, transparent);
-  color: var(--rose, #c45a5a);
-  border-color: color-mix(in oklab, var(--rose, #c45a5a) 30%, var(--rule));
+  background: color-mix(in oklab, var(--rose) 14%, transparent);
+  color: var(--rose);
+  border-color: color-mix(in oklab, var(--rose) 30%, var(--rule));
 }
 
 .tcl-default-badge {
@@ -193,7 +193,7 @@
   align-items: center;
   font-size: 10.5px;
   padding: 2px 8px;
-  border-radius: var(--radius-full, 100px);
+  border-radius: var(--radius-full);
   font-weight: 500;
   letter-spacing: 0.02em;
   background: color-mix(in oklab, var(--accent) 14%, transparent);
@@ -204,16 +204,16 @@
 .tcl-empty {
   margin-block-start: 12px;
   border: 1px dashed var(--rule);
-  border-radius: var(--radius, 12px);
+  border-radius: var(--radius);
   padding: 48px 24px;
   text-align: center;
 }
 
 .tcl-empty-title {
-  font-family: var(--serif, Fraunces, serif);
+  font-family: var(--serif);
   font-size: 22px;
   margin-block-end: 6px;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
 }
 
 .tcl-empty-body {
@@ -231,7 +231,7 @@
 .tcl-error {
   margin-block-start: 24px;
   border: 1px solid var(--rule);
-  border-radius: var(--radius, 12px);
+  border-radius: var(--radius);
   padding: 32px 24px;
   text-align: center;
 }
@@ -240,16 +240,16 @@
   margin-block-start: 24px;
   border: 1px solid var(--rule);
   background: var(--bg-elev);
-  border-radius: var(--radius, 12px);
+  border-radius: var(--radius);
   padding: 48px 24px;
   text-align: center;
 }
 
 .tcl-denied h1 {
-  font-family: var(--serif, Fraunces, serif);
+  font-family: var(--serif);
   font-size: 22px;
   margin: 0 0 8px;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
 }
 
 .tcl-denied p {
@@ -271,7 +271,7 @@
 .tcl-modal {
   background: var(--bg-elev);
   border: 1px solid var(--rule);
-  border-radius: var(--radius, 12px);
+  border-radius: var(--radius);
   max-width: 520px;
   width: 100%;
   box-shadow: var(--shadow-lg, 0 24px 60px -20px rgba(0, 0, 0, 0.25));
@@ -290,10 +290,10 @@
 }
 
 .tcl-modal-title {
-  font-family: var(--serif, Fraunces, serif);
+  font-family: var(--serif);
   font-size: 18px;
   margin: 0;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
 }
 
 .tcl-modal-close {
@@ -316,7 +316,7 @@
   gap: 8px;
   padding: 14px 18px;
   border-block-start: 1px solid var(--rule);
-  background: var(--bg, transparent);
+  background: var(--bg);
 }
 
 .tcl-field {
@@ -335,10 +335,10 @@
   width: 100%;
   padding: 8px 10px;
   border: 1px solid var(--rule);
-  background: var(--bg, var(--bg-elev));
-  border-radius: var(--radius-sm, 8px);
+  background: var(--bg);
+  border-radius: var(--radius-sm);
   font-size: 13px;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
   font-family: inherit;
 }
 
@@ -351,7 +351,7 @@
 .tcl-field-error {
   margin-block-start: 4px;
   font-size: 12px;
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
 }
 
 .tcl-field-row {
@@ -363,11 +363,11 @@
 .tcl-general-error {
   margin-block-end: 12px;
   padding: 10px 12px;
-  border: 1px solid color-mix(in oklab, var(--rose, #c45a5a) 30%, var(--rule));
-  background: color-mix(in oklab, var(--rose, #c45a5a) 10%, transparent);
-  border-radius: var(--radius-sm, 8px);
+  border: 1px solid color-mix(in oklab, var(--rose) 30%, var(--rule));
+  background: color-mix(in oklab, var(--rose) 10%, transparent);
+  border-radius: var(--radius-sm);
   font-size: 12.5px;
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
 }
 
 .tcl-check {
@@ -375,7 +375,7 @@
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: var(--ink, var(--ink-1));
+  color: var(--ink);
   cursor: pointer;
 }
 
@@ -386,10 +386,10 @@
   margin-inline: auto;
   max-width: 480px;
   padding: 12px 18px;
-  background: var(--ink, var(--ink-1));
+  background: var(--ink);
   color: var(--bg-elev);
-  border-radius: var(--radius, 10px);
-  font-family: var(--sans, inherit);
+  border-radius: var(--radius);
+  font-family: var(--sans);
   font-size: 13px;
   box-shadow: var(--shadow-lg, 0 24px 60px -20px rgba(0, 0, 0, 0.25));
   z-index: 110;
@@ -397,11 +397,11 @@
 }
 
 .tcl-toast--ok {
-  background: var(--sage, #4d7359);
+  background: var(--sage);
   color: #fff;
 }
 
 .tcl-toast--bad {
-  background: var(--rose, #c45a5a);
+  background: var(--rose);
   color: #fff;
 }

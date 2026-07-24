@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { useQuery } from "@tanstack/react-query";
-import { Plus, Search } from "lucide-react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { ChevronLeft, ChevronRight, Plus, Search } from "lucide-react";
 import { Link } from "../../../../../i18n/routing";
 import {
   customersListRequest,
@@ -47,17 +47,27 @@ function formatRelative(iso: string | null, locale: "en" | "ar"): string {
 export function CustomersListClient({ locale }: { locale: "en" | "ar" }) {
   const t = useTranslations("customers");
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
   const debounced = useDebounced(search, 300);
 
+  useEffect(() => {
+    setPage(1);
+  }, [debounced]);
+
   const listQ = useQuery({
-    queryKey: ["customers", "list", { search: debounced.trim() }],
+    queryKey: ["customers", "list", { search: debounced.trim(), page }],
     queryFn: () =>
       customersListRequest({
         search: debounced.trim() || undefined,
-        limit: 100,
+        page,
+        limit: 50,
       }),
     staleTime: 30_000,
+    placeholderData: keepPreviousData,
   });
+
+  const total = listQ.data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / (listQ.data?.limit ?? 50)));
 
   const items = useMemo<ApiCustomerSummary[]>(() => listQ.data?.items ?? [], [listQ.data]);
 
@@ -137,6 +147,37 @@ export function CustomersListClient({ locale }: { locale: "en" | "ar" }) {
             ))}
           </tbody>
         </table>
+      )}
+
+      {!listQ.isPending && !listQ.isError && items.length > 0 && (
+        <div className="cu-toolbar" style={{ justifyContent: "space-between", marginBlockStart: "var(--space-3)" }}>
+          <span className="cu-muted" style={{ fontSize: 12 }}>
+            {t("pagination.summary", { shown: items.length, total })}
+          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+            <button
+              type="button"
+              className="cu-btn"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
+              <ChevronLeft size={14} strokeWidth={1.5} className="rtl:rotate-180" />
+              {t("pagination.prev")}
+            </button>
+            <span className="cu-muted" style={{ fontSize: 12 }}>
+              {t("pagination.page", { page, total: totalPages })}
+            </span>
+            <button
+              type="button"
+              className="cu-btn"
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              {t("pagination.next")}
+              <ChevronRight size={14} strokeWidth={1.5} className="rtl:rotate-180" />
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

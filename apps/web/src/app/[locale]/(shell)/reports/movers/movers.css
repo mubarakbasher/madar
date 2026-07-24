@@ -60,7 +60,7 @@ html[lang="ar"] .mvr-title { font-family: var(--font-arabic); }
   padding-block: 8px;
   padding-inline: 12px;
   border: 1px solid var(--rule);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   background: var(--bg-elev);
   color: var(--ink);
   font: inherit;
@@ -76,7 +76,7 @@ html[lang="ar"] .mvr-title { font-family: var(--font-arabic); }
   padding-block: 8px;
   padding-inline: 12px;
   border: 1px solid var(--rule);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   background: color-mix(in oklab, var(--accent-soft) 35%, var(--bg-elev));
   color: var(--ink);
   font-size: 13px;
@@ -90,7 +90,7 @@ html[lang="ar"] .mvr-title { font-family: var(--font-arabic); }
   gap: 2px;
   padding: 4px;
   border-radius: var(--radius-lg);
-  background: var(--bg-soft);
+  background: var(--paper);
   margin-block-end: 18px;
 }
 .mvr-tab {
@@ -100,7 +100,7 @@ html[lang="ar"] .mvr-title { font-family: var(--font-arabic); }
   color: var(--ink-2);
   padding-block: 8px;
   padding-inline: 16px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   font: inherit;
   font-size: 13px;
   font-weight: 500;
@@ -134,7 +134,7 @@ html[lang="ar"] .mvr-title { font-family: var(--font-arabic); }
   border-radius: var(--radius-lg);
 }
 .mvr-row.is-slow {
-  background: color-mix(in oklab, var(--bg-soft) 60%, var(--bg-elev));
+  background: color-mix(in oklab, var(--paper) 60%, var(--bg-elev));
 }
 .mvr-row-main { min-width: 0; }
 .mvr-row-name {
@@ -155,7 +155,7 @@ html[lang="ar"] .mvr-title { font-family: var(--font-arabic); }
   align-items: center;
 }
 .mvr-sku {
-  font-family: var(--mono, ui-monospace, SFMono-Regular, monospace);
+  font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.04em;
 }
@@ -165,7 +165,7 @@ html[lang="ar"] .mvr-title { font-family: var(--font-arabic); }
   padding-block: 1px;
   padding-inline: 6px;
   border-radius: var(--radius-sm);
-  background: var(--bg-soft);
+  background: var(--paper);
   color: var(--ink-2);
   font-size: 11px;
 }
@@ -223,7 +223,7 @@ html[lang="ar"] .mvr-slow-title { font-family: var(--font-arabic); }
   color: var(--ink);
 }
 html[lang="ar"] .mvr-state-title { font-family: var(--font-arabic); }
-.mvr-error { color: var(--danger, var(--ink)); }
+.mvr-error { color: var(--rose); }
 .mvr-btn {
   margin-block-start: 12px;
   appearance: none;
@@ -232,9 +232,9 @@ html[lang="ar"] .mvr-state-title { font-family: var(--font-arabic); }
   color: var(--ink);
   padding-block: 8px;
   padding-inline: 16px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   font: inherit;
   font-size: 13px;
   cursor: pointer;
 }
-.mvr-btn:hover { background: var(--bg-soft); }
+.mvr-btn:hover { background: var(--paper); }

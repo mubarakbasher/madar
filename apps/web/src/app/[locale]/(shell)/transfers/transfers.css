@@ -22,11 +22,11 @@
 }
 
 .xfer-title {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 32px;
   line-height: 1.1;
   font-weight: 500;
-  color: var(--ink-1);
+  color: var(--ink);
   margin: 0;
 }
 
@@ -55,7 +55,7 @@
 }
 
 .xfer-tab-active {
-  color: var(--ink-1);
+  color: var(--ink);
   border-block-end-color: var(--accent);
 }
 
@@ -68,7 +68,7 @@
   border: 1px solid var(--rule);
   background: var(--bg-elev);
   font-size: 13px;
-  color: var(--ink-1);
+  color: var(--ink);
   cursor: pointer;
   text-decoration: none;
   font-family: inherit;
@@ -80,7 +80,7 @@
 
 .xfer-btn-primary {
   background: var(--accent);
-  color: var(--accent-ink, white);
+  color: var(--accent-ink);
   border-color: var(--accent);
 }
 
@@ -89,8 +89,8 @@
 }
 
 .xfer-btn-danger {
-  border-color: var(--rose, #c45a5a);
-  color: var(--rose, #c45a5a);
+  border-color: var(--rose);
+  color: var(--rose);
 }
 
 .xfer-btn-ghost {
@@ -107,7 +107,7 @@
   border-collapse: collapse;
   font-size: 13px;
   border: 1px solid var(--rule);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   overflow: hidden;
 }
 
@@ -135,7 +135,7 @@
 }
 
 .xfer-code {
-  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-family: var(--mono);
   text-transform: uppercase;
 }
 
@@ -165,25 +165,25 @@
 }
 
 .xfer-pill-received {
-  background: color-mix(in oklab, var(--sage, #6e9b7f) 18%, transparent);
-  color: var(--sage, #4d7359);
+  background: color-mix(in oklab, var(--sage) 18%, transparent);
+  color: var(--sage);
 }
 
 .xfer-pill-cancelled {
-  background: color-mix(in oklab, var(--rose, #c45a5a) 14%, transparent);
-  color: var(--rose, #c45a5a);
+  background: color-mix(in oklab, var(--rose) 14%, transparent);
+  color: var(--rose);
 }
 
 .xfer-empty {
   margin-block-start: 40px;
   border: 1px dashed var(--rule);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 48px 24px;
   text-align: center;
 }
 
 .xfer-empty-title {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 22px;
   margin-block-end: 6px;
 }
@@ -203,7 +203,7 @@
 .xfer-error {
   margin-block-start: 24px;
   border: 1px solid var(--rule);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 32px 24px;
   text-align: center;
 }
@@ -234,15 +234,15 @@
 
 .xfer-step-active {
   border-color: var(--accent);
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .xfer-step-done {
-  color: var(--sage, #4d7359);
+  color: var(--sage);
 }
 
 .xfer-step-num {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 18px;
   margin-inline-end: 8px;
 }
@@ -250,16 +250,16 @@
 .xfer-card {
   border: 1px solid var(--rule);
   background: var(--bg-elev);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 18px;
   margin-block-end: 14px;
 }
 
 .xfer-card-title {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 16px;
   margin-block-end: 12px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .xfer-field {
@@ -283,7 +283,7 @@
   background: var(--bg);
   border-radius: var(--radius-sm);
   font-size: 13px;
-  color: var(--ink-1);
+  color: var(--ink);
   font-family: inherit;
 }
 
@@ -295,7 +295,7 @@
 .xfer-field-error {
   margin-block-start: 4px;
   font-size: 12px;
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
 }
 
 .xfer-field-hint {
@@ -342,7 +342,7 @@
 .xfer-line-sku {
   font-size: 11px;
   color: var(--ink-3);
-  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-family: var(--mono);
 }
 
 .xfer-receive-input {
@@ -354,7 +354,7 @@
   font-size: 13px;
   text-align: end;
   font-family: inherit;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .xfer-discrepancy-input {
@@ -365,11 +365,11 @@
   border-radius: var(--radius-sm);
   font-size: 12px;
   font-family: inherit;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .xfer-line-discrepancy {
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
 }
 
 .xfer-detail-head {
@@ -408,5 +408,5 @@
 }
 
 .xfer-status-banner-discrepancy {
-  background: color-mix(in oklab, var(--rose, #c45a5a) 10%, transparent);
+  background: color-mix(in oklab, var(--rose) 10%, transparent);
 }

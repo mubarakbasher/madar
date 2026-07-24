@@ -40,7 +40,7 @@ export function ShiftChip({
         color: "var(--ink-2)",
       }}
     >
-      <Clock size={12} strokeWidth={1.75} />
+      <Clock size={12} strokeWidth={1.5} />
       <span>
         {t("openFor", { duration: fmtDuration(openedAt, locale) })} ·{" "}
         {t("float", { amount: formatMoney(openingFloatCents, currency, locale) })}
@@ -61,7 +61,7 @@ export function ShiftChip({
           borderRadius: "var(--radius-sm)",
         }}
       >
-        <LogOut size={12} strokeWidth={1.75} />
+        <LogOut size={12} strokeWidth={1.5} />
         {t("end")}
       </button>
     </div>

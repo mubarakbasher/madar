@@ -101,6 +101,7 @@ export function POWizard({
 }: POWizardProps) {
   const t = useTranslations("purchases.wizard");
   const tErr = useTranslations("purchases.errors");
+  const tCommon = useTranslations("common");
   const role = useAuthStore((s) => s.user?.role ?? "");
   const userBranchId = useAuthStore((s) => s.user?.branch_id ?? null);
   const tenantCurrency =
@@ -634,7 +635,7 @@ export function POWizard({
                     onChange={(e) => setNotes(e.target.value.slice(0, 2000))}
                     placeholder={t("step3.notesPlaceholder")}
                   />
-                  <div className="po-field-hint">{notes.length} / 2000</div>
+                  <div className="po-field-hint">{tCommon("charCount", { used: notes.length, max: 2000 })}</div>
                 </label>
               </div>
 

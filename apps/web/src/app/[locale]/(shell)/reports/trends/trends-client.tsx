@@ -223,7 +223,7 @@ function SummaryKpi({
         {value}
         {showTrend && (
           <span className={`trends-kpi-trend ${up ? "up" : "dn"}`} aria-hidden="true">
-            {up ? <ArrowUp size={12} strokeWidth={1.75} /> : <ArrowDown size={12} strokeWidth={1.75} />}
+            {up ? <ArrowUp size={12} strokeWidth={1.5} /> : <ArrowDown size={12} strokeWidth={1.5} />}
           </span>
         )}
       </div>

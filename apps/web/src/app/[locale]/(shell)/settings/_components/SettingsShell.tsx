@@ -1,11 +1,18 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { ShieldCheck, User, Briefcase, Users, Receipt, Bell } from "lucide-react";
+import { ShieldCheck, User, Briefcase, Users, Receipt, Bell, SunMoon } from "lucide-react";
 import { Link, usePathname } from "../../../../../../i18n/routing";
 import { useAuthStore } from "@/lib/auth/store";
 
-type ItemId = "security" | "profile" | "business" | "notifications" | "users" | "taxClasses";
+type ItemId =
+  | "security"
+  | "profile"
+  | "appearance"
+  | "business"
+  | "notifications"
+  | "users"
+  | "taxClasses";
 type Item = {
   id: ItemId;
   href: string;
@@ -18,6 +25,7 @@ type Item = {
 const ITEMS: Item[] = [
   { id: "security", href: "/settings/security", icon: ShieldCheck, enabled: true },
   { id: "profile", href: "/settings/profile", icon: User, enabled: true },
+  { id: "appearance", href: "/settings/appearance", icon: SunMoon, enabled: true },
   { id: "business", href: "/settings/business", icon: Briefcase, enabled: true, visibleToRoles: ["owner"] },
   {
     id: "notifications",
@@ -65,10 +73,10 @@ export function SettingsShell({
       <aside>
         <h2
           style={{
-            fontFamily: "var(--serif, Fraunces, serif)",
+            fontFamily: "var(--serif)",
             fontSize: 18,
             marginBottom: "var(--space-3)",
-            color: "var(--ink-1)",
+            color: "var(--ink)",
           }}
         >
           {t("title")}

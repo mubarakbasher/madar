@@ -99,9 +99,9 @@ export function BranchStrip({
                   style={{ marginTop: 6, fontSize: 11.5 }}
                 >
                   {up ? (
-                    <ArrowUp size={11} strokeWidth={1.75} />
+                    <ArrowUp size={11} strokeWidth={1.5} />
                   ) : (
-                    <ArrowDown size={11} strokeWidth={1.75} />
+                    <ArrowDown size={11} strokeWidth={1.5} />
                   )}
                   {Math.abs(b.vs_prev_week_pct as number).toFixed(1)}%
                 </div>

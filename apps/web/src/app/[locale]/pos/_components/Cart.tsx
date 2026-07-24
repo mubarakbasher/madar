@@ -154,7 +154,7 @@ export function Cart({
                 <div className="pos-line-sub">
                   {line.p.price} {currency} {t("line.each")}
                   {line.discount > 0 && (
-                    <span style={{ color: "var(--accent)" }}> · − {line.discount}%</span>
+                    <span style={{ color: "var(--accent)" }}> {t("line.discountSuffix", { discount: line.discount })}</span>
                   )}
                   {line.note && <span style={{ fontStyle: "italic" }}> · {line.note}</span>}
                 </div>

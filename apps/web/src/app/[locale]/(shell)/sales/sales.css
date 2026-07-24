@@ -20,11 +20,11 @@
 }
 
 .sl-title {
-  font-family: var(--font-display);
+  font-family: var(--serif);
   font-size: 32px;
   font-weight: 500;
   line-height: 1.1;
-  color: var(--ink-1);
+  color: var(--ink);
   margin: 0;
 }
 
@@ -59,11 +59,11 @@
 .sl-input,
 .sl-select {
   padding: 9px 12px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--rule);
   border-radius: 8px;
-  background: var(--surface-1);
+  background: var(--bg-elev);
   font-size: 13px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .sl-input:focus,
@@ -81,28 +81,28 @@
 .sl-chip {
   padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid var(--line);
-  background: var(--surface-1);
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
   color: var(--ink-2);
   font-size: 12px;
   cursor: pointer;
 }
 
 .sl-chip:hover {
-  background: var(--surface-2);
+  background: var(--bg-sunk);
 }
 
 .sl-chip-active {
   background: var(--accent);
-  color: var(--accent-on);
+  color: #fff;
   border-color: var(--accent);
 }
 
 .sl-table {
   width: 100%;
   border-collapse: collapse;
-  background: var(--surface-1);
-  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -112,7 +112,7 @@
   padding: 12px 16px;
   text-align: start;
   font-size: 13px;
-  border-block-end: 1px solid var(--line);
+  border-block-end: 1px solid var(--rule);
 }
 
 .sl-table th {
@@ -121,7 +121,7 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 11px;
-  background: var(--surface-2);
+  background: var(--bg-sunk);
 }
 
 .sl-table tbody tr:last-child td {
@@ -133,7 +133,7 @@
 }
 
 .sl-table tbody tr:hover {
-  background: var(--surface-2);
+  background: var(--bg-sunk);
 }
 
 .sl-num {
@@ -143,9 +143,9 @@
 }
 
 .sl-code {
-  font-family: var(--font-mono);
+  font-family: var(--mono);
   font-size: 12px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .sl-pill {
@@ -158,22 +158,22 @@
 }
 
 .sl-pill-paid {
-  background: color-mix(in oklab, var(--sage) 16%, var(--surface-1));
+  background: color-mix(in oklab, var(--sage) 16%, var(--bg-elev));
   color: var(--sage);
 }
 
 .sl-pill-pending {
-  background: color-mix(in oklab, var(--amber) 16%, var(--surface-1));
+  background: color-mix(in oklab, var(--amber) 16%, var(--bg-elev));
   color: var(--amber);
 }
 
 .sl-pill-disputed {
-  background: color-mix(in oklab, var(--rose) 16%, var(--surface-1));
+  background: color-mix(in oklab, var(--rose) 16%, var(--bg-elev));
   color: var(--rose);
 }
 
 .sl-pill-refunded {
-  background: var(--surface-2);
+  background: var(--bg-sunk);
   color: var(--ink-3);
 }
 
@@ -202,15 +202,15 @@
 .sl-page-btn {
   padding: 6px 12px;
   border-radius: 8px;
-  border: 1px solid var(--line);
-  background: var(--surface-1);
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
   font-size: 13px;
-  color: var(--ink-1);
+  color: var(--ink);
   cursor: pointer;
 }
 
 .sl-page-btn:hover:not(:disabled) {
-  background: var(--surface-2);
+  background: var(--bg-sunk);
 }
 
 .sl-page-btn:disabled {
@@ -225,7 +225,7 @@
 }
 
 .sl-empty-title {
-  font-family: var(--font-display);
+  font-family: var(--serif);
   font-size: 22px;
   color: var(--ink-2);
   margin-block-end: 6px;

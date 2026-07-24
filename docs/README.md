@@ -25,6 +25,10 @@ The `decisions/` folder contains Architecture Decision Records (ADRs) — short 
 |---|---|---|
 | 0001 | Modular monolith over microservices | Adopted |
 | 0002 | Bank transfer with manual verification over payment gateway | Adopted |
+| 0003 | Shared DB role + RLS bypass GUC (superseded by 0004) | Superseded |
+| 0004 | Dedicated `madar_admin` DB role for cross-tenant access | Adopted |
+| 0005 | Offline sync validation (device sequence + price drift) | Adopted |
+| 0006 | Bespoke token-driven CSS instead of shadcn/ui | Adopted |
 
 Future ADRs are referenced in `architecture.md` section 16 (RLS, two frontends, English+Arabic equality, shadcn restyled, no AI in v1, offline POS, inventory commits on sale, two Prisma clients).
 

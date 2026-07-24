@@ -58,7 +58,7 @@ export function ReconcileClient({ locale }: { locale: "en" | "ar" }) {
         </div>
         <h1
           style={{
-            fontFamily: "var(--font-display)",
+            fontFamily: "var(--serif)",
             fontSize: 32,
             margin: "6px 0 0",
           }}
@@ -96,11 +96,11 @@ export function ReconcileClient({ locale }: { locale: "en" | "ar" }) {
             onChange={(e) => setDate(e.target.value)}
             style={{
               padding: "9px var(--space-3)",
-              border: "1px solid var(--line)",
+              border: "1px solid var(--rule)",
               borderRadius: 8,
-              background: "var(--surface-1)",
+              background: "var(--bg-elev)",
               fontSize: 14,
-              color: "var(--ink-1)",
+              color: "var(--ink)",
             }}
           />
         </div>
@@ -114,9 +114,9 @@ export function ReconcileClient({ locale }: { locale: "en" | "ar" }) {
             gap: "var(--space-2)",
             padding: "9px var(--space-4)",
             borderRadius: "var(--radius)",
-            background: "var(--surface-1)",
-            border: "1px solid var(--line)",
-            color: "var(--ink-1)",
+            background: "var(--bg-elev)",
+            border: "1px solid var(--rule)",
+            color: "var(--ink)",
             cursor: "pointer",
             fontSize: 13,
           }}
@@ -174,8 +174,8 @@ function ChainCard({
   return (
     <section
       style={{
-        background: "var(--surface-1)",
-        border: "1px solid var(--line)",
+        background: "var(--bg-elev)",
+        border: "1px solid var(--rule)",
         borderRadius: 12,
         padding: "20px var(--space-5)",
         marginBlockEnd: 20,
@@ -183,7 +183,7 @@ function ChainCard({
     >
       <h2
         style={{
-          fontFamily: "var(--font-display)",
+          fontFamily: "var(--serif)",
           fontSize: 18,
           fontWeight: 500,
           margin: "0 0 14px",
@@ -239,8 +239,8 @@ function BranchPanel({
   return (
     <section
       style={{
-        background: "var(--surface-1)",
-        border: "1px solid var(--line)",
+        background: "var(--bg-elev)",
+        border: "1px solid var(--rule)",
         borderRadius: 12,
         padding: "20px var(--space-5)",
         marginBlockEnd: "var(--space-4)",
@@ -255,7 +255,7 @@ function BranchPanel({
         }}
       >
         <div>
-          <h2 style={{ fontFamily: "var(--font-display)", fontSize: 18, margin: 0 }}>
+          <h2 style={{ fontFamily: "var(--serif)", fontSize: 18, margin: 0 }}>
             {branch.branch_code} · {branch.name_i18n[locale] || branch.name_i18n.en}
           </h2>
           <div style={{ fontSize: 12, color: "var(--ink-3)", marginBlockStart: 2 }}>
@@ -269,16 +269,16 @@ function BranchPanel({
             fontSize: 12,
             background:
               variance === 0n
-                ? "color-mix(in oklab, var(--sage, #6e9b7f) 16%, var(--surface-1))"
+                ? "color-mix(in oklab, var(--sage) 16%, var(--bg-elev))"
                 : variance < 0n
-                  ? "color-mix(in oklab, var(--rose) 14%, var(--surface-1))"
-                  : "color-mix(in oklab, var(--amber, #c08a2f) 14%, var(--surface-1))",
+                  ? "color-mix(in oklab, var(--rose) 14%, var(--bg-elev))"
+                  : "color-mix(in oklab, var(--amber) 14%, var(--bg-elev))",
             color:
               variance === 0n
-                ? "var(--sage, #4d7359)"
+                ? "var(--sage)"
                 : variance < 0n
                   ? "var(--rose)"
-                  : "var(--amber, #8a6418)",
+                  : "var(--amber)",
           }}
         >
           {variance === 0n
@@ -375,7 +375,7 @@ function BranchPanel({
           </thead>
           <tbody>
             {branch.shifts.map((s) => (
-              <tr key={s.id} style={{ borderBlockStart: "1px solid var(--line)" }}>
+              <tr key={s.id} style={{ borderBlockStart: "1px solid var(--rule)" }}>
                 <td style={{ padding: "6px 0" }}>{s.cashier_name ?? "—"}</td>
                 <td style={{ padding: "6px 0", color: "var(--ink-3)" }}>{s.status}</td>
                 <td
@@ -406,7 +406,7 @@ function BranchPanel({
                       ? BigInt(s.variance_cents) < 0n
                         ? "var(--rose)"
                         : BigInt(s.variance_cents) > 0n
-                          ? "var(--sage, #4d7359)"
+                          ? "var(--sage)"
                           : "var(--ink-2)"
                       : "var(--ink-3)",
                   }}
@@ -433,10 +433,10 @@ function Stat({
 }) {
   const color =
     tone === "sage"
-      ? "var(--sage, #4d7359)"
+      ? "var(--sage)"
       : tone === "rose"
         ? "var(--rose)"
-        : "var(--ink-1)";
+        : "var(--ink)";
   return (
     <div>
       <div
@@ -451,7 +451,7 @@ function Stat({
       </div>
       <div
         style={{
-          fontFamily: "var(--font-display)",
+          fontFamily: "var(--serif)",
           fontSize: 22,
           color,
           marginBlockStart: "var(--space-1)",

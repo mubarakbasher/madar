@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { ChevronDown, ChevronRight, Pencil, Plus, Trash2, X } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronRight, Pencil, Plus, Trash2, X } from "lucide-react";
 import { Link } from "../../../../../../i18n/routing";
 import { ApiError } from "@/lib/api/client";
 import {
@@ -157,7 +157,10 @@ export function CategoriesClient({ locale }: { locale: "en" | "ar" }) {
           <span className="kicker">{t("kicker")}</span>
           <h1 className="cat-head-title">{t("title")}</h1>
           <p className="cat-head-sub">
-            <Link href="/inventory">← {t("backToInventory")}</Link>
+            <Link href="/inventory" style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+              <ArrowLeft size={12} strokeWidth={1.5} className="rtl:rotate-180" />
+              {t("backToInventory")}
+            </Link>
           </p>
         </div>
         <div>

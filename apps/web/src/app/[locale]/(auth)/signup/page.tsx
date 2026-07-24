@@ -77,7 +77,9 @@ export default function SignupPage() {
         user: session.user,
         tenant: session.tenant,
       });
-      router.replace("/", { locale });
+      // Straight to the plan picker — landing on "/" first just flashes the
+      // shell before useRedirectOnNoPlan bounces here anyway.
+      router.replace("/select-plan", { locale });
     },
   });
 
@@ -202,8 +204,8 @@ export default function SignupPage() {
               style={inputStyle()}
               {...register("default_locale")}
             >
-              <option value="en">English</option>
-              <option value="ar">العربية</option>
+              <option value="en">{t("localeOptionEn")}</option>
+              <option value="ar">{t("localeOptionAr")}</option>
             </select>
           </Field>
         </div>

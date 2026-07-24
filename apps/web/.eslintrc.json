@@ -3,7 +3,7 @@
   "plugins": ["i18next"],
   "rules": {
     "i18next/no-literal-string": [
-      "warn",
+      "error",
       {
         "markupOnly": true,
         "ignoreAttribute": [

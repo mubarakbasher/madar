@@ -41,10 +41,10 @@ export function SecurityClient({ locale }: { locale: string }) {
         </div>
         <h1
           style={{
-            fontFamily: "var(--serif, Fraunces, serif)",
+            fontFamily: "var(--serif)",
             fontSize: 28,
             margin: "var(--space-1) 0 0",
-            color: "var(--ink-1)",
+            color: "var(--ink)",
           }}
         >
           {t("title")}
@@ -69,9 +69,9 @@ export function SecurityClient({ locale }: { locale: string }) {
             height: 40,
             borderRadius: "var(--radius)",
             background: on
-              ? "color-mix(in oklab, var(--sage, #6e9b7f) 16%, transparent)"
+              ? "color-mix(in oklab, var(--sage) 16%, transparent)"
               : "color-mix(in oklab, var(--ink-3) 12%, transparent)",
-            color: on ? "var(--sage, #4d7359)" : "var(--ink-2)",
+            color: on ? "var(--sage)" : "var(--ink-2)",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
@@ -80,7 +80,7 @@ export function SecurityClient({ locale }: { locale: string }) {
           {on ? <ShieldCheck size={18} /> : <ShieldOff size={18} />}
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 500, color: "var(--ink-1)" }}>{t("mfaCardTitle")}</div>
+          <div style={{ fontWeight: 500, color: "var(--ink)" }}>{t("mfaCardTitle")}</div>
           <div style={{ marginTop: "var(--space-1)", fontSize: 13, color: "var(--ink-3)" }}>
             {on ? t("mfaOn") : t("mfaOff")}
           </div>
@@ -92,7 +92,7 @@ export function SecurityClient({ locale }: { locale: string }) {
                   style={{
                     background: "transparent",
                     border: "1px solid var(--rule)",
-                    color: "var(--ink-1)",
+                    color: "var(--ink)",
                     padding: "var(--space-2) 14px",
                     borderRadius: 8,
                     fontSize: 13,
@@ -108,8 +108,8 @@ export function SecurityClient({ locale }: { locale: string }) {
                   className="br-btn br-btn-danger"
                   style={{
                     background: "transparent",
-                    border: "1px solid var(--rose, #c45a5a)",
-                    color: "var(--rose, #c45a5a)",
+                    border: "1px solid var(--rose)",
+                    color: "var(--rose)",
                     padding: "var(--space-2) 14px",
                     borderRadius: 8,
                     fontSize: 13,

@@ -105,7 +105,7 @@ export function PrintLabelsSheet({
               fontSize: 13,
               border: "1px solid var(--rule)",
               background: "transparent",
-              color: "var(--ink-1)",
+              color: "var(--ink)",
               cursor: "pointer",
               fontFamily: "inherit",
               display: "inline-flex",
@@ -146,7 +146,7 @@ export function PrintLabelsSheet({
               <div>
                 <div
                   style={{
-                    fontFamily: "var(--mono, ui-monospace, monospace)",
+                    fontFamily: "var(--mono)",
                     fontSize: 11,
                     letterSpacing: "0.08em",
                     color: "#777",

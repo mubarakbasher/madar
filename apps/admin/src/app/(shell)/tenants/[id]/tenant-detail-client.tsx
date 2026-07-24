@@ -1,5 +1,7 @@
 "use client";
 
+import { formatMoney } from "@madar/ui";
+
 import { useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
@@ -10,12 +12,7 @@ import { LoginAsModal } from "./_components/LoginAsModal";
 import { t } from "@/lib/i18n";
 
 function formatCents(cents: string, currency: string): string {
-  const major = Number(BigInt(cents)) / 100;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency || "USD",
-    maximumFractionDigits: 0,
-  }).format(major);
+  return formatMoney(cents, currency || "USD", "en-US", { min: 0, max: 0 });
 }
 
 function shortDate(iso: string | null): string {
@@ -235,7 +232,7 @@ export function TenantDetailClient({ tenantId }: { tenantId: string }) {
                   alignItems: "center",
                   justifyContent: "space-between",
                   padding: "10px 12px",
-                  background: "var(--surface)",
+                  background: "var(--bg-elev)",
                   border: "1px solid var(--rule)",
                   borderRadius: 10,
                 }}
@@ -308,7 +305,7 @@ function KpiBlock({ label, value }: { label: string; value: string }) {
   return (
     <div
       style={{
-        background: "var(--surface)",
+        background: "var(--bg-elev)",
         border: "1px solid var(--rule)",
         borderRadius: 14,
         padding: 16,

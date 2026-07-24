@@ -330,12 +330,21 @@
           "recipientsHint": "اضغط Enter أو فاصلة للإضافة. حتى ٢٠ عنوانًا.",
           "format": "الصيغة",
           "params": "الإعدادات",
-          "timezone": "المنطقة الزمنية"
+          "timezone": "المنطقة الزمنية",
+          "currency": "العملة",
+          "branchIdOptional": "معرّف الفرع (اختياري)",
+          "metric": "المقياس",
+          "windowDays": "الفترة (أيام)"
         },
         "submit": "حفظ",
         "cancel": "إلغاء",
         "createdToast": "تم إنشاء الجدول.",
-        "updatedToast": "تم تحديث الجدول."
+        "updatedToast": "تم تحديث الجدول.",
+        "metricOptions": {
+          "revenue": "الإيرادات",
+          "transactions": "عدد العمليات",
+          "gross_profit": "إجمالي الربح"
+        }
       },
       "runNowToast": "تم وضعه في الطابور — سيستلمه المستلمون قريبًا.",
       "deleteConfirm": {
@@ -467,7 +476,9 @@
         "rate_limited": "تسجيلات كثيرة من هذه الشبكة — حاول لاحقاً.",
         "validation_failed": "تأكّد من الحقول وحاول مجدداً.",
         "network": "خطأ في الشبكة — حاول مجدداً."
-      }
+      },
+      "localeOptionEn": "English",
+      "localeOptionAr": "العربية"
     },
     "forgot": {
       "title": "نسيت كلمة المرور؟",
@@ -499,7 +510,8 @@
         "weak_password": "استخدم 8 خانات على الأقل، تتضمن حرفاً ورقماً.",
         "validation_failed": "تأكّد من الحقول وحاول مجدداً.",
         "network": "خطأ في الشبكة — حاول مجدداً."
-      }
+      },
+      "backToLogin": "العودة لتسجيل الدخول"
     },
     "verify": {
       "loading": "جاري تأكيد بريدك…",
@@ -513,7 +525,8 @@
       "resendDone": "تم الإرسال. تحقّق من بريدك.",
       "errors": {
         "network": "خطأ في الشبكة — حاول مجدداً."
-      }
+      },
+      "backToLogin": "العودة لتسجيل الدخول"
     },
     "passwordStrength": {
       "label": "القوة",
@@ -604,7 +617,19 @@
     "today": "اليوم",
     "yes": "نعم",
     "no": "لا",
-    "language": "اللغة"
+    "language": "اللغة",
+    "errorBoundary": {
+      "title": "حدث خطأ ما",
+      "body": "حدث خطأ غير متوقع. بياناتك بأمان — حاول مرة أخرى، أو عد إلى لوحة التحكم.",
+      "retry": "حاول مرة أخرى",
+      "backHome": "العودة إلى لوحة التحكم"
+    },
+    "notFound": {
+      "title": "الصفحة غير موجودة",
+      "body": "الصفحة التي تبحث عنها غير موجودة أو تم نقلها.",
+      "backHome": "العودة إلى لوحة التحكم"
+    },
+    "charCount": "{used} / {max}"
   },
   "home": {
     "headline": "مدار",
@@ -669,6 +694,10 @@
       "checkoutSub": "نقطة بيع مباشرة",
       "inventory": "المخزون",
       "inventorySub": "الكتالوج والمخزون"
+    },
+    "impersonation": {
+      "label": "تسجيل دخول الدعم",
+      "body": "أنت تعرض مدار باسم <strong>{tenant}</strong> — مسجّل الدخول باسم <strong>{admin}</strong>. جميع الإجراءات مسجَّلة."
     }
   },
   "inventory": {
@@ -907,7 +936,8 @@
         "hint": "JPG أو PNG أو WEBP · حتى ٥ ميجابايت · يُعاد تحجيمها وتجريد بيانات EXIF",
         "tooLarge": "يجب ألا تتجاوز الصورة ٥ ميجابايت.",
         "uploadFailed": "فشل رفع الصورة: {reason}"
-      }
+      },
+      "optionalTag": "اختياري"
     },
     "detail": {
       "backToInventory": "العودة إلى المخزون",
@@ -993,7 +1023,8 @@
           "product_deleted": "أرشف المنتج",
           "product_image_set": "حدّد صورة المنتج",
           "product_image_cleared": "أزال صورة المنتج"
-        }
+        },
+        "viaImpersonation": "عبر تسجيل دخول الدعم"
       },
       "kpis": {
         "stockValue": "قيمة المخزون",
@@ -1085,7 +1116,8 @@
         "sku": "الرمز",
         "error": "الخطأ"
       }
-    }
+    },
+    "tableNoMatch": "لا توجد منتجات مطابقة لعوامل التصفية."
   },
   "categoriesPage": {
     "kicker": "المخزون",
@@ -1536,7 +1568,8 @@
       "notePlaceholder": "مثلاً: حليب الشوفان، بدون سكر",
       "newTotal": "الإجمالي الجديد",
       "remove": "حذف البند",
-      "update": "تحديث"
+      "update": "تحديث",
+      "discountSuffix": "· −{discount}%"
     },
     "held": {
       "kicker": "الفواتير المحفوظة",
@@ -1657,7 +1690,8 @@
           "customer_required": "يجب إرفاق عميل لاستخدام رصيد المتجر.",
           "currency_mismatch": "رصيد العميل بعملة مختلفة."
         }
-      }
+      },
+      "roundUp": "↑{amount}"
     }
   },
   "receipt": {
@@ -1694,7 +1728,8 @@
       "heading": "تفاصيل التحويل البنكي",
       "bankName": "البنك",
       "holder": "صاحب الحساب",
-      "iban": "IBAN"
+      "iban": "IBAN",
+      "ibanLine": "IBAN: •••• {last4}"
     },
     "status": {
       "paid": "مدفوع",
@@ -1969,7 +2004,8 @@
         "headerLastMovement": "آخر حركة",
         "neverMoved": "—",
         "empty": "لا توجد سجلات مخزون لهذا الفرع بعد.",
-        "lowEmpty": "لا شيء منخفض في هذا الفرع."
+        "lowEmpty": "لا شيء منخفض في هذا الفرع.",
+        "error": "تعذر تحميل المخزون."
       },
       "settings": {
         "title": "الإعدادات",
@@ -2229,7 +2265,16 @@
       "business": "العمل",
       "users": "المستخدمون",
       "taxClasses": "الفئات الضريبية",
-      "notifications": "الإشعارات"
+      "notifications": "الإشعارات",
+      "appearance": "المظهر"
+    },
+    "appearance": {
+      "title": "المظهر",
+      "description": "اختر كيف يبدو مدار على هذا الجهاز.",
+      "light": "فاتح",
+      "dark": "داكن",
+      "system": "حسب النظام",
+      "systemHint": "خيار «حسب النظام» يتبع إعداد الوضع الفاتح أو الداكن في جهازك."
     },
     "security": {
       "kicker": "الحساب",
@@ -3412,6 +3457,12 @@
         "amount_zero": "المبلغ لا يمكن أن يكون صفراً.",
         "generic": "حدث خطأ. يرجى المحاولة مرة أخرى."
       }
+    },
+    "pagination": {
+      "summary": "{shown} من {total}",
+      "page": "صفحة {page} من {total}",
+      "prev": "السابق",
+      "next": "التالي"
     }
   },
   "refunds": {

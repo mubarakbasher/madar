@@ -1,5 +1,7 @@
 "use client";
 
+import { formatMoney } from "@madar/ui";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -24,13 +26,7 @@ const STATUS_TONE: Record<string, { color: string; bg: string }> = {
 };
 
 function formatCents(cents: string, currency: string): string {
-  const major = Number(BigInt(cents)) / 100;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency || "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(major);
+  return formatMoney(cents, currency || "USD", "en-US", { min: 0, max: 0 });
 }
 
 function overdueTone(days: number): string {

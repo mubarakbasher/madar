@@ -1,5 +1,7 @@
 "use client";
 
+import { formatMoney } from "@madar/ui";
+
 import { useState } from "react";
 import Link from "next/link";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -13,12 +15,7 @@ import { useAdminAuthStore } from "@/lib/auth/store";
 import { t } from "@/lib/i18n";
 
 function formatCents(cents: string, currency: string): string {
-  const major = Number(BigInt(cents)) / 100;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency || "USD",
-    maximumFractionDigits: major % 1 === 0 ? 0 : 2,
-  }).format(major);
+  return formatMoney(cents, currency || "USD", "en-US", { min: 0 });
 }
 
 function formatLimit(n: number): string {
@@ -61,7 +58,7 @@ export function PlansClient() {
         </div>
         {isOwner ? (
           <Link href="/plans/new" className="admin-btn admin-btn-primary">
-            <Plus size={16} strokeWidth={1.75} />
+            <Plus size={16} strokeWidth={1.5} />
             <span>{t("plans.newPlan")}</span>
           </Link>
         ) : null}
@@ -116,7 +113,7 @@ export function PlansClient() {
                 <td>
                   <Link
                     href={`/plans/${p.id}`}
-                    style={{ textDecoration: "none", color: "inherit", fontFamily: "var(--font-mono, monospace)" }}
+                    style={{ textDecoration: "none", color: "inherit", fontFamily: "var(--mono)" }}
                   >
                     {p.code}
                   </Link>
@@ -124,7 +121,7 @@ export function PlansClient() {
                 <td>{p.name_i18n.en || <span className="admin-muted">—</span>}</td>
                 <td className="right">{formatCents(p.monthly_price_cents, p.currency_code)}</td>
                 <td>
-                  <span style={{ fontFamily: "var(--font-mono, monospace)", fontSize: 13 }}>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: 13 }}>
                     {formatLimit(p.limits.txns)} · {formatLimit(p.limits.users)} ·{" "}
                     {formatLimit(p.limits.branches)} · {formatLimit(p.limits.storage_gb)}
                   </span>
@@ -159,7 +156,7 @@ export function PlansClient() {
 function EmptyPlans({ isOwner }: { isOwner: boolean }) {
   return (
     <div className="admin-empty-block">
-      <Package size={32} strokeWidth={1.25} />
+      <Package size={32} strokeWidth={1.5} />
       <h2>{t("plans.empty.title")}</h2>
       <p>
         {t("plans.empty.body")}

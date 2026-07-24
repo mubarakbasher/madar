@@ -1,5 +1,7 @@
 "use client";
 
+import { formatMoney, majorToMinor, minorToMajor } from "@madar/ui";
+
 import { AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { t } from "@/lib/i18n";
 
@@ -8,27 +10,23 @@ interface Props {
 }
 
 function formatCents(cents: string, currency: string): string {
-  const major = Number(BigInt(cents)) / 100;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency || "USD",
-    maximumFractionDigits: 0,
-  }).format(major);
+  return formatMoney(cents, currency || "USD", "en-US", { min: 0, max: 0 });
 }
 
 export function MrrTrendChart({ data }: Props) {
   const currency = data[0]?.currency_code ?? "USD";
   const firstCents = data[0]?.amount_cents ?? "0";
   const lastCents = data[data.length - 1]?.amount_cents ?? "0";
-  const delta = Number(BigInt(lastCents) - BigInt(firstCents)) / 100;
+  const deltaCents = BigInt(lastCents) - BigInt(firstCents);
+  const deltaAbs = (deltaCents < BigInt(0) ? -deltaCents : deltaCents).toString();
   const deltaStr =
-    delta >= 0
-      ? `+${formatCents(String(Math.abs(delta) * 100), currency)}`
-      : `-${formatCents(String(Math.abs(delta) * 100), currency)}`;
+    deltaCents >= BigInt(0)
+      ? `+${formatCents(deltaAbs, currency)}`
+      : `-${formatCents(deltaAbs, currency)}`;
 
   const chartData = data.map((d) => ({
     ...d,
-    amount: Number(BigInt(d.amount_cents)) / 100,
+    amount: minorToMajor(d.amount_cents, currency),
   }));
 
   return (
@@ -43,11 +41,11 @@ export function MrrTrendChart({ data }: Props) {
         <AreaChart data={chartData}>
           <defs>
             <linearGradient id="mrrGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#4A6B7A" stopOpacity={0.3} />
-              <stop offset="100%" stopColor="#4A6B7A" stopOpacity={0.05} />
+              <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.3} />
+              <stop offset="100%" stopColor="var(--accent)" stopOpacity={0.05} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="5 5" stroke="var(--border)" />
+          <CartesianGrid strokeDasharray="5 5" stroke="var(--rule)" />
           <XAxis
             dataKey="date"
             tick={{ fontSize: 10, fontFamily: "var(--sans)", fill: "var(--ink-3)" }}
@@ -57,27 +55,25 @@ export function MrrTrendChart({ data }: Props) {
           <YAxis
             tick={{ fontSize: 10, fontFamily: "var(--sans)", fill: "var(--ink-3)" }}
             width={48}
-            tickFormatter={(v: number) =>
-              formatCents(String(Math.round(v * 100)), currency).replace(/\.00$/, "")
-            }
+            tickFormatter={(v: number) => formatCents(String(majorToMinor(v, currency)), currency)}
           />
           <Tooltip
             contentStyle={{
               fontFamily: "var(--sans)",
               fontSize: 12,
               background: "var(--bg)",
-              border: "1px solid var(--border)",
+              border: "1px solid var(--rule)",
               borderRadius: 8,
             }}
             formatter={(v) => [
-              formatCents(String(Math.round(Number(v ?? 0) * 100)), currency),
+              formatCents(String(majorToMinor(Number(v ?? 0), currency)), currency),
               t("dashboard.charts.mrrLabel"),
             ]}
           />
           <Area
             type="monotone"
             dataKey="amount"
-            stroke="#4A6B7A"
+            stroke="var(--accent)"
             strokeWidth={2}
             fill="url(#mrrGrad)"
           />

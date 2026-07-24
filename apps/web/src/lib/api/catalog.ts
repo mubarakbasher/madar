@@ -46,11 +46,22 @@ export interface ApiCategoriesList {
   total: number;
 }
 
+export interface ApiInventorySummary {
+  sku_count: number;
+  /** SUM(cost_cents × qty_on_hand) over active products, stringified bigint. */
+  on_hand_value_cents: string;
+  low_count: number;
+}
+
 export interface ApiProductsList {
   items: ApiProduct[];
   total: number;
+  page: number;
   limit: number;
+  summary: ApiInventorySummary;
 }
+
+export type ProductsSortKey = "sku" | "name" | "price" | "cost" | "stock" | "vel";
 
 export interface ProductInitialStockEntry {
   branch_id: string;
@@ -105,13 +116,28 @@ export function categoriesListRequest(): Promise<ApiCategoriesList> {
 }
 
 export function productsListRequest(
-  params: { search?: string; category_id?: string; branch_id?: string; only_low_stock?: boolean } = {},
+  params: {
+    search?: string;
+    category_id?: string;
+    branch_id?: string;
+    only_low_stock?: boolean;
+    page?: number;
+    limit?: number;
+    sort?: ProductsSortKey;
+    dir?: "asc" | "desc";
+    name_locale?: "en" | "ar";
+  } = {},
 ): Promise<ApiProductsList> {
   const q = new URLSearchParams();
   if (params.search) q.set("search", params.search);
   if (params.category_id) q.set("category_id", params.category_id);
   if (params.branch_id) q.set("branch_id", params.branch_id);
   if (params.only_low_stock) q.set("only_low_stock", "true");
+  if (params.page) q.set("page", String(params.page));
+  if (params.limit) q.set("limit", String(params.limit));
+  if (params.sort) q.set("sort", params.sort);
+  if (params.dir) q.set("dir", params.dir);
+  if (params.name_locale) q.set("name_locale", params.name_locale);
   const qs = q.toString();
   return apiFetch<ApiProductsList>(`/v1/products${qs ? `?${qs}` : ""}`);
 }

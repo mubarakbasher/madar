@@ -22,7 +22,7 @@
   font-size: 36px;
   letter-spacing: -0.02em;
   margin-block: 8px 4px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .trends-subtitle {
@@ -62,7 +62,7 @@
   border: 1px solid var(--rule);
   border-radius: 8px;
   background: var(--bg-elev);
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .trends-filter select:focus-visible {
@@ -115,7 +115,7 @@
   font-family: var(--serif);
   font-size: 22px;
   letter-spacing: -0.01em;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .trends-empty p {
@@ -149,7 +149,7 @@
   font-family: var(--serif);
   font-size: 24px;
   letter-spacing: -0.01em;
-  color: var(--ink-1);
+  color: var(--ink);
   display: flex;
   align-items: center;
   gap: 6px;

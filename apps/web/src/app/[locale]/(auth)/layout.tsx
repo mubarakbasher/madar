@@ -1,8 +1,10 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { setRequestLocale, getTranslations } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, setRequestLocale, getTranslations } from "next-intl/server";
 import { MadarMark } from "@madar/ui";
 import { LocaleToggle } from "./_components/LocaleToggle";
+import { pickMessages } from "../../../lib/i18n/pick-messages";
 
 export default async function AuthLayout({
   children,
@@ -19,8 +21,11 @@ export default async function AuthLayout({
     redirect(`/${locale}`);
   }
   const t = await getTranslations("auth");
+  const tBrand = await getTranslations("brand");
+  const messages = pickMessages(await getMessages(), ["auth", "brand", "common"]);
 
   return (
+    <NextIntlClientProvider messages={messages}>
     <div
       className="min-h-dvh"
       style={{ background: "var(--bg)", color: "var(--ink)" }}
@@ -38,11 +43,11 @@ export default async function AuthLayout({
           <div className="flex items-center gap-3">
             <MadarMark size={36} style={{ color: "var(--accent)" }} />
             <span style={{ fontFamily: "var(--serif)", fontSize: 22, letterSpacing: "-0.01em" }}>
-              Madar
+              {tBrand("name")}
             </span>
           </div>
 
-          <div className="relative">
+          <div>
             <h1
               style={{
                 fontFamily: "var(--serif)",
@@ -60,23 +65,6 @@ export default async function AuthLayout({
             >
               {t("shell.brandTagline")}
             </p>
-
-            {/* Quiet atmospheric card peeks */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute -end-6 top-24 hidden rotate-[6deg] rounded-2xl border p-5 shadow-sm md:block"
-              style={{
-                width: 240,
-                background: "var(--paper)",
-                borderColor: "var(--rule)",
-                boxShadow: "0 14px 40px -28px rgba(15,15,15,0.35)",
-              }}
-            >
-              <div style={{ fontFamily: "var(--serif)", fontSize: 18 }}>كافيه بيت</div>
-              <div className="mt-3" style={{ fontSize: 12, color: "var(--ink-3)" }}>
-                Maadi · 5 branches · 21 SKUs
-              </div>
-            </div>
           </div>
 
           <div className="text-xs" style={{ color: "var(--ink-4)" }}>
@@ -95,7 +83,7 @@ export default async function AuthLayout({
               style={{ fontFamily: "var(--serif)", fontSize: 20, letterSpacing: "-0.01em" }}
             >
               <MadarMark size={22} style={{ color: "var(--accent)" }} />
-              Madar
+              {tBrand("name")}
             </span>
             <span className="hidden lg:block" />
             <LocaleToggle />
@@ -106,5 +94,6 @@ export default async function AuthLayout({
         </main>
       </div>
     </div>
+    </NextIntlClientProvider>
   );
 }

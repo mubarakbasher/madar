@@ -10,7 +10,7 @@ import {
   type ClipboardEvent,
 } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 const DIGITS = 6;
 
@@ -204,10 +204,11 @@ export function MfaChallenge({ signedInAs, submitting, error, onSubmit, onBack }
         <button
           type="button"
           onClick={onBack}
-          className="self-center text-[12px] underline underline-offset-4"
+          className="inline-flex items-center gap-1 self-center text-[12px] underline underline-offset-4"
           style={{ color: "var(--ink-3)" }}
         >
-          ← {t("back")}
+          <ArrowLeft size={12} strokeWidth={1.5} className="rtl:rotate-180" />
+          {t("back")}
         </button>
       </form>
     </div>

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Check, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "../../../../../i18n/routing";
 import { ApiError } from "../../../../lib/api/client";
 import { tryRefresh } from "../../../../lib/api/client";
+import { useAuthStore } from "../../../../lib/auth/store";
 import type { ApiPlan } from "../../../../lib/api/billing";
 import { publicPlansRequest, selectPlanRequest } from "../../../../lib/api/onboarding";
 import { currencyMinorUnits, minorToMajor } from "../../../../lib/currency";
@@ -38,6 +39,13 @@ export function SelectPlanClient() {
   const locale = useLocale();
   const router = useRouter();
   const [pendingPlanId, setPendingPlanId] = useState<string | null>(null);
+
+  // Inverse of useRedirectOnNoPlan: a tenant that already has a plan has no
+  // business on the picker (re-picking 409s) — send them to the dashboard.
+  const tenantPlan = useAuthStore((s) => s.tenant?.plan ?? null);
+  useEffect(() => {
+    if (tenantPlan) router.replace("/");
+  }, [tenantPlan, router]);
 
   const plansQ = useQuery({
     queryKey: ["public", "plans"],

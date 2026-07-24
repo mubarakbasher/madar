@@ -18,11 +18,11 @@
 }
 
 .br-title {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 32px;
   line-height: 1.1;
   font-weight: 500;
-  color: var(--ink-1);
+  color: var(--ink);
   margin: 0;
 }
 
@@ -45,7 +45,7 @@
   gap: 14px;
   border: 1px solid var(--rule);
   background: var(--bg-elev);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 18px;
   text-decoration: none;
   color: inherit;
@@ -69,11 +69,11 @@
 }
 
 .br-card-name {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 20px;
   line-height: 1.2;
   margin: 0;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-card-address {
@@ -93,8 +93,8 @@
 }
 
 .br-pill-open {
-  background: color-mix(in oklab, var(--sage, #6e9b7f) 18%, transparent);
-  color: var(--sage, #4d7359);
+  background: color-mix(in oklab, var(--sage) 18%, transparent);
+  color: var(--sage);
 }
 
 .br-pill-inactive {
@@ -127,17 +127,17 @@
 
 .br-stat-value {
   margin-block-start: 4px;
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 22px;
   line-height: 1.1;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-stat-value-sm {
   margin-block-start: 4px;
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 18px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-card-foot {
@@ -149,7 +149,7 @@
 }
 
 .br-card-code {
-  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-family: var(--mono);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -179,7 +179,7 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: var(--bg-pop, rgba(0, 0, 0, 0.04));
+  background: var(--bg-sunk);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -187,9 +187,9 @@
 }
 
 .br-add-title {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 18px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-add-sub {
@@ -200,13 +200,13 @@
 .br-empty {
   margin-block-start: 40px;
   border: 1px dashed var(--rule);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 48px 24px;
   text-align: center;
 }
 
 .br-empty-title {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 22px;
   margin-block-end: 6px;
 }
@@ -226,7 +226,7 @@
   border: 1px solid var(--rule);
   background: var(--bg-elev);
   font-size: 13px;
-  color: var(--ink-1);
+  color: var(--ink);
   cursor: pointer;
   text-decoration: none;
   font-family: inherit;
@@ -234,7 +234,7 @@
 
 .br-btn-primary {
   background: var(--accent);
-  color: var(--accent-ink, white);
+  color: var(--accent-ink);
   border-color: var(--accent);
 }
 
@@ -243,8 +243,8 @@
 }
 
 .br-btn-danger {
-  border-color: var(--rose, #c45a5a);
-  color: var(--rose, #c45a5a);
+  border-color: var(--rose);
+  color: var(--rose);
   background: transparent;
 }
 
@@ -261,7 +261,7 @@
 .br-error {
   margin-block-start: 24px;
   border: 1px solid var(--rule);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 32px 24px;
   text-align: center;
 }
@@ -311,7 +311,7 @@
 }
 
 .br-tab-active {
-  color: var(--ink-1);
+  color: var(--ink);
   border-block-end-color: var(--accent);
 }
 
@@ -324,7 +324,7 @@
 
 .br-kpi {
   border: 1px solid var(--rule);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 14px 16px;
   background: var(--bg-elev);
 }
@@ -338,24 +338,24 @@
 
 .br-kpi-value {
   margin-block-start: 6px;
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 26px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-section {
   border: 1px solid var(--rule);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   background: var(--bg-elev);
   padding: 14px 16px;
   margin-block-end: 14px;
 }
 
 .br-section-title {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 16px;
   margin-block-end: 8px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-list {
@@ -406,7 +406,7 @@
 }
 
 .br-stock-low {
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
   font-weight: 500;
 }
 
@@ -424,7 +424,7 @@
   border-radius: var(--radius-sm);
   font-size: 13px;
   width: 240px;
-  color: var(--ink-1);
+  color: var(--ink);
   font-family: inherit;
 }
 
@@ -447,16 +447,16 @@
 .br-form-section {
   border: 1px solid var(--rule);
   background: var(--bg-elev);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius);
   padding: 18px;
   margin-block-end: 14px;
 }
 
 .br-form-section-title {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 16px;
   margin-block-end: 12px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-field {
@@ -480,7 +480,7 @@
   background: var(--bg);
   border-radius: var(--radius-sm);
   font-size: 13px;
-  color: var(--ink-1);
+  color: var(--ink);
   font-family: inherit;
 }
 
@@ -498,7 +498,7 @@
 .br-field-error {
   margin-block-start: 4px;
   font-size: 12px;
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
 }
 
 .br-form-foot {
@@ -531,7 +531,7 @@
 
 .br-tab-strip button[aria-pressed="true"] {
   background: var(--accent);
-  color: var(--accent-ink, white);
+  color: var(--accent-ink);
 }
 
 .br-checkbox {
@@ -539,7 +539,7 @@
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-status-bar {
@@ -575,7 +575,7 @@
 
 .br-hours-day {
   font-size: 14px;
-  color: var(--ink-1);
+  color: var(--ink);
   font-weight: 500;
 }
 
@@ -594,7 +594,7 @@
   border: 1px solid var(--rule);
   border-radius: var(--radius-sm);
   background: var(--bg);
-  color: var(--ink-1);
+  color: var(--ink);
   font-size: 14px;
 }
 
@@ -639,7 +639,7 @@
 
 .br-btn-primary {
   background: var(--accent);
-  color: var(--accent-ink, white);
+  color: var(--accent-ink);
   border-color: var(--accent);
 }
 
@@ -678,7 +678,7 @@
 .br-bank-name {
   font-size: 14px;
   font-weight: 500;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-bank-meta {
@@ -748,7 +748,7 @@
 
 .br-view-toggle button.br-view-toggle-active {
   background: var(--accent);
-  color: var(--accent-ink, white);
+  color: var(--accent-ink);
 }
 
 .br-map-shell {
@@ -843,7 +843,7 @@
 
 .br-map-stats dd {
   font-size: 15px;
-  color: var(--ink-1);
+  color: var(--ink);
   margin: 0;
   font-weight: 500;
 }
@@ -880,7 +880,7 @@
 
 .br-staff-empty {
   border: 1px dashed var(--rule);
-  border-radius: var(--radius, 12px);
+  border-radius: var(--radius);
   padding: 40px 24px;
   text-align: center;
   color: var(--ink-3);
@@ -891,10 +891,10 @@
 }
 
 .br-staff-empty-title {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 20px;
   font-weight: 500;
-  color: var(--ink-1);
+  color: var(--ink);
   margin: 0;
 }
 
@@ -920,7 +920,7 @@
   align-items: center;
   padding: 12px 14px;
   border: 1px solid var(--rule);
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm);
   background: var(--bg-elev);
   position: relative;
 }
@@ -932,7 +932,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 15px;
   font-weight: 500;
   color: #fff;
@@ -948,7 +948,7 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: var(--ink-1);
+  color: var(--ink);
   font-weight: 500;
 }
 
@@ -972,7 +972,7 @@
   align-items: center;
   font-size: 10.5px;
   padding: 2px 8px;
-  border-radius: var(--radius-full, 100px);
+  border-radius: var(--radius-full);
   font-weight: 500;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -996,7 +996,7 @@
   align-items: center;
   font-size: 11px;
   padding: 2px 8px;
-  border-radius: var(--radius-full, 100px);
+  border-radius: var(--radius-full);
   font-weight: 500;
   letter-spacing: 0.02em;
   border: 1px solid var(--rule);
@@ -1010,15 +1010,15 @@
 }
 
 .br-role-manager {
-  background: color-mix(in oklab, var(--sage, #6e9b7f) 14%, transparent);
-  color: var(--sage, #4d7359);
-  border-color: color-mix(in oklab, var(--sage, #6e9b7f) 30%, var(--rule));
+  background: color-mix(in oklab, var(--sage) 14%, transparent);
+  color: var(--sage);
+  border-color: color-mix(in oklab, var(--sage) 30%, var(--rule));
 }
 
 .br-role-cashier {
-  background: color-mix(in oklab, var(--amber, #b88438) 14%, transparent);
-  color: var(--amber, #b88438);
-  border-color: color-mix(in oklab, var(--amber, #b88438) 30%, var(--rule));
+  background: color-mix(in oklab, var(--amber) 14%, transparent);
+  color: var(--amber);
+  border-color: color-mix(in oklab, var(--amber) 30%, var(--rule));
 }
 
 .br-role-accountant {
@@ -1039,12 +1039,12 @@
   gap: 5px;
   font-size: 11px;
   padding: 2px 8px;
-  border-radius: var(--radius-full, 100px);
+  border-radius: var(--radius-full);
   font-weight: 500;
   letter-spacing: 0.02em;
-  background: color-mix(in oklab, var(--sage, #6e9b7f) 16%, transparent);
-  color: var(--sage, #4d7359);
-  border: 1px solid color-mix(in oklab, var(--sage, #6e9b7f) 30%, var(--rule));
+  background: color-mix(in oklab, var(--sage) 16%, transparent);
+  color: var(--sage);
+  border: 1px solid color-mix(in oklab, var(--sage) 30%, var(--rule));
 }
 
 .br-on-shift-dot {
@@ -1066,7 +1066,7 @@
   justify-content: center;
   width: 30px;
   height: 30px;
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm);
   background: transparent;
   border: 1px solid transparent;
   color: var(--ink-3);
@@ -1076,7 +1076,7 @@
 .br-staff-kebab:hover {
   background: var(--bg-sunk, color-mix(in oklab, var(--ink-3) 6%, transparent));
   border-color: var(--rule);
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-staff-menu-scrim {
@@ -1093,7 +1093,7 @@
   min-width: 200px;
   background: var(--bg-elev);
   border: 1px solid var(--rule);
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm);
   box-shadow: 0 8px 24px color-mix(in oklab, #000 12%, transparent);
   padding: 4px;
   display: flex;
@@ -1108,7 +1108,7 @@
   border: 0;
   background: transparent;
   font: inherit;
-  color: var(--ink-1);
+  color: var(--ink);
   text-align: start;
   border-radius: 6px;
   cursor: pointer;
@@ -1119,7 +1119,7 @@
 }
 
 .br-staff-menu-danger {
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
 }
 
 /* ─── Modal (assign + confirm) ─────────────────────────────────── */
@@ -1138,7 +1138,7 @@
 .br-modal {
   background: var(--bg);
   border: 1px solid var(--rule);
-  border-radius: var(--radius, 12px);
+  border-radius: var(--radius);
   padding: 22px;
   max-width: 440px;
   width: 100%;
@@ -1158,10 +1158,10 @@
 }
 
 .br-modal-title {
-  font-family: var(--font-display, "Fraunces", serif);
+  font-family: var(--serif);
   font-size: 20px;
   font-weight: 500;
-  color: var(--ink-1);
+  color: var(--ink);
   margin: 0;
 }
 
@@ -1173,7 +1173,7 @@
 
 .br-modal-error {
   font-size: 13px;
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
   margin-block: 0 12px;
 }
 
@@ -1199,7 +1199,7 @@
 .br-modal-close:hover {
   border-color: var(--rule);
   background: var(--bg-sunk, color-mix(in oklab, var(--ink-3) 6%, transparent));
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-modal-search {
@@ -1208,7 +1208,7 @@
   gap: 8px;
   padding: 8px 10px;
   border: 1px solid var(--rule);
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm);
   background: var(--bg-elev);
   margin-block-end: 12px;
   color: var(--ink-3);
@@ -1220,7 +1220,7 @@
   border: 0;
   outline: none;
   font: inherit;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .br-modal-status {
@@ -1230,7 +1230,7 @@
 }
 
 .br-modal-status.br-modal-error {
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
 }
 
 /* ─── Assign-modal candidate list ──────────────────────────────── */
@@ -1259,7 +1259,7 @@
   gap: 12px;
   padding: 10px 12px;
   border: 1px solid var(--rule);
-  border-radius: var(--radius-sm, 8px);
+  border-radius: var(--radius-sm);
   background: var(--bg-elev);
   cursor: pointer;
   text-align: start;
@@ -1296,5 +1296,5 @@
   margin: 0;
   padding-inline-start: 12px;
   font-size: 12px;
-  color: var(--rose, #c45a5a);
+  color: var(--rose);
 }

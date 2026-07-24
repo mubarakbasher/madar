@@ -72,7 +72,7 @@ export function BankingClient() {
         </div>
         {isOwner ? (
           <button type="button" className="admin-btn admin-btn-primary" onClick={openCreate}>
-            <Plus size={16} strokeWidth={1.75} />
+            <Plus size={16} strokeWidth={1.5} />
             <span>{t("banking.addAccount")}</span>
           </button>
         ) : null}
@@ -107,8 +107,8 @@ export function BankingClient() {
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))",
-            gap: "var(--spacing-4, 16px)",
-            marginTop: "var(--spacing-4, 16px)",
+            gap: "var(--space-4)",
+            marginTop: "var(--space-4)",
           }}
         >
           {query.data.map((account) => (
@@ -173,9 +173,9 @@ function BankAccountCard({
       className="admin-card"
       style={{
         opacity: account.is_active ? 1 : 0.55,
-        padding: "var(--spacing-5, 20px)",
-        borderRadius: "var(--radius-lg, 12px)",
-        border: "1px solid var(--color-border, #e5e5e5)",
+        padding: "var(--space-5)",
+        borderRadius: "var(--radius-lg)",
+        border: "1px solid var(--rule)",
         position: "relative",
       }}
     >
@@ -194,14 +194,14 @@ function BankAccountCard({
             fontWeight: 600,
             padding: "2px 8px",
             borderRadius: 4,
-            background: "var(--color-surface-raised, #f5f5f5)",
+            background: "var(--bg-sunk)",
           }}
         >
           {account.currency_code}
         </span>
       </div>
 
-      <div style={{ fontSize: 18, fontFamily: "var(--font-mono, monospace)", marginBottom: 8 }}>
+      <div style={{ fontSize: 18, fontFamily: "var(--mono)", marginBottom: 8 }}>
         {revealed ? revealed : `•••• ${account.account_number_last4}`}
       </div>
 
@@ -238,7 +238,7 @@ function BankAccountCard({
           gap: 8,
           marginTop: 14,
           paddingTop: 12,
-          borderTop: "1px solid var(--color-border, #e5e5e5)",
+          borderTop: "1px solid var(--rule)",
         }}
       >
         {isOwner ? (
@@ -306,7 +306,7 @@ function BankAccountCard({
 function EmptyBanking({ isOwner, onCreate }: { isOwner: boolean; onCreate: () => void }) {
   return (
     <div className="admin-empty-block">
-      <Building2 size={32} strokeWidth={1.25} />
+      <Building2 size={32} strokeWidth={1.5} />
       <h2>{t("banking.empty.title")}</h2>
       <p>
         {t("banking.empty.body")}

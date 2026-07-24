@@ -9,15 +9,6 @@ export interface RejectSubmit {
   notes?: string;
 }
 
-const REJECT_REASONS = [
-  { id: "amount", label: t("proofs.reject.reasons.amount") },
-  { id: "unread", label: t("proofs.reject.reasons.unread") },
-  { id: "account", label: t("proofs.reject.reasons.account") },
-  { id: "dup", label: t("proofs.reject.reasons.dup") },
-  { id: "fraud", label: t("proofs.reject.reasons.fraud") },
-  { id: "other", label: t("proofs.reject.reasons.other") },
-];
-
 export function RejectModal({
   onCancel,
   onSubmit,
@@ -25,6 +16,16 @@ export function RejectModal({
   onCancel: () => void;
   onSubmit: (payload: RejectSubmit) => Promise<void>;
 }) {
+  // Resolved per render (not at module load) so labels follow the active
+  // dictionary if the admin app ever grows a second locale.
+  const REJECT_REASONS = [
+    { id: "amount", label: t("proofs.reject.reasons.amount") },
+    { id: "unread", label: t("proofs.reject.reasons.unread") },
+    { id: "account", label: t("proofs.reject.reasons.account") },
+    { id: "dup", label: t("proofs.reject.reasons.dup") },
+    { id: "fraud", label: t("proofs.reject.reasons.fraud") },
+    { id: "other", label: t("proofs.reject.reasons.other") },
+  ];
   const [reasonId, setReasonId] = useState<string>("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);

@@ -44,7 +44,7 @@ export function DisableMfaModal({ onClose }: { onClose: (disabled: boolean) => v
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0,0,0,0.45)",
+        background: "var(--scrim)",
         display: "grid",
         placeItems: "center",
         zIndex: 60,
@@ -71,7 +71,7 @@ export function DisableMfaModal({ onClose }: { onClose: (disabled: boolean) => v
             borderBlockEnd: "1px solid var(--rule)",
           }}
         >
-          <h2 style={{ fontFamily: "var(--serif, Fraunces, serif)", fontSize: 18, margin: 0 }}>
+          <h2 style={{ fontFamily: "var(--serif)", fontSize: 18, margin: 0 }}>
             {t("title")}
           </h2>
           <button
@@ -107,7 +107,7 @@ export function DisableMfaModal({ onClose }: { onClose: (disabled: boolean) => v
               borderRadius: 8,
               fontSize: 13,
               background: "var(--bg)",
-              color: "var(--ink-1)",
+              color: "var(--ink)",
               fontFamily: "inherit",
             }}
           />
@@ -122,7 +122,7 @@ export function DisableMfaModal({ onClose }: { onClose: (disabled: boolean) => v
                 fontSize: 13,
                 border: "1px solid var(--rule)",
                 background: "transparent",
-                color: "var(--ink-1)",
+                color: "var(--ink)",
                 cursor: "pointer",
                 fontFamily: "inherit",
               }}
@@ -137,8 +137,8 @@ export function DisableMfaModal({ onClose }: { onClose: (disabled: boolean) => v
                 padding: "var(--space-2) 14px",
                 borderRadius: 8,
                 fontSize: 13,
-                border: "1px solid var(--rose, #c45a5a)",
-                background: "var(--rose, #c45a5a)",
+                border: "1px solid var(--rose)",
+                background: "var(--rose)",
                 color: "white",
                 cursor: "pointer",
                 fontFamily: "inherit",

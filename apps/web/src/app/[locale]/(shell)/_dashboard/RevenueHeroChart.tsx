@@ -113,9 +113,9 @@ export function RevenueHeroChart({
                 style={{ marginInlineStart: "var(--space-3)", fontSize: 14 }}
               >
                 {deltaUp ? (
-                  <ArrowUp size={11} strokeWidth={1.75} />
+                  <ArrowUp size={11} strokeWidth={1.5} />
                 ) : (
-                  <ArrowDown size={11} strokeWidth={1.75} />
+                  <ArrowDown size={11} strokeWidth={1.5} />
                 )}
                 {Math.abs(weekDeltaPct as number).toFixed(1)}%
                 <span className="delta-sub">{tKpi("vsLastWeek")}</span>

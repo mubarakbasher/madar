@@ -101,7 +101,7 @@ html[lang="ar"] .ro-title { font-family: var(--font-arabic); }
 
 /* Supplier group card */
 .ro-card {
-  background: var(--surface);
+  background: var(--bg-elev);
   border: 1px solid var(--rule);
   border-radius: var(--radius-lg);
   padding: 20px;
@@ -194,7 +194,7 @@ html[lang="ar"] .ro-title { font-family: var(--font-arabic); }
   border-radius: var(--radius-sm);
   background: var(--bg);
   color: var(--ink);
-  font-family: var(--mono, monospace);
+  font-family: var(--mono);
   font-size: 13px;
   text-align: end;
 }
@@ -231,7 +231,7 @@ html[lang="ar"] .ro-title { font-family: var(--font-arabic); }
   padding: 10px 18px;
   border-radius: var(--radius-sm);
   font-size: 13px;
-  box-shadow: var(--shadow-md, 0 8px 24px -8px rgba(0, 0, 0, 0.4));
+  box-shadow: var(--shadow, 0 8px 24px -8px rgba(0, 0, 0, 0.4));
   z-index: 60;
 }
 .ro-toast-link {

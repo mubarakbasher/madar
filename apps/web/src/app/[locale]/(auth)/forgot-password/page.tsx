@@ -1,6 +1,6 @@
 "use client";
 import { useMutation } from "@tanstack/react-query";
-import { ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Link } from "../../../../../i18n/routing";
@@ -39,10 +39,11 @@ export default function ForgotPasswordPage() {
           <p style={{ color: "var(--ink-3)", fontSize: 14 }}>{t("successBody")}</p>
           <Link
             href="/login"
-            className="mt-4 inline-block text-sm underline underline-offset-4"
+            className="mt-4 inline-flex items-center gap-1 text-sm underline underline-offset-4"
             style={{ color: "var(--accent)" }}
           >
-            ← {t("backToLogin")}
+            <ArrowLeft size={14} strokeWidth={1.5} className="rtl:rotate-180" />
+            {t("backToLogin")}
           </Link>
         </div>
       ) : (
@@ -106,10 +107,11 @@ export default function ForgotPasswordPage() {
 
           <Link
             href="/login"
-            className="self-center text-sm underline underline-offset-4"
+            className="inline-flex items-center gap-1 self-center text-sm underline underline-offset-4"
             style={{ color: "var(--ink-3)" }}
           >
-            ← {t("backToLogin")}
+            <ArrowLeft size={14} strokeWidth={1.5} className="rtl:rotate-180" />
+            {t("backToLogin")}
           </Link>
         </form>
       )}

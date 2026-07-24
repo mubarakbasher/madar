@@ -20,11 +20,11 @@
 }
 
 .rf-title {
-  font-family: var(--font-display);
+  font-family: var(--serif);
   font-size: 32px;
   font-weight: 500;
   line-height: 1.1;
-  color: var(--ink-1);
+  color: var(--ink);
   margin: 0;
 }
 
@@ -47,8 +47,8 @@
   gap: 8px;
   padding: 8px 14px;
   border-radius: 999px;
-  border: 1px solid var(--line);
-  background: var(--surface-1);
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
   color: var(--ink-3);
   font-size: 13px;
 }
@@ -56,7 +56,7 @@
 .rf-step-active {
   border-color: var(--accent);
   color: var(--accent);
-  background: color-mix(in oklab, var(--accent) 8%, var(--surface-1));
+  background: color-mix(in oklab, var(--accent) 8%, var(--bg-elev));
 }
 
 .rf-step-done {
@@ -73,7 +73,7 @@
   border-radius: 999px;
   font-size: 11px;
   background: currentColor;
-  color: var(--surface-1);
+  color: var(--bg-elev);
 }
 
 .rf-step-arrow {
@@ -81,15 +81,15 @@
 }
 
 .rf-card {
-  background: var(--surface-1);
-  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
   border-radius: 12px;
   padding: 24px;
   margin-block-end: 20px;
 }
 
 .rf-card-title {
-  font-family: var(--font-display);
+  font-family: var(--serif);
   font-size: 20px;
   font-weight: 500;
   margin: 0 0 4px;
@@ -111,7 +111,7 @@
   padding: 12px 14px;
   text-align: start;
   font-size: 13px;
-  border-block-end: 1px solid var(--line);
+  border-block-end: 1px solid var(--rule);
   vertical-align: middle;
 }
 
@@ -121,7 +121,7 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 11px;
-  background: var(--surface-2);
+  background: var(--bg-sunk);
 }
 
 .rf-table tbody tr:last-child td {
@@ -144,16 +144,16 @@
   width: 28px;
   height: 28px;
   border-radius: 6px;
-  border: 1px solid var(--line);
-  background: var(--surface-1);
-  color: var(--ink-1);
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  color: var(--ink);
   cursor: pointer;
   font-size: 16px;
   line-height: 1;
 }
 
 .rf-qty-btn:hover:not(:disabled) {
-  background: var(--surface-2);
+  background: var(--bg-sunk);
 }
 
 .rf-qty-btn:disabled {
@@ -166,10 +166,10 @@
   height: 28px;
   padding: 0 6px;
   text-align: center;
-  border: 1px solid var(--line);
+  border: 1px solid var(--rule);
   border-radius: 6px;
-  background: var(--surface-1);
-  color: var(--ink-1);
+  background: var(--bg-elev);
+  color: var(--ink);
   font-size: 13px;
   font-variant-numeric: tabular-nums;
 }
@@ -186,8 +186,8 @@
 .rf-summary {
   position: sticky;
   inset-block-end: 0;
-  background: var(--surface-1);
-  border-block-start: 1px solid var(--line);
+  background: var(--bg-elev);
+  border-block-start: 1px solid var(--rule);
   margin-block-start: 24px;
   padding: 20px 24px;
   display: grid;
@@ -209,7 +209,7 @@
 }
 
 .rf-summary-row b {
-  font-family: var(--font-display);
+  font-family: var(--serif);
   font-size: 22px;
   font-weight: 500;
 }
@@ -227,16 +227,16 @@
   gap: 8px;
   padding: 10px 18px;
   border-radius: 10px;
-  background: var(--surface-1);
-  border: 1px solid var(--line);
-  color: var(--ink-1);
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  color: var(--ink);
   font-size: 14px;
   cursor: pointer;
   text-decoration: none;
 }
 
 .rf-btn:hover:not(:disabled) {
-  background: var(--surface-2);
+  background: var(--bg-sunk);
 }
 
 .rf-btn:disabled {
@@ -246,12 +246,12 @@
 
 .rf-btn-primary {
   background: var(--accent);
-  color: var(--accent-on);
+  color: #fff;
   border-color: var(--accent);
 }
 
 .rf-btn-primary:hover:not(:disabled) {
-  background: var(--accent-strong);
+  background: var(--accent-ink);
 }
 
 .rf-radio-row {
@@ -265,19 +265,19 @@
   align-items: flex-start;
   gap: 12px;
   padding: 14px 16px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--rule);
   border-radius: 10px;
   cursor: pointer;
-  background: var(--surface-1);
+  background: var(--bg-elev);
 }
 
 .rf-radio:hover {
-  background: var(--surface-2);
+  background: var(--bg-sunk);
 }
 
 .rf-radio-active {
   border-color: var(--accent);
-  background: color-mix(in oklab, var(--accent) 6%, var(--surface-1));
+  background: color-mix(in oklab, var(--accent) 6%, var(--bg-elev));
 }
 
 .rf-radio input[type="radio"] {
@@ -299,17 +299,17 @@
 .rf-method-detail {
   margin-block-start: 16px;
   padding-block-start: 16px;
-  border-block-start: 1px solid var(--line);
+  border-block-start: 1px solid var(--rule);
 }
 
 .rf-input {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--rule);
   border-radius: 8px;
-  background: var(--surface-1);
+  background: var(--bg-elev);
   font-size: 14px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .rf-input:focus {
@@ -333,15 +333,15 @@
   gap: 8px;
   padding: 8px 12px;
   border-radius: 999px;
-  background: var(--surface-2);
-  border: 1px solid var(--line);
+  background: var(--bg-sunk);
+  border: 1px solid var(--rule);
   font-size: 13px;
 }
 
 .rf-error {
   padding: 12px 16px;
-  background: color-mix(in oklab, var(--rose) 10%, var(--surface-1));
-  border: 1px solid color-mix(in oklab, var(--rose) 30%, var(--line));
+  background: color-mix(in oklab, var(--rose) 10%, var(--bg-elev));
+  border: 1px solid color-mix(in oklab, var(--rose) 30%, var(--rule));
   border-radius: 8px;
   color: var(--rose);
   font-size: 13px;
@@ -365,7 +365,7 @@
 }
 
 .rf-modal {
-  background: var(--surface-1);
+  background: var(--bg-elev);
   border-radius: 14px;
   padding: 24px 28px;
   max-width: 480px;
@@ -374,7 +374,7 @@
 }
 
 .rf-modal h3 {
-  font-family: var(--font-display);
+  font-family: var(--serif);
   font-size: 22px;
   font-weight: 500;
   margin: 0 0 8px;
@@ -396,7 +396,7 @@
 .rf-picker-list {
   max-height: 320px;
   overflow-y: auto;
-  border: 1px solid var(--line);
+  border: 1px solid var(--rule);
   border-radius: 8px;
 }
 
@@ -408,11 +408,11 @@
   width: 100%;
   background: transparent;
   border: none;
-  border-block-end: 1px solid var(--line);
+  border-block-end: 1px solid var(--rule);
   text-align: start;
   cursor: pointer;
   font-size: 13px;
-  color: var(--ink-1);
+  color: var(--ink);
 }
 
 .rf-picker-row:last-child {
@@ -420,7 +420,7 @@
 }
 
 .rf-picker-row:hover {
-  background: var(--surface-2);
+  background: var(--bg-sunk);
 }
 
 .rf-picker-empty {

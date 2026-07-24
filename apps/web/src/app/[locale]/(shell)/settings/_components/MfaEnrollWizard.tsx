@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { QRCodeSVG } from "qrcode.react";
-import { Copy, Download, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Copy, Download, X } from "lucide-react";
 import {
   mfaEnrollStartRequest,
   mfaEnrollVerifyRequest,
@@ -101,7 +101,7 @@ export function MfaEnrollWizard({
           borderBlockEnd: "1px solid var(--rule)",
         }}
       >
-        <h2 style={{ fontFamily: "var(--serif, Fraunces, serif)", fontSize: 18, margin: 0 }}>
+        <h2 style={{ fontFamily: "var(--serif)", fontSize: 18, margin: 0 }}>
           {t("title")}
         </h2>
         <button
@@ -143,7 +143,7 @@ export function MfaEnrollWizard({
                     background: "var(--bg)",
                     border: "1px solid var(--rule)",
                     borderRadius: "var(--radius-sm)",
-                    fontFamily: "var(--font-mono, ui-monospace, monospace)",
+                    fontFamily: "var(--mono)",
                     fontSize: 12,
                   }}
                 >
@@ -158,7 +158,8 @@ export function MfaEnrollWizard({
                 onClick={() => setStep("verify")}
                 style={btn("primary")}
               >
-                Continue →
+                {tCommon("continue")}
+                <ArrowRight size={13} strokeWidth={1.5} className="rtl:rotate-180" style={{ verticalAlign: "-2px", marginInlineStart: 4 }} />
               </button>
             </div>
           </>
@@ -183,10 +184,10 @@ export function MfaEnrollWizard({
                 fontSize: 22,
                 letterSpacing: 4,
                 textAlign: "center",
-                fontFamily: "var(--serif, Fraunces, serif)",
+                fontFamily: "var(--serif)",
                 border: "1px solid var(--rule)",
                 background: "var(--bg)",
-                color: "var(--ink-1)",
+                color: "var(--ink)",
                 borderRadius: 8,
               }}
             />
@@ -195,7 +196,8 @@ export function MfaEnrollWizard({
             )}
             <div style={{ marginBlockStart: 18, display: "flex", justifyContent: "space-between" }}>
               <button type="button" onClick={() => setStep("scan")} style={btn("ghost")}>
-                ← Back
+                <ArrowLeft size={13} strokeWidth={1.5} className="rtl:rotate-180" style={{ verticalAlign: "-2px", marginInlineEnd: 4 }} />
+                {tCommon("back")}
               </button>
               <button
                 type="button"
@@ -224,7 +226,7 @@ export function MfaEnrollWizard({
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gap: 6,
-                fontFamily: "var(--font-mono, ui-monospace, monospace)",
+                fontFamily: "var(--mono)",
                 fontSize: 13,
               }}
             >
@@ -286,7 +288,7 @@ function ModalShell({ onClose, children }: { onClose: () => void; children: Reac
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0,0,0,0.45)",
+        background: "var(--scrim)",
         display: "grid",
         placeItems: "center",
         zIndex: 60,
@@ -302,7 +304,7 @@ function ModalShell({ onClose, children }: { onClose: () => void; children: Reac
           border: "1px solid var(--rule)",
           borderRadius: "var(--radius-lg)",
           overflow: "hidden",
-          boxShadow: "0 24px 80px -24px rgba(0,0,0,0.35)",
+          boxShadow: "var(--shadow-lg)",
         }}
       >
         {children}
@@ -322,7 +324,7 @@ function btn(variant: "primary" | "ghost"): React.CSSProperties {
     fontSize: 13,
     border: primary ? "1px solid var(--accent)" : "1px solid var(--rule)",
     background: primary ? "var(--accent)" : "transparent",
-    color: primary ? "white" : "var(--ink-1)",
+    color: primary ? "white" : "var(--ink)",
     cursor: "pointer",
     fontFamily: "inherit",
   };

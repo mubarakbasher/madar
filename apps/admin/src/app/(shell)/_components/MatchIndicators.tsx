@@ -1,3 +1,4 @@
+import { formatMoney as formatMoneyShared, minorToMajor } from "@madar/ui";
 import { Check, X, Minus } from "lucide-react";
 import type { ProofItem } from "@/lib/api/admin-proofs";
 import { t } from "@/lib/i18n";
@@ -46,15 +47,10 @@ function compute(proof: ProofItem): Pill[] {
 }
 
 function formatMoney(cents: string, currency: string): string {
-  const major = Number(BigInt(cents)) / 100;
   try {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: currency || "USD",
-      maximumFractionDigits: 2,
-    }).format(major);
+    return formatMoneyShared(cents, currency || "USD", "en-US");
   } catch {
-    return `${major.toFixed(2)} ${currency}`;
+    return `${minorToMajor(cents, currency || "USD").toFixed(2)} ${currency}`;
   }
 }
 

@@ -68,10 +68,10 @@ export function NotificationsClient({ locale }: { locale: "en" | "ar" }) {
         </div>
         <h1
           style={{
-            fontFamily: "var(--font-display)",
+            fontFamily: "var(--serif)",
             fontSize: 28,
             margin: "6px 0 0",
-            color: "var(--ink-1)",
+            color: "var(--ink)",
           }}
         >
           {t("title")}
@@ -85,8 +85,8 @@ export function NotificationsClient({ locale }: { locale: "en" | "ar" }) {
         <div
           style={{
             padding: "10px 14px",
-            background: "color-mix(in oklab, var(--amber, #c08a2f) 12%, var(--surface-1))",
-            border: "1px solid var(--line)",
+            background: "color-mix(in oklab, var(--amber) 12%, var(--bg-elev))",
+            border: "1px solid var(--rule)",
             borderRadius: 8,
             color: "var(--ink-2)",
             fontSize: 13,
@@ -100,8 +100,8 @@ export function NotificationsClient({ locale }: { locale: "en" | "ar" }) {
         <div
           style={{
             padding: "10px 14px",
-            background: "color-mix(in oklab, var(--rose) 10%, var(--surface-1))",
-            border: "1px solid color-mix(in oklab, var(--rose) 30%, var(--line))",
+            background: "color-mix(in oklab, var(--rose) 10%, var(--bg-elev))",
+            border: "1px solid color-mix(in oklab, var(--rose) 30%, var(--rule))",
             borderRadius: 8,
             color: "var(--rose)",
             fontSize: 13,
@@ -113,8 +113,8 @@ export function NotificationsClient({ locale }: { locale: "en" | "ar" }) {
 
       <section
         style={{
-          background: "var(--surface-1)",
-          border: "1px solid var(--line)",
+          background: "var(--bg-elev)",
+          border: "1px solid var(--rule)",
           borderRadius: 12,
           overflow: "hidden",
         }}
@@ -130,7 +130,7 @@ export function NotificationsClient({ locale }: { locale: "en" | "ar" }) {
         ) : (
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
-              <tr style={{ background: "var(--surface-2)" }}>
+              <tr style={{ background: "var(--bg-sunk)" }}>
                 <th
                   style={{
                     textAlign: "start",
@@ -166,10 +166,10 @@ export function NotificationsClient({ locale }: { locale: "en" | "ar" }) {
               {NOTIFICATION_EVENTS.map((event, i) => (
                 <tr
                   key={event}
-                  style={{ borderBlockStart: i === 0 ? "none" : "1px solid var(--line)" }}
+                  style={{ borderBlockStart: i === 0 ? "none" : "1px solid var(--rule)" }}
                 >
                   <td style={{ padding: "var(--space-3) var(--space-4)" }}>
-                    <div style={{ fontSize: 14, fontWeight: 500, color: "var(--ink-1)" }}>
+                    <div style={{ fontSize: 14, fontWeight: 500, color: "var(--ink)" }}>
                       {t(`events.${event}.label`)}
                     </div>
                     <div style={{ fontSize: 12, color: "var(--ink-3)", marginBlockStart: 2 }}>

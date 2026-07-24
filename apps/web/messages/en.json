@@ -330,12 +330,21 @@
           "recipientsHint": "Press Enter or comma to add. Up to 20 addresses.",
           "format": "Format",
           "params": "Settings",
-          "timezone": "Timezone"
+          "timezone": "Timezone",
+          "currency": "Currency",
+          "branchIdOptional": "Branch ID (optional)",
+          "metric": "Metric",
+          "windowDays": "Window (days)"
         },
         "submit": "Save",
         "cancel": "Cancel",
         "createdToast": "Schedule created.",
-        "updatedToast": "Schedule updated."
+        "updatedToast": "Schedule updated.",
+        "metricOptions": {
+          "revenue": "Revenue",
+          "transactions": "Transactions",
+          "gross_profit": "Gross profit"
+        }
       },
       "runNowToast": "Queued — recipients should receive it shortly.",
       "deleteConfirm": {
@@ -467,7 +476,9 @@
         "rate_limited": "Too many signups from this network — try again later.",
         "validation_failed": "Please check the fields and try again.",
         "network": "Network error — please try again."
-      }
+      },
+      "localeOptionEn": "English",
+      "localeOptionAr": "العربية"
     },
     "forgot": {
       "title": "Forgot your password?",
@@ -499,7 +510,8 @@
         "weak_password": "Use 8+ characters with a letter and a number.",
         "validation_failed": "Please check the fields and try again.",
         "network": "Network error — please try again."
-      }
+      },
+      "backToLogin": "Back to sign in"
     },
     "verify": {
       "loading": "Confirming your email…",
@@ -513,7 +525,8 @@
       "resendDone": "Sent. Check your inbox.",
       "errors": {
         "network": "Network error — please try again."
-      }
+      },
+      "backToLogin": "Back to sign in"
     },
     "passwordStrength": {
       "label": "Strength",
@@ -604,7 +617,19 @@
     "today": "Today",
     "yes": "Yes",
     "no": "No",
-    "language": "Language"
+    "language": "Language",
+    "errorBoundary": {
+      "title": "Something went wrong",
+      "body": "An unexpected error occurred. Your data is safe — try again, or head back to the dashboard.",
+      "retry": "Try again",
+      "backHome": "Back to dashboard"
+    },
+    "notFound": {
+      "title": "Page not found",
+      "body": "The page you are looking for does not exist or has moved.",
+      "backHome": "Back to dashboard"
+    },
+    "charCount": "{used} / {max}"
   },
   "home": {
     "headline": "Madar",
@@ -669,6 +694,10 @@
       "checkoutSub": "Live terminal",
       "inventory": "Inventory",
       "inventorySub": "Catalog & stock"
+    },
+    "impersonation": {
+      "label": "Impersonating",
+      "body": "You are viewing Madar as <strong>{tenant}</strong> — logged in as <strong>{admin}</strong>. Every action is logged."
     }
   },
   "inventory": {
@@ -907,7 +936,8 @@
         "hint": "JPG, PNG, or WEBP · up to 5 MB · resized + EXIF stripped server-side",
         "tooLarge": "Image must be 5 MB or smaller.",
         "uploadFailed": "Image upload failed: {reason}"
-      }
+      },
+      "optionalTag": "optional"
     },
     "detail": {
       "backToInventory": "Back to inventory",
@@ -993,7 +1023,8 @@
           "product_deleted": "Archived the product",
           "product_image_set": "Set the product image",
           "product_image_cleared": "Removed the product image"
-        }
+        },
+        "viaImpersonation": "via impersonation"
       },
       "kpis": {
         "stockValue": "Stock value",
@@ -1085,7 +1116,8 @@
         "sku": "SKU",
         "error": "Error"
       }
-    }
+    },
+    "tableNoMatch": "No products match your filters."
   },
   "categoriesPage": {
     "kicker": "Inventory",
@@ -1536,7 +1568,8 @@
       "notePlaceholder": "e.g. oat milk, no sugar",
       "newTotal": "New total",
       "remove": "Remove line",
-      "update": "Update"
+      "update": "Update",
+      "discountSuffix": "· −{discount}%"
     },
     "held": {
       "kicker": "Parked tickets",
@@ -1657,7 +1690,8 @@
           "customer_required": "A customer must be attached to use store credit.",
           "currency_mismatch": "Customer credit is in a different currency."
         }
-      }
+      },
+      "roundUp": "↑{amount}"
     }
   },
   "receipt": {
@@ -1694,7 +1728,8 @@
       "heading": "Bank transfer details",
       "bankName": "Bank",
       "holder": "Account holder",
-      "iban": "IBAN"
+      "iban": "IBAN",
+      "ibanLine": "IBAN: •••• {last4}"
     },
     "status": {
       "paid": "PAID",
@@ -1969,7 +2004,8 @@
         "headerLastMovement": "Last movement",
         "neverMoved": "—",
         "empty": "No stock recorded at this branch yet.",
-        "lowEmpty": "Nothing is low at this branch."
+        "lowEmpty": "Nothing is low at this branch.",
+        "error": "Couldn’t load stock."
       },
       "settings": {
         "title": "Settings",
@@ -2229,7 +2265,16 @@
       "business": "Business",
       "users": "Users",
       "taxClasses": "Tax classes",
-      "notifications": "Notifications"
+      "notifications": "Notifications",
+      "appearance": "Appearance"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose how Madar looks on this device.",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System",
+      "systemHint": "System follows your device's light or dark setting."
     },
     "security": {
       "kicker": "Account",
@@ -3412,6 +3457,12 @@
         "amount_zero": "The amount can't be zero.",
         "generic": "Something went wrong. Please try again."
       }
+    },
+    "pagination": {
+      "summary": "{shown} of {total}",
+      "page": "Page {page} of {total}",
+      "prev": "Previous",
+      "next": "Next"
     }
   },
   "refunds": {

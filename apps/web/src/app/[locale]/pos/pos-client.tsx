@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import "./pos.css";
@@ -198,17 +198,17 @@ function PosView({
     return m;
   }, [apiProducts]);
 
-  const filteredProducts = useMemo(
-    () =>
-      products.filter(
-        (p) =>
-          (cat === "all" || p.cat === cat) &&
-          (!search ||
-            p.name.toLowerCase().includes(search.toLowerCase()) ||
-            p.sku.toLowerCase().includes(search.toLowerCase())),
-      ),
-    [products, cat, search],
-  );
+  // Deferred so keystrokes in the search box stay responsive on low-end
+  // tablets — the grid re-filters at transition priority, not per keypress.
+  const deferredSearch = useDeferredValue(search);
+  const filteredProducts = useMemo(() => {
+    const q = deferredSearch.toLowerCase();
+    return products.filter(
+      (p) =>
+        (cat === "all" || p.cat === cat) &&
+        (!q || p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q)),
+    );
+  }, [products, cat, deferredSearch]);
 
   // Integer-cent cart math (audit L-9): per line, gross = unit price_cents ×
   // qty and the percent discount floors via BigInt division — the exact
@@ -590,7 +590,7 @@ function PosView({
         <div
           role="status"
           style={{
-            background: "color-mix(in oklab, var(--amber, #B07A2A) 12%, var(--bg))",
+            background: "color-mix(in oklab, var(--amber) 12%, var(--bg))",
             color: "var(--ink-2)",
             padding: "10px var(--space-4)",
             display: "flex",

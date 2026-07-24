@@ -1,5 +1,7 @@
 "use client";
 
+import { formatMoney } from "@madar/ui";
+
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -27,12 +29,7 @@ const STATUSES: Array<{ value: TenantStatus | "all"; labelKey: "all" | "trial" |
 const PAGE_SIZE = 50;
 
 function formatCents(cents: string, currency: string): string {
-  const major = Number(BigInt(cents)) / 100;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency || "USD",
-    maximumFractionDigits: 0,
-  }).format(major);
+  return formatMoney(cents, currency || "USD", "en-US", { min: 0, max: 0 });
 }
 
 function relativeTime(iso: string | null): string {
@@ -160,7 +157,15 @@ export function TenantsClient() {
       </div>
 
       {data.items.length === 0 ? (
-        <TenantsEmpty filtered={filtered} />
+        <TenantsEmpty
+          filtered={filtered}
+          onClearFilters={() => {
+            setStatus("all");
+            setCountry("");
+            setSearchInput("");
+            setPage(1);
+          }}
+        />
       ) : (
         <>
           <table className="admin-table">

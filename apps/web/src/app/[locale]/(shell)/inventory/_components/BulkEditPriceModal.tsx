@@ -104,7 +104,7 @@ export function BulkEditPriceModal({
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0,0,0,0.45)",
+        background: "var(--scrim)",
         display: "grid",
         placeItems: "center",
         zIndex: 60,
@@ -177,8 +177,8 @@ export function BulkEditPriceModal({
               borderRadius: 8,
               fontSize: 14,
               background: "var(--bg)",
-              color: "var(--ink-1)",
-              fontFamily: "var(--mono, monospace)",
+              color: "var(--ink)",
+              fontFamily: "var(--mono)",
             }}
           />
 
@@ -202,9 +202,9 @@ export function BulkEditPriceModal({
             <div
               style={{
                 marginBlockStart: "var(--space-3)",
-                background: "color-mix(in oklab, var(--rose, #c45a5a) 12%, transparent)",
-                border: "1px solid var(--rose, #c45a5a)",
-                color: "var(--rose, #c45a5a)",
+                background: "color-mix(in oklab, var(--rose) 12%, transparent)",
+                border: "1px solid var(--rose)",
+                color: "var(--rose)",
                 fontSize: 12.5,
                 padding: "var(--space-2) 10px",
                 borderRadius: 8,
@@ -225,7 +225,7 @@ export function BulkEditPriceModal({
                 fontSize: 13,
                 border: "1px solid var(--rule)",
                 background: "transparent",
-                color: "var(--ink-1)",
+                color: "var(--ink)",
                 cursor: "pointer",
                 fontFamily: "inherit",
               }}
@@ -276,7 +276,7 @@ function ModeChip({
         fontSize: 12.5,
         border: `1px solid ${active ? "var(--accent)" : "var(--rule)"}`,
         background: active ? "var(--accent-soft)" : "transparent",
-        color: active ? "var(--accent-ink, var(--ink-1))" : "var(--ink-2)",
+        color: active ? "var(--accent-ink)" : "var(--ink-2)",
         cursor: "pointer",
         fontFamily: "inherit",
       }}

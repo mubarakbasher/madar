@@ -284,7 +284,7 @@ export function NewTransferWizard({ locale }: { locale: string }) {
                         cursor: inLines ? "default" : "pointer",
                         textAlign: "start",
                         fontFamily: "inherit",
-                        color: "var(--ink-1)",
+                        color: "var(--ink)",
                       }}
                       disabled={inLines}
                       onClick={() => addLine(p.id)}

@@ -56,7 +56,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0,0,0,0.45)",
+        background: "var(--scrim)",
         display: "grid",
         placeItems: "center",
         zIndex: 60,
@@ -83,7 +83,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
             borderBlockEnd: "1px solid var(--rule)",
           }}
         >
-          <h2 style={{ fontFamily: "var(--serif, Fraunces, serif)", fontSize: 18, margin: 0 }}>
+          <h2 style={{ fontFamily: "var(--serif)", fontSize: 18, margin: 0 }}>
             {t("title")}
           </h2>
           <button
@@ -128,7 +128,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                   borderRadius: 8,
                   fontSize: 13,
                   background: "var(--bg)",
-                  color: "var(--ink-1)",
+                  color: "var(--ink)",
                   fontFamily: "inherit",
                 }}
               />
@@ -155,7 +155,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                     fontSize: 13,
                     border: "1px solid var(--rule)",
                     background: "transparent",
-                    color: "var(--ink-1)",
+                    color: "var(--ink)",
                     cursor: "pointer",
                     fontFamily: "inherit",
                   }}
@@ -190,7 +190,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
               </p>
               <ul
                 style={{
-                  fontFamily: "var(--mono, ui-monospace, SFMono-Regular, monospace)",
+                  fontFamily: "var(--mono)",
                   fontSize: 14,
                   background: "var(--bg)",
                   border: "1px solid var(--rule)",
@@ -207,7 +207,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                   <li key={code}>{code}</li>
                 ))}
               </ul>
-              <p style={{ fontSize: 12, color: "var(--rose, #c45a5a)", marginBlockStart: 10 }}>
+              <p style={{ fontSize: 12, color: "var(--rose)", marginBlockStart: 10 }}>
                 {t("codesWarning")}
               </p>
               <div
@@ -224,7 +224,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                   style={{
                     background: "transparent",
                     border: "1px solid var(--rule)",
-                    color: "var(--ink-1)",
+                    color: "var(--ink)",
                     padding: "var(--space-2) var(--space-3)",
                     borderRadius: 8,
                     fontSize: 13,
