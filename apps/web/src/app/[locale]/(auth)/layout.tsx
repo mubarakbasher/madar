@@ -47,7 +47,7 @@ export default async function AuthLayout({
             </span>
           </div>
 
-          <div className="relative">
+          <div>
             <h1
               style={{
                 fontFamily: "var(--serif)",
@@ -65,23 +65,6 @@ export default async function AuthLayout({
             >
               {t("shell.brandTagline")}
             </p>
-
-            {/* Quiet atmospheric card peeks */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute -end-6 top-24 hidden rotate-[6deg] rounded-2xl border p-5 shadow-sm md:block"
-              style={{
-                width: 240,
-                background: "var(--paper)",
-                borderColor: "var(--rule)",
-                boxShadow: "0 14px 40px -28px rgba(15,15,15,0.35)",
-              }}
-            >
-              <div style={{ fontFamily: "var(--serif)", fontSize: 18 }}>{t("layout.demoShopName")}</div>
-              <div className="mt-3" style={{ fontSize: 12, color: "var(--ink-3)" }}>
-                {t("layout.demoShopMeta")}
-              </div>
-            </div>
           </div>
 
           <div className="text-xs" style={{ color: "var(--ink-4)" }}>
