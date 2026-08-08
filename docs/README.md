@@ -14,6 +14,7 @@ This folder contains all the supporting documentation referenced by `CLAUDE.md` 
 | **`architecture.md`** | System architecture, module structure, RLS, jobs, deployment | Setting up infrastructure or thinking about scaling |
 | **`i18n-guide.md`** | Translation workflow, RTL implementation, tooling | Adding any user-facing string or new UI component |
 | **`i18n-glossary.md`** | Canonical EN→AR translations for domain terms | Translating; reviewing PRs that change Arabic text |
+| **`competitive-gap-analysis-2026-08.md`** | Madar vs 9 POS/ERP competitors — comparison matrix, gap register, priorities, MENA compliance status | Planning roadmap priorities; before entering a new market |
 | **`api/openapi.yaml`** | API spec stub — endpoints filled in as built | Implementing controllers or client SDK |
 | **`decisions/`** | Architecture Decision Records (ADRs) | Understanding *why* a non-obvious choice was made |
 

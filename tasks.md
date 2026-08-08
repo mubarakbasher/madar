@@ -862,6 +862,32 @@ Cross-phase slice driven by the user's request to trial Madar in a real shop. Pl
 - [x] **A31 + A32 (plan editor)** pulled forward from Phase 4 — needed at install time so VPS deploys can create plans through the admin UI instead of running the demo seed. `apps/admin/src/app/(shell)/plans/` (list + `[id]` editor, owner-gated), `apps/api/src/admin/plans/` (controller + service + zod DTOs + audit writes), sidebar nav in "Pricing" section. Also adds `pnpm db:bootstrap-admin` for first-run super-admin (no demo data).
 - [x] **Self-pick plan onboarding flow** — `tenants.plan_id` made nullable (migration `20260530000000_nullable_plan_id`). Tenant signup no longer needs a `starter` plan to exist; tenant lands on `/onboarding/select-plan` after signup, picks from the public plans list, and only then unlocks the rest of the app. `TenantAuthGuard` returns `423 plan_required` for any feature endpoint until a plan is picked. New API: `GET /v1/public/plans` (public), `POST /v1/onboarding/select-plan` (auth, idempotent-by-state). New web route group `(onboarding)/select-plan` with its own minimal layout. Admin tenant detail + list render "No plan selected" when null.
 
+## Phase 5 — Competitive backlog (2026-08 gap analysis)
+
+Source: `docs/competitive-gap-analysis-2026-08.md` (Madar vs Rewaa, Foodics, Loyverse, Square, Lightspeed, Odoo, ERPNext, Zoho, SAP B1 + 2026 MENA compliance research). Gap IDs (G-NN) refer to that doc's §6 register. Only P0/P1 items get checkboxes here; P2/P3 live in the doc's register until promoted.
+
+### New items (not tracked elsewhere)
+
+- [ ] **G-01 ZATCA Phase 2 e-invoicing (KSA)** — **P0 market-blocking**: Wave 24 (> SAR 375k) enforced since 2026-06-30; Wave 25 (> SAR 187.5k) due 2027-02-01. B2C simplified invoices (QR/UUID/stamp/hash, 24h reporting) + B2B clearance. Blocks all KSA personas. Ref doc §4, §7.1.
+- [ ] **G-02 Egypt ETA e-receipts** — **P0 if Egypt is a launch market** (decide launch markets first — PRD §12 open question). Rides the same shared e-invoicing module as G-01. Ref doc §4, §7.2.
+- [ ] **G-03 PDPL/data-protection pack** — P1: enforce data-residency config, build admin A29/A30 export+delete, define support-access model. Saudi PDPL enforced (remote access = transfer); Egypt grace ends 2026-10-31. Ref doc §4, §7.3.
+- [ ] **G-04 Wholesale credit pack** — P1/XL: customer credit sales + credit limits + payment terms, AR aging, statements, customer price tiers. Wholesaler persona currently unserved — and Rewaa lacks this entirely (differentiator). Customer AR from credit sales is POS-domain, not the GL non-goal. Ref doc §6 G-04, §7.10.
+- [ ] **G-05 Restaurant order essentials** — P1/M: priced modifiers & combos + order types (dine-in/takeaway/delivery). Cheapest restaurant-credibility step. Ref doc §7.4.
+- [ ] **G-06 KDS + kitchen printer routing** — P1/L: after G-05; socket.io infra exists. Loyverse ships a free KDS. Ref doc §7.8.
+- [ ] **G-07 Recipe/ingredient depletion + costing** — P1/L: sale-time `stock_movements` multipliers; explicitly NOT manufacturing/BOM (no production orders). Ref doc §6 G-07, §7.9.
+- [ ] **G-10 Promotions engine** — P1/L: BOGO / time-based / coupon codes (loyalty part tracked below). Ref doc §7.7.
+
+### Re-prioritized (already tracked elsewhere — original lines untouched)
+
+- **G-08 Product variants** (PRD §4.2, no schema) — P1, schedule next retail slice (→ doc §7.5).
+- **G-09 Batch/expiry + FEFO at sale** (PRD §4.2 toggleable per category, no schema) — P1, pharmacy gateway; add controlled-substance flags (S) while in there (→ doc §7.6, note ³ on pharmacy white space).
+- **Loyalty & customer segmentation** (Phase 4 list above) — G-10 partner, P1: pull loyalty forward from Phase 4.
+- **Public REST API + webhooks** (Phase 4 list above) — G-20, strategic P2: 9/9 competitors have one; gates Salla/Zid connectors, aggregators, marketplace.
+- **Cycle counts + stock-levels pivot** (PAGES §17/§20, specced) — G-11, P2 high.
+- **Bank statement reconciliation** (billing-flow Phase 2) — G-23, P2 high: also de-costs our own verification ops.
+- **Serial numbers** (PRD §4.2) — G-17, P2. **Three-way match** (PRD §4.4) — P3, keep deferred. **Roles matrix editor** — G-26, P2. **Custom dashboards** (PAGES §42) — G-27, P3.
+- P2 quick wins from the register: GMROI/sell-through/stock-aging reports (G-24, S), barcode label printing (G-16, S–M), weight-embedded barcodes (G-22, S), UoM conversions (G-13, bundle with G-04), bundles/composites (G-14), gift cards (G-18, reuse store-credit ledger), WhatsApp receipts/campaigns (G-19), customer display (G-12), WAC/FIFO costing + landed costs (G-15).
+
 ---
 
 ## Design bundle map (`docs/design/`)
@@ -915,7 +941,7 @@ Eight self-host readiness items shipped in one push. Each was scoped tight and r
 - [x] **#8 End-of-day reconciliation page** — new `apps/api/src/tenant/reconcile/` module: `GET /v1/reconcile/day?date&branch_id?` returns per-branch + chain totals (gross revenue, transactions, items, cash sales, cash refunds, opening float, expected/declared/variance, by-payment breakdown). Reuses the `buildZReport` SQL pattern (sale_payments + sale_refund_payments JOINs). New `/[locale]/reconcile` page with date picker, chain card + per-branch panels with shift detail rows + by-payment breakdown, print-friendly (`@media print` hides controls). Sidebar `reconcile` entry flipped `enabled: true` (owner|manager|accountant). 24 new i18n keys.
 - [x] **#2 Production deployment runbook** — new `infra/docker-compose.prod.yml` overlay (caddy reverse proxy + always-on restart + named volumes), `infra/caddy/Caddyfile` (auto-LE HTTPS for 3 subdomains, HSTS + zstd/gzip + `Permissions-Policy: usb=(self)` for the WebUSB drawer), `.env.production.example` (every secret documented), `infra/Dockerfile.{api,web,admin}` (multi-stage Node 20 builds with pnpm + Prisma generate). New `docs/deployment.md` — step-by-step VPS guide (Hetzner CX22 €4/mo): provision → install Docker → DNS → clone + env → migrations → first deploy → bootstrap tenant → smoke checklist → update/restore procedures. New `docs/operations/incident-runbook.md` covers the most common failure modes (site down, disk full, API 500, login emails missing, backup didn't run, restore steps).
 
-**Deferred (#6 e-invoicing)** — Egypt ETA Phase 2 / Saudi ZATCA Phase 2 / UAE FTA. Each ~3-5 days; not legally required under threshold (~EGP 5M/yr in Egypt). Documented as Phase 4 — revisit when revenue or a B2B customer pulls it in.
+**Deferred (#6 e-invoicing)** — Egypt ETA Phase 2 / Saudi ZATCA Phase 2 / UAE FTA. Each ~3-5 days; not legally required under threshold (~EGP 5M/yr in Egypt). Documented as Phase 4 — revisit when revenue or a B2B customer pulls it in. *(→ G-01/G-02: rationale re-tested 2026-08-08 and no longer holds — ZATCA Wave 24 enforced since 2026-06-30, Wave 25 due 2027-02-01; Egypt e-receipt waves reach EGP 1–10M businesses in Q3–Q4 2026. Now P0 in Phase 5 / `docs/competitive-gap-analysis-2026-08.md` §4.)*
 
 ### Verification
 
@@ -928,6 +954,8 @@ Eight self-host readiness items shipped in one push. Each was scoped tight and r
 ---
 
 ## Quality audits
+
+- [x] **Competitive gap analysis (2026-08-08)** — Madar vs 9 products across two tiers (POS: Rewaa, Foodics, Loyverse, Square, Lightspeed · ERP: Odoo, ERPNext, Zoho, SAP B1) + MENA e-invoicing/PDPL compliance research, via 10 parallel web-research agents against an 89-row taxonomy. Output: `docs/competitive-gap-analysis-2026-08.md` (positioning, comparison matrix, 32-gap register, top-10 recommendations) + new "Phase 5 — Competitive backlog" section above. Headlines: ZATCA/ETA e-invoicing now **P0 market-blocking** (deferral rationale stale — see annotated note in Phase 3.6); wholesale credit pack and restaurant pack are the two unserved-persona P1 clusters; pharmacy (batch/expiry + FEFO + controlled flags) is uncontested white space — no competitor incl. Rewaa serves it; Madar's moats confirmed: bilingual depth, append-only audit, offline POS, multi-currency, zero-fee bank-transfer model.
 
 - [x] **Signup → blank page / trial "not applied" (fixed 2026-07-23)** — every new account dead-ended: `useRedirectOnNoPlan` redirected to `/[locale]/onboarding/select-plan`, but `(onboarding)` is a route *group* so the real URL is `/[locale]/select-plan` — the bounce 404'd (blank default 404 pre-boundaries), the tenant looked locked (423s everywhere), and since onboarding was unreachable the plan was never assigned. The 14-day trial itself was always applied correctly server-side at signup (`trial_ends_at = created_at + 14d`, verified in DB). Fixes: hook URL + loop-guard corrected (`use-redirect-on-no-plan.ts`); signup now lands directly on `/select-plan` (no shell flash); `SelectPlanClient` gained the inverse guard (tenant with a plan → dashboard, since re-picks 409); stale comment in billing-client corrected. Verified live with a fresh account: signup → picker → choose Starter → dashboard sticks → billing shows "Trial ends in 14 days". (Two throwaway dev tenants left behind: `test-bakery-77`, `second-cafe-88`.)
 
