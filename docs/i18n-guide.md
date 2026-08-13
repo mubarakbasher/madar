@@ -138,21 +138,13 @@ Use `jsonb` with shape `{ en: string, ar: string }`:
 -- Product names support both languages
 ALTER TABLE products ADD COLUMN name JSONB NOT NULL;
 -- Example value: '{"en": "Coca-Cola 330ml", "ar": "كوكاكولا ٣٣٠ مل"}'
-
--- Default Arabic to English if not provided
-CREATE OR REPLACE FUNCTION ensure_translatable(value JSONB)
-RETURNS JSONB AS $$
-BEGIN
-  IF NOT (value ? 'en') THEN
-    RAISE EXCEPTION 'English value required for translatable field';
-  END IF;
-  IF NOT (value ? 'ar') THEN
-    value := jsonb_set(value, '{ar}', value->'en');
-  END IF;
-  RETURN value;
-END;
-$$ LANGUAGE plpgsql IMMUTABLE;
 ```
+
+Both keys are always present and non-empty. The invariant is enforced at the
+API layer, not in the database: the shared zod schema `i18nText(max)`
+(`apps/api/src/shared/dto/i18n-text.ts`) accepts either language and mirrors
+the missing side from the other (see §8.2). Tenants type one value; API
+clients that have real translations may send both.
 
 Tables with translatable fields:
 - `products.name`, `products.description`
@@ -443,29 +435,32 @@ We do not use a translation management system (TMS) in v1 — JSON in git is suf
 
 ## 8. Bilingual Data Entry
 
-Some user-generated content needs both languages — products, categories, branches.
+Tenant-generated content (products, categories, branches, suppliers, tax classes, assets, business identity) is stored as `{ en, ar }` jsonb, but tenants **type it once** — a single input, in whichever language they use. *(Decision 2026-08: the original two-tab, both-required design was dropped — typing every name twice was the single biggest data-entry complaint.)*
 
 ### 8.1 UI pattern
 
-For translatable fields in forms, show two tabs (or two stacked inputs):
+One `dir="auto"` input per translatable field:
 
 ```
-[ EN ] [ AR ]
 ┌─────────────────────────────┐
-│ Product name (English)      │
+│ Name                        │
 │ ┌─────────────────────────┐ │
-│ │ Coca-Cola 330ml         │ │
+│ │ Coca-Cola 330ml         │ │  ← or بيبسي ٣٣٠ مل — either is fine
 │ └─────────────────────────┘ │
 └─────────────────────────────┘
 ```
 
-### 8.2 Auto-translate option (Phase 2+)
+**Legacy guard:** if an existing record holds two *different* values in `en`/`ar` (a real translation, e.g. seed data), the edit form falls back to the old dual EN/AR inputs so saving can't silently destroy the Arabic side. New records always get the single field.
 
-A button: "Copy from English" or "Auto-translate from English" — uses a translation API to suggest the Arabic version, which the user reviews before saving. Never auto-applied silently.
+The dual-entry pattern remains standard in the **admin app** (plans, platform bank accounts — flat `name_en`/`name_ar` columns).
 
-### 8.3 Fallback behavior
+### 8.2 Storage invariant — mirror at write
 
-If a tenant fills only English, the Arabic field defaults to the English text (the DB function `ensure_translatable` handles this). The UI displays English content even to Arabic-locale users in this case, with a small "translation missing" hint to the tenant (visible only to them).
+The API layer guarantees both keys are always non-empty: the shared zod schema `i18nText(max)` (`apps/api/src/shared/dto/i18n-text.ts`) accepts `{ en?, ar? }`, requires at least one, and mirrors the missing/empty side from the other. The CSV importer applies the same rule (`name_en` **or** `name_ar` is enough). Because every stored row carries both keys, display, `ILIKE` search over both keys, and `name_i18n->>'<locale>'` sorting need no per-key fallbacks. *(The previously planned `ensure_translatable` DB function is superseded by this schema-level mirror and was never implemented.)*
+
+### 8.3 Real translations (optional, later)
+
+Distinct EN + AR values remain fully supported at the data layer — API clients may send both keys. A tenant-facing "manage translations" affordance (and any auto-translate suggestion, which would first need a real ADR for the no-AI-in-v1 boundary) is deferred until requested.
 
 ---
 

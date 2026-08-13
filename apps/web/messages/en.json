@@ -896,6 +896,8 @@
         "status": "Status"
       },
       "fields": {
+        "name": "Name",
+        "description": "Description",
         "nameEn": "Name (English)",
         "nameAr": "Name (Arabic)",
         "descriptionEn": "Description (English)",
@@ -1140,6 +1142,7 @@
     "panel": {
       "label": "Selected category",
       "empty": "Select a category to view details.",
+      "name": "Name",
       "nameEn": "Name (English)",
       "nameAr": "Name (Arabic)",
       "parent": "Parent",
@@ -1161,6 +1164,7 @@
     },
     "form": {
       "code": "Code",
+      "name": "Name",
       "nameEn": "Name (English)",
       "nameAr": "Name (Arabic)",
       "parent": "Parent",
@@ -1888,9 +1892,11 @@
       "fields": {
         "code": "Branch code",
         "codeHint": "Short uppercase ID, 2–16 chars. Used in reports and receipts.",
+        "name": "Name",
         "nameEn": "Name (English)",
         "nameAr": "Name (Arabic)",
         "namePlaceholder": "Maadi",
+        "address": "Address",
         "addressEn": "Address (English)",
         "addressAr": "Address (Arabic)",
         "currency": "Currency",
@@ -2455,6 +2461,7 @@
         },
         "fields": {
           "code": "Code",
+          "name": "Name",
           "nameEn": "Name (English)",
           "nameAr": "Name (Arabic)",
           "ratePercent": "Rate (%)",
@@ -2785,6 +2792,7 @@
         "code": "Supplier code",
         "codeHint": "Short uppercase ID, 2–16 chars.",
         "codeLocked": "Code can't change after creation.",
+        "name": "Name",
         "nameEn": "Name (English)",
         "nameAr": "Name (Arabic)",
         "namePlaceholder": "Atlas Packaging",
@@ -3299,6 +3307,7 @@
     "emptyBody": "Start by recording chairs, tables, or equipment for a branch.",
     "notFoundBody": "This asset may have been deleted or never existed.",
     "form": {
+      "name": "Name",
       "nameEn": "Name (English)",
       "nameAr": "Name (Arabic)",
       "branch": "Branch",

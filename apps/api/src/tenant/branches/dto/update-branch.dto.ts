@@ -1,10 +1,8 @@
 import { z } from "zod";
 import { OperatingHoursSchema, HolidaysSchema } from "./hours.dto";
+import { i18nText } from "../../../shared/dto/i18n-text";
 
-const I18N_TEXT = z.object({
-  en: z.string().trim().min(1).max(120),
-  ar: z.string().trim().min(1).max(120),
-});
+const I18N_TEXT = i18nText(120);
 
 const I18N_ADDRESS_OPTIONAL = z
   .object({

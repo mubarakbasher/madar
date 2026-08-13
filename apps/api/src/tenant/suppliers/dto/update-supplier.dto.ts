@@ -1,9 +1,7 @@
 import { z } from "zod";
+import { i18nText } from "../../../shared/dto/i18n-text";
 
-const I18N_NAME = z.object({
-  en: z.string().trim().min(1).max(160),
-  ar: z.string().trim().min(1).max(160),
-});
+const I18N_NAME = i18nText(160);
 
 const I18N_ADDRESS_OPTIONAL = z
   .object({

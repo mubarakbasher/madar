@@ -40,10 +40,14 @@ export function AssetForm({
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
 
+  // Only legacy records with two real translations keep the dual EN/AR
+  // inputs; everything else gets a single name field mirrored into both keys.
+  const bilingual = Boolean(asset && asset.name_i18n.en !== asset.name_i18n.ar);
+
   function validate(): boolean {
     const next: FormErrors = {};
     if (!nameEn.trim()) next.nameEn = t("form.errors.nameRequired");
-    if (!nameAr.trim()) next.nameAr = t("form.errors.nameRequired");
+    if (bilingual && !nameAr.trim()) next.nameAr = t("form.errors.nameRequired");
     if (!branchId) next.branch = t("form.errors.branchRequired");
     const qty = Number(quantity);
     if (!Number.isInteger(qty) || qty < 0) next.quantity = t("form.errors.quantityInvalid");
@@ -91,38 +95,61 @@ export function AssetForm({
     <form className="as-form" onSubmit={onSubmit}>
       {errors.general && <div className="as-form-error">{errors.general}</div>}
 
-      <div className="as-field-row">
+      {!bilingual ? (
         <div className="as-field">
-          <label className="as-field-label as-field-required" htmlFor="as-name-en">
-            {t("form.nameEn")}
+          <label className="as-field-label as-field-required" htmlFor="as-name">
+            {t("form.name")}
           </label>
           <input
-            id="as-name-en"
+            id="as-name"
             className="as-input"
             value={nameEn}
-            onChange={(e) => setNameEn(e.target.value)}
+            onChange={(e) => {
+              setNameEn(e.target.value);
+              setNameAr(e.target.value);
+            }}
             maxLength={160}
+            dir="auto"
             required
           />
-          {errors.nameEn && <div className="as-field-error">{errors.nameEn}</div>}
+          {(errors.nameEn ?? errors.nameAr) && (
+            <div className="as-field-error">{errors.nameEn ?? errors.nameAr}</div>
+          )}
         </div>
+      ) : (
+        <div className="as-field-row">
+          <div className="as-field">
+            <label className="as-field-label as-field-required" htmlFor="as-name-en">
+              {t("form.nameEn")}
+            </label>
+            <input
+              id="as-name-en"
+              className="as-input"
+              value={nameEn}
+              onChange={(e) => setNameEn(e.target.value)}
+              maxLength={160}
+              required
+            />
+            {errors.nameEn && <div className="as-field-error">{errors.nameEn}</div>}
+          </div>
 
-        <div className="as-field">
-          <label className="as-field-label as-field-required" htmlFor="as-name-ar">
-            {t("form.nameAr")}
-          </label>
-          <input
-            id="as-name-ar"
-            className="as-input"
-            value={nameAr}
-            onChange={(e) => setNameAr(e.target.value)}
-            maxLength={160}
-            dir="rtl"
-            required
-          />
-          {errors.nameAr && <div className="as-field-error">{errors.nameAr}</div>}
+          <div className="as-field">
+            <label className="as-field-label as-field-required" htmlFor="as-name-ar">
+              {t("form.nameAr")}
+            </label>
+            <input
+              id="as-name-ar"
+              className="as-input"
+              value={nameAr}
+              onChange={(e) => setNameAr(e.target.value)}
+              maxLength={160}
+              dir="rtl"
+              required
+            />
+            {errors.nameAr && <div className="as-field-error">{errors.nameAr}</div>}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="as-field-row">
         <div className="as-field">

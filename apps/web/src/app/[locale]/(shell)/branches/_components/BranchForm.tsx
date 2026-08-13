@@ -69,6 +69,14 @@ export function BranchForm({
 
   const isEdit = mode === "edit";
 
+  // Only legacy records with two real translations keep the EN/AR tabs;
+  // everything else gets a single name + address mirrored into both keys.
+  const bilingual = Boolean(
+    initial &&
+      (initial.name_i18n.en !== initial.name_i18n.ar ||
+        (initial.address_i18n?.en ?? "") !== (initial.address_i18n?.ar ?? "")),
+  );
+
   const create = useMutation({
     mutationFn: (body: CreateBranchBody) => branchCreateRequest(body),
     onSuccess: (data) => {
@@ -95,7 +103,7 @@ export function BranchForm({
     if (!code.trim()) errs.code = t("errors.required");
     else if (!/^[A-Z0-9_-]{2,16}$/.test(code.trim().toUpperCase())) errs.code = t("errors.codePattern");
     if (!nameEn.trim()) errs.name_en = t("errors.required");
-    if (!nameAr.trim()) errs.name_ar = t("errors.required");
+    if (bilingual && !nameAr.trim()) errs.name_ar = t("errors.required");
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;
@@ -187,6 +195,42 @@ export function BranchForm({
             {errors.code && <span className="br-field-error">{errors.code}</span>}
           </label>
 
+          {!bilingual && (
+            <>
+              <label className="br-field">
+                <span className="br-field-label">{t("fields.name")}</span>
+                <input
+                  type="text"
+                  value={nameEn}
+                  onChange={(e) => {
+                    setNameEn(e.target.value);
+                    setNameAr(e.target.value);
+                  }}
+                  placeholder={t("fields.namePlaceholder")}
+                  maxLength={120}
+                  dir="auto"
+                  required
+                />
+                {(errors.name_en ?? errors.name_ar) && (
+                  <span className="br-field-error">{errors.name_en ?? errors.name_ar}</span>
+                )}
+              </label>
+              <label className="br-field">
+                <span className="br-field-label">{t("fields.address")}</span>
+                <textarea
+                  value={addressEn}
+                  onChange={(e) => {
+                    setAddressEn(e.target.value);
+                    setAddressAr(e.target.value);
+                  }}
+                  maxLength={500}
+                  dir="auto"
+                />
+              </label>
+            </>
+          )}
+
+          {bilingual && (
           <div className="br-tab-strip" style={{ marginBottom: "var(--space-2)" }}>
             <button type="button" aria-pressed={tab === "en"} onClick={() => setTab("en")}>
               {t("tabs.en")}
@@ -195,8 +239,9 @@ export function BranchForm({
               {t("tabs.ar")}
             </button>
           </div>
+          )}
 
-          {tab === "en" ? (
+          {!bilingual ? null : tab === "en" ? (
             <>
               <label className="br-field">
                 <span className="br-field-label">{t("fields.nameEn")}</span>

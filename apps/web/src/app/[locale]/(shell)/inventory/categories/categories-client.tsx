@@ -259,18 +259,27 @@ export function CategoriesClient({ locale }: { locale: "en" | "ar" }) {
                 {selected.code}
               </div>
 
-              <div className="cat-panel-section">
-                <div className="cat-panel-label">{t("panel.nameEn")}</div>
-                <div className="cat-panel-value">{selected.name_i18n.en}</div>
-              </div>
-              <div className="cat-panel-section">
-                <div className="cat-panel-label">{t("panel.nameAr")}</div>
-                <div className="cat-panel-value">
-                  {selected.name_i18n.ar || (
-                    <span className="cat-panel-value dim">{t("panel.empty")}</span>
-                  )}
+              {selected.name_i18n.en === selected.name_i18n.ar ? (
+                <div className="cat-panel-section">
+                  <div className="cat-panel-label">{t("panel.name")}</div>
+                  <div className="cat-panel-value" dir="auto">{selected.name_i18n.en}</div>
                 </div>
-              </div>
+              ) : (
+                <>
+                  <div className="cat-panel-section">
+                    <div className="cat-panel-label">{t("panel.nameEn")}</div>
+                    <div className="cat-panel-value">{selected.name_i18n.en}</div>
+                  </div>
+                  <div className="cat-panel-section">
+                    <div className="cat-panel-label">{t("panel.nameAr")}</div>
+                    <div className="cat-panel-value">
+                      {selected.name_i18n.ar || (
+                        <span className="cat-panel-value dim">{t("panel.empty")}</span>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
               <div className="cat-panel-section">
                 <div className="cat-panel-label">{t("panel.parent")}</div>
                 <div className="cat-panel-value">
@@ -405,6 +414,10 @@ function CategoryFormDialog({
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState<string | null>(null);
 
+  // Only legacy records with two real translations keep the dual EN/AR
+  // inputs; everything else gets a single name field mirrored into both keys.
+  const bilingual = Boolean(existing && existing.name_i18n.en !== existing.name_i18n.ar);
+
   function set<K extends keyof FormFields>(key: K, value: FormFields[K]): void {
     setForm((f) => ({ ...f, [key]: value }));
     setFieldErrors((e) => {
@@ -450,8 +463,12 @@ function CategoryFormDialog({
     if (!form.code.trim()) errs.code = t("errors.required");
     else if (!/^[A-Z0-9_-]+$/.test(form.code.trim()))
       errs.code = t("errors.codeFormat");
-    if (!form.name_en.trim()) errs.name_en = t("errors.required");
-    if (!form.name_ar.trim()) errs.name_ar = t("errors.required");
+    if (bilingual) {
+      if (!form.name_en.trim()) errs.name_en = t("errors.required");
+      if (!form.name_ar.trim()) errs.name_ar = t("errors.required");
+    } else if (!form.name_en.trim()) {
+      errs.name = t("errors.required");
+    }
     const so = Number(form.sort_order);
     if (!Number.isFinite(so) || so < 0) errs.sort_order = t("errors.sortOrder");
     return errs;
@@ -547,34 +564,55 @@ function CategoryFormDialog({
             )}
           </label>
 
-          <div className="cat-field-row">
+          {!bilingual ? (
             <label className="cat-field">
-              <span className="cat-field-label">{t("form.nameEn")}</span>
+              <span className="cat-field-label">{t("form.name")}</span>
               <input
                 className="cat-field-input"
                 type="text"
                 value={form.name_en}
-                onChange={(e) => set("name_en", e.target.value)}
-                dir="ltr"
+                onChange={(e) => {
+                  set("name_en", e.target.value);
+                  set("name_ar", e.target.value);
+                }}
+                dir="auto"
               />
-              {fieldErrors.name_en && (
-                <div className="cat-field-error">{fieldErrors.name_en}</div>
+              {(fieldErrors.name ?? fieldErrors.name_en ?? fieldErrors.name_ar) && (
+                <div className="cat-field-error">
+                  {fieldErrors.name ?? fieldErrors.name_en ?? fieldErrors.name_ar}
+                </div>
               )}
             </label>
-            <label className="cat-field">
-              <span className="cat-field-label">{t("form.nameAr")}</span>
-              <input
-                className="cat-field-input"
-                type="text"
-                value={form.name_ar}
-                onChange={(e) => set("name_ar", e.target.value)}
-                dir="rtl"
-              />
-              {fieldErrors.name_ar && (
-                <div className="cat-field-error">{fieldErrors.name_ar}</div>
-              )}
-            </label>
-          </div>
+          ) : (
+            <div className="cat-field-row">
+              <label className="cat-field">
+                <span className="cat-field-label">{t("form.nameEn")}</span>
+                <input
+                  className="cat-field-input"
+                  type="text"
+                  value={form.name_en}
+                  onChange={(e) => set("name_en", e.target.value)}
+                  dir="ltr"
+                />
+                {fieldErrors.name_en && (
+                  <div className="cat-field-error">{fieldErrors.name_en}</div>
+                )}
+              </label>
+              <label className="cat-field">
+                <span className="cat-field-label">{t("form.nameAr")}</span>
+                <input
+                  className="cat-field-input"
+                  type="text"
+                  value={form.name_ar}
+                  onChange={(e) => set("name_ar", e.target.value)}
+                  dir="rtl"
+                />
+                {fieldErrors.name_ar && (
+                  <div className="cat-field-error">{fieldErrors.name_ar}</div>
+                )}
+              </label>
+            </div>
+          )}
 
           <label className="cat-field">
             <span className="cat-field-label">{t("form.parent")}</span>

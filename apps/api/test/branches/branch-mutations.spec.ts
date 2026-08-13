@@ -92,7 +92,7 @@ describe("Branch mutations (POST/PATCH/DELETE /v1/branches)", () => {
     expect(r2.body.code).toBe("code_taken");
   });
 
-  it("POST /v1/branches missing Arabic name returns 400", async () => {
+  it("POST /v1/branches with one language mirrors it into the other", async () => {
     const res = await request(booted.http)
       .post("/v1/branches")
       .set("Authorization", `Bearer ${ownerToken}`)
@@ -100,6 +100,19 @@ describe("Branch mutations (POST/PATCH/DELETE /v1/branches)", () => {
       .send({
         code: `MISS-${randomUUID().slice(0, 4).toUpperCase()}`,
         name_i18n: { en: "Only English", ar: "" },
+      });
+    expect(res.status).toBe(201);
+    expect(res.body.name_i18n).toEqual({ en: "Only English", ar: "Only English" });
+  });
+
+  it("POST /v1/branches with no name in either language returns 400", async () => {
+    const res = await request(booted.http)
+      .post("/v1/branches")
+      .set("Authorization", `Bearer ${ownerToken}`)
+      .set("Idempotency-Key", randomUUID())
+      .send({
+        code: `MISS-${randomUUID().slice(0, 4).toUpperCase()}`,
+        name_i18n: { en: "", ar: "" },
       });
     expect(res.status).toBe(400);
     expect(res.body.code).toBe("validation_failed");

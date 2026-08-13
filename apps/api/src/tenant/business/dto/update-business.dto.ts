@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { i18nText } from "../../../shared/dto/i18n-text";
 
 export const BusinessTypeEnum = z.enum([
   "retail",
@@ -13,12 +14,7 @@ export type BusinessTypeValue = z.infer<typeof BusinessTypeEnum>;
 export const UpdateBusinessSchema = z
   .object({
     name: z.string().trim().min(1).max(120).optional(),
-    name_i18n: z
-      .object({
-        en: z.string().trim().min(1).max(120),
-        ar: z.string().trim().min(1).max(120),
-      })
-      .optional(),
+    name_i18n: i18nText(120).optional(),
     legal_name: z.string().trim().max(200).nullable().optional(),
     business_type: BusinessTypeEnum.nullable().optional(),
     default_currency_code: z

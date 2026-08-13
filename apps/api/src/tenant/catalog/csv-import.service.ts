@@ -13,7 +13,7 @@ import { AuditService, type AuditCtx } from "../auth/audit.service";
 const MAX_BYTES = 2 * 1024 * 1024;
 const MAX_ROWS = 5000;
 
-const REQUIRED_COLUMNS = ["sku", "name_en", "price_cents", "cost_cents"] as const;
+const REQUIRED_COLUMNS = ["sku", "price_cents", "cost_cents"] as const;
 const KNOWN_COLUMNS = [
   "sku",
   "name_en",
@@ -159,6 +159,13 @@ export class CsvImportService {
         });
       }
     }
+    // A name in either language is enough; the missing side is mirrored.
+    if (!header.includes("name_en") && !header.includes("name_ar")) {
+      throw new BadRequestException({
+        code: "csv_missing_column",
+        message: "Missing required column: name_en or name_ar",
+      });
+    }
     if (rows.length > MAX_ROWS) {
       throw new BadRequestException({
         code: "csv_too_many_rows",
@@ -237,8 +244,14 @@ export class CsvImportService {
         continue;
       }
       const nameEn = r.cells.name_en;
-      if (!nameEn) {
-        errors.push({ row: r.rowNumber, sku, code: "missing_name_en", message: "name_en is required" });
+      const nameAr = r.cells.name_ar;
+      if (!nameEn && !nameAr) {
+        errors.push({
+          row: r.rowNumber,
+          sku,
+          code: "missing_name",
+          message: "name_en or name_ar is required",
+        });
         continue;
       }
       const priceRaw = r.cells.price_cents;
@@ -319,7 +332,7 @@ export class CsvImportService {
 
       const data = {
         sku,
-        name_i18n: { en: nameEn, ar: r.cells.name_ar || nameEn },
+        name_i18n: { en: nameEn || nameAr, ar: nameAr || nameEn },
         category_id: categoryId,
         tax_class_id: taxClassId,
         price_cents: BigInt(price),

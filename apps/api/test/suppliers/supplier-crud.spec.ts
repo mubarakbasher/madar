@@ -138,7 +138,7 @@ describe("Supplier CRUD (/v1/suppliers)", () => {
     expect(b.body.code).toBe("code_taken");
   });
 
-  it("POST 400 on missing name_i18n.ar", async () => {
+  it("POST with one language mirrors it into the other", async () => {
     const res = await request(booted.http)
       .post("/v1/suppliers")
       .set("Authorization", `Bearer ${ownerToken}`)
@@ -146,6 +146,19 @@ describe("Supplier CRUD (/v1/suppliers)", () => {
       .send({
         code: `SUP-${randomUUID().slice(0, 4).toUpperCase()}`,
         name_i18n: { en: "Only EN" },
+      });
+    expect(res.status).toBe(201);
+    expect(res.body.name_i18n).toEqual({ en: "Only EN", ar: "Only EN" });
+  });
+
+  it("POST 400 when no name in either language", async () => {
+    const res = await request(booted.http)
+      .post("/v1/suppliers")
+      .set("Authorization", `Bearer ${ownerToken}`)
+      .set("Idempotency-Key", randomUUID())
+      .send({
+        code: `SUP-${randomUUID().slice(0, 4).toUpperCase()}`,
+        name_i18n: {},
       });
     expect(res.status).toBe(400);
   });

@@ -41,6 +41,10 @@ export function TaxClassModal({
   const [isActive, setIsActive] = useState(initial?.is_active ?? true);
   const [errors, setErrors] = useState<FormErrors>({});
 
+  // Only legacy records with two real translations keep the dual EN/AR
+  // inputs; everything else gets a single name field mirrored into both keys.
+  const bilingual = Boolean(initial && initial.name_i18n.en !== initial.name_i18n.ar);
+
   const createM = useMutation({
     mutationFn: (body: CreateTaxClassBody) => taxClassCreateRequest(body),
     onSuccess: (data) => {
@@ -72,7 +76,7 @@ export function TaxClassModal({
       errs.code = t("errors.validation_failed");
     }
     if (!trimmedEn) errs.name_en = t("errors.validation_failed");
-    if (!trimmedAr) errs.name_ar = t("errors.validation_failed");
+    if (bilingual && !trimmedAr) errs.name_ar = t("errors.validation_failed");
     if (
       !Number.isFinite(ratePercentNum) ||
       ratePercentNum < 0 ||
@@ -153,36 +157,56 @@ export function TaxClassModal({
               {errors.code && <span className="tcl-field-error">{errors.code}</span>}
             </label>
 
-            <div className="tcl-field-row">
+            {!bilingual ? (
               <label className="tcl-field">
-                <span className="tcl-field-label">{t("modal.fields.nameEn")}</span>
+                <span className="tcl-field-label">{t("modal.fields.name")}</span>
                 <input
                   type="text"
                   value={nameEn}
-                  onChange={(e) => setNameEn(e.target.value)}
+                  onChange={(e) => {
+                    setNameEn(e.target.value);
+                    setNameAr(e.target.value);
+                  }}
                   maxLength={120}
+                  dir="auto"
                   required
                 />
-                {errors.name_en && (
-                  <span className="tcl-field-error">{errors.name_en}</span>
+                {(errors.name_en ?? errors.name_ar) && (
+                  <span className="tcl-field-error">{errors.name_en ?? errors.name_ar}</span>
                 )}
               </label>
+            ) : (
+              <div className="tcl-field-row">
+                <label className="tcl-field">
+                  <span className="tcl-field-label">{t("modal.fields.nameEn")}</span>
+                  <input
+                    type="text"
+                    value={nameEn}
+                    onChange={(e) => setNameEn(e.target.value)}
+                    maxLength={120}
+                    required
+                  />
+                  {errors.name_en && (
+                    <span className="tcl-field-error">{errors.name_en}</span>
+                  )}
+                </label>
 
-              <label className="tcl-field">
-                <span className="tcl-field-label">{t("modal.fields.nameAr")}</span>
-                <input
-                  type="text"
-                  value={nameAr}
-                  onChange={(e) => setNameAr(e.target.value)}
-                  maxLength={120}
-                  dir="rtl"
-                  required
-                />
-                {errors.name_ar && (
-                  <span className="tcl-field-error">{errors.name_ar}</span>
-                )}
-              </label>
-            </div>
+                <label className="tcl-field">
+                  <span className="tcl-field-label">{t("modal.fields.nameAr")}</span>
+                  <input
+                    type="text"
+                    value={nameAr}
+                    onChange={(e) => setNameAr(e.target.value)}
+                    maxLength={120}
+                    dir="rtl"
+                    required
+                  />
+                  {errors.name_ar && (
+                    <span className="tcl-field-error">{errors.name_ar}</span>
+                  )}
+                </label>
+              </div>
+            )}
 
             <label className="tcl-field">
               <span className="tcl-field-label">{t("modal.fields.ratePercent")}</span>

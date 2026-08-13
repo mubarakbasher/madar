@@ -63,6 +63,14 @@ export function SupplierForm({
   const [errors, setErrors] = useState<FormErrors>({});
   const [tab, setTab] = useState<"en" | "ar">("en");
 
+  // Only legacy records with two real translations keep the EN/AR tabs;
+  // everything else gets a single name + address mirrored into both keys.
+  const bilingual = Boolean(
+    initial &&
+      (initial.name_i18n.en !== initial.name_i18n.ar ||
+        (initial.address_i18n?.en ?? "") !== (initial.address_i18n?.ar ?? "")),
+  );
+
   const create = useMutation({
     mutationFn: (body: CreateSupplierBody) => supplierCreateRequest(body),
     onSuccess: (data) => {
@@ -93,7 +101,7 @@ export function SupplierForm({
       }
     }
     if (!nameEn.trim()) errs.name_en = t("errors.required");
-    if (!nameAr.trim()) errs.name_ar = t("errors.required");
+    if (bilingual && !nameAr.trim()) errs.name_ar = t("errors.required");
     if (contactEmail.trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contactEmail.trim())) {
       errs.contact_email = t("errors.emailInvalid");
     }
@@ -184,40 +192,63 @@ export function SupplierForm({
             {errors.code && <span className="sup-field-error">{errors.code}</span>}
           </label>
 
-          <div className="sup-tab-strip">
-            <button type="button" aria-pressed={tab === "en"} onClick={() => setTab("en")}>
-              {t("tabs.en")}
-            </button>
-            <button type="button" aria-pressed={tab === "ar"} onClick={() => setTab("ar")}>
-              {t("tabs.ar")}
-            </button>
-          </div>
-
-          {tab === "en" ? (
+          {!bilingual ? (
             <label className="sup-field">
-              <span className="sup-field-label">{t("fields.nameEn")}</span>
+              <span className="sup-field-label">{t("fields.name")}</span>
               <input
                 type="text"
                 value={nameEn}
-                onChange={(e) => setNameEn(e.target.value)}
+                onChange={(e) => {
+                  setNameEn(e.target.value);
+                  setNameAr(e.target.value);
+                }}
                 placeholder={t("fields.namePlaceholder")}
                 maxLength={120}
+                dir="auto"
                 required
               />
-              {errors.name_en && <span className="sup-field-error">{errors.name_en}</span>}
+              {(errors.name_en ?? errors.name_ar) && (
+                <span className="sup-field-error">{errors.name_en ?? errors.name_ar}</span>
+              )}
             </label>
           ) : (
-            <label className="sup-field" dir="rtl">
-              <span className="sup-field-label">{t("fields.nameAr")}</span>
-              <input
-                type="text"
-                value={nameAr}
-                onChange={(e) => setNameAr(e.target.value)}
-                maxLength={120}
-                required
-              />
-              {errors.name_ar && <span className="sup-field-error">{errors.name_ar}</span>}
-            </label>
+            <>
+              <div className="sup-tab-strip">
+                <button type="button" aria-pressed={tab === "en"} onClick={() => setTab("en")}>
+                  {t("tabs.en")}
+                </button>
+                <button type="button" aria-pressed={tab === "ar"} onClick={() => setTab("ar")}>
+                  {t("tabs.ar")}
+                </button>
+              </div>
+
+              {tab === "en" ? (
+                <label className="sup-field">
+                  <span className="sup-field-label">{t("fields.nameEn")}</span>
+                  <input
+                    type="text"
+                    value={nameEn}
+                    onChange={(e) => setNameEn(e.target.value)}
+                    placeholder={t("fields.namePlaceholder")}
+                    maxLength={120}
+                    required
+                  />
+                  {errors.name_en && <span className="sup-field-error">{errors.name_en}</span>}
+                </label>
+              ) : (
+                <label className="sup-field" dir="rtl">
+                  <span className="sup-field-label">{t("fields.nameAr")}</span>
+                  <input
+                    type="text"
+                    value={nameAr}
+                    onChange={(e) => setNameAr(e.target.value)}
+                    maxLength={120}
+                    required
+                  />
+                  {errors.name_ar && <span className="sup-field-error">{errors.name_ar}</span>}
+                </label>
+              )}
+            </>
           )}
 
           <div className="sup-form-row">
@@ -298,7 +329,20 @@ export function SupplierForm({
 
         <section className="sup-form-section">
           <h2 className="sup-form-section-title">{t("sections.address")}</h2>
-          {tab === "en" ? (
+          {!bilingual ? (
+            <label className="sup-field">
+              <span className="sup-field-label">{t("fields.address")}</span>
+              <textarea
+                value={addressEn}
+                onChange={(e) => {
+                  setAddressEn(e.target.value);
+                  setAddressAr(e.target.value);
+                }}
+                maxLength={500}
+                dir="auto"
+              />
+            </label>
+          ) : tab === "en" ? (
             <label className="sup-field">
               <span className="sup-field-label">{t("fields.addressEn")}</span>
               <textarea

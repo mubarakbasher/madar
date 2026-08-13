@@ -123,14 +123,30 @@ describe("Product mutations (POST/PATCH/DELETE /v1/products)", () => {
     expect(res.body.code).toBe("sku_taken");
   });
 
-  it("POST /v1/products rejects missing Arabic name with 400", async () => {
+  it("POST /v1/products with one language mirrors it into the other", async () => {
+    const res = await request(booted.http)
+      .post("/v1/products")
+      .set("Authorization", `Bearer ${ownerToken}`)
+      .set("Idempotency-Key", randomUUID())
+      .send({
+        sku: `MIR-${randomUUID().slice(0, 6).toUpperCase()}`,
+        name_i18n: { en: "Only English", ar: "" },
+        price_cents: 100,
+        cost_cents: 50,
+        currency_code: "USD",
+      });
+    expect(res.status).toBe(201);
+    expect(res.body.name_i18n).toEqual({ en: "Only English", ar: "Only English" });
+  });
+
+  it("POST /v1/products rejects a name empty in both languages with 400", async () => {
     const res = await request(booted.http)
       .post("/v1/products")
       .set("Authorization", `Bearer ${ownerToken}`)
       .set("Idempotency-Key", randomUUID())
       .send({
         sku: `BAD-${randomUUID().slice(0, 6).toUpperCase()}`,
-        name_i18n: { en: "Only English", ar: "" },
+        name_i18n: { en: "", ar: "" },
         price_cents: 100,
         cost_cents: 50,
         currency_code: "USD",

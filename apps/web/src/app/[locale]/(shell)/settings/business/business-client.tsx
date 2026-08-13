@@ -250,33 +250,50 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
         <h2 className="bz-card-title">{t("identity.title")}</h2>
         <div className="bz-field">
           <label className="bz-label">{t("identity.name")}</label>
-          <div className="bz-name-tabs">
-            {(["en", "ar"] as const).map((nl) => (
-              <button
-                key={nl}
-                type="button"
-                className={`bz-name-tab ${nameLocale === nl ? "bz-name-tab-active" : ""}`}
-                onClick={() => setNameLocale(nl)}
-              >
-                {nl === "en" ? "English" : "العربية"}
-              </button>
-            ))}
-          </div>
-          <input
-            className="bz-input"
-            disabled={!isOwner}
-            dir={nameLocale === "ar" ? "rtl" : "ltr"}
-            value={nameLocale === "ar" ? form.nameAr : form.nameEn}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                ...(nameLocale === "ar"
-                  ? { nameAr: e.target.value }
-                  : { nameEn: e.target.value }),
-              })
-            }
-            maxLength={120}
-          />
+          {/* Only legacy tenants with two real translations keep the EN/AR
+              tabs; everyone else types once and both keys stay mirrored. */}
+          {snap.name_i18n.en === snap.name_i18n.ar ? (
+            <input
+              className="bz-input"
+              disabled={!isOwner}
+              dir="auto"
+              value={form.nameEn}
+              onChange={(e) =>
+                setForm({ ...form, nameEn: e.target.value, nameAr: e.target.value })
+              }
+              maxLength={120}
+            />
+          ) : (
+            <>
+              <div className="bz-name-tabs">
+                {(["en", "ar"] as const).map((nl) => (
+                  <button
+                    key={nl}
+                    type="button"
+                    className={`bz-name-tab ${nameLocale === nl ? "bz-name-tab-active" : ""}`}
+                    onClick={() => setNameLocale(nl)}
+                  >
+                    {nl === "en" ? "English" : "العربية"}
+                  </button>
+                ))}
+              </div>
+              <input
+                className="bz-input"
+                disabled={!isOwner}
+                dir={nameLocale === "ar" ? "rtl" : "ltr"}
+                value={nameLocale === "ar" ? form.nameAr : form.nameEn}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    ...(nameLocale === "ar"
+                      ? { nameAr: e.target.value }
+                      : { nameEn: e.target.value }),
+                  })
+                }
+                maxLength={120}
+              />
+            </>
+          )}
         </div>
 
         <div className="bz-field">

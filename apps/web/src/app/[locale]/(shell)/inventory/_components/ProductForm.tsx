@@ -116,6 +116,15 @@ export function ProductForm({
   const [form, setForm] = useState<FormState>(initial);
   useEffect(() => setForm(initial), [initial]);
 
+  // Records created since single-language entry hold the same text in both
+  // keys. Only legacy records with two real translations still get the
+  // EN/AR tabs, so saving can't silently destroy an Arabic translation.
+  const bilingual =
+    mode === "edit" &&
+    !!product &&
+    (product.name_i18n.en !== product.name_i18n.ar ||
+      (product.description_i18n?.en ?? "") !== (product.description_i18n?.ar ?? ""));
+
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((f) => ({ ...f, [key]: value }));
     setFieldErrors((e) => {
@@ -189,8 +198,12 @@ export function ProductForm({
     const errs: Record<string, string> = {};
     if (mode === "create" && !form.sku.trim()) errs.sku = t("errors.required");
     if (form.sku && !/^[A-Z0-9-]+$/.test(form.sku)) errs.sku = t("errors.skuFormat");
-    if (!form.name_en.trim()) errs.name_en = t("errors.required");
-    if (!form.name_ar.trim()) errs.name_ar = t("errors.required");
+    if (bilingual) {
+      if (!form.name_en.trim()) errs.name_en = t("errors.required");
+      if (!form.name_ar.trim()) errs.name_ar = t("errors.required");
+    } else if (!form.name_en.trim()) {
+      errs.name = t("errors.required");
+    }
     if (mode === "create" && !form.price_major.trim()) errs.price_major = t("errors.required");
     if (mode === "create" && !form.cost_major.trim()) errs.cost_major = t("errors.required");
     return errs;
@@ -387,59 +400,96 @@ export function ProductForm({
 
         {/* Basics ───────────────────────────────────────── */}
         <Section title={t("sections.basics")}>
-          <div style={{ marginBottom: "var(--space-3)", display: "inline-flex", border: "1px solid var(--rule)", borderRadius: "var(--radius-full)", padding: 2 }}>
-            {(["en", "ar"] as const).map((l) => (
-              <button
-                key={l}
-                type="button"
-                onClick={() => setActiveLang(l)}
-                style={{
-                  padding: "var(--space-1) 14px",
-                  fontSize: 12,
-                  borderRadius: "var(--radius-full)",
-                  background: activeLang === l ? "var(--accent)" : "transparent",
-                  color: activeLang === l ? "white" : "var(--ink-3)",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                {l === "en" ? "EN" : "ع"}
-              </button>
-            ))}
-          </div>
-
-          {activeLang === "en" ? (
+          {!bilingual ? (
             <>
               <Field
-                label={t("fields.nameEn")}
-                error={fieldErrors.name_en ?? fieldErrors["name_i18n.en"]}
+                label={t("fields.name")}
+                error={
+                  fieldErrors.name ??
+                  fieldErrors.name_en ??
+                  fieldErrors["name_i18n.en"] ??
+                  fieldErrors["name_i18n.ar"]
+                }
               >
-                <Input value={form.name_en} onChange={(v) => set("name_en", v)} autoFocus />
+                <Input
+                  value={form.name_en}
+                  onChange={(v) => {
+                    set("name_en", v);
+                    set("name_ar", v);
+                  }}
+                  dir="auto"
+                  autoFocus
+                />
               </Field>
-              <Field label={t("fields.descriptionEn")} optional>
+              <Field label={t("fields.description")} optional>
                 <Textarea
                   value={form.description_en}
-                  onChange={(v) => set("description_en", v)}
+                  onChange={(v) => {
+                    set("description_en", v);
+                    set("description_ar", v);
+                  }}
+                  dir="auto"
                   rows={3}
                 />
               </Field>
             </>
           ) : (
             <>
-              <Field
-                label={t("fields.nameAr")}
-                error={fieldErrors.name_ar ?? fieldErrors["name_i18n.ar"]}
-              >
-                <Input value={form.name_ar} onChange={(v) => set("name_ar", v)} dir="rtl" />
-              </Field>
-              <Field label={t("fields.descriptionAr")} optional>
-                <Textarea
-                  value={form.description_ar}
-                  onChange={(v) => set("description_ar", v)}
-                  dir="rtl"
-                  rows={3}
-                />
-              </Field>
+              <div style={{ marginBottom: "var(--space-3)", display: "inline-flex", border: "1px solid var(--rule)", borderRadius: "var(--radius-full)", padding: 2 }}>
+                {(["en", "ar"] as const).map((l) => (
+                  <button
+                    key={l}
+                    type="button"
+                    onClick={() => setActiveLang(l)}
+                    style={{
+                      padding: "var(--space-1) 14px",
+                      fontSize: 12,
+                      borderRadius: "var(--radius-full)",
+                      background: activeLang === l ? "var(--accent)" : "transparent",
+                      color: activeLang === l ? "white" : "var(--ink-3)",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {l === "en" ? "EN" : "ع"}
+                  </button>
+                ))}
+              </div>
+
+              {activeLang === "en" ? (
+                <>
+                  <Field
+                    label={t("fields.nameEn")}
+                    error={fieldErrors.name_en ?? fieldErrors["name_i18n.en"]}
+                  >
+                    <Input value={form.name_en} onChange={(v) => set("name_en", v)} autoFocus />
+                  </Field>
+                  <Field label={t("fields.descriptionEn")} optional>
+                    <Textarea
+                      value={form.description_en}
+                      onChange={(v) => set("description_en", v)}
+                      rows={3}
+                    />
+                  </Field>
+                </>
+              ) : (
+                <>
+                  <Field
+                    label={t("fields.nameAr")}
+                    error={fieldErrors.name_ar ?? fieldErrors["name_i18n.ar"]}
+                  >
+                    <Input value={form.name_ar} onChange={(v) => set("name_ar", v)} dir="rtl" />
+                  </Field>
+                  <Field label={t("fields.descriptionAr")} optional>
+                    <Textarea
+                      value={form.description_ar}
+                      onChange={(v) => set("description_ar", v)}
+                      dir="rtl"
+                      rows={3}
+                    />
+                  </Field>
+                </>
+              )}
             </>
           )}
 

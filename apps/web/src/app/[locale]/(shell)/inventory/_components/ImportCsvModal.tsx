@@ -9,10 +9,11 @@ import {
   type CsvImportResult,
 } from "@/lib/api/catalog";
 
+// A name in either language column is enough — the other side mirrors it.
 const TEMPLATE_CSV =
   "sku,name_en,name_ar,category_code,price_cents,cost_cents,barcode,tax_class_code,branch_code,initial_qty,is_active\n" +
-  'ESP-001,Espresso,إسبريسو,beans,3500,1200,123456789012,STD,BR-001,50,true\n' +
-  'CAP-002,"Cappuccino, large","كابتشينو كبير",beverages,4500,1400,,STD,BR-001,30,true\n';
+  'ESP-001,Espresso,,beans,3500,1200,123456789012,STD,BR-001,50,true\n' +
+  'CAP-002,,"كابتشينو كبير",beverages,4500,1400,,STD,BR-001,30,true\n';
 
 export function ImportCsvModal({ onClose }: { onClose: () => void }) {
   const t = useTranslations("inventory.import");
