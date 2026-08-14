@@ -42,9 +42,9 @@ function daysClass(d: number): string {
 
 function formatMoney(cents: string, currency: string): string {
   try {
-    return formatMoneyShared(cents, currency || "USD", "en-US");
+    return formatMoneyShared(cents, currency || "EGP", "en-US");
   } catch {
-    return `${minorToMajor(cents, currency || "USD").toFixed(2)} ${currency}`;
+    return `${minorToMajor(cents, currency || "EGP").toFixed(2)} ${currency}`;
   }
 }
 

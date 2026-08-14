@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { ArrowUp, ArrowDown } from "lucide-react";
-import { formatNumberShort, minorToMajor } from "@/lib/currency";
+import { currencySymbol, formatNumberShort, minorToMajor } from "@/lib/currency";
 import type { ApiOwnerDashboardLeaderboardRow } from "@/lib/api/dashboard";
 
 interface BranchStripProps {
@@ -11,19 +11,6 @@ interface BranchStripProps {
   locale: string;
 }
 
-function symbolFor(currency: string, locale: string): string {
-  if (currency === "EGP") return locale === "ar" ? "ج.م" : "£";
-  try {
-    const parts = new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-EG", {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 0,
-    }).formatToParts(0);
-    return parts.find((p) => p.type === "currency")?.value ?? currency;
-  } catch {
-    return currency;
-  }
-}
 
 export function BranchStrip({
   leaderboard,
@@ -31,7 +18,7 @@ export function BranchStrip({
   locale,
 }: BranchStripProps) {
   const t = useTranslations("dashboard.leaderboard");
-  const cur = symbolFor(currency_code, locale);
+  const cur = currencySymbol(currency_code, locale);
 
   // API returns leaderboard already DESC by revenue. Coerce the bigint string
   // once for the bar-fill math, keep it as a number for compact formatting.

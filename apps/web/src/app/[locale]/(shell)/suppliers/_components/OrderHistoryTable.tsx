@@ -7,7 +7,7 @@ import {
   type ApiPOSummary,
   type PurchaseOrderStatus,
 } from "@/lib/api/purchase-orders";
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency, formatMoney } from "@/lib/currency";
 
 function pickBranchName(
   i18n: { en: string; ar: string } | null,
@@ -99,7 +99,7 @@ export function OrderHistoryTable({
                   </td>
                   <td>{branchName}</td>
                   <td style={{ textAlign: "end" }}>
-                    {formatCurrency(total / 100, po.currency_code, locale)}
+                    {formatMoney(total, po.currency_code, locale)}
                   </td>
                 </tr>
               );

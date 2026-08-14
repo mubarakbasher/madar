@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { Plus } from "lucide-react";
 import { suppliersListRequest } from "@/lib/api/suppliers";
 import { useAuthStore } from "@/lib/auth/store";
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency, formatMoney } from "@/lib/currency";
 import { SupplierCard } from "./_components/SupplierCard";
 import "./suppliers.css";
 
@@ -108,7 +108,7 @@ export function SuppliersClient({ locale }: { locale: "en" | "ar" }) {
         <div className="sup-hero-cell">
           <div className="sup-hero-label">{t("hero.totalOwed")}</div>
           <div className="sup-hero-value">
-            {formatCurrency(hero.owedCents / 100, tenantCurrency, locale)}
+            {formatMoney(hero.owedCents, tenantCurrency, locale)}
           </div>
         </div>
         <div className="sup-hero-cell">

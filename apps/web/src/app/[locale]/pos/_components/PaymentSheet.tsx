@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   X,
   Banknote,
@@ -14,7 +14,7 @@ import {
   SplitSquareHorizontal,
 } from "lucide-react";
 import { ApiError } from "@/lib/api/client";
-import { majorToMinor, minorToMajor } from "@/lib/currency";
+import { currencySymbol, majorToMinor, minorToMajor } from "@/lib/currency";
 import { CardPaymentBody } from "./CardPaymentBody";
 import { StoreCreditBody } from "./StoreCreditBody";
 import { SplitTenderBody, type SplitPaymentSlice } from "./SplitTenderBody";
@@ -77,6 +77,7 @@ export function PaymentSheet({
   // Major-unit mirror for the cash denomination chips + display.
   const total = minorToMajor(total_cents, currency);
   const t = useTranslations("pos.payment");
+  const locale = useLocale();
   const tMethods = useTranslations("pos.payment.methods");
   const tStoreCredit = useTranslations("pos.payment.storeCredit");
   const tTaxBreakdown = useTranslations("pos.payment.taxBreakdown");
@@ -184,7 +185,7 @@ export function PaymentSheet({
               style={{ fontSize: 42, fontWeight: 500, marginTop: "var(--space-1)", letterSpacing: "-0.025em", lineHeight: 1 }}
             >
               <span style={{ fontSize: "0.5em", color: "var(--ink-3)", marginInlineEnd: "var(--space-1)" }}>
-                {currency === "EGP" ? "£" : currency}
+                {currencySymbol(currency, locale)}
               </span>
               {Math.round(total)}
             </div>

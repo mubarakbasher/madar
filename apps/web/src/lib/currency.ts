@@ -9,6 +9,7 @@ export {
   majorToMinor,
   formatMoney,
   formatCurrency,
+  currencySymbol,
   formatNumber,
   formatNumberShort,
 } from "@madar/ui";

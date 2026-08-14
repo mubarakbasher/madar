@@ -13,7 +13,7 @@ import { publicPlansRequest, selectPlanRequest } from "../../../../lib/api/onboa
 import { currencyMinorUnits, minorToMajor } from "../../../../lib/currency";
 
 function formatPrice(cents: string, currency: string, locale: string): string {
-  const code = currency || "USD";
+  const code = currency || "EGP";
   const major = minorToMajor(cents, code);
   return new Intl.NumberFormat(locale === "ar" ? "ar" : "en-US", {
     style: "currency",

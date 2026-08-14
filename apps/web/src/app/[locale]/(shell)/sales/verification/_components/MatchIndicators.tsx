@@ -8,9 +8,9 @@ type Tone = "ok" | "bad" | "neutral";
 
 function formatMoney(cents: string, currency: string): string {
   try {
-    return formatMoneyShared(cents, currency || "USD");
+    return formatMoneyShared(cents, currency || "EGP");
   } catch {
-    return `${minorToMajor(cents, currency || "USD")} ${currency}`;
+    return `${minorToMajor(cents, currency || "EGP")} ${currency}`;
   }
 }
 

@@ -6,6 +6,8 @@ import type { MutableRefObject } from "react";
 import type { Category } from "@/lib/mock-data/categories";
 import type { Product } from "@/lib/mock-data/products";
 import { productImagePublicUrl } from "@/lib/api/catalog";
+import { currencySymbol, formatNumber } from "@/lib/currency";
+import { useAuthStore } from "@/lib/auth/store";
 
 export function ProductGrid({
   search,
@@ -31,6 +33,12 @@ export function ProductGrid({
   tenantId: string | null;
 }) {
   const t = useTranslations("pos");
+  const currencyCode = useAuthStore((s) => s.tenant?.default_currency_code ?? "EGP");
+  // Category chips carry tenant data (`name_i18n`), not UI strings — pick the
+  // active locale's side, same as the inventory FilterBar. Reading `.name`
+  // unconditionally left the POS chips in English on /ar.
+  const pickCategoryName = (c: Category) =>
+    locale === "ar" ? c.nameAr || c.name : c.name || c.nameAr;
 
   return (
     <div className="pos-products">
@@ -78,8 +86,8 @@ export function ProductGrid({
             aria-pressed={cat === c.id}
             onClick={() => setCat(c.id)}
           >
-            {c.name}
-            <span className="pos-cat-count tnum">{c.count}</span>
+            {pickCategoryName(c)}
+            <span className="pos-cat-count tnum">{formatNumber(c.count, locale)}</span>
           </button>
         ))}
       </div>
@@ -124,9 +132,12 @@ export function ProductGrid({
                     )}
                   </div>
                   <div className="pos-tile-name">{p.name}</div>
-                  <div className="pos-tile-price serif tnum" aria-label={`${p.price} EGP`}>
-                    <span className="cur">{locale === "ar" ? "ج.م" : "£"}</span>
-                    {p.price}
+                  <div
+                    className="pos-tile-price serif tnum"
+                    aria-label={`${p.price} ${currencyCode}`}
+                  >
+                    <span className="cur">{currencySymbol(currencyCode, locale)}</span>
+                    {formatNumber(p.price, locale)}
                   </div>
                 </button>
               );

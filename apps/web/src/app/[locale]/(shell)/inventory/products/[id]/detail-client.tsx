@@ -23,7 +23,7 @@ import { swatchFromId } from "@/lib/swatch";
 type Tab = "overview" | "stock" | "activity";
 
 function formatMajor(cents: string | bigint, currency: string): string {
-  const code = currency || "USD";
+  const code = currency || "EGP";
   // Compact intent: no forced trailing zeros, but keep the currency's real
   // precision (KWD=3, JPY=0) instead of truncating to whole units.
   return new Intl.NumberFormat("en-US", {

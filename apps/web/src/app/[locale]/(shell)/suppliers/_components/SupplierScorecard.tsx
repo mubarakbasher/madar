@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import type { ApiSupplierStats } from "@/lib/api/suppliers";
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency, formatMoney } from "@/lib/currency";
 
 function formatPct(value: number | null): string {
   if (value === null) return "—";
@@ -60,7 +60,7 @@ export function SupplierScorecard({
         </div>
         <div className="sup-stat">
           <span className="sup-stat-label">{t("totalSpend")}</span>
-          <span className="sup-stat-value">{formatCurrency(spend / 100, currencyCode, locale)}</span>
+          <span className="sup-stat-value">{formatMoney(spend, currencyCode, locale)}</span>
         </div>
       </div>
 

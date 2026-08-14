@@ -19,7 +19,7 @@ import { currencyMinorUnits, formatMoney, minorToMajor } from "@/lib/currency";
 type Step = 1 | 2 | 3;
 
 function formatCents(cents: string, currency: string): string {
-  return formatMoney(cents, currency || "USD", "en");
+  return formatMoney(cents, currency || "EGP", "en");
 }
 
 /**
@@ -539,10 +539,18 @@ export function PayInvoiceClient({
             {t("step3.heading")}
           </h2>
           <p style={{ fontSize: 14, color: "var(--ink-3)", marginTop: "var(--space-2)", maxWidth: 480, marginInline: "auto" }}>
-            {t("step3.body", {
-              amount: formatCents(invoice.amount_cents, invoice.currency_code),
-              ref: invoice.reference_code,
-            })}
+            {/* A suspended or cancelled shop is read-only until the payment is
+                approved — promising "full access in the meantime" was false
+                for exactly the tenants most likely to be on this screen. */}
+            {t(
+              tenant?.status === "suspended" || tenant?.status === "cancelled"
+                ? "step3.bodyLocked"
+                : "step3.body",
+              {
+                amount: formatCents(invoice.amount_cents, invoice.currency_code),
+                ref: invoice.reference_code,
+              },
+            )}
           </p>
           <Link
             href="/billing"

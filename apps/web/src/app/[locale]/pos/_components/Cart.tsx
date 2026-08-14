@@ -1,9 +1,10 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Pause, Plus, Minus, User, X } from "lucide-react";
 import type { Product } from "@/lib/mock-data/products";
 import { EmptyBasket } from "./EmptyBasket";
+import { currencySymbol } from "@/lib/currency";
 
 export type CartLine = {
   id: string;
@@ -62,6 +63,7 @@ export function Cart({
   currency: string;
 }) {
   const t = useTranslations("pos");
+  const locale = useLocale();
 
   return (
     <aside className="pos-cart">
@@ -187,7 +189,7 @@ export function Cart({
       <div className="pos-hero-total">
         <span className="pos-hero-kicker">{t("cart.totalKicker", { currency })}</span>
         <div className="pos-hero-amount serif tnum">
-          <span className="cur">{currency === "EGP" ? "£" : currency}</span>
+          <span className="cur">{currencySymbol(currency, locale)}</span>
           {Math.round(total)}
         </div>
       </div>

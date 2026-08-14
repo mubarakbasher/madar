@@ -882,7 +882,7 @@
     },
     "form": {
       "createTitle": "New product",
-      "createSubtitle": "Add a SKU to your catalog. Both English and Arabic names are required.",
+      "createSubtitle": "Add a SKU to your catalog. Type the name in whichever language you use.",
       "editTitle": "Edit product",
       "editSubtitle": "Update product details. Stock changes use the bulk Adjust stock action.",
       "backToInventory": "Back to inventory",
@@ -1223,7 +1223,14 @@
     },
     "plans": {
       "title": "Plan comparison",
-      "current": "current"
+      "current": "current",
+      "unlimited": "Unlimited",
+      "limit": {
+        "txns": "transactions / month",
+        "users": "users",
+        "branches": "branches",
+        "storage": "GB storage"
+      }
     },
     "invoices": {
       "empty": "No invoices yet.",
@@ -1275,7 +1282,8 @@
         "kicker": "Step 3 of 3 · Awaiting verification",
         "heading": "Your payment is being verified",
         "body": "Receipt for {amount} on {ref} received. Our finance team verifies within 24h. You keep full access in the meantime.",
-        "cta": "Back to billing"
+        "cta": "Back to billing",
+        "bodyLocked": "Receipt for {amount} on {ref} received. Our finance team verifies within 24h. Your shop stays read-only until the payment is approved."
       },
       "bank": {
         "bankName": "Bank",

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { ArrowRight, CreditCard, FileText, Clock, Sparkles } from "lucide-react";
 import { Link } from "../../../../../i18n/routing";
 import "./billing.css";
@@ -14,7 +14,7 @@ import {
   type ApiSubscription,
   type ApiSubscriptionInvoice,
 } from "@/lib/api/billing";
-import { currencyMinorUnits, minorToMajor } from "@/lib/currency";
+import { currencyMinorUnits, formatNumber, minorToMajor } from "@/lib/currency";
 
 type Tab = "plan" | "invoices" | "history";
 
@@ -27,17 +27,34 @@ const INVOICE_TONE: Record<string, { color: string; bg: string; label: string }>
   cancelled: { color: "var(--ink-3)", bg: "var(--bg-sunk)", label: "Cancelled" },
 };
 
-function formatCents(cents: string, currency: string): string {
-  const code = currency || "USD";
+function formatCents(cents: string, currency: string, locale: string): string {
+  const code = currency || "EGP";
   // Compact billing display: no forced trailing zeros, but allow the
   // currency's real precision instead of truncating to whole units.
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-EG", {
     style: "currency",
     currency: code,
     minimumFractionDigits: 0,
     maximumFractionDigits: currencyMinorUnits(code),
   }).format(minorToMajor(cents, code));
 }
+
+// `-1` is the API's "unlimited" sentinel (see plan-schemas.ts). Rendering the
+// raw value showed customers "-1 txns / -1 users / -1 branches".
+function formatLimit(value: unknown, locale: string, unlimitedLabel: string): string {
+  if (typeof value !== "number") return "—";
+  if (value < 0) return unlimitedLabel;
+  return formatNumber(value, locale);
+}
+
+// The jsonb keys are storage identifiers, not copy — they were being printed
+// raw ("storage gb") in both locales.
+const LIMIT_LABEL_KEYS: Record<string, string> = {
+  txns: "plans.limit.txns",
+  users: "plans.limit.users",
+  branches: "plans.limit.branches",
+  storage_gb: "plans.limit.storage",
+};
 
 function shortDate(iso: string | null): string {
   if (!iso) return "—";
@@ -232,7 +249,7 @@ function PlanTab({
                 letterSpacing: "-0.02em",
               }}
             >
-              {formatCents(sub.plan.monthly_price_cents, sub.plan.currency_code)}
+              {formatCents(sub.plan.monthly_price_cents, sub.plan.currency_code, locale)}
               <small style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--ink-3)" }}>
                 {" "}
                 / {t("currentPlan.month")}
@@ -263,7 +280,7 @@ function PlanTab({
                   marginTop: "var(--space-1)",
                 }}
               >
-                {formatCents(sub.next_invoice.amount_cents, sub.next_invoice.currency_code)}
+                {formatCents(sub.next_invoice.amount_cents, sub.next_invoice.currency_code, locale)}
               </div>
               <div style={{ marginTop: 6, fontSize: 12 }}>
                 <span
@@ -336,7 +353,7 @@ function PlanTab({
                   marginTop: "var(--space-1)",
                 }}
               >
-                {formatCents(p.monthly_price_cents, p.currency_code)}
+                {formatCents(p.monthly_price_cents, p.currency_code, locale)}
                 <small style={{ fontFamily: "var(--sans)", fontSize: 11, color: "var(--ink-3)" }}>
                   /{t("currentPlan.month")}
                 </small>
@@ -344,7 +361,8 @@ function PlanTab({
               <ul style={{ marginTop: "var(--space-3)", fontSize: 12, color: "var(--ink-2)", lineHeight: 1.7, paddingInlineStart: "var(--space-4)" }}>
                 {Object.entries(p.limits as Record<string, unknown>).slice(0, 4).map(([k, v]) => (
                   <li key={k}>
-                    <strong>{String(v)}</strong> {k.replace("_", " ")}
+                    <strong>{formatLimit(v, locale, t("plans.unlimited"))}</strong>{" "}
+                    {LIMIT_LABEL_KEYS[k] ? t(LIMIT_LABEL_KEYS[k]) : k.replace("_", " ")}
                   </li>
                 ))}
               </ul>
@@ -357,22 +375,27 @@ function PlanTab({
 }
 
 function UsageBar({ label, current, cap }: { label: string; current: number; cap: number | null }) {
-  const pct = cap ? Math.min(100, Math.round((current / cap) * 100)) : 0;
+  const t = useTranslations("billing");
+  const locale = useLocale();
+  // `cap === -1` means unlimited, and -1 is truthy — so the old `cap ?` guards
+  // produced a negative percentage, a " / -1" caption and a negative bar width.
+  const capped = typeof cap === "number" && cap > 0 ? cap : null;
+  const pct = capped ? Math.min(100, Math.round((current / capped) * 100)) : 0;
   const warn = pct >= 90;
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--ink-3)", marginBottom: "var(--space-1)" }}>
         <span>{label}</span>
         <span>
-          <strong>{current.toLocaleString()}</strong>
-          {cap ? ` / ${cap.toLocaleString()}` : ""}
+          <strong>{formatNumber(current, locale)}</strong>
+          {capped ? ` / ${formatNumber(capped, locale)}` : cap === -1 ? ` / ${t("plans.unlimited")}` : ""}
         </span>
       </div>
       <div style={{ height: 6, borderRadius: "var(--radius-full)", background: "var(--rule)" }}>
         <div
           style={{
             height: "100%",
-            width: cap ? `${pct}%` : "0%",
+            width: capped ? `${pct}%` : "0%",
             background: warn ? "var(--amber)" : "var(--accent)",
             borderRadius: "var(--radius-full)",
             transition: "width 240ms ease",
@@ -385,6 +408,7 @@ function UsageBar({ label, current, cap }: { label: string; current: number; cap
 
 function InvoicesTab({ invoices, loading }: { invoices: ApiSubscriptionInvoice[]; loading: boolean }) {
   const t = useTranslations("billing");
+  const locale = useLocale();
   if (loading) {
     return <div style={{ padding: 40, color: "var(--ink-3)" }}>{t("loading")}</div>;
   }
@@ -415,7 +439,7 @@ function InvoicesTab({ invoices, loading }: { invoices: ApiSubscriptionInvoice[]
               </td>
               <td>{inv.due_date}</td>
               <td style={{ textAlign: "end", fontVariantNumeric: "tabular-nums" }}>
-                {formatCents(inv.amount_cents, inv.currency_code)}
+                {formatCents(inv.amount_cents, inv.currency_code, locale)}
               </td>
               <td>
                 <span
@@ -464,6 +488,7 @@ function InvoicesTab({ invoices, loading }: { invoices: ApiSubscriptionInvoice[]
 
 function HistoryTab({ invoices }: { invoices: ApiSubscriptionInvoice[] }) {
   const t = useTranslations("billing");
+  const locale = useLocale();
   const lifetimeCents = invoices.reduce(
     (sum, inv) => sum + Number(BigInt(inv.amount_cents)),
     0,
@@ -507,7 +532,7 @@ function HistoryTab({ invoices }: { invoices: ApiSubscriptionInvoice[] }) {
                   fontVariantNumeric: "tabular-nums",
                 }}
               >
-                {formatCents(inv.amount_cents, inv.currency_code)}
+                {formatCents(inv.amount_cents, inv.currency_code, locale)}
               </span>
             </div>
           ))}
@@ -524,7 +549,7 @@ function HistoryTab({ invoices }: { invoices: ApiSubscriptionInvoice[] }) {
               marginTop: "var(--space-1)",
             }}
           >
-            {formatCents(String(lifetimeCents), currency)}
+            {formatCents(String(lifetimeCents), currency, locale)}
           </div>
           <p style={{ fontSize: 12, color: "var(--ink-3)", marginTop: 6 }}>
             {t("history.acrossPayments", { count: invoices.length })}

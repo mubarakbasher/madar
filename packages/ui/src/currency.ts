@@ -84,6 +84,28 @@ export function formatCurrency(value: number, currency = "EGP", locale = "en"): 
   }).format(value);
 }
 
+/**
+ * The currency's symbol on its own, for layouts that set the symbol in a
+ * separate (usually smaller) element from the amount — POS tiles, KPI cards.
+ *
+ * Prefer `formatMoney` when the amount and symbol can live in one string. This
+ * exists so those split layouts stop hand-rolling `currency === "EGP" ? "£"`,
+ * which is what rendered Egyptian pounds as sterling across the tenant app.
+ */
+export function currencySymbol(currencyCode: string, locale = "en"): string {
+  try {
+    const parts = new Intl.NumberFormat(intlLocale(locale), {
+      style: "currency",
+      currency: currencyCode,
+      maximumFractionDigits: 0,
+    }).formatToParts(0);
+    return parts.find((p) => p.type === "currency")?.value ?? currencyCode;
+  } catch {
+    // Unknown/malformed code — show the code itself rather than a wrong glyph.
+    return currencyCode;
+  }
+}
+
 export function formatNumber(value: number, locale = "en"): string {
   return new Intl.NumberFormat(intlLocale(locale)).format(value);
 }

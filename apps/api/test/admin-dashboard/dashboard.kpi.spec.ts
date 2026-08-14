@@ -80,6 +80,33 @@ describe("GET /v1/admin/dashboard/kpi", () => {
     expect(res.body.pending_verifications.count).toBe(0);
   });
 
+  // Regression: MRR sums plan.monthly_price_cents, but used to label the total
+  // with the TENANT's default_currency_code. A tenant paying for a USD plan
+  // while trading in EGP therefore had its USD subscription revenue reported
+  // as EGP.
+  it("labels MRR with the plan currency, not the tenant's trading currency", async () => {
+    await isolateTenantUniverse([]);
+    await adminPrisma.paymentProof.deleteMany({});
+    const tenants = await makeMultipleTenants([
+      { status: "active", planCode: "growth", country: "EG" },
+      { status: "active", planCode: "growth", country: "EG" },
+    ]);
+    // Plans are seeded in USD by the fixture; these shops trade in EGP.
+    await adminPrisma.tenant.updateMany({
+      where: { id: { in: tenants.map((t) => t!.id) } },
+      data: { default_currency_code: "EGP" },
+    });
+
+    const token = await adminToken();
+    const res = await request(booted.http)
+      .get("/v1/admin/dashboard/kpi")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.monthly_recurring.amount_cents).toBe("29800");
+    expect(res.body.monthly_recurring.currency_code).toBe("USD");
+  });
+
   it("includes pending payment-proof counts + oldest_days", async () => {
     await isolateTenantUniverse([]);
     await adminPrisma.paymentProof.deleteMany({});

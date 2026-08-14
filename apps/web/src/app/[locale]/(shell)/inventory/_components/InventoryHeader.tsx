@@ -6,6 +6,8 @@ import { Download, FolderTree, Package, Plus, ScrollText, ShoppingCart, Upload }
 import { Link } from "../../../../../../i18n/routing";
 import { formatNumber } from "@/lib/currency";
 import { ImportCsvModal } from "./ImportCsvModal";
+import { currencySymbol } from "@/lib/currency";
+import { useAuthStore } from "@/lib/auth/store";
 
 export function InventoryHeader({
   skuCount,
@@ -23,7 +25,8 @@ export function InventoryHeader({
   canReorder: boolean;
 }) {
   const t = useTranslations("inventory");
-  const cur = locale === "ar" ? "ج.م" : "£";
+  const currencyCode = useAuthStore((s) => s.tenant?.default_currency_code ?? "EGP");
+  const cur = currencySymbol(currencyCode, locale);
   const showReorder = canReorder && lowCount > 0 && !!branchId;
   const [importing, setImporting] = useState(false);
 

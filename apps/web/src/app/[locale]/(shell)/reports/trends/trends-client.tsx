@@ -26,7 +26,7 @@ function formatValue(metric: TrendsMetric, currency: string, locale: "en" | "ar"
   }
   // Compact KPI intent: no forced trailing zeros, but allow the currency's
   // real precision (KWD=3, JPY=0) instead of truncating to whole units.
-  const code = currency || "USD";
+  const code = currency || "EGP";
   return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
     style: "currency",
     currency: code,

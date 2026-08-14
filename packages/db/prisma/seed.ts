@@ -44,7 +44,12 @@ async function main() {
               : "المؤسسات",
           },
           monthly_price_cents: BigInt(p.price),
-          currency_code: "USD",
+          // Demo figures, not a price list. Must match the demo tenant's
+          // currency and the platform receiving account below — seeding plans
+          // in USD against an EGP tenant told the shop to wire USD into an EGP
+          // account, and made the admin MRR card sum USD but label it EGP.
+          // Admins still choose the currency per plan in the admin app.
+          currency_code: "EGP",
           limits: p.limits,
         },
       }),
@@ -455,7 +460,8 @@ async function main() {
       period_end: new Date("2026-05-31"),
       due_date: new Date("2026-05-31"),
       amount_cents: growthPlan.monthly_price_cents,
-      currency_code: "USD",
+      // Derived, never a literal: invoice currency must follow the plan it bills.
+      currency_code: growthPlan.currency_code,
       status: "in_review",
       reference_code: "INV-2026-05-001",
     },
@@ -470,7 +476,7 @@ async function main() {
       context: "subscription",
       reference_id: invoice.id,
       amount_cents: invoice.amount_cents,
-      currency_code: "USD",
+      currency_code: invoice.currency_code,
       bank_account_kind: "platform",
       bank_account_id: platformBank.id,
       payer_name: "Bayt Coffee Co.",
@@ -497,7 +503,7 @@ async function main() {
       period_end: nextPeriodEnd,
       due_date: nextDue,
       amount_cents: growthPlan.monthly_price_cents,
-      currency_code: "USD",
+      currency_code: growthPlan.currency_code,
       status: "awaiting_payment",
       reference_code: "INV-2026-06-001",
     },

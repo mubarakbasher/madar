@@ -6,6 +6,7 @@ export {
   majorToMinor,
   formatMoney,
   formatCurrency,
+  currencySymbol,
   formatNumber,
   formatNumberShort,
 } from "./currency";

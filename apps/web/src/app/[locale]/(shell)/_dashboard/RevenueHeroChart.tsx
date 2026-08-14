@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { ArrowUp, ArrowDown } from "lucide-react";
-import { formatNumber, minorToMajor } from "@/lib/currency";
+import { currencySymbol, formatNumber, minorToMajor } from "@/lib/currency";
 import type { ApiOwnerDashboardRevenuePoint } from "@/lib/api/dashboard";
 
 interface RevenueHeroChartProps {
@@ -12,19 +12,6 @@ interface RevenueHeroChartProps {
   locale: string;
 }
 
-function symbolFor(currency: string, locale: string): string {
-  if (currency === "EGP") return locale === "ar" ? "ج.م" : "£";
-  try {
-    const parts = new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-EG", {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 0,
-    }).formatToParts(0);
-    return parts.find((p) => p.type === "currency")?.value ?? currency;
-  } catch {
-    return currency;
-  }
-}
 
 export function RevenueHeroChart({
   revenue_30d,
@@ -34,7 +21,7 @@ export function RevenueHeroChart({
 }: RevenueHeroChartProps) {
   const t = useTranslations("dashboard.hero");
   const tKpi = useTranslations("dashboard.kpi");
-  const cur = symbolFor(currency_code, locale);
+  const cur = currencySymbol(currency_code, locale);
 
   // Empty state: no points (brand-new tenant). Render the card chrome but
   // skip the SVG body.

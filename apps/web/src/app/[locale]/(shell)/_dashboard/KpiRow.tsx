@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { KPICard } from "./KPICard";
-import { formatNumber, minorToMajor } from "@/lib/currency";
+import { currencySymbol, formatNumber, minorToMajor } from "@/lib/currency";
 import type {
   ApiOwnerDashboardPrevWeek,
   ApiOwnerDashboardSparklines,
@@ -26,22 +26,6 @@ function centsToUnits(cents: string | number, currency: string): number {
   return Math.round(minorToMajor(cents, currency));
 }
 
-function symbolFor(currency: string, locale: string): string {
-  if (currency === "EGP") return locale === "ar" ? "ج.م" : "£";
-  // Best-effort symbol for other currencies via Intl.NumberFormat. Falls back
-  // to the ISO code on environments without `formatToParts`.
-  try {
-    const parts = new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-EG", {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 0,
-    }).formatToParts(0);
-    const sym = parts.find((p) => p.type === "currency");
-    return sym?.value ?? currency;
-  } catch {
-    return currency;
-  }
-}
 
 export function KpiRow({
   week,
@@ -51,7 +35,7 @@ export function KpiRow({
   locale,
 }: KpiRowProps) {
   const t = useTranslations("dashboard.kpi");
-  const cur = symbolFor(currency_code, locale);
+  const cur = currencySymbol(currency_code, locale);
 
   const revenueSpark = sparklines.revenue_cents.map((c) => centsToUnits(c, currency_code));
   const grossSpark = sparklines.gross_profit_cents.map((c) => centsToUnits(c, currency_code));

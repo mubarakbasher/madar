@@ -7,6 +7,7 @@ import type { Product } from "@/lib/mock-data/products";
 import { productImagePublicUrl } from "@/lib/api/catalog";
 import { useAuthStore } from "@/lib/auth/store";
 import { RowActionsMenu } from "./RowActionsMenu";
+import { currencySymbol, formatNumber } from "@/lib/currency";
 
 export type SortKey = "sku" | "name" | "price" | "cost" | "stock" | "vel";
 export type SortState = { key: SortKey; dir: "asc" | "desc" };
@@ -29,7 +30,8 @@ export function ProductsTable({
   locale: string;
 }) {
   const t = useTranslations("inventory");
-  const cur = locale === "ar" ? "ج.م" : "£";
+  const currencyCode = useAuthStore((s) => s.tenant?.default_currency_code ?? "EGP");
+  const cur = currencySymbol(currencyCode, locale);
   const tenantId = useAuthStore((s) => s.tenant?.id ?? null);
   const allSelected = selected.length === rows.length && rows.length > 0;
 
@@ -176,17 +178,17 @@ export function ProductsTable({
                 </td>
                 <td className="inv-td inv-td-end">
                   {cur}
-                  {p.price}
+                  {formatNumber(p.price, locale)}
                 </td>
                 <td className="inv-td inv-td-end inv-cell-cost">
                   {cur}
-                  {p.cost}
+                  {formatNumber(p.cost, locale)}
                 </td>
-                <td className="inv-td inv-td-end inv-cell-margin">{margin}%</td>
+                <td className="inv-td inv-td-end inv-cell-margin">{formatNumber(margin, locale)}%</td>
                 <td className="inv-td">
                   <div className="inv-stock">
                     <span className="inv-stock-qty" data-low={isLow ? "true" : undefined}>
-                      {p.stock}
+                      {formatNumber(p.stock, locale)}
                     </span>
                     <div className="inv-stock-bar">
                       <div
@@ -198,7 +200,7 @@ export function ProductsTable({
                     {isLow && <span className="inv-low-badge">{t("row.lowBadge")}</span>}
                   </div>
                 </td>
-                <td className="inv-td inv-td-end inv-cell-vel">{p.vel}</td>
+                <td className="inv-td inv-td-end inv-cell-vel">{formatNumber(p.vel, locale)}</td>
                 <td className="inv-td inv-td-end">
                   <RowActionsMenu productId={p.id} productName={p.name} />
                 </td>

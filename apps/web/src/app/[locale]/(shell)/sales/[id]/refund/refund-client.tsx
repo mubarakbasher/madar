@@ -37,7 +37,7 @@ interface PickedLine {
 
 function formatMoney(cents: bigint, currency: string, locale: "en" | "ar"): string {
   try {
-    return formatMoneyIntl(cents, currency || "USD", locale);
+    return formatMoneyIntl(cents, currency || "EGP", locale);
   } catch {
     return `${currency} ${minorToMajor(cents, currency).toFixed(currencyMinorUnits(currency))}`;
   }

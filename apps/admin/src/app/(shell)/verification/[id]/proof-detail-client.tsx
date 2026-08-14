@@ -12,6 +12,7 @@ import {
   adminRejectProof,
   adminRequestProofInfo,
 } from "@/lib/api/admin-proofs";
+import { adminGetTenant } from "@/lib/api/admin-tenant-detail";
 import { ApiError } from "@/lib/api/client";
 import { t } from "@/lib/i18n";
 import { MatchIndicators } from "../../_components/MatchIndicators";
@@ -22,9 +23,9 @@ import { RequestInfoModal, type RequestInfoSubmit } from "../../_components/Requ
 
 function formatMoney(cents: string, currency: string): string {
   try {
-    return formatMoneyShared(cents, currency || "USD", "en-US");
+    return formatMoneyShared(cents, currency || "EGP", "en-US");
   } catch {
-    return `${minorToMajor(cents, currency || "USD").toFixed(2)} ${currency}`;
+    return `${minorToMajor(cents, currency || "EGP").toFixed(2)} ${currency}`;
   }
 }
 
@@ -45,6 +46,17 @@ export function ProofDetailClient({ proofId }: { proofId: string }) {
     queryKey: ["admin", "proofs", "detail", proofId],
     queryFn: () => adminGetProof(proofId),
     staleTime: 30_000,
+  });
+
+  // The proof payload carries only tenant_id, so the verifier was reading a
+  // raw UUID. Resolve the name here rather than widening the shared
+  // tenant/admin proof serializer for one admin-only label.
+  const tenantId = detailQuery.data?.tenant_id ?? null;
+  const tenantQuery = useQuery({
+    queryKey: ["admin", "tenants", "detail", tenantId],
+    queryFn: () => adminGetTenant(tenantId as string),
+    enabled: !!tenantId,
+    staleTime: 5 * 60_000,
   });
 
   async function handleApprove() {
@@ -164,7 +176,11 @@ export function ProofDetailClient({ proofId }: { proofId: string }) {
             }).format(new Date(p.created_at))}
           </dd>
           <dt>{t("verification.dl.tenant")}</dt>
-          <dd style={{ fontFamily: "var(--mono)", fontSize: 11.5 }}>{p.tenant_id}</dd>
+          <dd title={p.tenant_id}>
+            {tenantQuery.data?.name_i18n.en ?? (
+              <span style={{ fontFamily: "var(--mono)", fontSize: 11.5 }}>{p.tenant_id}</span>
+            )}
+          </dd>
         </dl>
 
         <ProofActionBar

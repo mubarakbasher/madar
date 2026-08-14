@@ -9,7 +9,7 @@ import {
   Wallet,
   type LucideIcon,
 } from "lucide-react";
-import { formatNumber, minorToMajor } from "@/lib/currency";
+import { currencySymbol, formatNumber, minorToMajor } from "@/lib/currency";
 import type {
   ApiOwnerDashboardRecentTx,
 } from "@/lib/api/dashboard";
@@ -44,19 +44,6 @@ const STATUS_CLASS: Record<
   refunded: "dash-tx-pill dash-tx-pill-refunded",
 };
 
-function symbolFor(currency: string, locale: string): string {
-  if (currency === "EGP") return locale === "ar" ? "ج.م" : "£";
-  try {
-    const parts = new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-EG", {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 0,
-    }).formatToParts(0);
-    return parts.find((p) => p.type === "currency")?.value ?? currency;
-  } catch {
-    return currency;
-  }
-}
 
 // Render an ISO timestamp as "Xm ago" / "Xh ago" via Intl.RelativeTimeFormat
 // (locale-aware: "منذ ١٢ دقيقة" in Arabic). Falls back to the date string on
@@ -93,7 +80,7 @@ export function RecentTxCard({
   const t = useTranslations("dashboard.recent");
   const tMethod = useTranslations("dashboard.recent.method");
   const tStatus = useTranslations("dashboard.recent.status");
-  const cur = symbolFor(currency_code, locale);
+  const cur = currencySymbol(currency_code, locale);
 
   if (recent_transactions.length === 0) {
     return (

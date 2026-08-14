@@ -2,7 +2,10 @@
   "name": "@madar/ui",
   "version": "0.0.0",
   "private": true,
-  "sideEffects": ["./src/tokens.css", "./src/theme.css"],
+  "sideEffects": [
+    "./src/tokens.css",
+    "./src/theme.css"
+  ],
   "exports": {
     "./tokens.css": "./src/tokens.css",
     "./theme.css": "./src/theme.css",
@@ -11,7 +14,8 @@
   },
   "types": "./src/index.ts",
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "lucide-react": "^0.453.0"
@@ -22,6 +26,7 @@
   },
   "devDependencies": {
     "@types/react": "^18.3.0",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.9"
   }
 }
