@@ -183,7 +183,6 @@ html[lang="ar"] .inv-head-title { font-family: var(--font-arabic); }
 
 /* Body rows */
 .inv-row {
-  position: relative;
   transition: background 120ms;
   border-bottom: 1px solid var(--rule);
 }
@@ -191,7 +190,13 @@ html[lang="ar"] .inv-head-title { font-family: var(--font-arabic); }
 .inv-row:hover {
   background: color-mix(in oklab, var(--accent-soft) 22%, var(--bg-elev));
 }
-.inv-row::before {
+
+/* Accent stripe. MUST hang off the first cell, never off the <tr>: a
+   generated box on a table-row gets wrapped in an ANONYMOUS TABLE CELL,
+   which claims column 1 and shifts every real <td> one column right —
+   so the header labels stop matching the values underneath them. */
+.inv-row .inv-td:first-child { position: relative; }
+.inv-row .inv-td:first-child::before {
   content: "";
   position: absolute;
   inset-inline-start: 0;
@@ -201,12 +206,12 @@ html[lang="ar"] .inv-head-title { font-family: var(--font-arabic); }
   background: var(--accent);
   transition: width 120ms;
 }
-.inv-row:hover::before { width: 2px; }
-.inv-row[data-low="true"]::before { width: 2px; background: var(--rose); }
+.inv-row:hover .inv-td:first-child::before { width: 2px; }
+.inv-row[data-low="true"] .inv-td:first-child::before { width: 2px; background: var(--rose); }
 .inv-row[data-sel="true"] {
   background: color-mix(in oklab, var(--accent-soft) 40%, var(--bg-elev));
 }
-.inv-row[data-sel="true"]::before { width: 2px; background: var(--accent); }
+.inv-row[data-sel="true"] .inv-td:first-child::before { width: 2px; background: var(--accent); }
 
 .inv-td {
   padding: 14px;
