@@ -134,7 +134,6 @@ function SubscriptionBannerShell({
     <div
       role="status"
       style={{
-        gridColumn: "1 / -1",
         background: tones[tone].bg,
         color: tones[tone].fg,
         padding: "10px 20px",
@@ -142,9 +141,6 @@ function SubscriptionBannerShell({
         alignItems: "center",
         gap: "var(--space-3)",
         fontSize: 13,
-        position: "sticky",
-        insetBlockStart: 0,
-        zIndex: 49,
       }}
     >
       {children}

@@ -54,7 +54,6 @@ export function ImpersonationBanner() {
     <div
       role="status"
       style={{
-        gridColumn: "1 / -1",
         background: "linear-gradient(90deg, var(--rose) 0%, color-mix(in oklab, var(--rose) 75%, #000) 100%)",
         color: "white",
         padding: "10px 20px",
@@ -62,9 +61,6 @@ export function ImpersonationBanner() {
         alignItems: "center",
         gap: "var(--space-4)",
         fontSize: 13,
-        position: "sticky",
-        top: 0,
-        zIndex: 50,
       }}
     >
       <span
