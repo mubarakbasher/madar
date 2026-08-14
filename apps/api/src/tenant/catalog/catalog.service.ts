@@ -12,7 +12,7 @@ import { fromBuffer as fileTypeFromBuffer } from "file-type";
 // not under RLS) — mirrors branches.service's adminPrisma usage for the same
 // purpose.
 // eslint-disable-next-line no-restricted-imports
-import { adminPrisma, tenantScoped } from "@madar/db";
+import { adminPrisma, tenantScoped, Prisma } from "@madar/db";
 import { withTenantTx } from "../../shared/db-tx";
 import { AuditService, type AuditCtx } from "../auth/audit.service";
 import { ImageProcessor, type SupportedMime } from "../../common/image/image-processor.service";
@@ -568,7 +568,9 @@ export class CatalogService {
             tenant_id: tenantId,
             sku: body.sku,
             name_i18n: body.name_i18n,
-            description_i18n: body.description_i18n,
+            // Prisma needs the explicit SQL-NULL sentinel for a nullable Json
+            // column; a bare `null` throws. Same idiom as branches.service.
+            description_i18n: body.description_i18n ?? Prisma.DbNull,
             category_id: body.category_id ?? null,
             tax_class_id: body.tax_class_id ?? null,
             price_cents: BigInt(body.price_cents),
@@ -682,7 +684,9 @@ export class CatalogService {
     const data: Record<string, unknown> = {};
     if (body.sku !== undefined) data.sku = body.sku;
     if (body.name_i18n !== undefined) data.name_i18n = body.name_i18n;
-    if (body.description_i18n !== undefined) data.description_i18n = body.description_i18n;
+    if (body.description_i18n !== undefined)
+      data.description_i18n =
+        body.description_i18n === null ? Prisma.DbNull : body.description_i18n;
     if (body.category_id !== undefined) data.category_id = body.category_id;
     if (body.tax_class_id !== undefined) data.tax_class_id = body.tax_class_id;
     if (body.price_cents !== undefined) data.price_cents = BigInt(body.price_cents);
