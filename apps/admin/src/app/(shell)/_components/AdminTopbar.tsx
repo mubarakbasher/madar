@@ -22,16 +22,12 @@ type Theme = "light" | "dark";
 
 function useTheme(): [Theme, () => void] {
   const [theme, setTheme] = useState<Theme>("light");
+  // The pre-paint script in the root layout already resolved the theme onto
+  // <html>. Read it back rather than deciding again here — two sources of
+  // truth meant a second post-paint write and a visible flash.
   useEffect(() => {
-    const stored = (typeof window !== "undefined" ? localStorage.getItem(THEME_KEY) : null) as Theme | null;
-    const initial: Theme =
-      stored === "dark" || stored === "light"
-        ? stored
-        : window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light";
-    setTheme(initial);
-    document.documentElement.setAttribute("data-theme", initial);
+    const applied = document.documentElement.getAttribute("data-theme");
+    setTheme(applied === "dark" ? "dark" : "light");
   }, []);
   const toggle = () => {
     const next: Theme = theme === "dark" ? "light" : "dark";

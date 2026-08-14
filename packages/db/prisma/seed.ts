@@ -19,6 +19,20 @@ const prisma = adminPrisma;
 // the user scanned the first time keeps working. Replace in production.
 const DEMO_ADMIN_TOTP_SECRET = "JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP";
 
+// Stable reference codes so re-seeding an existing database still upserts the
+// same two demo invoices instead of accumulating a new pair each run.
+const DEMO_INVOICE_REVIEW_REF = "INV-DEMO-REVIEW";
+const DEMO_INVOICE_OPEN_REF = "INV-DEMO-OPEN";
+
+/** Midnight UTC, `days` from the seed run. Keeps the demo's billing state
+ *  stable no matter when the seed is executed. */
+function relativeDay(days: number): Date {
+  const d = new Date();
+  d.setUTCHours(0, 0, 0, 0);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d;
+}
+
 async function main() {
   console.log("🌱 Seeding Madar demo data …");
 
@@ -450,20 +464,24 @@ async function main() {
   console.log(`  ✓ Sale payment proof (${salePaymentProof.id}, pending)`);
 
   // ── 14. Subscription invoice + its payment proof ─────────────────
+  // Dates are RELATIVE to the seed run. Hardcoded 2026-05/06 dates meant that
+  // from ~2026-08-06 onward the billing lifecycle marched the demo tenant
+  // straight to `cancelled` on the first tick (>=31 days past due), locking a
+  // freshly seeded demo out of the entire app on first login.
   const invoice = await prisma.subscriptionInvoice.upsert({
-    where: { tenant_id_reference_code: { tenant_id: tenant.id, reference_code: "INV-2026-05-001" } },
+    where: { tenant_id_reference_code: { tenant_id: tenant.id, reference_code: DEMO_INVOICE_REVIEW_REF } },
     update: {},
     create: {
       tenant_id: tenant.id,
       plan_id: growthPlan.id,
-      period_start: new Date("2026-05-01"),
-      period_end: new Date("2026-05-31"),
-      due_date: new Date("2026-05-31"),
+      period_start: relativeDay(-30),
+      period_end: relativeDay(-1),
+      due_date: relativeDay(3),
       amount_cents: growthPlan.monthly_price_cents,
       // Derived, never a literal: invoice currency must follow the plan it bills.
       currency_code: growthPlan.currency_code,
       status: "in_review",
-      reference_code: "INV-2026-05-001",
+      reference_code: DEMO_INVOICE_REVIEW_REF,
     },
   });
 
@@ -490,11 +508,13 @@ async function main() {
   console.log(`  ✓ Subscription invoice ${invoice.reference_code} + payment proof (${subPaymentProof.id}, pending)`);
 
   // ── 15. Awaiting-payment invoice (drives the tenant pay-invoice demo) ──
-  const nextPeriodStart = new Date("2026-06-01");
-  const nextPeriodEnd = new Date("2026-06-30");
-  const nextDue = new Date("2026-06-30");
+  const nextPeriodStart = relativeDay(0);
+  const nextPeriodEnd = relativeDay(29);
+  // Comfortably in the future: the lifecycle tick only acts on invoices whose
+  // due_date has passed, so the demo tenant stays `active` on any run date.
+  const nextDue = relativeDay(7);
   const awaitingInvoice = await prisma.subscriptionInvoice.upsert({
-    where: { tenant_id_reference_code: { tenant_id: tenant.id, reference_code: "INV-2026-06-001" } },
+    where: { tenant_id_reference_code: { tenant_id: tenant.id, reference_code: DEMO_INVOICE_OPEN_REF } },
     update: {},
     create: {
       tenant_id: tenant.id,
@@ -505,7 +525,7 @@ async function main() {
       amount_cents: growthPlan.monthly_price_cents,
       currency_code: growthPlan.currency_code,
       status: "awaiting_payment",
-      reference_code: "INV-2026-06-001",
+      reference_code: DEMO_INVOICE_OPEN_REF,
     },
   });
   console.log(`  ✓ Awaiting invoice ${awaitingInvoice.reference_code} (drives /billing pay flow)`);

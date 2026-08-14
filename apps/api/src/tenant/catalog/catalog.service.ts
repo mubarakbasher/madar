@@ -1222,6 +1222,13 @@ export class CatalogService {
     if (!product || product.deleted_at || !product.image_url) {
       throw new NotFoundException({ code: "image_not_found", message: "No image set for this product" });
     }
+    // The row can outlive its file; that is a 404, not an unhandled ENOENT.
+    if (!(await this.storage.exists(product.image_url))) {
+      throw new NotFoundException({
+        code: "image_file_missing",
+        message: "Product image is missing from storage",
+      });
+    }
     const buffer = await this.storage.get(product.image_url);
     const ext = product.image_url.split(".").pop()?.toLowerCase() ?? "jpg";
     const mime =

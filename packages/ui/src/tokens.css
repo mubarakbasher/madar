@@ -155,6 +155,11 @@ html[lang="ar"] body { font-family: var(--font-arabic); }
 
 button { font-family: inherit; cursor: pointer; }
 input, select, textarea { font-family: inherit; color: inherit; }
+/* Checkboxes and radios were rendering in the browser's default blue — OS
+   chrome in a design system that forbids hardcoded colour. `accent-color`
+   tints the native control, so it follows the tenant/admin accent and both
+   themes for free, without the regression surface of a fully custom control. */
+input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); }
 
 /* Tabular numerals — apply broadly to data */
 .tnum { font-variant-numeric: tabular-nums lining-nums; }

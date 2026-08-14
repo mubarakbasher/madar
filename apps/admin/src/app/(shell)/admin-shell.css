@@ -753,6 +753,11 @@
 /* ─── Receipt viewer ──────────────────────────────────────────────── */
 .admin-receipt-frame {
   aspect-ratio: 4 / 5;
+  /* Uncapped, a 4:5 frame at the admin content width rendered ~1450px tall,
+     pushing Approve/Reject three viewport-heights down the page — on the one
+     screen the Finance role lives in all day. Click-to-zoom already exists for
+     the full-size view. */
+  max-block-size: min(62vh, 620px);
   background:
     repeating-linear-gradient(
       45deg,
@@ -864,6 +869,13 @@
   margin-top: 18px;
   padding-top: 18px;
   border-top: 1px solid var(--rule-2);
+  /* Keep the verify/reject decision reachable without scrolling back down.
+     Matches the sticky form-footer idiom used across the tenant app. */
+  position: sticky;
+  inset-block-end: 0;
+  background: var(--bg-elev);
+  padding-bottom: 14px;
+  z-index: 2;
 }
 .admin-btn-primary {
   background: var(--sage);
