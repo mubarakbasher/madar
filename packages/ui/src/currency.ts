@@ -45,9 +45,18 @@ export function majorToMinor(value: number, currencyCode: string): number {
 }
 
 /** Bare "en"/"ar" map to the tenant default region; full BCP-47 tags
- *  (e.g. admin's "en-US") pass through unchanged. */
+ *  (e.g. admin's "en-US", or an opted-in tenant's "ar-EG-u-nu-arab") pass
+ *  through unchanged.
+ *
+ *  The `-u-nu-latn` on Arabic is load-bearing. Western digits are the product
+ *  default for every locale (docs/i18n-guide.md §5.1), and next-intl formats
+ *  through the bare tag "ar", which CLDR already resolves to `latn`. Plain
+ *  "ar-EG" would resolve to `arab` purely as a side effect of naming a region
+ *  — which is how the app ended up rendering `٢٢ منتج` next to `عرض 22 من 22`
+ *  on the same screen. The region still buys us `ج.م.` and Arabic month
+ *  names; only the digits are pinned. */
 function intlLocale(locale: string): string {
-  if (locale === "ar") return "ar-EG";
+  if (locale === "ar") return "ar-EG-u-nu-latn";
   if (locale === "en") return "en-EG";
   return locale;
 }

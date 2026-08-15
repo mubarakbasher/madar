@@ -3,6 +3,7 @@ import {
   currencyMinorUnits,
   currencySymbol,
   formatMoney,
+  formatNumber,
   majorToMinor,
   minorToMajor,
 } from "./currency";
@@ -55,13 +56,41 @@ describe("formatMoney", () => {
     expect(formatMoney(14900, "JPY", "en")).toContain("14,900");
   });
 
-  it("formats Arabic in Arabic-Indic digits", () => {
-    expect(formatMoney(16000, "EGP", "ar")).toMatch(/[٠-٩]/);
+  // Western digits are the product default in every locale
+  // (docs/i18n-guide.md §5.1). This asserted the opposite until 2026-08-15,
+  // which is how the mixed-numeral bug survived: money rendered `٢٢` while
+  // next-intl rendered `22` two elements away.
+  it("keeps Arabic on Western digits by default", () => {
+    const ar = formatMoney(16000, "EGP", "ar");
+    expect(ar).not.toMatch(/[٠-٩]/);
+    expect(ar).toContain("160");
+    // …but still Arabic typography, not an English fallback.
+    expect(ar).toContain("ج.م.");
+  });
+
+  it("renders Arabic-Indic digits when a tenant opts in via the tag", () => {
+    expect(formatMoney(16000, "EGP", "ar-EG-u-nu-arab")).toMatch(/[٠-٩]/);
   });
 
   it("honours fraction-digit overrides for compact displays", () => {
     expect(formatMoney(14900, "EGP", "en", { min: 0, max: 0 })).not.toContain(".");
   });
+});
+
+// The bug this guards against is not "wrong digits" — it is *two* numbering
+// systems on one screen. next-intl formats ICU plurals through the bare tag
+// (`ar`), and these helpers format everything else. If the two ever disagree
+// again, a user sees `٢٢ منتج` beside `عرض 22 من 22`.
+describe("agreement with next-intl's numbering system", () => {
+  for (const locale of ["en", "ar"] as const) {
+    it(`matches Intl.NumberFormat("${locale}") — the tag next-intl uses`, () => {
+      const nextIntl = new Intl.NumberFormat(locale).format(1234);
+      const ours = formatNumber(1234, locale);
+      const digitsOf = (s: string) => s.replace(/[^\p{Nd}]/gu, "");
+      // Separators legitimately differ by region; the digits must not.
+      expect(digitsOf(ours)).toBe(digitsOf(nextIntl));
+    });
+  }
 });
 
 describe("currencySymbol", () => {
