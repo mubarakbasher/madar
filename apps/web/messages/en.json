@@ -697,7 +697,10 @@
     },
     "impersonation": {
       "label": "Impersonating",
-      "body": "You are viewing Madar as <strong>{tenant}</strong> — logged in as <strong>{admin}</strong>. Every action is logged."
+      "body": "You are viewing Madar as <strong>{tenant}</strong> — logged in as <strong>{admin}</strong>. Every action is logged.",
+      "exit": "Exit impersonation",
+      "exiting": "Exiting…",
+      "exitFailed": "Couldn't end the session. It is still open and still being logged."
     }
   },
   "inventory": {
