@@ -4,9 +4,8 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Download, FolderTree, Package, Plus, ScrollText, ShoppingCart, Upload } from "lucide-react";
 import { Link } from "../../../../../../i18n/routing";
-import { formatNumber } from "@/lib/currency";
+import { formatCurrency, formatNumber } from "@/lib/currency";
 import { ImportCsvModal } from "./ImportCsvModal";
-import { currencySymbol } from "@/lib/currency";
 import { useAuthStore } from "@/lib/auth/store";
 
 export function InventoryHeader({
@@ -26,7 +25,6 @@ export function InventoryHeader({
 }) {
   const t = useTranslations("inventory");
   const currencyCode = useAuthStore((s) => s.tenant?.default_currency_code ?? "EGP");
-  const cur = currencySymbol(currencyCode, locale);
   const showReorder = canReorder && lowCount > 0 && !!branchId;
   const [importing, setImporting] = useState(false);
 
@@ -42,10 +40,7 @@ export function InventoryHeader({
           </span>
           <span>·</span>
           <span>
-            <strong className="tnum">
-              {cur}
-              {formatNumber(onHandValue, locale)}
-            </strong>{" "}
+            <strong className="tnum">{formatCurrency(onHandValue, currencyCode, locale)}</strong>{" "}
             {t("summary.onHand")}
           </span>
           <span>·</span>

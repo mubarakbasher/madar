@@ -7,7 +7,7 @@ import type { Product } from "@/lib/mock-data/products";
 import { productImagePublicUrl } from "@/lib/api/catalog";
 import { useAuthStore } from "@/lib/auth/store";
 import { RowActionsMenu } from "./RowActionsMenu";
-import { currencySymbol, formatNumber } from "@/lib/currency";
+import { formatCurrency, formatNumber } from "@/lib/currency";
 
 export type SortKey = "sku" | "name" | "price" | "cost" | "stock" | "vel";
 export type SortState = { key: SortKey; dir: "asc" | "desc" };
@@ -31,7 +31,6 @@ export function ProductsTable({
 }) {
   const t = useTranslations("inventory");
   const currencyCode = useAuthStore((s) => s.tenant?.default_currency_code ?? "EGP");
-  const cur = currencySymbol(currencyCode, locale);
   const tenantId = useAuthStore((s) => s.tenant?.id ?? null);
   const allSelected = selected.length === rows.length && rows.length > 0;
 
@@ -176,13 +175,9 @@ export function ProductsTable({
                     </div>
                   </div>
                 </td>
-                <td className="inv-td inv-td-end">
-                  {cur}
-                  {formatNumber(p.price, locale)}
-                </td>
+                <td className="inv-td inv-td-end">{formatCurrency(p.price, currencyCode, locale)}</td>
                 <td className="inv-td inv-td-end inv-cell-cost">
-                  {cur}
-                  {formatNumber(p.cost, locale)}
+                  {formatCurrency(p.cost, currencyCode, locale)}
                 </td>
                 <td className="inv-td inv-td-end inv-cell-margin">{formatNumber(margin, locale)}%</td>
                 <td className="inv-td">
