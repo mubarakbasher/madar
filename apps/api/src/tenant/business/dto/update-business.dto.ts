@@ -27,6 +27,10 @@ export const UpdateBusinessSchema = z
     tax_registration_number: z.string().trim().max(40).nullable().optional(),
     tax_inclusive_default: z.boolean().optional(),
     default_locale: z.enum(["en", "ar"]).optional(),
+    // Display-only. Storage stays Western digits / Gregorian ISO 8601 UTC —
+    // these only change how the tenant app renders numbers and dates.
+    use_arabic_indic_digits: z.boolean().optional(),
+    use_hijri_calendar: z.boolean().optional(),
   })
   .refine((o) => Object.keys(o).length > 0, {
     message: "Provide at least one field to update",

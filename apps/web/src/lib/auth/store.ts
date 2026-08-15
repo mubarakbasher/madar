@@ -23,6 +23,10 @@ export interface AuthTenant {
   trial_ends_at: string | null;
   default_tax_class_id: string | null;
   tax_inclusive_default: boolean;
+  /** Display-only rendering preferences — see packages/ui/src/format-locale.ts.
+   *  Storage is always Western digits and Gregorian ISO 8601 UTC. */
+  use_arabic_indic_digits: boolean;
+  use_hijri_calendar: boolean;
   plan: { code: string; name_i18n: unknown } | null;
 }
 

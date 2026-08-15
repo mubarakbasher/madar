@@ -218,6 +218,10 @@ model Tenant {
   business_type            BusinessType?
   timezone                 String         @default("Africa/Cairo")
   fiscal_year_start_month  Int            @default(1) @db.SmallInt
+  // Display-only preferences. Storage is always Western digits + ISO 8601 UTC
+  // (docs/i18n-guide.md §5.1, §5.2); these change rendering, never data.
+  use_arabic_indic_digits  Boolean        @default(false)
+  use_hijri_calendar       Boolean        @default(false)
   logo_url                 String?
   trial_reminder_sent_at   DateTime?      @db.Timestamptz
   created_at               DateTime       @default(now()) @db.Timestamptz
