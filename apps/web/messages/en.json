@@ -2665,6 +2665,19 @@
         "hint": "JPG / PNG / WebP up to 5 MB. Squareish + transparent background prints best.",
         "tooLarge": "Logo must be 5MB or smaller.",
         "uploadFailed": "Upload failed — please retry."
+      },
+      "languageRegion": {
+        "title": "Language & region",
+        "subtitle": "Display only — stored values are always Western digits and Gregorian dates.",
+        "preview": "Preview",
+        "digits": {
+          "label": "Arabic-Indic digits",
+          "hint": "Show ١٢٣ instead of 123 in the Arabic interface. Has no effect in English."
+        },
+        "calendar": {
+          "label": "Hijri calendar",
+          "hint": "Show dates in the Hijri calendar. Applies to both languages."
+        }
       }
     },
     "notifications": {

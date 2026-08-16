@@ -17,6 +17,7 @@ import {
 } from "@/lib/api/business";
 import { meRequest } from "@/lib/api/auth";
 import { useAuthStore } from "@/lib/auth/store";
+import { LanguageRegionCard } from "./_components/LanguageRegionCard";
 
 type NameLocale = "en" | "ar";
 
@@ -31,6 +32,8 @@ interface FormState {
   tax_registration_number: string;
   tax_inclusive_default: boolean;
   default_locale: "en" | "ar";
+  use_arabic_indic_digits: boolean;
+  use_hijri_calendar: boolean;
 }
 
 const CURRENCY_OPTIONS = [
@@ -86,6 +89,8 @@ function snapshotToForm(s: BusinessSnapshot): FormState {
     tax_registration_number: s.tax_registration_number ?? "",
     tax_inclusive_default: s.tax_inclusive_default,
     default_locale: (s.default_locale === "ar" ? "ar" : "en") as "en" | "ar",
+    use_arabic_indic_digits: s.use_arabic_indic_digits,
+    use_hijri_calendar: s.use_hijri_calendar,
   };
 }
 
@@ -122,6 +127,12 @@ function diff(
   }
   if (form.default_locale !== snap.default_locale) {
     body.default_locale = form.default_locale;
+  }
+  if (form.use_arabic_indic_digits !== snap.use_arabic_indic_digits) {
+    body.use_arabic_indic_digits = form.use_arabic_indic_digits;
+  }
+  if (form.use_hijri_calendar !== snap.use_hijri_calendar) {
+    body.use_hijri_calendar = form.use_hijri_calendar;
   }
   return { body, dirty: Object.keys(body).length > 0 };
 }
@@ -524,6 +535,13 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
         onChanged={(next) => {
           qc.setQueryData(["business", "snapshot"], next);
         }}
+      />
+
+      <LanguageRegionCard
+        locale={locale}
+        arabicIndic={form.use_arabic_indic_digits}
+        hijri={form.use_hijri_calendar}
+        onChange={(patch) => setForm((prev) => (prev ? { ...prev, ...patch } : prev))}
       />
 
       {/* Lifecycle (read-only) */}
