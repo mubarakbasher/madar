@@ -108,7 +108,7 @@ export function CustomerDetailClient({
           <h1 className="cu-title">{c.name}</h1>
           <div className="cu-detail-meta">
             {c.code && <span>{c.code}</span>}
-            {c.phone && <span>{c.phone}</span>}
+            {c.phone && <span dir="ltr">{c.phone}</span>}
             {c.email && <span>{c.email}</span>}
             <span>· {t("memberSince", { date: fmtDate(c.created_at, locale) })}</span>
           </div>

@@ -127,7 +127,7 @@ export function CustomerPickerModal({
                 <div style={{ flex: 1, textAlign: "start" }}>
                   <div style={{ fontSize: 14, fontWeight: 500 }}>{c.name}</div>
                   <div style={{ fontSize: 12, color: "var(--ink-3)" }}>
-                    {c.phone ?? c.email ?? c.code ?? "—"} ·{" "}
+                    <span dir="ltr">{c.phone ?? c.email ?? c.code ?? "—"}</span> ·{" "}
                     {t("salesCount", { count: c.sales_count })}
                   </div>
                 </div>

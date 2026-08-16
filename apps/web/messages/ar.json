@@ -1615,7 +1615,7 @@
       "conflictsBannerCta": "مراجعة"
     },
     "payment": {
-      "kicker": "الدفع · فاتورة #{id}",
+      "kicker": "الدفع",
       "openReceipt": "افتح الإيصال ←",
       "fullyCovered": "مسدّد بالكامل",
       "remaining": "متبقي {amount}",
@@ -1655,7 +1655,9 @@
       "taxBreakdown": {
         "label": "الضريبة",
         "inclusiveHint": "الضريبة مضمّنة في سعر الصنف.",
-        "exclusiveHint": "تُضاف الضريبة إلى الإجمالي الفرعي."
+        "exclusiveHint": "تُضاف الضريبة إلى الإجمالي الفرعي.",
+        "inclusivePrefix": "شامل",
+        "addedPrefix": "+"
       },
       "card": {
         "title": "بطاقة",

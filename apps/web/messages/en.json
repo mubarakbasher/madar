@@ -1615,7 +1615,7 @@
       "conflictsBannerCta": "Review"
     },
     "payment": {
-      "kicker": "Payment · Ticket #{id}",
+      "kicker": "Payment",
       "openReceipt": "Open receipt →",
       "fullyCovered": "Fully covered",
       "remaining": "{amount} remaining",
@@ -1655,7 +1655,9 @@
       "taxBreakdown": {
         "label": "Tax",
         "inclusiveHint": "Tax inclusive — already in the line price.",
-        "exclusiveHint": "Tax added to the subtotal."
+        "exclusiveHint": "Tax added to the subtotal.",
+        "inclusivePrefix": "incl.",
+        "addedPrefix": "+"
       },
       "card": {
         "title": "Card",

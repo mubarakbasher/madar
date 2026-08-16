@@ -14,7 +14,8 @@ import {
   SplitSquareHorizontal,
 } from "lucide-react";
 import { ApiError } from "@/lib/api/client";
-import { currencySymbol, majorToMinor, minorToMajor } from "@/lib/currency";
+import { majorToMinor, minorToMajor } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 import { CardPaymentBody } from "./CardPaymentBody";
 import { StoreCreditBody } from "./StoreCreditBody";
 import { SplitTenderBody, type SplitPaymentSlice } from "./SplitTenderBody";
@@ -82,6 +83,7 @@ export function PaymentSheet({
   const total = minorToMajor(total_cents, currency);
   const t = useTranslations("pos.payment");
   const locale = useLocale();
+  const f = useFormat();
   const tMethods = useTranslations("pos.payment.methods");
   const tStoreCredit = useTranslations("pos.payment.storeCredit");
   const tTaxBreakdown = useTranslations("pos.payment.taxBreakdown");
@@ -187,15 +189,15 @@ export function PaymentSheet({
       <div className="pos-modal" style={{ width: 500 }} onClick={(e) => e.stopPropagation()}>
         <header className="pos-modal-head">
           <div style={{ flex: 1 }}>
-            <span className="kicker">{t("kicker", { id: "2848" })}</span>
+            <span className="kicker">{t("kicker")}</span>
             <div
               className="serif tnum"
               style={{ fontSize: 42, fontWeight: 500, marginTop: "var(--space-1)", letterSpacing: "-0.025em", lineHeight: 1 }}
             >
               <span style={{ fontSize: "0.5em", color: "var(--ink-3)", marginInlineEnd: "var(--space-1)" }}>
-                {currencySymbol(currency, locale)}
+                {f.currencySymbol(currency)}
               </span>
-              {Math.round(total)}
+              {f.number(Math.round(total))}
             </div>
             {tax !== undefined && tax > 0 && (
               <div
@@ -211,8 +213,8 @@ export function PaymentSheet({
               >
                 <span className="kicker">{tTaxBreakdown("label")}</span>
                 <span className="tnum">
-                  {taxInclusive ? "incl. " : "+ "}
-                  {Math.round(tax)} {currency}
+                  {taxInclusive ? tTaxBreakdown("inclusivePrefix") : tTaxBreakdown("addedPrefix")}{" "}
+                  {f.moneyMajor(tax, currency)}
                 </span>
                 <span style={{ color: "var(--ink-4)" }}>·</span>
                 <span style={{ color: "var(--ink-4)" }}>
@@ -316,7 +318,7 @@ export function PaymentSheet({
                         >
                           {c.l}
                           <span className="tnum" style={{ color: "var(--ink-3)", marginInlineStart: "var(--space-1)" }}>
-                            {c.v} {currency}
+                            {f.moneyMajor(c.v, currency)}
                           </span>
                         </button>
                       ))}
@@ -338,7 +340,7 @@ export function PaymentSheet({
                         {t("changeDueLabel")}
                       </span>
                       <span className="serif tnum" style={{ fontSize: 22, fontWeight: 500 }}>
-                        {change} {currency}
+                        {f.moneyMajor(change, currency)}
                       </span>
                     </div>
                   )}

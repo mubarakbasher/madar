@@ -194,7 +194,7 @@ function CustomerRow({ c, locale }: { c: ApiCustomerSummary; locale: "en" | "ar"
         <div className="cu-name">{c.name}</div>
         {c.code && <div className="cu-muted" style={{ fontSize: 11 }}>{c.code}</div>}
       </td>
-      <td className="cu-muted">{c.phone ?? "—"}</td>
+      <td className="cu-muted" dir="ltr">{c.phone ?? "—"}</td>
       <td className="cu-muted">{c.email ?? "—"}</td>
       <td>
         <span

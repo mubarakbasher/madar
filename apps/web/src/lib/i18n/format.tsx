@@ -17,6 +17,7 @@ import { createContext, useContext, useMemo, type ReactNode } from "react";
 import {
   buildFormatLocale,
   currencySymbol as uiCurrencySymbol,
+  formatCurrency as uiFormatCurrency,
   formatDate as uiFormatDate,
   formatDateTime as uiFormatDateTime,
   formatDuration as uiFormatDuration,
@@ -46,6 +47,12 @@ export interface Formatter {
     currencyCode: string,
     digits?: { min?: number; max?: number },
   ): string;
+  /**
+   * MAJOR-unit amount → money string. Prefer `money()` — this exists for the
+   * screens that already hold major units. Do NOT convert by hand with ×100:
+   * minor-unit counts vary by currency (KWD=3, JPY=0).
+   */
+  moneyMajor(value: number, currencyCode: string): string;
   /** The symbol alone, for layouts that style it separately (POS tiles, KPIs). */
   currencySymbol(currencyCode: string): string;
   number(value: number): string;
@@ -79,6 +86,7 @@ function build(lang: Lang, prefs: DisplayPrefs): Formatter {
     lang,
     prefs,
     money: (minor, currencyCode, digits) => uiFormatMoney(minor, currencyCode, locale, digits),
+    moneyMajor: (value, currencyCode) => uiFormatCurrency(value, currencyCode, locale),
     currencySymbol: (currencyCode) => uiCurrencySymbol(currencyCode, locale),
     number: (value) => uiFormatNumber(value, locale),
     numberShort: (value) => uiFormatNumberShort(value, locale),

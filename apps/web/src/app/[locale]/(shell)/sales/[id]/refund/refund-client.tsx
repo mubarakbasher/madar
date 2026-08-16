@@ -697,7 +697,7 @@ function CustomerPicker({
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 500 }}>{c.name}</div>
                   <div style={{ fontSize: 12, color: "var(--ink-3)" }}>
-                    {c.phone ?? c.email ?? c.code ?? "—"}
+                    <span dir="ltr">{c.phone ?? c.email ?? c.code ?? "—"}</span>
                   </div>
                 </div>
               </button>
