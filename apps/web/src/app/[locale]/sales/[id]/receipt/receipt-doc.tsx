@@ -26,7 +26,7 @@ function centsMajor(cents: string | bigint, currency: string): string {
 }
 
 function fmtDate(iso: string, locale: "en" | "ar"): string {
-  return new Date(iso).toLocaleString(locale === "ar" ? "ar-EG" : "en-US", {
+  return new Date(iso).toLocaleString(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",

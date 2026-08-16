@@ -15,6 +15,7 @@ import { useAuthStore } from "@/lib/auth/store";
 import { currencyMinorUnits } from "@/lib/currency";
 import { Sparkline } from "../../_dashboard/Sparkline";
 import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
+import { useFormat } from "@/lib/i18n/format";
 
 /**
  * Movers / margin analysis. PAGES §39.
@@ -187,11 +188,12 @@ function MoverRow({
   t: (k: string) => string;
   slow?: boolean;
 }) {
+  const f = useFormat();
   const value = useMemo(() => {
     if (metric === "units") return String(item.units);
     const cents =
       metric === "profit" ? item.gross_profit_cents : item.revenue_cents;
-    return formatCurrency(BigInt(cents), currency, locale);
+    return formatCurrency(BigInt(cents), currency, f.locale);
   }, [metric, item, currency, locale]);
 
   const name = item.name_i18n[locale] || item.name_i18n.en || item.sku;
@@ -214,7 +216,7 @@ function MoverRow({
       <div className="mvr-row-value">
         <p className="mvr-value">{value}</p>
         <p className="mvr-margin">
-          {t("columns.margin")}: {formatPct(item.gross_profit_pct, locale)}
+          {t("columns.margin")}: {formatPct(item.gross_profit_pct, f.locale)}
         </p>
       </div>
     </li>
@@ -228,7 +230,7 @@ function isoDate(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
-function formatCurrency(cents: bigint, currency: string, locale: "en" | "ar"): string {
+function formatCurrency(cents: bigint, currency: string, locale: string): string {
   const minor = currencyMinorUnits(currency);
   const divisor = 10n ** BigInt(minor);
   const whole = Number(cents / divisor);
@@ -246,7 +248,7 @@ function formatCurrency(cents: bigint, currency: string, locale: "en" | "ar"): s
   }
 }
 
-function formatPct(v: number, locale: "en" | "ar"): string {
+function formatPct(v: number, locale: string): string {
   try {
     return new Intl.NumberFormat(locale === "ar" ? "ar" : "en", {
       style: "percent",

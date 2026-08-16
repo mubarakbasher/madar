@@ -4,11 +4,12 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { branchStockRequest } from "@/lib/api/branches";
+import { useFormat } from "@/lib/i18n/format";
 
 function relTime(iso: string | null, locale: string, neverLabel: string): string {
   if (!iso) return neverLabel;
   const diffMs = Date.now() - new Date(iso).getTime();
-  const fmt = new Intl.RelativeTimeFormat(locale === "ar" ? "ar-EG" : "en-EG", { numeric: "auto" });
+  const fmt = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
   const mins = Math.floor(diffMs / 60_000);
   if (mins < 60) return fmt.format(-mins, "minute");
   const hrs = Math.floor(mins / 60);
@@ -18,6 +19,7 @@ function relTime(iso: string | null, locale: string, neverLabel: string): string
 }
 
 export function StockTab({ branchId, locale }: { branchId: string; locale: string }) {
+  const f = useFormat();
   const t = useTranslations("branches.detail.stock");
   const [search, setSearch] = useState("");
   const [lowOnly, setLowOnly] = useState(false);
@@ -89,7 +91,7 @@ export function StockTab({ branchId, locale }: { branchId: string; locale: strin
                   <td className={low ? "br-stock-low" : ""}>{row.qty_on_hand}</td>
                   <td>{row.reorder_point ?? "—"}</td>
                   <td>{row.available}</td>
-                  <td>{relTime(row.last_movement_at, locale, t("neverMoved"))}</td>
+                  <td>{relTime(row.last_movement_at, f.locale, t("neverMoved"))}</td>
                 </tr>
               );
             })}

@@ -22,6 +22,7 @@ import { MatchIndicators } from "../_components/MatchIndicators";
 import { ProofActionBar } from "../_components/ProofActionBar";
 import { ReceiptViewer } from "../_components/ReceiptViewer";
 import { RejectModal, type RejectSubmit } from "../_components/RejectModal";
+import { useFormat } from "@/lib/i18n/format";
 import "../verification.css";
 
 const VERIFIER_ROLES = new Set(["owner", "manager"]);
@@ -38,6 +39,7 @@ function formatMoney(cents: string, currency: string, locale: string): string {
 export function ProofDetailClient({ proofId }: { proofId: string }) {
   const params = useParams();
   const locale = (params?.locale as string) ?? "en";
+  const f = useFormat();
   const t = useTranslations("verification");
   const queryClient = useQueryClient();
   const user = useAuthStore((s) => s.user);
@@ -67,7 +69,7 @@ export function ProofDetailClient({ proofId }: { proofId: string }) {
       await approvePaymentProof(proofId);
       await queryClient.invalidateQueries({ queryKey: ["payment-proofs"] });
       setToast({
-        text: `${t("toast.verified")} · ${formatMoney(detailQuery.data.amount_cents, detailQuery.data.currency_code, locale)}`,
+        text: `${t("toast.verified")} · ${formatMoney(detailQuery.data.amount_cents, detailQuery.data.currency_code, f.locale)}`,
         tone: "ok",
       });
     } catch (err) {
@@ -146,7 +148,7 @@ export function ProofDetailClient({ proofId }: { proofId: string }) {
 
         <dl className="vq-detail-grid">
           <dt>{t("detail.amount")}</dt>
-          <dd>{formatMoney(p.amount_cents, p.currency_code, locale)}</dd>
+          <dd>{formatMoney(p.amount_cents, p.currency_code, f.locale)}</dd>
           <dt>{t("detail.context")}</dt>
           <dd style={{ textTransform: "capitalize" }}>{p.context}</dd>
           <dt>{t("detail.transferDate")}</dt>
@@ -157,7 +159,7 @@ export function ProofDetailClient({ proofId }: { proofId: string }) {
           <dd>{p.payer_bank ?? "—"}</dd>
           <dt>{t("detail.submittedAt")}</dt>
           <dd>
-            {new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-US", {
+            {new Intl.DateTimeFormat(f.locale, {
               dateStyle: "medium",
               timeStyle: "short",
             }).format(new Date(p.created_at))}

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Trash2 } from "lucide-react";
 import type { ApiProduct } from "@/lib/api/catalog";
 import { formatCurrency, minorToMajor } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 export interface DraftRMALine {
   /** Stable key so React doesn't lose focus when reordering. */
@@ -52,6 +53,7 @@ export function ReturnLineEditor({
   currencyCode: string;
   locale: "en" | "ar";
 }) {
+  const f = useFormat();
   const t = useTranslations("returns.form");
   const tSuggested = useTranslations("returns.form.suggested");
 
@@ -203,7 +205,7 @@ export function ReturnLineEditor({
       />
 
       <div className="rma-line-total">
-        {formatCurrency(minorToMajor(lineTotal, currencyCode), currencyCode, locale)}
+        {formatCurrency(minorToMajor(lineTotal, currencyCode), currencyCode, f.locale)}
       </div>
 
       <div className="rma-reason-input">

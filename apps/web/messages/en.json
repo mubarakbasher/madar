@@ -674,7 +674,7 @@
       "soon": "Soon"
     },
     "merchant": {
-      "branches": "{count, plural, one {# branch} other {# branches}}"
+      "branches": "{count, plural, one {{count_n} branch} other {{count_n} branches}}"
     },
     "topbar": {
       "searchPlaceholder": "Search products, orders, branches…",
@@ -747,7 +747,7 @@
       "importCsv": "Import CSV"
     },
     "ai": {
-      "summaryLead": "{count, plural, one {# SKU} other {# SKUs}} will run out within {days, plural, one {# day} other {# days}}.",
+      "summaryLead": "{count, plural, one {{count_n} SKU} other {{count_n} SKUs}} will run out within {days, plural, one {{count_n} day} other {{count_n} days}}.",
       "suggestBundled": "Madar suggests reordering {items} — bundled into one PO with {supplier}.",
       "suggestMulti": "Madar suggests reordering {items} across {suppliers} suppliers.",
       "suggestPlain": "Madar suggests reordering {items}.",
@@ -812,7 +812,7 @@
       "editPrice": "Edit price",
       "adjustStock": "Adjust stock",
       "printLabels": {
-        "title": "{count, plural, one {# label} other {# labels}} ready to print",
+        "title": "{count, plural, one {{count_n} label} other {{count_n} labels}} ready to print",
         "printButton": "Print",
         "close": "Close",
         "hint": "Press Ctrl/⌘+P or use the Print button. Tip: in the browser print dialog turn on \"Background graphics\" for accurate colors."
@@ -820,7 +820,7 @@
       "clear": "Clear",
       "editPriceModal": {
         "title": "Edit price for selected",
-        "subtitle": "{count, plural, one {# product} other {# products}} selected",
+        "subtitle": "{count, plural, one {{count_n} product} other {{count_n} products}} selected",
         "close": "Close",
         "modes": {
           "set": "Set price to…",
@@ -842,7 +842,7 @@
       },
       "adjustStockModal": {
         "title": "Adjust stock for selected",
-        "subtitle": "{count, plural, one {# product} other {# products}} selected · same delta applied to each",
+        "subtitle": "{count, plural, one {{count_n} product} other {{count_n} products}} selected · same delta applied to each",
         "close": "Close",
         "branchLabel": "Branch",
         "deltaLabel": "Qty delta (signed)",
@@ -959,7 +959,7 @@
         "edit": "Edit",
         "active": "Active",
         "inactive": "Hidden from POS",
-        "branches": "{count, plural, =0 {no branches} =1 {1 branch} other {# branches}}",
+        "branches": "{count, plural, =0 {no branches} =1 {1 branch} other {{count_n} branches}}",
         "lastMovement": "Last movement {when}",
         "noMovement": "No movements yet"
       },
@@ -1144,7 +1144,7 @@
       "label": "Category tree",
       "expand": "Expand",
       "collapse": "Collapse",
-      "countLabel": "{count, plural, =0 {no products} one {# product} other {# products}}"
+      "countLabel": "{count, plural, =0 {no products} one {{count_n} product} other {{count_n} products}}"
     },
     "panel": {
       "label": "Selected category",
@@ -1354,7 +1354,8 @@
     "hero": {
       "title": "Revenue · last 30 days",
       "branchAll": "All branches",
-      "empty": "No sales recorded in the last 30 days."
+      "empty": "No sales recorded in the last 30 days.",
+      "axisDaysAgo": "{days_n}d"
     },
     "insights": {
       "confidence": "{percent}% confidence",
@@ -1398,7 +1399,7 @@
     "recent": {
       "title": "Recent transactions",
       "empty": "No transactions yet.",
-      "items": "{count, plural, one {# item} other {# items}}",
+      "items": "{count, plural, one {{count_n} item} other {{count_n} items}}",
       "method": {
         "cash": "Cash",
         "card": "Card",
@@ -1416,7 +1417,7 @@
   },
   "subscription": {
     "banner": {
-      "trialEndingBody": "Your trial ends in {days, plural, =0 {today} one {1 day} other {# days}}. Pay your first invoice to keep selling.",
+      "trialEndingBody": "Your trial ends in {days, plural, =0 {today} one {1 day} other {{days_n} days}}. Pay your first invoice to keep selling.",
       "trialEndingCta": "Pay now",
       "graceBody": "Subscription payment is overdue. You can keep working — pay before access pauses.",
       "payNow": "Pay now",
@@ -1540,7 +1541,7 @@
       "loadError": "Couldn't load customers. Try again.",
       "noResults": "No matches.",
       "createNew": "Add a new customer",
-      "salesCount": "{count, plural, =0 {no sales yet} one {# sale} other {# sales}}"
+      "salesCount": "{count, plural, =0 {no sales yet} one {{count_n} sale} other {{count_n} sales}}"
     },
     "header": {
       "shiftOpen": "Shift open",
@@ -1571,7 +1572,7 @@
       "decreaseQty": "Decrease quantity",
       "increaseQty": "Increase quantity",
       "addCustomer": "Add customer to this sale",
-      "visits": "{count, plural, one {# visit} other {# visits}}",
+      "visits": "{count, plural, one {{count_n} visit} other {{count_n} visits}}",
       "storeCredit": "store credit",
       "subtotal": "Subtotal",
       "tax": "Tax",
@@ -1601,10 +1602,10 @@
     "held": {
       "kicker": "Parked tickets",
       "title": "Held sales · {count}",
-      "items": "{count, plural, one {# item} other {# items}}",
+      "items": "{count, plural, one {{count_n} item} other {{count_n} items}}",
       "justNow": "just now",
       "minutesAgo": "{minutes} min ago",
-      "hoursAgo": "{hours, plural, one {# hr ago} other {# hrs ago}}",
+      "hoursAgo": "{hours, plural, one {{hours_n} hr ago} other {{hours_n} hrs ago}}",
       "empty": "No held sales. Use Hold in the cart to park a ticket for later.",
       "resume": "Resume",
       "discard": "Discard",
@@ -1619,11 +1620,11 @@
     },
     "offline": {
       "statusOnline": "Online",
-      "statusOffline": "Offline · {count, plural, =0 {no pending} one {1 pending} other {# pending}}",
+      "statusOffline": "Offline · {count, plural, =0 {no pending} one {1 pending} other {{count_n} pending}}",
       "statusSyncing": "Syncing {count}",
       "statusPending": "Pending {count}",
       "queuedToast": "Saved offline. Will sync when back online.",
-      "conflictsBanner": "{count, plural, one {1 sync conflict needs review} other {# sync conflicts need review}}",
+      "conflictsBanner": "{count, plural, one {1 sync conflict needs review} other {{count_n} sync conflicts need review}}",
       "conflictsBannerCta": "Review"
     },
     "payment": {
@@ -1994,13 +1995,13 @@
         "recentActivity": "Recent activity",
         "recentEmpty": "Nothing to show yet.",
         "staffSummaryTitle": "Staff",
-        "staffSummaryCount": "{count, plural, =0 {No staff assigned yet} one {1 person assigned} other {# people assigned}}",
+        "staffSummaryCount": "{count, plural, =0 {No staff assigned yet} one {1 person assigned} other {{count_n} people assigned}}",
         "viewStaffLink": "View staff →",
         "saleRef": "Sale {code}"
       },
       "staff": {
         "title": "Staff at {branch}",
-        "countChip": "{count, plural, =0 {No one assigned yet} one {1 person} other {# people}}",
+        "countChip": "{count, plural, =0 {No one assigned yet} one {1 person} other {{count_n} people}}",
         "assignCta": "Assign user",
         "onShift": "On shift",
         "onShiftHint": "Currently working an open shift at this branch",
@@ -3571,7 +3572,7 @@
       "subtitle": "Once submitted, the refund code is locked and the audit log is written.",
       "sale": "Original sale",
       "lines": "Lines",
-      "linesCount": "{count, plural, =0 {No items} one {1 item} other {# items}}",
+      "linesCount": "{count, plural, =0 {No items} one {1 item} other {{count_n} items}}",
       "method": "Refund method",
       "customer": "Customer"
     },
@@ -3695,7 +3696,7 @@
       "variance": "Variance"
     },
     "branch": {
-      "shifts": "{count, plural, =0 {No shifts} one {1 shift} other {# shifts}}",
+      "shifts": "{count, plural, =0 {No shifts} one {1 shift} other {{count_n} shifts}}",
       "balanced": "Balanced",
       "short": "Short {amount}",
       "over": "Over {amount}",

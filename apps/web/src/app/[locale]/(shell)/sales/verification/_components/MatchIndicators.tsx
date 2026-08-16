@@ -3,6 +3,7 @@ import { Check, X, Minus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ProofItem } from "@/lib/api/payment-proofs";
 import { formatMoney as formatMoneyShared, minorToMajor } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 type Tone = "ok" | "bad" | "neutral";
 
@@ -15,6 +16,7 @@ function formatMoney(cents: string, currency: string): string {
 }
 
 export function MatchIndicators({ proof }: { proof: ProofItem }) {
+  const f = useFormat();
   const t = useTranslations("verification.match");
 
   const now = Date.now();
@@ -32,7 +34,7 @@ export function MatchIndicators({ proof }: { proof: ProofItem }) {
     { label: t("amount"), value: formatMoney(proof.amount_cents, proof.currency_code), tone: "neutral" },
     {
       label: t("date"),
-      value: new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(
+      value: new Intl.DateTimeFormat(f.locale, { month: "short", day: "numeric" }).format(
         transferMs ? new Date(transferMs) : new Date(),
       ),
       tone: dateOk ? "ok" : "bad",

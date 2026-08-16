@@ -10,8 +10,10 @@ import { formatCurrency, formatMoney } from "@/lib/currency";
 import { SupplierCard } from "./_components/SupplierCard";
 import "./suppliers.css";
 import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
+import { useFormat } from "@/lib/i18n/format";
 
 export function SuppliersClient({ locale }: { locale: "en" | "ar" }) {
+  const f = useFormat();
   const t = useTranslations("suppliers");
   const role = useAuthStore((s) => s.user?.role ?? "");
   const tenantCurrency = useTenantCurrency();
@@ -108,7 +110,7 @@ export function SuppliersClient({ locale }: { locale: "en" | "ar" }) {
         <div className="sup-hero-cell">
           <div className="sup-hero-label">{t("hero.totalOwed")}</div>
           <div className="sup-hero-value">
-            {formatMoney(hero.owedCents, tenantCurrency, locale)}
+            {formatMoney(hero.owedCents, tenantCurrency, f.locale)}
           </div>
         </div>
         <div className="sup-hero-cell">

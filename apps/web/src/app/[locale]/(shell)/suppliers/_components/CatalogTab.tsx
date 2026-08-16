@@ -14,6 +14,7 @@ import {
 import { productsListRequest, type ApiProduct } from "@/lib/api/catalog";
 import { useAuthStore } from "@/lib/auth/store";
 import { formatCurrency, formatMoney } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 const COMMON_CURRENCIES = ["EGP", "SDG", "SAR", "AED", "USD", "EUR", "GBP", "TRY", "JOD", "KWD"];
 
@@ -133,6 +134,7 @@ function EditableRow({
   onSaved: () => void;
   onRemoved: () => void;
 }) {
+  const f = useFormat();
   const t = useTranslations("suppliers.catalog");
   const [editing, setEditing] = useState(false);
   const [supplierSku, setSupplierSku] = useState(entry.supplier_sku ?? "");
@@ -262,7 +264,7 @@ function EditableRow({
         <div className="sup-typeahead-sku">{entry.product_sku}</div>
       </td>
       <td>{entry.supplier_sku ?? "—"}</td>
-      <td>{formatMoney(unitCostCents, entry.currency_code, locale)}</td>
+      <td>{formatMoney(unitCostCents, entry.currency_code, f.locale)}</td>
       <td>{entry.currency_code}</td>
       <td>
         <button

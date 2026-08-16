@@ -17,7 +17,7 @@ function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-function fmtMoney(cents: string, currency: string, locale: "en" | "ar"): string {
+function fmtMoney(cents: string, currency: string, locale: string): string {
   try {
     return formatMoney(cents, currency || "EGP", locale);
   } catch {

@@ -14,6 +14,7 @@ import { ApiError } from "@/lib/api/client";
 import { useBranchScopeStore, branchScopeParam } from "@/lib/branch-scope/store";
 import { useAuthStore } from "@/lib/auth/store";
 import { currencyMinorUnits, formatMoney, minorToMajor } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 const HORIZONS = [7, 14, 30] as const;
 
@@ -22,7 +23,7 @@ function i18nName(n: { en?: string; ar?: string } | null, fallback: string, loca
   return (locale === "ar" ? n.ar || n.en : n.en || n.ar) || fallback;
 }
 
-function fmtMoney(cents: string | number, currency: string, locale: "en" | "ar"): string {
+function fmtMoney(cents: string | number, currency: string, locale: string): string {
   try {
     return formatMoney(cents, currency || "EGP", locale);
   } catch {
@@ -142,6 +143,7 @@ function SupplierGroupCard({
   locale: "en" | "ar";
   onCreated: (code: string, id: string) => void;
 }) {
+  const f = useFormat();
   const t = useTranslations("inventory.reorder");
   const [qty, setQty] = useState<Record<string, number>>(() =>
     Object.fromEntries(group.lines.map((l) => [l.product_id, l.suggested_qty])),
@@ -235,8 +237,8 @@ function SupplierGroupCard({
                     }
                   />
                 </td>
-                <td className="ro-td-end ro-tnum ro-muted">{fmtMoney(l.unit_cost_cents, group.currency_code, locale)}</td>
-                <td className="ro-td-end ro-tnum">{fmtMoney(n * Number(l.unit_cost_cents), group.currency_code, locale)}</td>
+                <td className="ro-td-end ro-tnum ro-muted">{fmtMoney(l.unit_cost_cents, group.currency_code, f.locale)}</td>
+                <td className="ro-td-end ro-tnum">{fmtMoney(n * Number(l.unit_cost_cents), group.currency_code, f.locale)}</td>
               </tr>
             );
           })}
@@ -244,7 +246,7 @@ function SupplierGroupCard({
         <tfoot>
           <tr>
             <td colSpan={6} className="ro-td-end ro-foot-label">{t("estTotal")}</td>
-            <td className="ro-td-end ro-tnum ro-foot-total">{fmtMoney(total, group.currency_code, locale)}</td>
+            <td className="ro-td-end ro-tnum ro-foot-total">{fmtMoney(total, group.currency_code, f.locale)}</td>
           </tr>
         </tfoot>
       </table>

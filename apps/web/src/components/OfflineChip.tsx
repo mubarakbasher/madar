@@ -2,12 +2,14 @@
 
 import { useTranslations } from "next-intl";
 import { useOnlineStatus } from "@/lib/offline/online-status";
+import { useFormat } from "@/lib/i18n/format";
 
 /**
  * Small status chip — green dot when online + empty queue; amber when syncing
  * or holding queued items; rose when offline.
  */
 export function OfflineChip(): JSX.Element {
+  const f = useFormat();
   const t = useTranslations("pos.offline");
   const online = useOnlineStatus((s) => s.online);
   const queueDepth = useOnlineStatus((s) => s.queueDepth);
@@ -15,7 +17,7 @@ export function OfflineChip(): JSX.Element {
 
   const { tone, label } = (() => {
     if (!online) {
-      return { tone: "danger" as const, label: t("statusOffline", { count: queueDepth }) };
+      return { tone: "danger" as const, label: t("statusOffline", { count: queueDepth, count_n: f.number(queueDepth) }) };
     }
     if (syncing) {
       return { tone: "warning" as const, label: t("statusSyncing", { count: queueDepth }) };

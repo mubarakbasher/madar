@@ -315,22 +315,22 @@ export function PnlClient({ locale }: { locale: string }): JSX.Element {
 
             <span className="pnl-row-label">{t("statement.revenue")}</span>
             <span className="pnl-row-value">
-              {formatMoney(report.revenue_cents, report.currency, locale)}
+              {formatMoney(report.revenue_cents, report.currency, f.locale)}
             </span>
 
             <span className="pnl-row-label">{t("statement.discount")}</span>
             <span className="pnl-row-value">
-              −{formatMoney(report.discount_cents, report.currency, locale)}
+              −{formatMoney(report.discount_cents, report.currency, f.locale)}
             </span>
 
             <span className="pnl-row-label">{t("statement.tax")}</span>
             <span className="pnl-row-value">
-              −{formatMoney(report.tax_cents, report.currency, locale)}
+              −{formatMoney(report.tax_cents, report.currency, f.locale)}
             </span>
 
             <span className="pnl-row-label">{t("statement.cogs")}</span>
             <span className="pnl-row-value">
-              −{formatMoney(report.cogs_cents, report.currency, locale)}
+              −{formatMoney(report.cogs_cents, report.currency, f.locale)}
             </span>
 
             <div className="pnl-row-rule" />
@@ -339,7 +339,7 @@ export function PnlClient({ locale }: { locale: string }): JSX.Element {
               <span className="pnl-row-label">{t("statement.grossProfit")}</span>
             </span>
             <span className="pnl-row-value pnl-row-total">
-              {formatMoney(report.gross_profit_cents, report.currency, locale)}
+              {formatMoney(report.gross_profit_cents, report.currency, f.locale)}
               <span
                 style={{
                   display: "inline-block",
@@ -355,7 +355,7 @@ export function PnlClient({ locale }: { locale: string }): JSX.Element {
 
             <span className="pnl-row-label">{t("statement.refunds")}</span>
             <span className="pnl-row-value">
-              −{formatMoney(report.refunds_cents, report.currency, locale)}
+              −{formatMoney(report.refunds_cents, report.currency, f.locale)}
             </span>
 
             <div className="pnl-row-rule" />
@@ -363,7 +363,7 @@ export function PnlClient({ locale }: { locale: string }): JSX.Element {
             <div className="pnl-row-net" style={{ display: "contents" }}>
               <span className="pnl-row-label">{t("statement.netRevenue")}</span>
               <span className="pnl-row-value">
-                {formatMoney(report.net_revenue_cents, report.currency, locale)}
+                {formatMoney(report.net_revenue_cents, report.currency, f.locale)}
               </span>
             </div>
 
@@ -423,9 +423,9 @@ export function PnlClient({ locale }: { locale: string }): JSX.Element {
                   {report.breakdown.map((row) => (
                     <tr key={row.key}>
                       <td>{labelForRow(row)}</td>
-                      <td>{formatMoney(row.revenue_cents, report.currency, locale)}</td>
-                      <td>{formatMoney(row.cogs_cents, report.currency, locale)}</td>
-                      <td>{formatMoney(row.gross_profit_cents, report.currency, locale)}</td>
+                      <td>{formatMoney(row.revenue_cents, report.currency, f.locale)}</td>
+                      <td>{formatMoney(row.cogs_cents, report.currency, f.locale)}</td>
+                      <td>{formatMoney(row.gross_profit_cents, report.currency, f.locale)}</td>
                       <td>{row.transactions}</td>
                     </tr>
                   ))}

@@ -25,6 +25,7 @@ import {
   formatMoney as formatMoneyIntl,
   minorToMajor,
 } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 type Step = "lines" | "method" | "review";
 type Method = "cash" | "card" | "bank_transfer" | "store_credit";
@@ -35,7 +36,7 @@ interface PickedLine {
   restock: boolean;
 }
 
-function formatMoney(cents: bigint, currency: string, locale: "en" | "ar"): string {
+function formatMoney(cents: bigint, currency: string, locale: string): string {
   try {
     return formatMoneyIntl(cents, currency || "EGP", locale);
   } catch {
@@ -54,6 +55,7 @@ function pickName(i18n: { en?: string; ar?: string } | null | undefined, locale:
 }
 
 export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" | "ar" }) {
+  const f = useFormat();
   const t = useTranslations("refunds");
   const role = useAuthStore((s) => s.user?.role ?? "");
 
@@ -146,7 +148,7 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
   }, [sale, refundable, picks, refundedByLine]);
 
   const currency = sale?.currency_code ?? "USD";
-  const fmt = (cents: bigint) => formatMoney(cents, currency, locale);
+  const fmt = (cents: bigint) => formatMoney(cents, currency, f.locale);
 
   const updateQty = (lineId: string, qty: number, max: number) => {
     const next = Math.max(0, Math.min(qty, max));

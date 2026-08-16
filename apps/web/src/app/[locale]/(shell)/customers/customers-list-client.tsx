@@ -23,18 +23,18 @@ function useDebounced<T>(value: T, delayMs: number): T {
 function formatCurrencyMinor(
   amountMinor: string | null | undefined,
   currency: string | null | undefined,
-  locale: "en" | "ar",
+  locale: string,
 ): string {
   if (!amountMinor || !currency) return "—";
   return formatMoney(amountMinor, currency, locale);
 }
 
-function formatRelative(iso: string | null, locale: "en" | "ar"): string {
+function formatRelative(iso: string | null, locale: string): string {
   if (!iso) return "—";
   const then = new Date(iso).getTime();
   const now = Date.now();
   const diffSec = Math.round((then - now) / 1000);
-  const rtf = new Intl.RelativeTimeFormat(locale === "ar" ? "ar-EG" : "en-US", {
+  const rtf = new Intl.RelativeTimeFormat(locale, {
     numeric: "auto",
   });
   const abs = Math.abs(diffSec);

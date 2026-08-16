@@ -15,6 +15,7 @@ import {
   branchScopeParam,
 } from "@/lib/branch-scope/store";
 import { currencyMinorUnits, formatMoney, minorToMajor } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 type Status = "all" | "paid" | "payment_pending" | "disputed" | "refunded";
 type Method =
@@ -25,7 +26,7 @@ type Method =
   | "store_credit"
   | "split";
 
-function fmtMoney(cents: string, currency: string, locale: "en" | "ar"): string {
+function fmtMoney(cents: string, currency: string, locale: string): string {
   try {
     return formatMoney(cents, currency, locale);
   } catch {
@@ -33,8 +34,8 @@ function fmtMoney(cents: string, currency: string, locale: "en" | "ar"): string 
   }
 }
 
-function fmtDate(iso: string, locale: "en" | "ar"): string {
-  return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-US", {
+function fmtDate(iso: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(iso));
@@ -50,6 +51,7 @@ function weekAgoIso(): string {
 }
 
 export function SalesListClient({ locale }: { locale: "en" | "ar" }) {
+  const f = useFormat();
   const t = useTranslations("salesList");
   const selectedBranch = useBranchScopeStore((s) => s.selectedBranchId);
 
@@ -220,11 +222,11 @@ export function SalesListClient({ locale }: { locale: "en" | "ar" }) {
                   }}
                 >
                   <td className="sl-code">{s.code}</td>
-                  <td>{fmtDate(s.occurred_at, locale)}</td>
+                  <td>{fmtDate(s.occurred_at, f.locale)}</td>
                   <td>{s.branch_name_i18n?.[locale] || s.branch_name_i18n?.en || s.branch_code}</td>
                   <td>{s.cashier_name ?? "—"}</td>
                   <td className="sl-num">{s.line_count}</td>
-                  <td className="sl-num">{fmtMoney(s.total_cents, s.currency_code, locale)}</td>
+                  <td className="sl-num">{fmtMoney(s.total_cents, s.currency_code, f.locale)}</td>
                   <td className="sl-method">{t(`methods.${s.payment_method}`)}</td>
                   <td>
                     <span className={`sl-pill sl-pill-${statusToken(s.payment_status)}`}>

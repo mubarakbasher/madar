@@ -16,19 +16,20 @@ import {
 } from "@/lib/api/reports/trends";
 import "./trends.css";
 import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
+import { useFormat } from "@/lib/i18n/format";
 
 const WINDOW_OPTIONS: TrendsWindow[] = [7, 30, 90];
 const METRIC_OPTIONS: TrendsMetric[] = ["revenue", "transactions", "gross_profit"];
 const COMPARE_OPTIONS: TrendsCompare[] = ["none", "prev_period", "yoy"];
 
-function formatValue(metric: TrendsMetric, currency: string, locale: "en" | "ar", v: number): string {
+function formatValue(metric: TrendsMetric, currency: string, locale: string, v: number): string {
   if (metric === "transactions") {
-    return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US").format(v);
+    return new Intl.NumberFormat(locale).format(v);
   }
   // Compact KPI intent: no forced trailing zeros, but allow the currency's
   // real precision (KWD=3, JPY=0) instead of truncating to whole units.
   const code = currency || "EGP";
-  return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: code,
     minimumFractionDigits: 0,
@@ -38,7 +39,7 @@ function formatValue(metric: TrendsMetric, currency: string, locale: "en" | "ar"
 
 function shortDate(iso: string, locale: "en" | "ar"): string {
   try {
-    return new Date(iso).toLocaleDateString(locale === "ar" ? "ar-EG" : "en-US", {
+    return new Date(iso).toLocaleDateString(locale, {
       month: "short",
       day: "numeric",
     });
@@ -48,6 +49,7 @@ function shortDate(iso: string, locale: "en" | "ar"): string {
 }
 
 export function TrendsClient({ locale }: { locale: "en" | "ar" }) {
+  const f = useFormat();
   const t = useTranslations("reports.trends");
   const tenant = useAuthStore((s) => s.tenant);
   const currency = useTenantCurrency();
@@ -80,7 +82,7 @@ export function TrendsClient({ locale }: { locale: "en" | "ar" }) {
   const isLoading = trendsQ.isPending;
   const isError = trendsQ.isError;
   const isEmpty = data?.series.every((p) => p.value === 0) ?? false;
-  const fmt = (v: number) => formatValue(metric, currency, locale, v);
+  const fmt = (v: number) => formatValue(metric, currency, f.locale, v);
 
   return (
     <div className="trends-page">

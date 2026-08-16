@@ -29,6 +29,7 @@ import { Link, usePathname } from "../../../../../i18n/routing";
 import { useAuthStore } from "@/lib/auth/store";
 import { businessGetRequest } from "@/lib/api/business";
 import { branchesListRequest } from "@/lib/api/branches";
+import { useFormat } from "@/lib/i18n/format";
 
 type NavItem = {
   id: string;
@@ -165,6 +166,7 @@ function isActive(pathname: string, href: string): boolean {
 }
 
 export function Sidebar() {
+  const f = useFormat();
   const tShell = useTranslations("shell");
   const tNav = useTranslations("shell.nav");
   const tSec = useTranslations("shell.section");
@@ -275,7 +277,7 @@ export function Sidebar() {
           <div className="sb-merchant-avatar">{avatar}</div>
           <div className="sb-merchant-meta">
             <b>{storeName}</b>
-            {branchCount != null && <small>{tMerch("branches", { count: branchCount })}</small>}
+            {branchCount != null && <small>{tMerch("branches", { count: branchCount, count_n: f.number(branchCount) })}</small>}
           </div>
         </div>
       </div>

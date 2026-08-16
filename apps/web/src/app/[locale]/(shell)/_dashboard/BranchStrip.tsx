@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import { currencySymbol, formatNumberShort, minorToMajor } from "@/lib/currency";
 import type { ApiOwnerDashboardLeaderboardRow } from "@/lib/api/dashboard";
+import { useFormat } from "@/lib/i18n/format";
 
 interface BranchStripProps {
   leaderboard: ApiOwnerDashboardLeaderboardRow[];
@@ -17,8 +18,9 @@ export function BranchStrip({
   currency_code,
   locale,
 }: BranchStripProps) {
+  const f = useFormat();
   const t = useTranslations("dashboard.leaderboard");
-  const cur = currencySymbol(currency_code, locale);
+  const cur = currencySymbol(currency_code, f.locale);
 
   // API returns leaderboard already DESC by revenue. Coerce the bigint string
   // once for the bar-fill math, keep it as a number for compact formatting.
@@ -63,13 +65,13 @@ export function BranchStrip({
                 }}
               >
                 <span className="dash-strip-rank">
-                  {t("rank", { n: i + 1 })}
+                  {t("rank", { n: f.number(i + 1) })}
                 </span>
                 <strong style={{ fontSize: 13 }}>{name}</strong>
               </div>
               <div className="dash-strip-total">
                 <span className="cur">{cur}</span>
-                {formatNumberShort(b.revenue_units, locale)}
+                {formatNumberShort(b.revenue_units, f.locale)}
               </div>
               <div className="dash-strip-bar">
                 <div

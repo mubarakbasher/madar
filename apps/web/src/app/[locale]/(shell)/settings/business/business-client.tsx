@@ -222,7 +222,7 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
   };
 
   const monthNames = useMemo(() => {
-    const fmt = new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-US", {
+    const fmt = new Intl.DateTimeFormat(locale, {
       month: "long",
     });
     return Array.from({ length: 12 }, (_, i) =>
@@ -556,7 +556,7 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
             <div>
               <div className="bz-meta-key">{t("lifecycle.trialEnds")}</div>
               <div className="bz-meta-value">
-                {new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-US", {
+                {new Intl.DateTimeFormat(locale, {
                   dateStyle: "medium",
                 }).format(new Date(snap.trial_ends_at))}
               </div>

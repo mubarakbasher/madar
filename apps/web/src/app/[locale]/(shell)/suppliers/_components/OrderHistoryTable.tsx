@@ -8,6 +8,7 @@ import {
   type PurchaseOrderStatus,
 } from "@/lib/api/purchase-orders";
 import { formatCurrency, formatMoney } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 function pickBranchName(
   i18n: { en: string; ar: string } | null,
@@ -20,7 +21,7 @@ function pickBranchName(
 
 function formatDate(iso: string, locale: string): string {
   const d = new Date(iso);
-  return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-EG", {
+  return new Intl.DateTimeFormat(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -44,6 +45,7 @@ export function OrderHistoryTable({
   supplierId: string;
   locale: "en" | "ar";
 }) {
+  const f = useFormat();
   const t = useTranslations("suppliers.orderHistory");
   const tStatus = useTranslations("suppliers.orderHistory.statuses");
 
@@ -93,13 +95,13 @@ export function OrderHistoryTable({
                       {po.code}
                     </a>
                   </td>
-                  <td>{formatDate(po.created_at, locale)}</td>
+                  <td>{formatDate(po.created_at, f.locale)}</td>
                   <td>
                     <StatusPill status={po.status} label={tStatus(po.status)} />
                   </td>
                   <td>{branchName}</td>
                   <td style={{ textAlign: "end" }}>
-                    {formatMoney(total, po.currency_code, locale)}
+                    {formatMoney(total, po.currency_code, f.locale)}
                   </td>
                 </tr>
               );

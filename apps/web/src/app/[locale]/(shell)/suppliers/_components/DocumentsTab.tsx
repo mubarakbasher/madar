@@ -14,6 +14,7 @@ import {
 } from "@/lib/api/suppliers";
 import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/auth/store";
+import { useFormat } from "@/lib/i18n/format";
 
 const KINDS: DocumentKind[] = ["contract", "tax_certificate", "bank_letter", "other"];
 
@@ -22,7 +23,7 @@ const ALLOWED_MIME = ["image/jpeg", "image/png", "application/pdf"];
 
 function formatDate(iso: string, locale: string): string {
   const d = new Date(iso);
-  return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-EG", {
+  return new Intl.DateTimeFormat(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -36,6 +37,7 @@ export function DocumentsTab({
   supplierId: string;
   locale: "en" | "ar";
 }) {
+  const f = useFormat();
   const t = useTranslations("suppliers.documents");
   const qc = useQueryClient();
   const role = useAuthStore((s) => s.user?.role ?? "");
@@ -188,7 +190,7 @@ export function DocumentsTab({
                       <span className="sup-doc-meta">
                         {t("size", { kb: Math.max(1, Math.round(doc.size_bytes / 1024)) })}
                         {" · "}
-                        {t("uploadedOn", { date: formatDate(doc.created_at, locale) })}
+                        {t("uploadedOn", { date: formatDate(doc.created_at, f.locale) })}
                       </span>
                     </div>
                     <div className="sup-doc-actions">

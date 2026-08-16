@@ -19,6 +19,7 @@ import { formatCurrency, minorToMajor } from "@/lib/currency";
 import { RefundDialog } from "../_components/RefundDialog";
 import { ReturnStatusPill } from "../_components/ReturnStatusPill";
 import { ReturnTimeline } from "../_components/ReturnTimeline";
+import { useFormat } from "@/lib/i18n/format";
 
 function pickName(
   i18n: { en: string; ar: string } | null,
@@ -34,7 +35,7 @@ function pickName(
 
 function fmtDateTime(iso: string, locale: string): string {
   try {
-    return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-EG", {
+    return new Intl.DateTimeFormat(locale, {
       dateStyle: "medium",
     }).format(new Date(iso));
   } catch {
@@ -49,6 +50,7 @@ export function ReturnDetailClient({
   locale: "en" | "ar";
   id: string;
 }) {
+  const f = useFormat();
   const t = useTranslations("returns");
   const tDetail = useTranslations("returns.detail");
   const tErr = useTranslations("returns.errors");
@@ -156,7 +158,7 @@ export function ReturnDetailClient({
       <div className="rma-detail-head">
         <div className="rma-detail-head-left">
           <div className="rma-kicker">
-            {tDetail("kicker", { date: fmtDateTime(rma.created_at, locale) })}
+            {tDetail("kicker", { date: fmtDateTime(rma.created_at, f.locale) })}
           </div>
           <h1 className="rma-title">{rma.code}</h1>
           <div className="rma-detail-meta">
@@ -179,7 +181,7 @@ export function ReturnDetailClient({
             {formatCurrency(
               minorToMajor(rma.total_cents, rma.currency_code),
               rma.currency_code,
-              locale,
+              f.locale,
             )}
           </div>
         </div>
@@ -193,7 +195,7 @@ export function ReturnDetailClient({
           </div>
           <div className="rma-kpi-value">
             {showRefundedKpi
-              ? fmtDateTime(rma.refunded_at as string, locale)
+              ? fmtDateTime(rma.refunded_at as string, f.locale)
               : rma.currency_code}
           </div>
         </div>
@@ -242,14 +244,14 @@ export function ReturnDetailClient({
                       {formatCurrency(
                         minorToMajor(l.unit_cost_cents, rma.currency_code),
                         rma.currency_code,
-                        locale,
+                        f.locale,
                       )}
                     </td>
                     <td className="rma-num">
                       {formatCurrency(
                         minorToMajor(l.line_total_cents, rma.currency_code),
                         rma.currency_code,
-                        locale,
+                        f.locale,
                       )}
                     </td>
                     <td>

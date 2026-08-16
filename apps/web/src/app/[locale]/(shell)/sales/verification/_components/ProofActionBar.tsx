@@ -3,6 +3,7 @@
 import { Check, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ProofItem } from "@/lib/api/payment-proofs";
+import { useFormat } from "@/lib/i18n/format";
 
 export function ProofActionBar({
   proof,
@@ -16,6 +17,7 @@ export function ProofActionBar({
   busy: boolean;
 }) {
   const t = useTranslations("verification.actions");
+  const f = useFormat();
   const tRes = useTranslations("verification.resolved");
 
   if (proof.status === "verified") {
@@ -27,7 +29,7 @@ export function ProofActionBar({
           {proof.verified_at && (
             <span className="vq-resolved-meta">
               {" · "}
-              {new Intl.DateTimeFormat("en-US", {
+              {new Intl.DateTimeFormat(f.locale, {
                 dateStyle: "medium",
                 timeStyle: "short",
               }).format(new Date(proof.verified_at))}

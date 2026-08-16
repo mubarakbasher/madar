@@ -12,10 +12,12 @@ import { StockTab } from "../_components/StockTab";
 import { SettingsTab } from "../_components/SettingsTab";
 import { HoursTab } from "../_components/HoursTab";
 import { BankingTab } from "../_components/BankingTab";
+import { useFormat } from "@/lib/i18n/format";
 
 type Tab = "overview" | "staff" | "stock" | "hours" | "banking" | "settings";
 
 export function BranchDetailClient({ locale, id }: { locale: "en" | "ar"; id: string }) {
+  const f = useFormat();
   const t = useTranslations("branches");
   const tD = useTranslations("branches.detail");
   const tPerf = useTranslations("branches.detail.performance");
@@ -67,7 +69,7 @@ export function BranchDetailClient({ locale, id }: { locale: "en" | "ar"; id: st
               {formatCurrency(
                 minorToMajor(branch.today_revenue_cents, branch.currency_code),
                 branch.currency_code,
-                locale,
+                f.locale,
               )}{" "}
               {t("salesToday").toLowerCase()}
             </span>

@@ -23,6 +23,7 @@ import { useAuthStore } from "@/lib/auth/store";
 import { formatCurrency, minorToMajor } from "@/lib/currency";
 import { ReturnLineEditor, type DraftRMALine } from "./ReturnLineEditor";
 import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
+import { useFormat } from "@/lib/i18n/format";
 
 interface InitialDraft {
   supplier_id?: string;
@@ -74,6 +75,7 @@ export interface ReturnFormProps {
  * the user via the read-only banner, not a hidden 409).
  */
 export function ReturnForm({ locale, mode, editingId, initial }: ReturnFormProps) {
+  const f = useFormat();
   const t = useTranslations("returns.form");
   const tCommon = useTranslations("common");
   const tHeader = useTranslations("returns");
@@ -377,7 +379,7 @@ export function ReturnForm({ locale, mode, editingId, initial }: ReturnFormProps
         <div className="rma-subtotal-box">
           <span className="rma-subtotal-label">{t("subtotal")}</span>
           <span className="rma-subtotal-value">
-            {formatCurrency(minorToMajor(subtotalCents, currency), currency, locale)}
+            {formatCurrency(minorToMajor(subtotalCents, currency), currency, f.locale)}
           </span>
         </div>
       </section>

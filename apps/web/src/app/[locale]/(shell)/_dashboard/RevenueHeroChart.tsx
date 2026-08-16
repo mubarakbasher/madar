@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import { currencySymbol, formatNumber, minorToMajor } from "@/lib/currency";
 import type { ApiOwnerDashboardRevenuePoint } from "@/lib/api/dashboard";
+import { useFormat } from "@/lib/i18n/format";
 
 interface RevenueHeroChartProps {
   revenue_30d: ApiOwnerDashboardRevenuePoint[];
@@ -19,9 +20,10 @@ export function RevenueHeroChart({
   currency_code,
   locale,
 }: RevenueHeroChartProps) {
+  const f = useFormat();
   const t = useTranslations("dashboard.hero");
   const tKpi = useTranslations("dashboard.kpi");
-  const cur = currencySymbol(currency_code, locale);
+  const cur = currencySymbol(currency_code, f.locale);
 
   // Empty state: no points (brand-new tenant). Render the card chrome but
   // skip the SVG body.
@@ -93,7 +95,7 @@ export function RevenueHeroChart({
           <div className="kicker">{t("title")}</div>
           <div className="dash-hero-total">
             <span className="cur">{cur}</span>
-            {formatNumber(last, locale)}
+            {formatNumber(last, f.locale)}
             {hasDelta && (
               <span
                 className={`delta ${deltaUp ? "up" : "dn"}`}
@@ -176,7 +178,7 @@ export function RevenueHeroChart({
               fill="var(--ink-3)"
               fontFamily="var(--sans)"
             >
-              {`${30 - i}d`}
+              {t("axisDaysAgo", { days: 30 - i, days_n: f.number(30 - i) })}
             </text>
           );
         })}

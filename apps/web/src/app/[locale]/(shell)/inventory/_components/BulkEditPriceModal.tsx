@@ -6,6 +6,7 @@ import { X } from "lucide-react";
 import { productUpdateRequest } from "@/lib/api/catalog";
 import { ApiError } from "@/lib/api/client";
 import { currencyMinorUnits, majorToMinor } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 interface SelectedRow {
   id: string;
@@ -33,6 +34,7 @@ export function BulkEditPriceModal({
   onClose: () => void;
   onDone: () => void;
 }) {
+  const f = useFormat();
   const t = useTranslations("inventory.bulk.editPriceModal");
   const [mode, setMode] = useState<Mode>("set");
   const [value, setValue] = useState("");
@@ -136,7 +138,7 @@ export function BulkEditPriceModal({
               {t("title")}
             </h2>
             <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--ink-3)" }}>
-              {t("subtitle", { count: rows.length })}
+              {t("subtitle", { count: rows.length, count_n: f.number(rows.length) })}
             </p>
           </div>
           <button

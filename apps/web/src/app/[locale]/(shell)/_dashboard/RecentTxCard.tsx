@@ -125,7 +125,7 @@ export function RecentTxCard({
                     tx.branch_code}
                   {tx.cashier_name ? ` · ${tx.cashier_name}` : ""}
                   {" · "}
-                  {t("items", { count: tx.items })}
+                  {t("items", { count: tx.items, count_n: f.number(tx.items) })}
                 </div>
               </div>
               <span className={STATUS_CLASS[tx.payment_status]}>

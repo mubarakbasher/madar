@@ -8,8 +8,10 @@ import { branchesListRequest } from "@/lib/api/branches";
 import { useAuthStore } from "@/lib/auth/store";
 import { useBranchScopeStore } from "@/lib/branch-scope/store";
 import { formatNumberShort, minorToMajor } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 export function BranchSwitcher({ locale }: { locale: string }) {
+  const f = useFormat();
   const t = useTranslations("shell.topbar");
   const [open, setOpen] = useState(false);
   const bootstrapped = useAuthStore((s) => s.bootstrapped);
@@ -100,7 +102,7 @@ export function BranchSwitcher({ locale }: { locale: string }) {
                   <MapPin size={14} strokeWidth={1.5} />
                   <span style={{ flex: 1 }}>{pickName(b.name_i18n, locale)}</span>
                   <span className="bs-amount">
-                    {formatNumberShort(minorToMajor(cents, b.currency_code), locale)}
+                    {formatNumberShort(minorToMajor(cents, b.currency_code), f.locale)}
                   </span>
                 </button>
               );

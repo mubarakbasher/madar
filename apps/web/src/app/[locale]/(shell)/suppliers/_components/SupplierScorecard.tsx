@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { ApiSupplierStats } from "@/lib/api/suppliers";
 import { formatCurrency, formatMoney } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 function formatPct(value: number | null): string {
   if (value === null) return "—";
@@ -12,7 +13,7 @@ function formatPct(value: number | null): string {
 function formatRelative(iso: string | null, locale: string, neverLabel: string): string {
   if (!iso) return neverLabel;
   const diffMs = Date.now() - new Date(iso).getTime();
-  const rtf = new Intl.RelativeTimeFormat(locale === "ar" ? "ar-EG" : "en-EG", { numeric: "auto" });
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
   const minutes = Math.floor(diffMs / 60_000);
   if (minutes < 60) return rtf.format(-Math.max(1, minutes), "minute");
   const hours = Math.floor(minutes / 60);
@@ -35,6 +36,7 @@ export function SupplierScorecard({
   lastOrderAt: string | null;
   locale: "en" | "ar";
 }) {
+  const f = useFormat();
   const t = useTranslations("suppliers.scorecard");
 
   const spend = Number(stats.total_spend_cents);
@@ -60,7 +62,7 @@ export function SupplierScorecard({
         </div>
         <div className="sup-stat">
           <span className="sup-stat-label">{t("totalSpend")}</span>
-          <span className="sup-stat-value">{formatMoney(spend, currencyCode, locale)}</span>
+          <span className="sup-stat-value">{formatMoney(spend, currencyCode, f.locale)}</span>
         </div>
       </div>
 
@@ -72,7 +74,7 @@ export function SupplierScorecard({
         <div>
           <div className="sup-stat-mini-label">{t("lastOrder")}</div>
           <div className="sup-stat-mini-value">
-            {formatRelative(lastOrderAt, locale, t("never"))}
+            {formatRelative(lastOrderAt, f.locale, t("never"))}
           </div>
         </div>
       </div>

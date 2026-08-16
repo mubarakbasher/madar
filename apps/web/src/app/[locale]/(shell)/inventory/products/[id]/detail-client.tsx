@@ -19,14 +19,15 @@ import {
 import { useAuthStore } from "@/lib/auth/store";
 import { currencyMinorUnits, minorToMajor } from "@/lib/currency";
 import { swatchFromId } from "@/lib/swatch";
+import { useFormat } from "@/lib/i18n/format";
 
 type Tab = "overview" | "stock" | "activity";
 
-function formatMajor(cents: string | bigint, currency: string): string {
+function formatMajor(cents: string | bigint, currency: string, locale: string): string {
   const code = currency || "EGP";
   // Compact intent: no forced trailing zeros, but keep the currency's real
   // precision (KWD=3, JPY=0) instead of truncating to whole units.
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: code,
     minimumFractionDigits: 0,
@@ -59,6 +60,7 @@ const KIND_TONE: Record<string, string> = {
 };
 
 export function ProductDetailClient({ id, locale }: { id: string; locale: "en" | "ar" }) {
+  const f = useFormat();
   const t = useTranslations("inventory.detail");
   const tenant = useAuthStore((s) => s.tenant);
   const role = useAuthStore((s) => s.user?.role ?? "");
@@ -248,7 +250,7 @@ export function ProductDetailClient({ id, locale }: { id: string; locale: "en" |
         <aside style={{ position: "sticky", top: 24, alignSelf: "start" }}>
           <KpiCard
             label={t("kpis.stockValue")}
-            value={formatMajor(p.kpis.total_stock_value_cents, p.currency_code)}
+            value={formatMajor(p.kpis.total_stock_value_cents, p.currency_code, f.locale)}
           />
           <KpiCard
             label={t("kpis.unitsSold")}
@@ -338,6 +340,7 @@ function OverviewTab({
   locale: "en" | "ar";
   margin: number | null;
 }) {
+  const f = useFormat();
   const t = useTranslations("inventory.detail.overview");
   const description = product.description_i18n?.[locale] ?? product.description_i18n?.en ?? null;
   return (
@@ -371,8 +374,8 @@ function OverviewTab({
       >
         <span className="kicker">{t("pricing")}</span>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "var(--space-4)", marginTop: "var(--space-3)" }}>
-          <PriceCell label={t("price")} value={formatMajor(product.price_cents.toString(), product.currency_code)} />
-          <PriceCell label={t("cost")} value={formatMajor(product.cost_cents.toString(), product.currency_code)} />
+          <PriceCell label={t("price")} value={formatMajor(product.price_cents.toString(), product.currency_code, f.locale)} />
+          <PriceCell label={t("cost")} value={formatMajor(product.cost_cents.toString(), product.currency_code, f.locale)} />
           <PriceCell label={t("margin")} value={margin != null ? `${margin}%` : "—"} />
         </div>
       </section>

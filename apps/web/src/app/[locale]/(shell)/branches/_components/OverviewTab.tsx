@@ -3,11 +3,12 @@
 import { useTranslations } from "next-intl";
 import type { ApiBranchDetail } from "@/lib/api/branches";
 import { formatCurrency, formatNumber, minorToMajor } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 function relTime(iso: string, locale: string): string {
   const diffMs = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diffMs / 60_000);
-  const fmt = new Intl.RelativeTimeFormat(locale === "ar" ? "ar-EG" : "en-EG", { numeric: "auto" });
+  const fmt = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
   if (mins < 60) return fmt.format(-mins, "minute");
   const hrs = Math.floor(mins / 60);
   if (hrs < 24) return fmt.format(-hrs, "hour");
@@ -24,6 +25,7 @@ export function OverviewTab({
   locale: string;
   onViewStaff: () => void;
 }) {
+  const f = useFormat();
   const t = useTranslations("branches.detail.overview");
   const topName = branch.kpis.top_product_name
     ? locale === "ar"
@@ -37,22 +39,22 @@ export function OverviewTab({
         <div className="br-kpi">
           <div className="br-kpi-label">{t("todayRevenue")}</div>
           <div className="br-kpi-value">
-            {formatCurrency(minorToMajor(branch.today_revenue_cents, branch.currency_code), branch.currency_code, locale)}
+            {formatCurrency(minorToMajor(branch.today_revenue_cents, branch.currency_code), branch.currency_code, f.locale)}
           </div>
         </div>
         <div className="br-kpi">
           <div className="br-kpi-label">{t("weekRevenue")}</div>
           <div className="br-kpi-value">
-            {formatCurrency(minorToMajor(branch.kpis.week_revenue_cents, branch.currency_code), branch.currency_code, locale)}
+            {formatCurrency(minorToMajor(branch.kpis.week_revenue_cents, branch.currency_code), branch.currency_code, f.locale)}
           </div>
         </div>
         <div className="br-kpi">
           <div className="br-kpi-label">{t("transactionsToday")}</div>
-          <div className="br-kpi-value">{formatNumber(branch.kpis.transactions_today, locale)}</div>
+          <div className="br-kpi-value">{formatNumber(branch.kpis.transactions_today, f.locale)}</div>
         </div>
         <div className="br-kpi">
           <div className="br-kpi-label">{t("transactionsWeek")}</div>
-          <div className="br-kpi-value">{formatNumber(branch.kpis.transactions_week, locale)}</div>
+          <div className="br-kpi-value">{formatNumber(branch.kpis.transactions_week, f.locale)}</div>
         </div>
       </div>
 
@@ -62,7 +64,7 @@ export function OverviewTab({
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14 }}>
             <span>{topName}</span>
             <span className="br-list-meta">
-              {formatNumber(branch.kpis.units_sold_top_product, locale)}
+              {formatNumber(branch.kpis.units_sold_top_product, f.locale)}
             </span>
           </div>
         ) : (
@@ -73,7 +75,7 @@ export function OverviewTab({
       <section className="br-section">
         <h3 className="br-section-title">{t("staffSummaryTitle")}</h3>
         <div className="br-overview-staff-link">
-          <span>{t("staffSummaryCount", { count: branch.users.length })}</span>
+          <span>{t("staffSummaryCount", { count: branch.users.length, count_n: f.number(branch.users.length) })}</span>
           <button type="button" className="br-link" onClick={onViewStaff}>
             {t("viewStaffLink")}
           </button>
@@ -94,7 +96,7 @@ export function OverviewTab({
                     : a.action}
                   {a.actor_name ? ` · ${a.actor_name}` : ""}
                 </span>
-                <span className="br-list-meta">{relTime(a.occurred_at, locale)}</span>
+                <span className="br-list-meta">{relTime(a.occurred_at, f.locale)}</span>
               </li>
             ))}
           </ul>

@@ -7,6 +7,7 @@ import { Plus } from "lucide-react";
 import { customerStoreCreditRequest } from "@/lib/api/customers";
 import { useAuthStore } from "@/lib/auth/store";
 import { AdjustCreditModal } from "./_components/AdjustCreditModal";
+import { useFormat } from "@/lib/i18n/format";
 
 function pickNote(
   note: { en?: string; ar?: string } | null,
@@ -18,7 +19,7 @@ function pickNote(
 
 function formatDate(iso: string, locale: "en" | "ar"): string {
   try {
-    return new Date(iso).toLocaleString(locale === "ar" ? "ar-EG" : "en-US", {
+    return new Date(iso).toLocaleString(locale, {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -30,10 +31,10 @@ function formatDate(iso: string, locale: "en" | "ar"): string {
   }
 }
 
-function formatMinor(value: string): string {
+function formatMinor(value: string, locale: string): string {
   // Always integer cents on the wire; show signed integer.
   const n = Number(value);
-  return Number.isFinite(n) ? n.toLocaleString("en-US") : value;
+  return Number.isFinite(n) ? n.toLocaleString(locale) : value;
 }
 
 export function StoreCreditClient({
@@ -44,6 +45,7 @@ export function StoreCreditClient({
   customerId: string;
 }) {
   const t = useTranslations("customers.storeCredit");
+  const f = useFormat();
   const tRef = useTranslations("customers.storeCredit.references");
   const tCols = useTranslations("customers.storeCredit.columns");
   const role = useAuthStore((s) => s.user?.role ?? "");
@@ -79,7 +81,7 @@ export function StoreCreditClient({
   }
 
   const summary = q.data;
-  const balanceDisplay = formatMinor(summary.balance_minor);
+  const balanceDisplay = formatMinor(summary.balance_minor, f.locale);
 
   return (
     <div className="sc">
@@ -151,9 +153,9 @@ export function StoreCreditClient({
                       }`}
                     >
                       {isCredit ? "+" : ""}
-                      {formatMinor(row.amount_minor)}
+                      {formatMinor(row.amount_minor, f.locale)}
                     </td>
-                    <td className="tnum">{formatMinor(row.balance_after_minor)}</td>
+                    <td className="tnum">{formatMinor(row.balance_after_minor, f.locale)}</td>
                     <td>{pickNote(row.note_i18n, locale)}</td>
                   </tr>
                 );

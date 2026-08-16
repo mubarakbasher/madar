@@ -20,6 +20,7 @@ import { MatchIndicators } from "./_components/MatchIndicators";
 import { ProofActionBar } from "./_components/ProofActionBar";
 import { ReceiptViewer } from "./_components/ReceiptViewer";
 import { RejectModal, type RejectSubmit } from "./_components/RejectModal";
+import { useFormat } from "@/lib/i18n/format";
 import "./verification.css";
 
 const VERIFIER_ROLES = new Set(["owner", "manager"]);
@@ -48,6 +49,7 @@ export function VerificationClient() {
   const router = useRouter();
   const params = useParams();
   const locale = (params?.locale as string) ?? "en";
+  const f = useFormat();
   const searchParams = useSearchParams();
   const statusParam = (searchParams.get("status") as ProofStatus | "all" | null) ?? "pending";
   const selectedId = searchParams.get("selected") ?? "";
@@ -121,7 +123,7 @@ export function VerificationClient() {
       await approvePaymentProof(detailQuery.data.id);
       await queryClient.invalidateQueries({ queryKey: ["payment-proofs"] });
       setToast({
-        text: `${t("toast.verified")} · ${formatMoney(detailQuery.data.amount_cents, detailQuery.data.currency_code, locale)}`,
+        text: `${t("toast.verified")} · ${formatMoney(detailQuery.data.amount_cents, detailQuery.data.currency_code, f.locale)}`,
         tone: "ok",
       });
     } catch (err) {
@@ -211,7 +213,7 @@ export function VerificationClient() {
               >
                 <div className="vq-row-head">
                   <span className="vq-row-payer">{p.payer_name}</span>
-                  <span className="vq-row-amount">{formatMoney(p.amount_cents, p.currency_code, locale)}</span>
+                  <span className="vq-row-amount">{formatMoney(p.amount_cents, p.currency_code, f.locale)}</span>
                 </div>
                 <div className="vq-row-meta">
                   <span>{p.transfer_reference ?? t("list.noRef")}</span>
@@ -256,7 +258,7 @@ export function VerificationClient() {
 
               <dl className="vq-detail-grid">
                 <dt>{t("detail.amount")}</dt>
-                <dd>{formatMoney(detailQuery.data.amount_cents, detailQuery.data.currency_code, locale)}</dd>
+                <dd>{formatMoney(detailQuery.data.amount_cents, detailQuery.data.currency_code, f.locale)}</dd>
                 <dt>{t("detail.transferDate")}</dt>
                 <dd>{detailQuery.data.transfer_date}</dd>
                 <dt>{t("detail.bankRef")}</dt>
@@ -265,7 +267,7 @@ export function VerificationClient() {
                 <dd>{detailQuery.data.payer_bank ?? "—"}</dd>
                 <dt>{t("detail.submittedAt")}</dt>
                 <dd>
-                  {new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-US", {
+                  {new Intl.DateTimeFormat(f.locale, {
                     dateStyle: "medium",
                     timeStyle: "short",
                   }).format(new Date(detailQuery.data.created_at))}

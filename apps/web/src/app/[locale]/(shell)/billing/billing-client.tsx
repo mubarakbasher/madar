@@ -45,7 +45,7 @@ function formatCents(cents: string, currency: string, locale: string): string {
   const code = currency || "EGP";
   // Compact billing display: no forced trailing zeros, but allow the
   // currency's real precision instead of truncating to whole units.
-  return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-EG", {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: code,
     minimumFractionDigits: 0,
@@ -258,7 +258,7 @@ function PlanTab({
                 letterSpacing: "-0.02em",
               }}
             >
-              {formatCents(sub.plan.monthly_price_cents, sub.plan.currency_code, locale)}
+              {formatCents(sub.plan.monthly_price_cents, sub.plan.currency_code, f.locale)}
               <small style={{ fontFamily: "var(--sans)", fontSize: 13, color: "var(--ink-3)" }}>
                 {" "}
                 / {t("currentPlan.month")}
@@ -289,7 +289,7 @@ function PlanTab({
                   marginTop: "var(--space-1)",
                 }}
               >
-                {formatCents(sub.next_invoice.amount_cents, sub.next_invoice.currency_code, locale)}
+                {formatCents(sub.next_invoice.amount_cents, sub.next_invoice.currency_code, f.locale)}
               </div>
               <div style={{ marginTop: 6, fontSize: 12 }}>
                 <span
@@ -362,7 +362,7 @@ function PlanTab({
                   marginTop: "var(--space-1)",
                 }}
               >
-                {formatCents(p.monthly_price_cents, p.currency_code, locale)}
+                {formatCents(p.monthly_price_cents, p.currency_code, f.locale)}
                 <small style={{ fontFamily: "var(--sans)", fontSize: 11, color: "var(--ink-3)" }}>
                   /{t("currentPlan.month")}
                 </small>
@@ -370,7 +370,7 @@ function PlanTab({
               <ul style={{ marginTop: "var(--space-3)", fontSize: 12, color: "var(--ink-2)", lineHeight: 1.7, paddingInlineStart: "var(--space-4)" }}>
                 {Object.entries(p.limits as Record<string, unknown>).slice(0, 4).map(([k, v]) => (
                   <li key={k}>
-                    <strong>{formatLimit(v, locale, t("plans.unlimited"))}</strong>{" "}
+                    <strong>{formatLimit(v, f.locale, t("plans.unlimited"))}</strong>{" "}
                     {LIMIT_LABEL_KEYS[k] ? t(LIMIT_LABEL_KEYS[k]) : k.replace("_", " ")}
                   </li>
                 ))}
@@ -386,6 +386,7 @@ function PlanTab({
 function UsageBar({ label, current, cap }: { label: string; current: number; cap: number | null }) {
   const t = useTranslations("billing");
   const locale = useLocale();
+  const f = useFormat();
   // `cap === -1` means unlimited, and -1 is truthy — so the old `cap ?` guards
   // produced a negative percentage, a " / -1" caption and a negative bar width.
   const capped = typeof cap === "number" && cap > 0 ? cap : null;
@@ -396,8 +397,8 @@ function UsageBar({ label, current, cap }: { label: string; current: number; cap
       <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--ink-3)", marginBottom: "var(--space-1)" }}>
         <span>{label}</span>
         <span>
-          <strong>{formatNumber(current, locale)}</strong>
-          {capped ? ` / ${formatNumber(capped, locale)}` : cap === -1 ? ` / ${t("plans.unlimited")}` : ""}
+          <strong>{formatNumber(current, f.locale)}</strong>
+          {capped ? ` / ${formatNumber(capped, f.locale)}` : cap === -1 ? ` / ${t("plans.unlimited")}` : ""}
         </span>
       </div>
       <div style={{ height: 6, borderRadius: "var(--radius-full)", background: "var(--rule)" }}>
@@ -450,7 +451,7 @@ function InvoicesTab({ invoices, loading }: { invoices: ApiSubscriptionInvoice[]
               </td>
               <td>{f.date(inv.due_date)}</td>
               <td style={{ textAlign: "end", fontVariantNumeric: "tabular-nums" }}>
-                {formatCents(inv.amount_cents, inv.currency_code, locale)}
+                {formatCents(inv.amount_cents, inv.currency_code, f.locale)}
               </td>
               <td>
                 <span
@@ -545,7 +546,7 @@ function HistoryTab({ invoices }: { invoices: ApiSubscriptionInvoice[] }) {
                   fontVariantNumeric: "tabular-nums",
                 }}
               >
-                {formatCents(inv.amount_cents, inv.currency_code, locale)}
+                {formatCents(inv.amount_cents, inv.currency_code, f.locale)}
               </span>
             </div>
           ))}
@@ -562,7 +563,7 @@ function HistoryTab({ invoices }: { invoices: ApiSubscriptionInvoice[] }) {
               marginTop: "var(--space-1)",
             }}
           >
-            {formatCents(String(lifetimeCents), currency, locale)}
+            {formatCents(String(lifetimeCents), currency, f.locale)}
           </div>
           <p style={{ fontSize: 12, color: "var(--ink-3)", marginTop: 6 }}>
             {t("history.acrossPayments", { count: invoices.length })}
