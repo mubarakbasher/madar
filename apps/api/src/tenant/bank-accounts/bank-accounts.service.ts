@@ -3,6 +3,9 @@ import { tenantScoped } from "@madar/db";
 
 export interface TenantBankAccountItem {
   id: string;
+  /** Translatable label ("Main account" / "الحساب الرئيسي"). `bank_name` and
+   *  `account_holder` are the institution's own strings and stay untranslated. */
+  name_i18n: { en: string; ar: string };
   bank_name: string;
   account_holder: string;
   account_number_last4: string;
@@ -36,6 +39,7 @@ export class BankAccountsService {
       ],
       select: {
         id: true,
+        name_i18n: true,
         bank_name: true,
         account_holder: true,
         account_number_last4: true,
@@ -47,6 +51,17 @@ export class BankAccountsService {
         is_active: true,
       },
     });
-    return { items: rows };
+    // `name_i18n` is a non-null jsonb column that this endpoint never selected,
+    // so an Arabic UI could only ever show the Latin bank_name. Shaped
+    // defensively like reconcile.service.ts in case a row holds malformed json.
+    return {
+      items: rows.map((r) => {
+        const n = (r.name_i18n ?? {}) as { en?: string; ar?: string };
+        return {
+          ...r,
+          name_i18n: { en: n.en ?? r.bank_name, ar: n.ar ?? n.en ?? r.bank_name },
+        };
+      }),
+    };
   }
 }

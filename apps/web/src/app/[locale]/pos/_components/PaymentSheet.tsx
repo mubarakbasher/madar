@@ -18,6 +18,7 @@ import { currencySymbol, majorToMinor, minorToMajor } from "@/lib/currency";
 import { CardPaymentBody } from "./CardPaymentBody";
 import { StoreCreditBody } from "./StoreCreditBody";
 import { SplitTenderBody, type SplitPaymentSlice } from "./SplitTenderBody";
+import { TransferBody } from "./TransferBody";
 
 type PaymentMethodId = "cash" | "card" | "tx" | "sc" | "split";
 
@@ -61,6 +62,7 @@ export function PaymentSheet({
   taxInclusive,
   currency,
   customer,
+  branchId,
   onClose,
   onSubmit,
 }: {
@@ -71,6 +73,8 @@ export function PaymentSheet({
   taxInclusive?: boolean;
   currency: string;
   customer?: PaymentSheetCustomer | null;
+  /** Selects the branch's receiving account for the bank-transfer panel. */
+  branchId?: string | null;
   onClose: () => void;
   onSubmit: (payment: PaymentSubmit) => Promise<void>;
 }) {
@@ -97,11 +101,15 @@ export function PaymentSheet({
 
   const change = cashTendered - total;
   const cashOk = method !== "cash" || cashTendered >= total;
+  // Guards the receipt-stage SUBMIT only. It must not guard the compose-stage
+  // button, which is the only way to reach the stage where these three inputs
+  // exist — that circular gate made bank transfer unreachable in both locales.
   const transferOk =
     method !== "tx" || (receiptRef.length > 0 && receiptFile !== null && payerName.trim().length > 0);
   // Bottom "Complete sale" button only used for cash + bank transfer.
   const useBottomRow = method === "cash" || method === "tx";
-  const canConfirm = useBottomRow && cashOk && transferOk && !submitting;
+  // For "tx" this only advances a stage; the real submit is gated separately.
+  const canConfirm = useBottomRow && cashOk && !submitting;
 
   const storeCreditMinor = customer?.store_credit_balance_cents ?? null;
   const totalMinor = total_cents;
@@ -356,6 +364,15 @@ export function PaymentSheet({
                   customerName={customer?.name ?? null}
                   submitting={submitting}
                   onSubmit={() => void dispatchSubmit({ method: "store_credit" })}
+                />
+              )}
+
+              {method === "tx" && (
+                <TransferBody
+                  locale={locale === "ar" ? "ar" : "en"}
+                  branchId={branchId ?? null}
+                  totalCents={totalMinor}
+                  currency={currency}
                 />
               )}
 

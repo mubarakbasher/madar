@@ -1706,7 +1706,20 @@
           "currency_mismatch": "Customer credit is in a different currency."
         }
       },
-      "roundUp": "↑{amount}"
+      "roundUp": "↑{amount}",
+      "transfer": {
+        "loading": "Loading account…",
+        "bank": "Bank",
+        "holder": "Account holder",
+        "iban": "IBAN",
+        "account": "Account",
+        "amount": "Amount",
+        "hint": "Show these details to the customer, then capture their receipt on the next step.",
+        "empty": {
+          "title": "No receiving account set up",
+          "body": "Add a bank account in Settings before taking transfers, so this sale can be matched to it."
+        }
+      }
     }
   },
   "receipt": {
