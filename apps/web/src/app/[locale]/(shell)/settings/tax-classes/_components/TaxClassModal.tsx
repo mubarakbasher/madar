@@ -154,7 +154,7 @@ export function TaxClassModal({
                 autoFocus={mode === "create"}
                 required
               />
-              {errors.code && <span className="tcl-field-error">{errors.code}</span>}
+              {errors.code && <span className="tcl-field-error" role="alert">{errors.code}</span>}
             </label>
 
             {!bilingual ? (
@@ -172,7 +172,7 @@ export function TaxClassModal({
                   required
                 />
                 {(errors.name_en ?? errors.name_ar) && (
-                  <span className="tcl-field-error">{errors.name_en ?? errors.name_ar}</span>
+                  <span className="tcl-field-error" role="alert">{errors.name_en ?? errors.name_ar}</span>
                 )}
               </label>
             ) : (
@@ -187,7 +187,7 @@ export function TaxClassModal({
                     required
                   />
                   {errors.name_en && (
-                    <span className="tcl-field-error">{errors.name_en}</span>
+                    <span className="tcl-field-error" role="alert">{errors.name_en}</span>
                   )}
                 </label>
 
@@ -202,7 +202,7 @@ export function TaxClassModal({
                     required
                   />
                   {errors.name_ar && (
-                    <span className="tcl-field-error">{errors.name_ar}</span>
+                    <span className="tcl-field-error" role="alert">{errors.name_ar}</span>
                   )}
                 </label>
               </div>
@@ -222,7 +222,7 @@ export function TaxClassModal({
               />
               <span className="tcl-field-hint">{t("taxRateHint")}</span>
               {errors.rate_percent && (
-                <span className="tcl-field-error">{errors.rate_percent}</span>
+                <span className="tcl-field-error" role="alert">{errors.rate_percent}</span>
               )}
             </label>
 

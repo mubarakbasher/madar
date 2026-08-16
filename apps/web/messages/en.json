@@ -147,6 +147,10 @@
         "forbidden_role": "You don't have permission to view financial reports.",
         "validation_failed": "Some filters aren't valid — double-check the date range and currency code.",
         "generic": "Something went wrong while generating the report."
+      },
+      "period": {
+        "day": "{date}",
+        "custom": "{from} – {to}"
       }
     },
     "movers": {

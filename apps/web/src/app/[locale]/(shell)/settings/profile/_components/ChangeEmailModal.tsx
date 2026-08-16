@@ -76,7 +76,7 @@ export function ChangeEmailModal({
             required
           />
           {fieldErrors.email && (
-            <div className="prof-field-error">{fieldErrors.email}</div>
+            <div className="prof-field-error" role="alert">{fieldErrors.email}</div>
           )}
         </div>
 
@@ -94,7 +94,7 @@ export function ChangeEmailModal({
             required
           />
           {fieldErrors.password && (
-            <div className="prof-field-error">{fieldErrors.password}</div>
+            <div className="prof-field-error" role="alert">{fieldErrors.password}</div>
           )}
         </div>
 

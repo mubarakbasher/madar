@@ -79,7 +79,7 @@ export function ChangePasswordModal({
             required
           />
           {fieldErrors.current && (
-            <div className="prof-field-error">{fieldErrors.current}</div>
+            <div className="prof-field-error" role="alert">{fieldErrors.current}</div>
           )}
         </div>
 
@@ -98,7 +98,7 @@ export function ChangePasswordModal({
           />
           <PasswordStrengthMeter password={next} />
           {fieldErrors.next && (
-            <div className="prof-field-error">{fieldErrors.next}</div>
+            <div className="prof-field-error" role="alert">{fieldErrors.next}</div>
           )}
         </div>
 

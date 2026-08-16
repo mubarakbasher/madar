@@ -169,7 +169,7 @@ export function SupplierForm({
         <h1 className="sup-title">{isEdit ? t("titleEdit") : t("titleCreate")}</h1>
       </header>
 
-      {errors.general && <div className="sup-field-error">{errors.general}</div>}
+      {errors.general && <div className="sup-field-error" role="alert">{errors.general}</div>}
 
       <form onSubmit={onSubmit}>
         <section className="sup-form-section">
@@ -189,7 +189,7 @@ export function SupplierForm({
             <span className="sup-field-hint">
               {isEdit ? t("fields.codeLocked") : t("fields.codeHint")}
             </span>
-            {errors.code && <span className="sup-field-error">{errors.code}</span>}
+            {errors.code && <span className="sup-field-error" role="alert">{errors.code}</span>}
           </label>
 
           {!bilingual ? (
@@ -208,7 +208,7 @@ export function SupplierForm({
                 required
               />
               {(errors.name_en ?? errors.name_ar) && (
-                <span className="sup-field-error">{errors.name_en ?? errors.name_ar}</span>
+                <span className="sup-field-error" role="alert">{errors.name_en ?? errors.name_ar}</span>
               )}
             </label>
           ) : (
@@ -233,7 +233,7 @@ export function SupplierForm({
                     maxLength={120}
                     required
                   />
-                  {errors.name_en && <span className="sup-field-error">{errors.name_en}</span>}
+                  {errors.name_en && <span className="sup-field-error" role="alert">{errors.name_en}</span>}
                 </label>
               ) : (
                 <label className="sup-field" dir="rtl">
@@ -245,7 +245,7 @@ export function SupplierForm({
                     maxLength={120}
                     required
                   />
-                  {errors.name_ar && <span className="sup-field-error">{errors.name_ar}</span>}
+                  {errors.name_ar && <span className="sup-field-error" role="alert">{errors.name_ar}</span>}
                 </label>
               )}
             </>
@@ -313,7 +313,7 @@ export function SupplierForm({
               maxLength={200}
             />
             {errors.contact_email && (
-              <span className="sup-field-error">{errors.contact_email}</span>
+              <span className="sup-field-error" role="alert">{errors.contact_email}</span>
             )}
           </label>
           <label className="sup-field">

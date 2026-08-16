@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
-import { INSIGHT_COPY, interpolate } from "./dashboard.insights.i18n";
+import { formatMoney } from "../../common/currency";
+import { AR_NOUNS, INSIGHT_COPY, arabicNoun, interpolate } from "./dashboard.insights.i18n";
 
 /**
  * Pure rule engine for the owner dashboard insight rail.
@@ -148,7 +149,7 @@ export function computeInsights(ctx: InsightContext): Insight[] {
   // 3. stale_payment_proof — at least one pending proof older than 48 h.
   if (ctx.stalePaymentProofsCount > 0) {
     const noun_en = ctx.stalePaymentProofsCount === 1 ? "proof" : "proofs";
-    const noun_ar = ctx.stalePaymentProofsCount === 1 ? "إثبات" : "إثباتات";
+    const noun_ar = arabicNoun(ctx.stalePaymentProofsCount, AR_NOUNS.paymentProof);
     all.push({
       id: makeInsightId(ctx.tenantId, "stale_payment_proof", "global", weekKey),
       kind: "stale_payment_proof",
@@ -180,7 +181,7 @@ export function computeInsights(ctx: InsightContext): Insight[] {
   // 4. low_stock_critical — at least one product at zero on hand somewhere.
   if (ctx.lowStockCount > 0) {
     const noun_en = ctx.lowStockCount === 1 ? "product" : "products";
-    const noun_ar = ctx.lowStockCount === 1 ? "منتج" : "منتجات";
+    const noun_ar = arabicNoun(ctx.lowStockCount, AR_NOUNS.product);
     all.push({
       id: makeInsightId(ctx.tenantId, "low_stock_critical", "global", weekKey),
       kind: "low_stock_critical",
@@ -250,18 +251,23 @@ export function computeInsights(ctx: InsightContext): Insight[] {
 
   // 6. week_recap — fallback so the rail never ships empty.
   if (top.length < 4) {
-    const revenueDisplay = formatRevenueDisplay(ctx.weekRevenueCents, ctx.currencyCode);
+    // One string per locale. A single "en-US"-formatted value was previously
+    // interpolated into BOTH headlines, which is why the Arabic insight read
+    // "أسبوع ثابت — 810.00 EGP عبر 1 عملية بيع" — English grouping and a raw
+    // ISO code inside an Arabic sentence.
+    const revenueEn = formatRevenueDisplay(ctx.weekRevenueCents, ctx.currencyCode, "en");
+    const revenueAr = formatRevenueDisplay(ctx.weekRevenueCents, ctx.currencyCode, "ar");
     top.push({
       id: makeInsightId(ctx.tenantId, "week_recap", "global", weekKey),
       kind: "week_recap",
       urgency: "low",
       headline_i18n: {
         en: interpolate(INSIGHT_COPY.week_recap.en.headline, {
-          revenue: revenueDisplay,
+          revenue: revenueEn,
           transactions: ctx.weekTransactions,
         }),
         ar: interpolate(INSIGHT_COPY.week_recap.ar.headline, {
-          revenue: revenueDisplay,
+          revenue: revenueAr,
           transactions: ctx.weekTransactions,
         }),
       },
@@ -296,28 +302,21 @@ function makeInsightId(
  * 2 minor units except the small set with 0 or 3 — close enough for headline
  * copy where exactness is not the point.
  */
-function formatRevenueDisplay(revenueCents: string, currencyCode: string): string {
-  const minorUnits = getMinorUnits(currencyCode);
+function formatRevenueDisplay(
+  revenueCents: string,
+  currencyCode: string,
+  locale: "en" | "ar",
+): string {
   const amount = Number(revenueCents);
   if (!Number.isFinite(amount)) return `${revenueCents} ${currencyCode}`;
-  const major = amount / Math.pow(10, minorUnits);
-  return `${major.toLocaleString("en-US", {
-    minimumFractionDigits: minorUnits,
-    maximumFractionDigits: minorUnits,
-  })} ${currencyCode}`;
+  // formatMoney owns the 23-currency minor-unit table; the local getMinorUnits
+  // here covered six and drifted from it.
+  return formatMoney(BigInt(revenueCents), currencyCode, INSIGHT_LOCALE[locale]);
 }
 
-function getMinorUnits(currencyCode: string): number {
-  switch (currencyCode.toUpperCase()) {
-    case "JPY":
-    case "KRW":
-    case "VND":
-      return 0;
-    case "KWD":
-    case "BHD":
-    case "OMR":
-      return 3;
-    default:
-      return 2;
-  }
-}
+/** Western digits + the locale's own currency glyph — the product default
+ *  (docs/i18n-guide.md §5.1). A tenant that has opted into Arabic-Indic will
+ *  see Western digits here until display preferences are threaded to the API;
+ *  tracked as a follow-up rather than guessed at. */
+const INSIGHT_LOCALE = { en: "en-EG", ar: "ar-EG-u-nu-latn" } as const;
+

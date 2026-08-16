@@ -138,7 +138,7 @@ export function EditUserModal({
                   </option>
                 ))}
               </select>
-              {errors.role && <span className="usr-field-error">{errors.role}</span>}
+              {errors.role && <span className="usr-field-error" role="alert">{errors.role}</span>}
             </label>
 
             <label className="usr-field">
@@ -156,7 +156,7 @@ export function EditUserModal({
                 ))}
               </select>
               {errors.branch_id && (
-                <span className="usr-field-error">{errors.branch_id}</span>
+                <span className="usr-field-error" role="alert">{errors.branch_id}</span>
               )}
             </label>
 

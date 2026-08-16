@@ -120,7 +120,9 @@ export function RecentTxCard({
               <div style={{ minWidth: 0 }}>
                 <div className="dash-tx-id">{tx.code}</div>
                 <div className="dash-tx-meta">
-                  {tx.branch_code}
+                  {tx.branch_name_i18n?.[locale as "en" | "ar"] ||
+                    tx.branch_name_i18n?.en ||
+                    tx.branch_code}
                   {tx.cashier_name ? ` · ${tx.cashier_name}` : ""}
                   {" · "}
                   {t("items", { count: tx.items })}

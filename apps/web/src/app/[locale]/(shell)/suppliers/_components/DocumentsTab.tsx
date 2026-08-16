@@ -160,7 +160,7 @@ export function DocumentsTab({
             {t("allowedTypes")} {t("maxSize")}
           </div>
           {uploadError && (
-            <div className="sup-field-error" style={{ marginBlockStart: 6 }}>
+            <div className="sup-field-error" role="alert" style={{ marginBlockStart: 6 }}>
               {uploadError}
             </div>
           )}

@@ -221,7 +221,7 @@ export function SalesListClient({ locale }: { locale: "en" | "ar" }) {
                 >
                   <td className="sl-code">{s.code}</td>
                   <td>{fmtDate(s.occurred_at, locale)}</td>
-                  <td>{s.branch_code}</td>
+                  <td>{s.branch_name_i18n?.[locale] || s.branch_name_i18n?.en || s.branch_code}</td>
                   <td>{s.cashier_name ?? "—"}</td>
                   <td className="sl-num">{s.line_count}</td>
                   <td className="sl-num">{fmtMoney(s.total_cents, s.currency_code, locale)}</td>

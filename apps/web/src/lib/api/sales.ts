@@ -136,6 +136,7 @@ export interface SaleSummary {
   code: string;
   branch_id: string;
   branch_code: string;
+  branch_name_i18n: { en: string; ar: string } | null;
   cashier_id: string;
   cashier_name: string | null;
   customer_id: string | null;

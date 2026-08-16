@@ -419,7 +419,7 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
             ))}
           </select>
           {fieldError.key === "timezone" && fieldError.msg && (
-            <div className="bz-field-error">{fieldError.msg}</div>
+            <div className="bz-field-error" role="alert">{fieldError.msg}</div>
           )}
         </div>
 
@@ -719,7 +719,7 @@ function LogoSection({
             </button>
           )}
           <span className="bz-hint">{t("hint")}</span>
-          {error && <div className="bz-field-error">{error}</div>}
+          {error && <div className="bz-field-error" role="alert">{error}</div>}
         </div>
       </div>
     </section>

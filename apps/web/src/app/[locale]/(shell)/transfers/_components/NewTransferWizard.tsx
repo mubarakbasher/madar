@@ -154,7 +154,7 @@ export function NewTransferWizard({ locale }: { locale: string }) {
         ))}
       </div>
 
-      {generalError && <div className="xfer-field-error">{generalError}</div>}
+      {generalError && <div className="xfer-field-error" role="alert">{generalError}</div>}
 
       {step === 1 && (
         <section className="xfer-card">
@@ -207,10 +207,10 @@ export function NewTransferWizard({ locale }: { locale: string }) {
             </select>
           </label>
           {fromBranch && toBranch && fromBranch === toBranch && (
-            <div className="xfer-field-error">{t("step1.sameBranchError")}</div>
+            <div className="xfer-field-error" role="alert">{t("step1.sameBranchError")}</div>
           )}
           {branchesQ.isError && (
-            <div className="xfer-field-error">
+            <div className="xfer-field-error" role="alert">
               {t("step1.branchesError")}{" "}
               <button
                 type="button"

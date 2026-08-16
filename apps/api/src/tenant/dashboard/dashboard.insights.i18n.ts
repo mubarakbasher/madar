@@ -46,7 +46,7 @@ export const INSIGHT_COPY: Record<string, InsightCopyByLocale> = {
       body: "Bank-transfer receipts older than two days need a verifier. Open the queue to clear them.",
     },
     ar: {
-      headline: "{count} إثبات دفع بانتظار التحقق منذ أكثر من 48 ساعة",
+      headline: "{count} {noun} بانتظار التحقق منذ أكثر من 48 ساعة",
       body: "إيصالات التحويل البنكي الأقدم من يومين تحتاج إلى مراجعة. افتح قائمة التحقق لإكمالها.",
     },
   },
@@ -93,3 +93,49 @@ export function interpolate(template: string, vars: Record<string, string | numb
     return value === undefined ? match : String(value);
   });
 }
+
+/**
+ * Arabic noun form for a count.
+ *
+ * Arabic has six plural categories, and the callers were choosing between two
+ * with `count === 1 ? singular : plural`. That is an English rule: it renders
+ * "21 منتجات" where the grammar requires the singular accusative "21 منتجًا",
+ * and it has no dual form at all, so 2 came out as a plural too.
+ *
+ * Intl.PluralRules("ar") does the categorisation; this table supplies the
+ * forms. Note the `-u-nu-*` numbering extension does not affect category
+ * selection, so a plain "ar" tag is correct here.
+ */
+export interface ArabicNounForms {
+  zero: string;
+  one: string;
+  two: string;
+  few: string;
+  many: string;
+  other: string;
+}
+
+const AR_PLURAL_RULES = new Intl.PluralRules("ar");
+
+export function arabicNoun(count: number, forms: ArabicNounForms): string {
+  return forms[AR_PLURAL_RULES.select(count) as keyof ArabicNounForms] ?? forms.other;
+}
+
+export const AR_NOUNS = {
+  product: {
+    zero: "منتج",
+    one: "منتج",
+    two: "منتجان",
+    few: "منتجات",
+    many: "منتجًا",
+    other: "منتج",
+  },
+  paymentProof: {
+    zero: "إثبات دفع",
+    one: "إثبات دفع",
+    two: "إثباتا دفع",
+    few: "إثباتات دفع",
+    many: "إثبات دفع",
+    other: "إثبات دفع",
+  },
+} satisfies Record<string, ArabicNounForms>;

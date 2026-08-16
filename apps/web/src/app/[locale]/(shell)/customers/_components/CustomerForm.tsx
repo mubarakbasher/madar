@@ -96,7 +96,7 @@ export function CustomerForm({
           maxLength={120}
           required
         />
-        {errors.name && <div className="cu-field-error">{errors.name}</div>}
+        {errors.name && <div className="cu-field-error" role="alert">{errors.name}</div>}
       </div>
 
       <div className="cu-field">
@@ -111,7 +111,7 @@ export function CustomerForm({
           maxLength={40}
           type="tel"
         />
-        {errors.phone && <div className="cu-field-error">{errors.phone}</div>}
+        {errors.phone && <div className="cu-field-error" role="alert">{errors.phone}</div>}
       </div>
 
       <div className="cu-field">
@@ -126,7 +126,7 @@ export function CustomerForm({
           maxLength={255}
           type="email"
         />
-        {errors.email && <div className="cu-field-error">{errors.email}</div>}
+        {errors.email && <div className="cu-field-error" role="alert">{errors.email}</div>}
       </div>
 
       <div className="cu-field">
@@ -144,7 +144,7 @@ export function CustomerForm({
         <div className="cu-muted" style={{ fontSize: 12, marginBlockStart: "var(--space-1)" }}>
           {t("form.codeHelp")}
         </div>
-        {errors.code && <div className="cu-field-error">{errors.code}</div>}
+        {errors.code && <div className="cu-field-error" role="alert">{errors.code}</div>}
       </div>
 
       <div className="cu-field">
@@ -158,7 +158,7 @@ export function CustomerForm({
           onChange={(e) => setNotes(e.target.value)}
           maxLength={2000}
         />
-        {errors.notes && <div className="cu-field-error">{errors.notes}</div>}
+        {errors.notes && <div className="cu-field-error" role="alert">{errors.notes}</div>}
       </div>
 
       <div className="cu-form-footer">

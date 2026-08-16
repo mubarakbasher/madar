@@ -113,7 +113,7 @@ export function AssetForm({
             required
           />
           {(errors.nameEn ?? errors.nameAr) && (
-            <div className="as-field-error">{errors.nameEn ?? errors.nameAr}</div>
+            <div className="as-field-error" role="alert">{errors.nameEn ?? errors.nameAr}</div>
           )}
         </div>
       ) : (
@@ -130,7 +130,7 @@ export function AssetForm({
               maxLength={160}
               required
             />
-            {errors.nameEn && <div className="as-field-error">{errors.nameEn}</div>}
+            {errors.nameEn && <div className="as-field-error" role="alert">{errors.nameEn}</div>}
           </div>
 
           <div className="as-field">
@@ -146,7 +146,7 @@ export function AssetForm({
               dir="rtl"
               required
             />
-            {errors.nameAr && <div className="as-field-error">{errors.nameAr}</div>}
+            {errors.nameAr && <div className="as-field-error" role="alert">{errors.nameAr}</div>}
           </div>
         </div>
       )}
@@ -172,7 +172,7 @@ export function AssetForm({
               </option>
             ))}
           </select>
-          {errors.branch && <div className="as-field-error">{errors.branch}</div>}
+          {errors.branch && <div className="as-field-error" role="alert">{errors.branch}</div>}
         </div>
 
         <div className="as-field">
@@ -190,7 +190,7 @@ export function AssetForm({
             inputMode="numeric"
             required
           />
-          {errors.quantity && <div className="as-field-error">{errors.quantity}</div>}
+          {errors.quantity && <div className="as-field-error" role="alert">{errors.quantity}</div>}
         </div>
       </div>
 
@@ -205,7 +205,7 @@ export function AssetForm({
           onChange={(e) => setNotes(e.target.value)}
           maxLength={500}
         />
-        {errors.notes && <div className="as-field-error">{errors.notes}</div>}
+        {errors.notes && <div className="as-field-error" role="alert">{errors.notes}</div>}
       </div>
 
       <div className="as-form-footer">

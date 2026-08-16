@@ -145,7 +145,7 @@ export function ProfileClient({ locale }: { locale: "en" | "ar" }) {
                   {t("identity.saved")}
                 </div>
               )}
-              {nameError && <div className="prof-field-error">{nameError}</div>}
+              {nameError && <div className="prof-field-error" role="alert">{nameError}</div>}
             </div>
 
             <div className="prof-field">

@@ -180,7 +180,7 @@ export function BranchForm({
         <h1 className="br-title">{isEdit ? t("titleEdit") : t("titleCreate")}</h1>
       </header>
 
-      {errors.general && <div className="br-field-error">{errors.general}</div>}
+      {errors.general && <div className="br-field-error" role="alert">{errors.general}</div>}
 
       <form onSubmit={onSubmit}>
         <section className="br-form-section">
@@ -197,7 +197,7 @@ export function BranchForm({
               required
             />
             <span className="br-field-hint">{t("fields.codeHint")}</span>
-            {errors.code && <span className="br-field-error">{errors.code}</span>}
+            {errors.code && <span className="br-field-error" role="alert">{errors.code}</span>}
           </label>
 
           {!bilingual && (
@@ -217,7 +217,7 @@ export function BranchForm({
                   required
                 />
                 {(errors.name_en ?? errors.name_ar) && (
-                  <span className="br-field-error">{errors.name_en ?? errors.name_ar}</span>
+                  <span className="br-field-error" role="alert">{errors.name_en ?? errors.name_ar}</span>
                 )}
               </label>
               <label className="br-field">
@@ -258,7 +258,7 @@ export function BranchForm({
                   maxLength={120}
                   required
                 />
-                {errors.name_en && <span className="br-field-error">{errors.name_en}</span>}
+                {errors.name_en && <span className="br-field-error" role="alert">{errors.name_en}</span>}
               </label>
               <label className="br-field">
                 <span className="br-field-label">{t("fields.addressEn")}</span>
@@ -280,7 +280,7 @@ export function BranchForm({
                   maxLength={120}
                   required
                 />
-                {errors.name_ar && <span className="br-field-error">{errors.name_ar}</span>}
+                {errors.name_ar && <span className="br-field-error" role="alert">{errors.name_ar}</span>}
               </label>
               <label className="br-field" dir="rtl">
                 <span className="br-field-label">{t("fields.addressAr")}</span>

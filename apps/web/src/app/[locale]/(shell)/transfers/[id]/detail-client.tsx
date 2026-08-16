@@ -175,7 +175,7 @@ export function TransferDetailClient({ locale, id }: { locale: "en" | "ar"; id: 
         </div>
       </div>
 
-      {actionError && <div className="xfer-field-error">{actionError}</div>}
+      {actionError && <div className="xfer-field-error" role="alert">{actionError}</div>}
 
       {x.status === "draft" && !canManageDraft && (
         <div className="xfer-status-banner">

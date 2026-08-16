@@ -14,6 +14,7 @@ import {
   type PnlQueryOpts,
 } from "@/lib/api/reports/pnl";
 import { formatMoney as formatMoneyShared, minorToMajor } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 import {
   localDaysAgo,
   localIsoDate,
@@ -60,6 +61,15 @@ function formatMoney(cents: string, currency: string, locale: string): string {
 
 export function PnlClient({ locale }: { locale: string }): JSX.Element {
   const t = useTranslations("reports.pnl");
+  const f = useFormat();
+  // The API used to send this as English prose ("Custom range", "August 2026")
+  // and it was rendered verbatim in the statement header. It now sends a
+  // descriptor so the period follows the tenant's language and calendar.
+  const periodLabel = (p: ApiPnlReport["period"]): string => {
+    if (p.kind === "day") return f.date(p.date, "long");
+    if (p.kind === "month") return f.monthYear(new Date(Date.UTC(p.year, p.month - 1, 1)));
+    return t("period.custom", { from: f.date(p.from), to: f.date(p.to) });
+  };
   const role = useAuthStore((s) => s.user?.role ?? "");
   const tenant = useAuthStore((s) => s.tenant);
   const accessToken = useAuthStore((s) => s.accessToken);
@@ -301,7 +311,7 @@ export function PnlClient({ locale }: { locale: string }): JSX.Element {
         <>
           <article className="pnl-statement" aria-label={t("title")}>
             <span className="pnl-statement-kicker">{report.currency}</span>
-            <h2 className="pnl-statement-period">{report.period_label}</h2>
+            <h2 className="pnl-statement-period">{periodLabel(report.period)}</h2>
 
             <span className="pnl-row-label">{t("statement.revenue")}</span>
             <span className="pnl-row-value">

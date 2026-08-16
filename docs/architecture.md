@@ -435,8 +435,14 @@ PWA loaded → Service Worker installs → IndexedDB created
 
 ### 11.2 Backend
 
-- **nestjs-i18n** for error messages.
-- Locale from `Accept-Language` header or authenticated user's `locale` field.
+- **Not `nestjs-i18n`.** It was specified here but never installed, and the
+  API has no request-locale resolution at all — no `Accept-Language` handling,
+  no `locale` claim on the JWT. Corrected 2026-08-16.
+- User-facing strings are shipped as `{ en, ar }` pairs and picked by the
+  client (see `INSIGHT_COPY`, `reconcile.service.ts`), or as machine-readable
+  descriptors the client formats (see `PnlPeriod`). Prefer the descriptor.
+- Outbound email is the exception: it resolves a locale from the recipient's
+  `users.locale`, falling back to `tenants.default_locale`.
 
 ### 11.3 Database
 
