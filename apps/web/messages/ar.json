@@ -1306,6 +1306,14 @@
         "invoiceLoad": "تعذّر تحميل هذه الفاتورة.",
         "network": "خطأ في الشبكة — يُرجى المحاولة مجدداً."
       }
+    },
+    "invoiceStatus": {
+      "paid": "مدفوعة",
+      "awaiting_payment": "بانتظار التحويل",
+      "in_review": "قيد المراجعة",
+      "overdue": "متأخرة",
+      "draft": "مسودة",
+      "cancelled": "ملغاة"
     }
   },
   "dashboard": {
@@ -2616,7 +2624,14 @@
         "plan": "الخطة",
         "status": "الحالة",
         "trialEnds": "نهاية الفترة التجريبية",
-        "manage": "إدارة الاشتراك"
+        "manage": "إدارة الاشتراك",
+        "statuses": {
+          "trialing": "فترة تجريبية",
+          "active": "نشط",
+          "grace_period": "مهلة سماح",
+          "suspended": "موقوف",
+          "cancelled": "ملغى"
+        }
       },
       "actions": {
         "save": "حفظ التغييرات",

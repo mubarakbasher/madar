@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { ApiError } from "@/lib/api/client";
 import {
   businessGetRequest,
@@ -126,8 +126,30 @@ function diff(
   return { body, dirty: Object.keys(body).length > 0 };
 }
 
+const TENANT_STATUSES = new Set([
+  "trialing",
+  "active",
+  "grace_period",
+  "suspended",
+  "cancelled",
+]);
+
+/** The API sends `plan.name_i18n` but types it `unknown`, so callers reached
+ *  for `plan.code` and shipped the raw enum ("growth") to users instead. */
+function planName(
+  plan: { code: string; name_i18n: unknown } | null,
+  locale: "en" | "ar",
+): string | null {
+  if (!plan) return null;
+  const n = plan.name_i18n as { en?: string; ar?: string } | null;
+  return n?.[locale] || n?.en || plan.code;
+}
+
 export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
   const t = useTranslations("settings.business");
+  const tStatus = useTranslations("settings.business.lifecycle.statuses");
+  const statusLabel = (status: string) =>
+    TENANT_STATUSES.has(status) ? tStatus(status as "active") : status;
   const tErr = useTranslations("settings.business.errors");
   const qc = useQueryClient();
   const user = useAuthStore((s) => s.user);
@@ -489,7 +511,8 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
             {snap.default_tax_class_id ? snap.default_tax_class_id : "—"}
           </div>
           <a className="bz-hint" href={`/${locale}/settings/tax-classes`}>
-            {t("tax.manageClasses")} →
+            {t("tax.manageClasses")}{" "}
+            <ArrowRight size={12} strokeWidth={1.5} className="rtl:rotate-180" />
           </a>
         </div>
       </section>
@@ -509,7 +532,7 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
         <div className="bz-lifecycle-grid">
           <div>
             <div className="bz-meta-key">{t("lifecycle.plan")}</div>
-            <div className="bz-meta-value">{snap.plan?.code ?? "—"}</div>
+            <div className="bz-meta-value">{planName(snap.plan, locale) ?? "—"}</div>
           </div>
           <div>
             <div className="bz-meta-key">{t("lifecycle.status")}</div>
@@ -525,7 +548,7 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
                         : "bz-pill-muted"
                 }`}
               >
-                {snap.status}
+                {statusLabel(snap.status)}
               </span>
             </div>
           </div>
@@ -549,7 +572,8 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
           style={{ marginBlockStart: 14 }}
           href={`/${locale}/billing`}
         >
-          {t("lifecycle.manage")} →
+          {t("lifecycle.manage")}{" "}
+          <ArrowRight size={13} strokeWidth={1.5} className="rtl:rotate-180" />
         </a>
       </section>
 

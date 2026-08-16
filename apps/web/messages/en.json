@@ -1306,6 +1306,14 @@
         "invoiceLoad": "Couldn't load this invoice.",
         "network": "Network error — please try again."
       }
+    },
+    "invoiceStatus": {
+      "paid": "Paid",
+      "awaiting_payment": "Awaiting transfer",
+      "in_review": "In review",
+      "overdue": "Overdue",
+      "draft": "Draft",
+      "cancelled": "Cancelled"
     }
   },
   "dashboard": {
@@ -2616,7 +2624,14 @@
         "plan": "Plan",
         "status": "Status",
         "trialEnds": "Trial ends",
-        "manage": "Manage subscription"
+        "manage": "Manage subscription",
+        "statuses": {
+          "trialing": "Trial",
+          "active": "Active",
+          "grace_period": "Grace period",
+          "suspended": "Suspended",
+          "cancelled": "Cancelled"
+        }
       },
       "actions": {
         "save": "Save changes",

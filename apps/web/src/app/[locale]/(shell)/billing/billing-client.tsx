@@ -15,17 +15,31 @@ import {
   type ApiSubscriptionInvoice,
 } from "@/lib/api/billing";
 import { currencyMinorUnits, formatNumber, minorToMajor } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 type Tab = "plan" | "invoices" | "history";
 
-const INVOICE_TONE: Record<string, { color: string; bg: string; label: string }> = {
-  paid: { color: "var(--sage)", bg: "var(--sage-soft, color-mix(in oklab, var(--sage) 14%, transparent))", label: "Paid" },
-  awaiting_payment: { color: "var(--amber)", bg: "color-mix(in oklab, var(--amber) 14%, transparent)", label: "Awaiting transfer" },
-  in_review: { color: "var(--accent)", bg: "color-mix(in oklab, var(--accent) 14%, transparent)", label: "In review" },
-  overdue: { color: "var(--rose)", bg: "color-mix(in oklab, var(--rose) 14%, transparent)", label: "Overdue" },
-  draft: { color: "var(--ink-3)", bg: "var(--bg-sunk)", label: "Draft" },
-  cancelled: { color: "var(--ink-3)", bg: "var(--bg-sunk)", label: "Cancelled" },
+// Colour only. The labels used to live here as English string literals —
+// six user-facing strings bypassing next-intl, which the no-literal-string
+// lint rule never saw because they are object values, not JSX.
+const INVOICE_TONE: Record<string, { color: string; bg: string }> = {
+  paid: { color: "var(--sage)", bg: "var(--sage-soft, color-mix(in oklab, var(--sage) 14%, transparent))" },
+  awaiting_payment: { color: "var(--amber)", bg: "color-mix(in oklab, var(--amber) 14%, transparent)" },
+  in_review: { color: "var(--accent)", bg: "color-mix(in oklab, var(--accent) 14%, transparent)" },
+  overdue: { color: "var(--rose)", bg: "color-mix(in oklab, var(--rose) 14%, transparent)" },
+  draft: { color: "var(--ink-3)", bg: "var(--bg-sunk)" },
+  cancelled: { color: "var(--ink-3)", bg: "var(--bg-sunk)" },
 };
+
+const INVOICE_STATUSES = new Set(Object.keys(INVOICE_TONE));
+
+/** Translated invoice status, falling back to the raw value for a status the
+ *  API adds before the dictionary catches up. */
+function useInvoiceStatusLabel(): (status: string) => string {
+  const t = useTranslations("billing.invoiceStatus");
+  return (status: string) =>
+    INVOICE_STATUSES.has(status) ? t(status as "paid") : status;
+}
 
 function formatCents(cents: string, currency: string, locale: string): string {
   const code = currency || "EGP";
@@ -56,14 +70,7 @@ const LIMIT_LABEL_KEYS: Record<string, string> = {
   storage_gb: "plans.limit.storage",
 };
 
-function shortDate(iso: string | null): string {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
+
 
 export function BillingClient({ locale }: { locale: "en" | "ar" }) {
   const t = useTranslations("billing");
@@ -160,6 +167,8 @@ function PlanTab({
   locale: "en" | "ar";
 }) {
   const t = useTranslations("billing");
+  const f = useFormat();
+  const invoiceStatusLabel = useInvoiceStatusLabel();
   // The (shell) layout redirects no-plan tenants to /select-plan,
   // so by the time PlanTab renders, sub.plan is guaranteed to be set. The
   // null check is a TypeScript narrowing — render nothing during the brief
@@ -300,10 +309,10 @@ function PlanTab({
                       verticalAlign: "1px",
                     }}
                   />
-                  {INVOICE_TONE[sub.next_invoice.status]?.label ?? sub.next_invoice.status}
+                  {invoiceStatusLabel(sub.next_invoice.status)}
                 </span>
                 <span style={{ color: "var(--ink-3)", marginInlineStart: "var(--space-2)" }}>
-                  {t("nextInvoice.due", { date: shortDate(sub.next_invoice.due_date) })}
+                  {t("nextInvoice.due", { date: sub.next_invoice.due_date ? f.date(sub.next_invoice.due_date) : "—" })}
                 </span>
               </div>
               <Link
@@ -408,6 +417,8 @@ function UsageBar({ label, current, cap }: { label: string; current: number; cap
 
 function InvoicesTab({ invoices, loading }: { invoices: ApiSubscriptionInvoice[]; loading: boolean }) {
   const t = useTranslations("billing");
+  const f = useFormat();
+  const invoiceStatusLabel = useInvoiceStatusLabel();
   const locale = useLocale();
   if (loading) {
     return <div style={{ padding: 40, color: "var(--ink-3)" }}>{t("loading")}</div>;
@@ -435,9 +446,9 @@ function InvoicesTab({ invoices, loading }: { invoices: ApiSubscriptionInvoice[]
             <tr key={inv.id}>
               <td style={{ fontFamily: "var(--mono)", fontSize: 12 }}>{inv.reference_code}</td>
               <td>
-                {inv.period_start} → {inv.period_end}
+                {f.date(inv.period_start)} → {f.date(inv.period_end)}
               </td>
-              <td>{inv.due_date}</td>
+              <td>{f.date(inv.due_date)}</td>
               <td style={{ textAlign: "end", fontVariantNumeric: "tabular-nums" }}>
                 {formatCents(inv.amount_cents, inv.currency_code, locale)}
               </td>
@@ -451,7 +462,7 @@ function InvoicesTab({ invoices, loading }: { invoices: ApiSubscriptionInvoice[]
                     fontSize: 11,
                   }}
                 >
-                  {tone?.label ?? inv.status}
+                  {invoiceStatusLabel(inv.status)}
                 </span>
               </td>
               <td style={{ textAlign: "end" }}>
@@ -488,6 +499,8 @@ function InvoicesTab({ invoices, loading }: { invoices: ApiSubscriptionInvoice[]
 
 function HistoryTab({ invoices }: { invoices: ApiSubscriptionInvoice[] }) {
   const t = useTranslations("billing");
+  const f = useFormat();
+  const invoiceStatusLabel = useInvoiceStatusLabel();
   const locale = useLocale();
   const lifetimeCents = invoices.reduce(
     (sum, inv) => sum + Number(BigInt(inv.amount_cents)),
@@ -522,7 +535,7 @@ function HistoryTab({ invoices }: { invoices: ApiSubscriptionInvoice[] }) {
                   {t("history.paid")} {inv.reference_code}
                 </div>
                 <div style={{ fontSize: 12, color: "var(--ink-3)" }}>
-                  {shortDate(inv.paid_at)} · {inv.period_start} → {inv.period_end}
+                  {inv.paid_at ? f.date(inv.paid_at) : "—"} · {f.date(inv.period_start)} → {f.date(inv.period_end)}
                 </div>
               </div>
               <span
