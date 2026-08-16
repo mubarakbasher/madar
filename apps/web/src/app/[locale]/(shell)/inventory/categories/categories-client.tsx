@@ -560,7 +560,7 @@ function CategoryFormDialog({
               autoFocus={!isEdit}
             />
             {fieldErrors.code && (
-              <div className="cat-field-error">{fieldErrors.code}</div>
+              <div className="cat-field-error" role="alert">{fieldErrors.code}</div>
             )}
           </label>
 
@@ -578,7 +578,7 @@ function CategoryFormDialog({
                 dir="auto"
               />
               {(fieldErrors.name ?? fieldErrors.name_en ?? fieldErrors.name_ar) && (
-                <div className="cat-field-error">
+                <div className="cat-field-error" role="alert">
                   {fieldErrors.name ?? fieldErrors.name_en ?? fieldErrors.name_ar}
                 </div>
               )}
@@ -595,7 +595,7 @@ function CategoryFormDialog({
                   dir="ltr"
                 />
                 {fieldErrors.name_en && (
-                  <div className="cat-field-error">{fieldErrors.name_en}</div>
+                  <div className="cat-field-error" role="alert">{fieldErrors.name_en}</div>
                 )}
               </label>
               <label className="cat-field">
@@ -608,7 +608,7 @@ function CategoryFormDialog({
                   dir="rtl"
                 />
                 {fieldErrors.name_ar && (
-                  <div className="cat-field-error">{fieldErrors.name_ar}</div>
+                  <div className="cat-field-error" role="alert">{fieldErrors.name_ar}</div>
                 )}
               </label>
             </div>
@@ -629,7 +629,7 @@ function CategoryFormDialog({
               ))}
             </select>
             {fieldErrors.parent_id && (
-              <div className="cat-field-error">{fieldErrors.parent_id}</div>
+              <div className="cat-field-error" role="alert">{fieldErrors.parent_id}</div>
             )}
           </label>
 
@@ -644,7 +644,7 @@ function CategoryFormDialog({
               onChange={(e) => set("sort_order", e.target.value)}
             />
             {fieldErrors.sort_order && (
-              <div className="cat-field-error">{fieldErrors.sort_order}</div>
+              <div className="cat-field-error" role="alert">{fieldErrors.sort_order}</div>
             )}
           </label>
 

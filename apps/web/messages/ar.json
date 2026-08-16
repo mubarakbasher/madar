@@ -147,6 +147,10 @@
         "forbidden_role": "لا تملك صلاحية عرض التقارير المالية.",
         "validation_failed": "بعض المرشحات غير صالحة — تأكد من نطاق التاريخ ورمز العملة.",
         "generic": "حدث خطأ أثناء إنشاء التقرير."
+      },
+      "period": {
+        "day": "{date}",
+        "custom": "{from} – {to}"
       }
     },
     "movers": {
@@ -169,7 +173,7 @@
         "product": "المنتج",
         "value": "القيمة",
         "margin": "الهامش",
-        "sparkline": "اتجاه ٧ أيام"
+        "sparkline": "اتجاه 7 أيام"
       },
       "slowMovers": {
         "title": "منتجات بطيئة الحركة",
@@ -327,7 +331,7 @@
           "kind": "التقرير",
           "cadence": "التكرار",
           "recipients": "المستلمون",
-          "recipientsHint": "اضغط Enter أو فاصلة للإضافة. حتى ٢٠ عنوانًا.",
+          "recipientsHint": "اضغط Enter أو فاصلة للإضافة. حتى 20 عنوانًا.",
           "format": "الصيغة",
           "params": "الإعدادات",
           "timezone": "المنطقة الزمنية",
@@ -639,7 +643,7 @@
   },
   "shell": {
     "brand": "مدار",
-    "brandSub": "نقاط البيع · الإصدار ١",
+    "brandSub": "نقاط البيع · الإصدار 1",
     "section": {
       "operations": "العمليات",
       "network": "الشبكة",
@@ -670,7 +674,7 @@
       "soon": "قريباً"
     },
     "merchant": {
-      "branches": "{count, plural, zero {لا فروع} one {فرع واحد} two {فرعان} few {# فروع} many {# فرعًا} other {# فرع}}"
+      "branches": "{count, plural, zero {لا فروع} one {فرع واحد} two {فرعان} few {{count_n} فروع} many {{count_n} فرعًا} other {{count_n} فرع}}"
     },
     "topbar": {
       "searchPlaceholder": "ابحث عن منتج، طلب، أو فرع…",
@@ -743,14 +747,14 @@
       "importCsv": "استيراد CSV"
     },
     "ai": {
-      "summaryLead": "{count, plural, zero {لا منتجات} one {منتج واحد} two {منتجان} few {# منتجات} many {# منتجًا} other {# منتج}} سينفد خلال {days, plural, one {يوم واحد} two {يومين} few {# أيام} other {# يومًا}}.",
+      "summaryLead": "{count, plural, zero {لا منتجات} one {منتج واحد} two {منتجان} few {{count_n} منتجات} many {{count_n} منتجًا} other {{count_n} منتج}} سينفد خلال {days, plural, one {يوم واحد} two {يومين} few {{count_n} أيام} other {{count_n} يومًا}}.",
       "suggestBundled": "يقترح مدار إعادة طلب {items} — مجمّعة في أمر شراء واحد مع {supplier}.",
       "suggestMulti": "يقترح مدار إعادة طلب {items} عبر {suppliers} موردين.",
       "suggestPlain": "يقترح مدار إعادة طلب {items}.",
       "andMore": "+{count} أخرى",
       "review": "مراجعة الطلب",
       "why": "لماذا؟",
-      "whyExplain": "مرتّبة حسب معدّل المبيعات في آخر ٣٠ يومًا ونقاط إعادة الطلب لكل فرع."
+      "whyExplain": "مرتّبة حسب معدّل المبيعات في آخر 30 يومًا ونقاط إعادة الطلب لكل فرع."
     },
     "reorder": {
       "back": "العودة إلى المخزون",
@@ -808,7 +812,7 @@
       "editPrice": "تعديل السعر",
       "adjustStock": "تعديل المخزون",
       "printLabels": {
-        "title": "{count, plural, zero {لا ملصقات} one {ملصق واحد جاهز} two {ملصقان جاهزان} few {# ملصقات جاهزة} many {# ملصقًا جاهزًا} other {# ملصق جاهز}} للطباعة",
+        "title": "{count, plural, zero {لا ملصقات} one {ملصق واحد جاهز} two {ملصقان جاهزان} few {{count_n} ملصقات جاهزة} many {{count_n} ملصقًا جاهزًا} other {{count_n} ملصق جاهز}} للطباعة",
         "printButton": "طباعة",
         "close": "إغلاق",
         "hint": "اضغط Ctrl/⌘+P أو استخدم زر الطباعة. نصيحة: في مربع حوار الطباعة فعّل \"الرسومات الخلفية\" للحصول على ألوان دقيقة."
@@ -816,7 +820,7 @@
       "clear": "إلغاء",
       "editPriceModal": {
         "title": "تعديل أسعار المحدد",
-        "subtitle": "{count, plural, zero {لا منتجات} one {منتج واحد} two {منتجان} few {# منتجات} many {# منتجًا} other {# منتج}} محدد",
+        "subtitle": "{count, plural, zero {لا منتجات} one {منتج واحد} two {منتجان} few {{count_n} منتجات} many {{count_n} منتجًا} other {{count_n} منتج}} محدد",
         "close": "إغلاق",
         "modes": {
           "set": "تعيين السعر إلى…",
@@ -838,7 +842,7 @@
       },
       "adjustStockModal": {
         "title": "تعديل مخزون المحدد",
-        "subtitle": "{count, plural, zero {لا منتجات} one {منتج واحد} two {منتجان} few {# منتجات} many {# منتجًا} other {# منتج}} محدد · نفس الفارق يُطبَّق على كل منتج",
+        "subtitle": "{count, plural, zero {لا منتجات} one {منتج واحد} two {منتجان} few {{count_n} منتجات} many {{count_n} منتجًا} other {{count_n} منتج}} محدد · نفس الفارق يُطبَّق على كل منتج",
         "close": "إغلاق",
         "branchLabel": "الفرع",
         "deltaLabel": "فارق الكمية (إشاري)",
@@ -938,8 +942,8 @@
         "upload": "رفع صورة",
         "replace": "استبدال الصورة",
         "remove": "إزالة",
-        "hint": "JPG أو PNG أو WEBP · حتى ٥ ميجابايت · يُعاد تحجيمها وتجريد بيانات EXIF",
-        "tooLarge": "يجب ألا تتجاوز الصورة ٥ ميجابايت.",
+        "hint": "JPG أو PNG أو WEBP · حتى 5 ميجابايت · يُعاد تحجيمها وتجريد بيانات EXIF",
+        "tooLarge": "يجب ألا تتجاوز الصورة 5 ميجابايت.",
         "uploadFailed": "فشل رفع الصورة: {reason}"
       },
       "optionalTag": "اختياري"
@@ -955,7 +959,7 @@
         "edit": "تعديل",
         "active": "نشط",
         "inactive": "مخفي عن نقطة البيع",
-        "branches": "{count, plural, =0 {بلا فروع} =1 {فرع واحد} =2 {فرعان} few {# فروع} many {# فرعاً} other {# فرع}}",
+        "branches": "{count, plural, =0 {بلا فروع} =1 {فرع واحد} =2 {فرعان} few {{count_n} فروع} many {{count_n} فرعاً} other {{count_n} فرع}}",
         "lastMovement": "آخر حركة {when}",
         "noMovement": "لا توجد حركات بعد"
       },
@@ -1033,7 +1037,7 @@
       },
       "kpis": {
         "stockValue": "قيمة المخزون",
-        "unitsSold": "الوحدات المُباعة (٣٠ يوماً)",
+        "unitsSold": "الوحدات المُباعة (30 يوماً)",
         "velocity": "السرعة / يوم",
         "daysOfCover": "أيام التغطية",
         "neverRunOut": "∞"
@@ -1140,7 +1144,7 @@
       "label": "شجرة الفئات",
       "expand": "توسيع",
       "collapse": "طي",
-      "countLabel": "{count, plural, =0 {لا توجد منتجات} one {منتج واحد} two {منتجان} few {# منتجات} many {# منتجًا} other {# منتج}}"
+      "countLabel": "{count, plural, =0 {لا توجد منتجات} one {منتج واحد} two {منتجان} few {{count_n} منتجات} many {{count_n} منتجًا} other {{count_n} منتج}}"
     },
     "panel": {
       "label": "الفئة المحددة",
@@ -1262,17 +1266,17 @@
       "loading": "جارٍ التحميل…",
       "copy": "نسخ",
       "step1": {
-        "kicker": "الخطوة ١ من ٣ · إجراء التحويل",
+        "kicker": "الخطوة 1 من 3 · إجراء التحويل",
         "heading": "حوِّل {amount} عبر التحويل البنكي",
         "body": "حوِّل إلى أحد حساباتنا. أَضِف رمز المرجع في خانة المرجع ليكون التحقق سريعاً.",
         "noBanks": "لا توجد حسابات بنكية متاحة بعملتك. تواصل مع الدعم.",
         "next": "أرسلتُ التحويل ←"
       },
       "step2": {
-        "kicker": "الخطوة ٢ من ٣ · ارفع إيصالك",
+        "kicker": "الخطوة 2 من 3 · ارفع إيصالك",
         "heading": "ارفع إيصال التحويل",
         "upload": "اضغط أو اسحب ملف PDF / JPG / PNG هنا",
-        "uploadHint": "حتى ٥ ميجابايت · فحص تلقائي",
+        "uploadHint": "حتى 5 ميجابايت · فحص تلقائي",
         "payerName": "اسم الدافع",
         "transferDate": "تاريخ التحويل",
         "transferReference": "مرجع البنك",
@@ -1282,11 +1286,11 @@
         "submitting": "جارٍ الإرسال…"
       },
       "step3": {
-        "kicker": "الخطوة ٣ من ٣ · بانتظار التحقق",
+        "kicker": "الخطوة 3 من 3 · بانتظار التحقق",
         "heading": "جاري التحقق من دفعتك",
-        "body": "تمّ استلام إيصال بقيمة {amount} على {ref}. يتحقّق فريق المالية خلال ٢٤ ساعة. تبقى صلاحياتك كاملة.",
+        "body": "تمّ استلام إيصال بقيمة {amount} على {ref}. يتحقّق فريق المالية خلال 24 ساعة. تبقى صلاحياتك كاملة.",
         "cta": "العودة إلى الفوترة",
-        "bodyLocked": "تمّ استلام إيصال بقيمة {amount} على {ref}. يتحقّق فريق المالية خلال ٢٤ ساعة. يبقى متجرك للقراءة فقط حتى اعتماد الدفعة."
+        "bodyLocked": "تمّ استلام إيصال بقيمة {amount} على {ref}. يتحقّق فريق المالية خلال 24 ساعة. يبقى متجرك للقراءة فقط حتى اعتماد الدفعة."
       },
       "bank": {
         "bankName": "البنك",
@@ -1299,13 +1303,21 @@
       "reference": {
         "label": "رمز المرجع · يجب وضعه في خانة المرجع",
         "copy": "نسخ الرمز",
-        "note": "بدون رمز المرجع، قد يتأخّر التحقق ٢٤–٤٨ ساعة."
+        "note": "بدون رمز المرجع، قد يتأخّر التحقق 24–48 ساعة."
       },
       "errors": {
         "fileRequired": "يُرجى إرفاق ملف الإيصال قبل الإرسال.",
         "invoiceLoad": "تعذّر تحميل هذه الفاتورة.",
         "network": "خطأ في الشبكة — يُرجى المحاولة مجدداً."
       }
+    },
+    "invoiceStatus": {
+      "paid": "مدفوعة",
+      "awaiting_payment": "بانتظار التحويل",
+      "in_review": "قيد المراجعة",
+      "overdue": "متأخرة",
+      "draft": "مسودة",
+      "cancelled": "ملغاة"
     }
   },
   "dashboard": {
@@ -1336,13 +1348,14 @@
       "revenueLabel": "الإيرادات · هذا الأسبوع",
       "grossProfitLabel": "إجمالي الربح",
       "transactionsLabel": "المعاملات",
-      "sparklineLabel": "آخر ٧ أيام",
+      "sparklineLabel": "آخر 7 أيام",
       "vsLastWeek": "مقارنة بالأسبوع الماضي"
     },
     "hero": {
-      "title": "الإيرادات · آخر ٣٠ يوماً",
+      "title": "الإيرادات · آخر 30 يوماً",
       "branchAll": "كل الفروع",
-      "empty": "لا توجد مبيعات مسجّلة خلال آخر ٣٠ يوماً."
+      "empty": "لا توجد مبيعات مسجّلة خلال آخر 30 يوماً.",
+      "axisDaysAgo": "{days_n} ي"
     },
     "insights": {
       "confidence": "ثقة {percent}٪",
@@ -1371,7 +1384,7 @@
     },
     "heatmap": {
       "title": "متى يشتري العملاء",
-      "body": "كلّ خانة تمثّل ساعة × يوماً من آخر ٤ أسابيع. كلّما اشتدّ اللون زاد الازدحام. استخدمها لرصد فترة الظهيرة الهادئة أو ذروة الصباح.",
+      "body": "كلّ خانة تمثّل ساعة × يوماً من آخر 4 أسابيع. كلّما اشتدّ اللون زاد الازدحام. استخدمها لرصد فترة الظهيرة الهادئة أو ذروة الصباح.",
       "legend": "أهدأ ← أكثر ازدحاماً",
       "days": {
         "mon": "إثن",
@@ -1386,7 +1399,7 @@
     "recent": {
       "title": "المعاملات الأخيرة",
       "empty": "لا توجد معاملات بعد.",
-      "items": "{count, plural, zero {لا أصناف} one {صنف واحد} two {صنفان} few {# أصناف} many {# صنفاً} other {# صنف}}",
+      "items": "{count, plural, zero {لا أصناف} one {صنف واحد} two {صنفان} few {{count_n} أصناف} many {{count_n} صنفاً} other {{count_n} صنف}}",
       "method": {
         "cash": "نقدي",
         "card": "بطاقة",
@@ -1404,7 +1417,7 @@
   },
   "subscription": {
     "banner": {
-      "trialEndingBody": "تنتهي فترتك التجريبية {days, plural, =0 {اليوم} one {خلال يوم واحد} two {خلال يومين} few {خلال # أيام} many {خلال # يوماً} other {خلال # يوم}}. ادفع أول فاتورة لمواصلة البيع.",
+      "trialEndingBody": "تنتهي فترتك التجريبية {days, plural, =0 {اليوم} one {خلال يوم واحد} two {خلال يومين} few {خلال {days_n} أيام} many {خلال {days_n} يوماً} other {خلال {days_n} يوم}}. ادفع أول فاتورة لمواصلة البيع.",
       "trialEndingCta": "ادفع الآن",
       "graceBody": "هناك دفعة اشتراك متأخرة. يمكنك متابعة العمل — ادفع قبل توقّف الوصول.",
       "payNow": "ادفع الآن",
@@ -1528,7 +1541,7 @@
       "loadError": "تعذّر تحميل العملاء. حاول مجدداً.",
       "noResults": "لا توجد نتائج.",
       "createNew": "إضافة عميل جديد",
-      "salesCount": "{count, plural, =0 {بلا مبيعات} one {بيعة} two {بيعتان} few {# مبيعات} many {# بيعة} other {# مبيعة}}"
+      "salesCount": "{count, plural, =0 {بلا مبيعات} one {بيعة} two {بيعتان} few {{count_n} مبيعات} many {{count_n} بيعة} other {{count_n} مبيعة}}"
     },
     "header": {
       "shiftOpen": "الوردية مفتوحة",
@@ -1559,7 +1572,7 @@
       "decreaseQty": "تقليل الكمية",
       "increaseQty": "زيادة الكمية",
       "addCustomer": "أضف عميلاً لهذه العملية",
-      "visits": "{count, plural, zero {لا زيارات} one {زيارة واحدة} two {زيارتان} few {# زيارات} many {# زيارة} other {# زيارة}}",
+      "visits": "{count, plural, zero {لا زيارات} one {زيارة واحدة} two {زيارتان} few {{count_n} زيارات} many {{count_n} زيارة} other {{count_n} زيارة}}",
       "storeCredit": "رصيد المتجر",
       "subtotal": "المجموع الفرعي",
       "tax": "الضريبة",
@@ -1589,10 +1602,10 @@
     "held": {
       "kicker": "الفواتير المحفوظة",
       "title": "مبيعات محفوظة · {count}",
-      "items": "{count, plural, zero {لا أصناف} one {صنف واحد} two {صنفان} few {# أصناف} many {# صنفاً} other {# صنف}}",
+      "items": "{count, plural, zero {لا أصناف} one {صنف واحد} two {صنفان} few {{count_n} أصناف} many {{count_n} صنفاً} other {{count_n} صنف}}",
       "justNow": "الآن",
       "minutesAgo": "منذ {minutes} د",
-      "hoursAgo": "{hours, plural, zero {الآن} one {منذ ساعة} two {منذ ساعتين} few {منذ # ساعات} many {منذ # ساعة} other {منذ # ساعة}}",
+      "hoursAgo": "{hours, plural, zero {الآن} one {منذ ساعة} two {منذ ساعتين} few {منذ {hours_n} ساعات} many {منذ {hours_n} ساعة} other {منذ {hours_n} ساعة}}",
       "empty": "لا توجد مبيعات محفوظة. استخدم زر «احتفاظ» لحفظ فاتورة لوقت لاحق.",
       "resume": "استئناف",
       "discard": "تجاهل",
@@ -1607,15 +1620,15 @@
     },
     "offline": {
       "statusOnline": "متصل",
-      "statusOffline": "غير متصل · {count, plural, zero {لا توجد} one {طلب معلّق} two {طلبان معلّقان} few {# طلبات معلّقة} many {# طلبًا معلّقًا} other {# طلب معلّق}}",
+      "statusOffline": "غير متصل · {count, plural, zero {لا توجد} one {طلب معلّق} two {طلبان معلّقان} few {{count_n} طلبات معلّقة} many {{count_n} طلبًا معلّقًا} other {{count_n} طلب معلّق}}",
       "statusSyncing": "تتم المزامنة · {count}",
       "statusPending": "بانتظار المزامنة · {count}",
       "queuedToast": "تم الحفظ دون اتصال. ستُزامَن عند العودة للإنترنت.",
-      "conflictsBanner": "{count, plural, zero {لا توجد تعارضات} one {تعارض مزامنة بحاجة مراجعة} two {تعارضا مزامنة بحاجة مراجعة} few {# تعارضات مزامنة بحاجة مراجعة} many {# تعارضًا بحاجة مراجعة} other {# تعارض بحاجة مراجعة}}",
+      "conflictsBanner": "{count, plural, zero {لا توجد تعارضات} one {تعارض مزامنة بحاجة مراجعة} two {تعارضا مزامنة بحاجة مراجعة} few {{count_n} تعارضات مزامنة بحاجة مراجعة} many {{count_n} تعارضًا بحاجة مراجعة} other {{count_n} تعارض بحاجة مراجعة}}",
       "conflictsBannerCta": "مراجعة"
     },
     "payment": {
-      "kicker": "الدفع · فاتورة #{id}",
+      "kicker": "الدفع",
       "openReceipt": "افتح الإيصال ←",
       "fullyCovered": "مسدّد بالكامل",
       "remaining": "متبقي {amount}",
@@ -1655,7 +1668,9 @@
       "taxBreakdown": {
         "label": "الضريبة",
         "inclusiveHint": "الضريبة مضمّنة في سعر الصنف.",
-        "exclusiveHint": "تُضاف الضريبة إلى الإجمالي الفرعي."
+        "exclusiveHint": "تُضاف الضريبة إلى الإجمالي الفرعي.",
+        "inclusivePrefix": "شامل",
+        "addedPrefix": "+"
       },
       "card": {
         "title": "بطاقة",
@@ -1706,7 +1721,20 @@
           "currency_mismatch": "رصيد العميل بعملة مختلفة."
         }
       },
-      "roundUp": "↑{amount}"
+      "roundUp": "↑{amount}",
+      "transfer": {
+        "loading": "جارٍ تحميل الحساب…",
+        "bank": "البنك",
+        "holder": "صاحب الحساب",
+        "iban": "الآيبان",
+        "account": "الحساب",
+        "amount": "المبلغ",
+        "hint": "اعرض هذه البيانات على العميل، ثم صوّر إيصاله في الخطوة التالية.",
+        "empty": {
+          "title": "لا يوجد حساب استلام",
+          "body": "أضف حساباً بنكياً في الإعدادات قبل قبول التحويلات، حتى تُطابق هذه العملية به."
+        }
+      }
     }
   },
   "receipt": {
@@ -1756,8 +1784,8 @@
     },
     "buttons": {
       "print": "طباعة",
-      "switch58": "تبديل إلى ٥٨مم",
-      "switch80": "تبديل إلى ٨٠مم",
+      "switch58": "تبديل إلى 58مم",
+      "switch80": "تبديل إلى 80مم",
       "switchA4": "تبديل إلى A4",
       "backToPos": "العودة إلى نقطة البيع",
       "refund": "استرداد",
@@ -1967,13 +1995,13 @@
         "recentActivity": "النشاط الأخير",
         "recentEmpty": "لا شيء لعرضه بعد.",
         "staffSummaryTitle": "الفريق",
-        "staffSummaryCount": "{count, plural, =0 {لم يُعيَّن أحد بعد} one {شخص واحد مُعيَّن} two {شخصان مُعيَّنان} few {# أشخاص مُعيَّنين} many {# شخصًا مُعيَّنًا} other {# شخص مُعيَّن}}",
+        "staffSummaryCount": "{count, plural, =0 {لم يُعيَّن أحد بعد} one {شخص واحد مُعيَّن} two {شخصان مُعيَّنان} few {{count_n} أشخاص مُعيَّنين} many {{count_n} شخصًا مُعيَّنًا} other {{count_n} شخص مُعيَّن}}",
         "viewStaffLink": "عرض الفريق ←",
         "saleRef": "بيع {code}"
       },
       "staff": {
         "title": "فريق {branch}",
-        "countChip": "{count, plural, =0 {لا أحد مُعيَّن بعد} one {شخص واحد} two {شخصان} few {# أشخاص} many {# شخصًا} other {# شخص}}",
+        "countChip": "{count, plural, =0 {لا أحد مُعيَّن بعد} one {شخص واحد} two {شخصان} few {{count_n} أشخاص} many {{count_n} شخصًا} other {{count_n} شخص}}",
         "assignCta": "تعيين موظف",
         "onShift": "في الوردية",
         "onShiftHint": "يعمل حاليًا في وردية مفتوحة بهذا الفرع",
@@ -2601,7 +2629,14 @@
         "plan": "الخطة",
         "status": "الحالة",
         "trialEnds": "نهاية الفترة التجريبية",
-        "manage": "إدارة الاشتراك"
+        "manage": "إدارة الاشتراك",
+        "statuses": {
+          "trialing": "فترة تجريبية",
+          "active": "نشط",
+          "grace_period": "مهلة سماح",
+          "suspended": "موقوف",
+          "cancelled": "ملغى"
+        }
       },
       "actions": {
         "save": "حفظ التغييرات",
@@ -2630,6 +2665,19 @@
         "hint": "JPG / PNG / WebP حتى 5 ميغابايت. الأفضل مربّع وبخلفية شفافة.",
         "tooLarge": "يجب ألا يتجاوز حجم الشعار 5 ميغابايت.",
         "uploadFailed": "فشل الرفع — يُرجى المحاولة مجددًا."
+      },
+      "languageRegion": {
+        "title": "اللغة والمنطقة",
+        "subtitle": "للعرض فقط — تُخزَّن القيم دائماً بالأرقام الغربية والتقويم الميلادي.",
+        "preview": "معاينة",
+        "digits": {
+          "label": "الأرقام العربية الهندية",
+          "hint": "إظهار ١٢٣ بدلاً من 123 في الواجهة العربية. لا تأثير لها في الإنجليزية."
+        },
+        "calendar": {
+          "label": "التقويم الهجري",
+          "hint": "عرض التواريخ بالتقويم الهجري. تنطبق على اللغتين."
+        }
       }
     },
     "notifications": {
@@ -2652,7 +2700,7 @@
         },
         "trial_ending": {
           "label": "تذكير انتهاء التجربة",
-          "description": "قبل ٣ أيام من انتهاء الفترة التجريبية."
+          "description": "قبل 3 أيام من انتهاء الفترة التجريبية."
         },
         "invoice_issued": {
           "label": "فاتورة جديدة",
@@ -2765,7 +2813,7 @@
     },
     "alerts": {
       "title": "تراجع الموثوقية",
-      "body": "{name} أقل من ٨٠٪ في معدل التوريد أو التسليم في الموعد. راجع أوامر الشراء الأخيرة وفكّر في بدائل.",
+      "body": "{name} أقل من 80٪ في معدل التوريد أو التسليم في الموعد. راجع أوامر الشراء الأخيرة وفكّر في بدائل.",
       "reviewCta": "مراجعة النشاط"
     },
     "orderHistory": {
@@ -2801,7 +2849,7 @@
       },
       "fields": {
         "code": "رمز المورد",
-        "codeHint": "معرّف قصير بأحرف كبيرة، ٢–١٦ حرفاً.",
+        "codeHint": "معرّف قصير بأحرف كبيرة، 2–16 حرفاً.",
         "codeLocked": "لا يمكن تغيير الرمز بعد الإنشاء.",
         "name": "الاسم",
         "nameEn": "الاسم (بالإنجليزية)",
@@ -2811,7 +2859,7 @@
         "currency": "العملة",
         "leadTimeDays": "مدة التوريد (أيام)",
         "paymentTerms": "شروط الدفع",
-        "paymentTermsHint": "مثال: صافي ٣٠، دفع عند الاستلام، ٥٠٪ مقدماً.",
+        "paymentTermsHint": "مثال: صافي 30، دفع عند الاستلام، 50٪ مقدماً.",
         "contactEmail": "البريد الإلكتروني للتواصل",
         "contactPhone": "هاتف التواصل",
         "addressEn": "العنوان (بالإنجليزية)",
@@ -2883,12 +2931,12 @@
       "download": "تنزيل",
       "delete": "حذف",
       "empty": "لم يتم رفع أي مستندات بعد.",
-      "maxSize": "الحد الأقصى ٥ ميجابايت.",
+      "maxSize": "الحد الأقصى 5 ميجابايت.",
       "allowedTypes": "JPG أو PNG أو PDF.",
       "size": "{kb} كيلوبايت",
       "uploadedOn": "تم الرفع {date}",
       "errors": {
-        "too_large": "الملف كبير جداً. الحد الأقصى ٥ ميجابايت.",
+        "too_large": "الملف كبير جداً. الحد الأقصى 5 ميجابايت.",
         "bad_type": "نوع الملف غير مدعوم."
       }
     },
@@ -3461,7 +3509,7 @@
         "title": "تعديل رصيد المتجر",
         "fields": {
           "amountSigned": "المبلغ (هلّلات، بإشارة)",
-          "currency": "العملة (رمز ISO من ٣ أحرف)",
+          "currency": "العملة (رمز ISO من 3 أحرف)",
           "noteEn": "ملاحظة (إنجليزي)",
           "noteAr": "ملاحظة (عربي)"
         },
@@ -3537,7 +3585,7 @@
       "subtitle": "بعد الإرسال يُقفل رمز الاسترداد ويُكتب سجل التدقيق.",
       "sale": "المبيعة الأصلية",
       "lines": "البنود",
-      "linesCount": "{count, plural, =0 {لا توجد عناصر} one {عنصر واحد} two {عنصران} few {# عناصر} many {# عنصرًا} other {# عنصر}}",
+      "linesCount": "{count, plural, =0 {لا توجد عناصر} one {عنصر واحد} two {عنصران} few {{count_n} عناصر} many {{count_n} عنصرًا} other {{count_n} عنصر}}",
       "method": "طريقة الاسترداد",
       "customer": "العميل"
     },
@@ -3661,7 +3709,7 @@
       "variance": "الفرق"
     },
     "branch": {
-      "shifts": "{count, plural, =0 {لا ورديات} one {وردية واحدة} two {ورديتان} few {# ورديات} many {# وردية} other {# وردية}}",
+      "shifts": "{count, plural, =0 {لا ورديات} one {وردية واحدة} two {ورديتان} few {{count_n} ورديات} many {{count_n} وردية} other {{count_n} وردية}}",
       "balanced": "متطابق",
       "short": "نقص {amount}",
       "over": "زيادة {amount}",

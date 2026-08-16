@@ -9,6 +9,7 @@ import { shiftsListRequest } from "@/lib/api/shifts";
 import { userUpdateRequest } from "@/lib/api/users";
 import { useAuthStore } from "@/lib/auth/store";
 import { AssignUserModal } from "./AssignUserModal";
+import { useFormat } from "@/lib/i18n/format";
 
 type RoleKey = "owner" | "manager" | "cashier" | "accountant" | "auditor";
 
@@ -26,6 +27,7 @@ function initial(name: string): string {
 }
 
 export function StaffTab({ branch, locale }: { branch: ApiBranchDetail; locale: "en" | "ar" }) {
+  const f = useFormat();
   const t = useTranslations("branches.detail.staff");
   const tRoles = useTranslations("settings.users.roles");
   const qc = useQueryClient();
@@ -85,7 +87,7 @@ export function StaffTab({ branch, locale }: { branch: ApiBranchDetail; locale: 
           <h3 className="br-section-title" style={{ marginBlockEnd: "var(--space-1)" }}>
             {t("title", { branch: branchName })}
           </h3>
-          <p className="br-staff-sub">{t("countChip", { count })}</p>
+          <p className="br-staff-sub">{t("countChip", { count, count_n: f.number(count) })}</p>
         </div>
         {canEdit && (
           <button

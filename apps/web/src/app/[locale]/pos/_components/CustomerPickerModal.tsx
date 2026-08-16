@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { Search, UserPlus, X } from "lucide-react";
 import { customersListRequest, type ApiCustomerSummary } from "@/lib/api/customers";
+import { useFormat } from "@/lib/i18n/format";
 
 export interface PosCustomerPick {
   id: string;
@@ -25,6 +26,7 @@ export function CustomerPickerModal({
   onPick: (c: PosCustomerPick) => void;
   locale: "en" | "ar";
 }) {
+  const f = useFormat();
   const t = useTranslations("pos.customerPicker");
   const [search, setSearch] = useState("");
   const [debounced, setDebounced] = useState("");
@@ -127,8 +129,8 @@ export function CustomerPickerModal({
                 <div style={{ flex: 1, textAlign: "start" }}>
                   <div style={{ fontSize: 14, fontWeight: 500 }}>{c.name}</div>
                   <div style={{ fontSize: 12, color: "var(--ink-3)" }}>
-                    {c.phone ?? c.email ?? c.code ?? "—"} ·{" "}
-                    {t("salesCount", { count: c.sales_count })}
+                    <span dir="ltr">{c.phone ?? c.email ?? c.code ?? "—"}</span> ·{" "}
+                    {t("salesCount", { count: c.sales_count, count_n: f.number(c.sales_count) })}
                   </div>
                 </div>
               </button>

@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Pause, Plus, Minus, User, X } from "lucide-react";
 import type { Product } from "@/lib/mock-data/products";
 import { EmptyBasket } from "./EmptyBasket";
-import { currencySymbol } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 export type CartLine = {
   id: string;
@@ -63,7 +63,7 @@ export function Cart({
   currency: string;
 }) {
   const t = useTranslations("pos");
-  const locale = useLocale();
+  const f = useFormat();
 
   return (
     <aside className="pos-cart">
@@ -90,7 +90,7 @@ export function Cart({
             <div style={{ flex: 1, textAlign: "start" }}>
               <div style={{ fontSize: 13, fontWeight: 500 }}>{customer.name}</div>
               <div style={{ fontSize: 11, color: "var(--ink-3)" }}>
-                {t("cart.visits", { count: customer.visits })} · {customer.credit} {currency} {t("cart.storeCredit")}
+                {t("cart.visits", { count: customer.visits })} · {f.moneyMajor(customer.credit, currency)} {t("cart.storeCredit")}
               </div>
             </div>
             <X size={14} strokeWidth={1.5} />
@@ -154,14 +154,14 @@ export function Cart({
               <div className="pos-line-body">
                 <div className="pos-line-name">{line.p.name}</div>
                 <div className="pos-line-sub">
-                  {line.p.price} {currency} {t("line.each")}
+                  {f.moneyMajor(line.p.price, currency)} {t("line.each")}
                   {line.discount > 0 && (
                     <span style={{ color: "var(--accent)" }}> {t("line.discountSuffix", { discount: line.discount })}</span>
                   )}
                   {line.note && <span style={{ fontStyle: "italic" }}> · {line.note}</span>}
                 </div>
               </div>
-              <div className="pos-line-total tnum">{Math.round(line.price)}</div>
+              <div className="pos-line-total tnum">{f.number(Math.round(line.price))}</div>
             </div>
           ))
         )}
@@ -170,18 +170,18 @@ export function Cart({
       <div className="pos-totals">
         <div className="pos-totals-row">
           <span>{t("cart.subtotal")}</span>
-          <span className="tnum">{Math.round(subtotal)}</span>
+          <span className="tnum">{f.number(Math.round(subtotal))}</span>
         </div>
         {totalDiscount > 0 && (
           <div className="pos-totals-row pos-totals-discount">
             <span>{t("cart.discount")}</span>
-            <span className="tnum">− {Math.round(totalDiscount)}</span>
+            <span className="tnum">− {f.number(Math.round(totalDiscount))}</span>
           </div>
         )}
         {tax > 0 && (
           <div className="pos-totals-row">
             <span>{taxInclusive ? t("cart.taxIncluded") : t("cart.tax")}</span>
-            <span className="tnum">{Math.round(tax)}</span>
+            <span className="tnum">{f.number(Math.round(tax))}</span>
           </div>
         )}
       </div>
@@ -189,8 +189,8 @@ export function Cart({
       <div className="pos-hero-total">
         <span className="pos-hero-kicker">{t("cart.totalKicker", { currency })}</span>
         <div className="pos-hero-amount serif tnum">
-          <span className="cur">{currencySymbol(currency, locale)}</span>
-          {Math.round(total)}
+          <span className="cur">{f.currencySymbol(currency)}</span>
+          {f.number(Math.round(total))}
         </div>
       </div>
 
@@ -202,7 +202,7 @@ export function Cart({
         aria-label={`${t("cart.pay")} ${total}`}
       >
         <span className="pos-pay-label">{t("cart.pay")}</span>
-        <span className="pos-pay-amount tnum">{Math.round(total)}</span>
+        <span className="pos-pay-amount tnum">{f.number(Math.round(total))}</span>
       </button>
     </aside>
   );

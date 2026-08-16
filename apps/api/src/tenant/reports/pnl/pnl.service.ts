@@ -22,6 +22,7 @@ export interface ApiPnlReport {
   from: string;
   to: string;
   period_label: string;
+  period: PnlPeriod;
   revenue_cents: string;
   discount_cents: string;
   tax_cents: string;
@@ -121,6 +122,7 @@ export class PnlService {
       from: q.from,
       to: q.to,
       period_label: buildPeriodLabel(q.from, q.to),
+      period: buildPeriod(q.from, q.to),
       revenue_cents: revenue.toString(),
       discount_cents: discount.toString(),
       tax_cents: tax.toString(),
@@ -353,6 +355,39 @@ function shapeBreakdownRow(
     base.label = key;
   }
   return base;
+}
+
+/**
+ * Machine-readable description of the reporting period.
+ *
+ * `period_label` beside it is English prose ("Custom range", "August 2026")
+ * and the tenant app rendered it verbatim, so Arabic users read English in
+ * their statement header. The API has no request-locale to translate with —
+ * there is no Accept-Language handling and no locale JWT claim — so it
+ * describes the period and lets the client format it with the tenant's own
+ * language, numerals and calendar. The string stays for the CSV export and
+ * the scheduled-report email, which are not locale-aware either.
+ */
+export type PnlPeriod =
+  | { kind: "day"; date: string }
+  | { kind: "month"; year: number; month: number }
+  | { kind: "custom"; from: string; to: string };
+
+function buildPeriod(from: string, to: string): PnlPeriod {
+  if (from === to) return { kind: "day", date: from };
+  const f = new Date(from);
+  const t = new Date(to);
+  if (
+    f.getUTCFullYear() === t.getUTCFullYear() &&
+    f.getUTCMonth() === t.getUTCMonth() &&
+    f.getUTCDate() === 1
+  ) {
+    const lastDay = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth() + 1, 0)).getUTCDate();
+    if (t.getUTCDate() === lastDay) {
+      return { kind: "month", year: f.getUTCFullYear(), month: f.getUTCMonth() + 1 };
+    }
+  }
+  return { kind: "custom", from, to };
 }
 
 function buildPeriodLabel(from: string, to: string): string {

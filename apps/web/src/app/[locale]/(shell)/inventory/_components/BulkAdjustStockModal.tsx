@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { branchesListRequest, type ApiBranchSummary } from "@/lib/api/branches";
 import { apiFetch, ApiError } from "@/lib/api/client";
+import { useFormat } from "@/lib/i18n/format";
 
 interface SelectedRow {
   id: string;
@@ -39,6 +40,7 @@ export function BulkAdjustStockModal({
   onClose: () => void;
   onDone: () => void;
 }) {
+  const f = useFormat();
   const t = useTranslations("inventory.bulk.adjustStockModal");
   const [branchId, setBranchId] = useState<string>("");
   const [delta, setDelta] = useState("");
@@ -156,7 +158,7 @@ export function BulkAdjustStockModal({
               {t("title")}
             </h2>
             <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--ink-3)" }}>
-              {t("subtitle", { count: rows.length })}
+              {t("subtitle", { count: rows.length, count_n: f.number(rows.length) })}
             </p>
           </div>
           <button

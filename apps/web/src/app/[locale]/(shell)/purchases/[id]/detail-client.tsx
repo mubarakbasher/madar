@@ -18,6 +18,7 @@ import { formatCurrency, minorToMajor } from "@/lib/currency";
 import { POStatusPill } from "../_components/POStatusPill";
 import { POTimeline } from "../_components/POTimeline";
 import { SendToSupplierDialog } from "../_components/SendToSupplierDialog";
+import { useFormat } from "@/lib/i18n/format";
 
 function pickName(i18n: { en: string; ar: string } | null, locale: string): string {
   if (!i18n) return "—";
@@ -27,7 +28,7 @@ function pickName(i18n: { en: string; ar: string } | null, locale: string): stri
 function fmtDate(yyyyMmDd: string | null, locale: string): string {
   if (!yyyyMmDd) return "—";
   try {
-    return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-EG", {
+    return new Intl.DateTimeFormat(locale, {
       dateStyle: "medium",
     }).format(new Date(yyyyMmDd + "T00:00:00Z"));
   } catch {
@@ -37,7 +38,7 @@ function fmtDate(yyyyMmDd: string | null, locale: string): string {
 
 function fmtDateTime(iso: string, locale: string): string {
   try {
-    return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-EG", {
+    return new Intl.DateTimeFormat(locale, {
       dateStyle: "medium",
     }).format(new Date(iso));
   } catch {
@@ -52,6 +53,7 @@ export function PODetailClient({
   locale: "en" | "ar";
   id: string;
 }) {
+  const f = useFormat();
   const t = useTranslations("purchases");
   const tDetail = useTranslations("purchases.detail");
   const tErr = useTranslations("purchases.errors");
@@ -124,7 +126,7 @@ export function PODetailClient({
       <div className="po-detail-head">
         <div className="po-detail-head-left">
           <div className="po-kicker">
-            {tDetail("kicker", { date: fmtDateTime(po.created_at, locale) })}
+            {tDetail("kicker", { date: fmtDateTime(po.created_at, f.locale) })}
           </div>
           <h1 className="po-title">{po.code}</h1>
           <div className="po-detail-meta">
@@ -133,7 +135,7 @@ export function PODetailClient({
             <span>{branchName}</span>
             <span>·</span>
             <span>
-              {tDetail("expectedLabel")}: {fmtDate(po.expected_at, locale)}
+              {tDetail("expectedLabel")}: {fmtDate(po.expected_at, f.locale)}
             </span>
             <POStatusPill status={po.status} />
             {po.has_discrepancy && (
@@ -153,25 +155,25 @@ export function PODetailClient({
         <div className="po-kpi-cell">
           <div className="po-kpi-label">{tDetail("kpis.subtotal")}</div>
           <div className="po-kpi-value">
-            {formatCurrency(minorToMajor(po.subtotal_cents, po.currency_code), po.currency_code, locale)}
+            {formatCurrency(minorToMajor(po.subtotal_cents, po.currency_code), po.currency_code, f.locale)}
           </div>
         </div>
         <div className="po-kpi-cell">
           <div className="po-kpi-label">{tDetail("kpis.tax")}</div>
           <div className="po-kpi-value">
-            {formatCurrency(minorToMajor(po.tax_cents, po.currency_code), po.currency_code, locale)}
+            {formatCurrency(minorToMajor(po.tax_cents, po.currency_code), po.currency_code, f.locale)}
           </div>
         </div>
         <div className="po-kpi-cell">
           <div className="po-kpi-label">{tDetail("kpis.shipping")}</div>
           <div className="po-kpi-value">
-            {formatCurrency(minorToMajor(po.shipping_cents, po.currency_code), po.currency_code, locale)}
+            {formatCurrency(minorToMajor(po.shipping_cents, po.currency_code), po.currency_code, f.locale)}
           </div>
         </div>
         <div className="po-kpi-cell">
           <div className="po-kpi-label">{tDetail("kpis.total")}</div>
           <div className="po-kpi-value">
-            {formatCurrency(minorToMajor(po.total_cents, po.currency_code), po.currency_code, locale)}
+            {formatCurrency(minorToMajor(po.total_cents, po.currency_code), po.currency_code, f.locale)}
           </div>
         </div>
       </div>
@@ -214,14 +216,14 @@ export function PODetailClient({
                         {formatCurrency(
                           minorToMajor(l.unit_cost_cents, po.currency_code),
                           po.currency_code,
-                          locale,
+                          f.locale,
                         )}
                       </td>
                       <td className="po-num">
                         {formatCurrency(
                           minorToMajor(l.line_total_cents, po.currency_code),
                           po.currency_code,
-                          locale,
+                          f.locale,
                         )}
                       </td>
                       <td>

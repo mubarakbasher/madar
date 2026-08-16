@@ -713,6 +713,7 @@ function PosView({
           taxInclusive={taxInclusive}
           currency={currency}
           customer={null}
+          branchId={branchId}
           onClose={() => setPayOpen(false)}
           onSubmit={async (payment) => {
             const result = await handlePaymentSubmit(payment);

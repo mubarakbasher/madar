@@ -8,6 +8,7 @@ import type { Product } from "@/lib/mock-data/products";
 import { productImagePublicUrl } from "@/lib/api/catalog";
 import { currencySymbol, formatNumber } from "@/lib/currency";
 import { useAuthStore } from "@/lib/auth/store";
+import { useFormat } from "@/lib/i18n/format";
 
 export function ProductGrid({
   search,
@@ -32,6 +33,7 @@ export function ProductGrid({
   locale: string;
   tenantId: string | null;
 }) {
+  const f = useFormat();
   const t = useTranslations("pos");
   const currencyCode = useAuthStore((s) => s.tenant?.default_currency_code ?? "EGP");
   // Category chips carry tenant data (`name_i18n`), not UI strings — pick the
@@ -87,7 +89,7 @@ export function ProductGrid({
             onClick={() => setCat(c.id)}
           >
             {pickCategoryName(c)}
-            <span className="pos-cat-count tnum">{formatNumber(c.count, locale)}</span>
+            <span className="pos-cat-count tnum">{formatNumber(c.count, f.locale)}</span>
           </button>
         ))}
       </div>
@@ -136,8 +138,8 @@ export function ProductGrid({
                     className="pos-tile-price serif tnum"
                     aria-label={`${p.price} ${currencyCode}`}
                   >
-                    <span className="cur">{currencySymbol(currencyCode, locale)}</span>
-                    {formatNumber(p.price, locale)}
+                    <span className="cur">{currencySymbol(currencyCode, f.locale)}</span>
+                    {formatNumber(p.price, f.locale)}
                   </div>
                 </button>
               );

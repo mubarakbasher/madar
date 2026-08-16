@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import type { ApiSupplierSummary } from "@/lib/api/suppliers";
 import { formatCurrency, formatMoney } from "@/lib/currency";
 import { ReliabilityDial } from "./ReliabilityDial";
+import { useFormat } from "@/lib/i18n/format";
 
 function pickName(
   i18n: { en: string; ar: string } | null | undefined,
@@ -17,7 +18,7 @@ function pickName(
 function formatLastOrder(iso: string | null, locale: string): string {
   if (!iso) return "—";
   const diffMs = Date.now() - new Date(iso).getTime();
-  const rtf = new Intl.RelativeTimeFormat(locale === "ar" ? "ar-EG" : "en-EG", { numeric: "auto" });
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
   const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
   if (days <= 0) return rtf.format(-Math.max(1, Math.floor(diffMs / 3600_000)), "hour");
   if (days < 30) return rtf.format(-days, "day");
@@ -33,13 +34,14 @@ export function SupplierCard({
   supplier: ApiSupplierSummary;
   locale: "en" | "ar";
 }) {
+  const f = useFormat();
   const t = useTranslations("suppliers");
   // List rows don't carry stats — show a placeholder dial (null tier).
   // Real reliability is on the detail page.
   const name = pickName(supplier.name_i18n, locale, supplier.code);
   const owed = Number(supplier.owed_cents);
-  const owedFormatted = formatMoney(owed, supplier.currency_code, locale);
-  const lastOrder = formatLastOrder(supplier.last_order_at, locale);
+  const owedFormatted = formatMoney(owed, supplier.currency_code, f.locale);
+  const lastOrder = formatLastOrder(supplier.last_order_at, f.locale);
   const isHighOwed = owed > 1_000_000; // 10k major units
 
   const metaBits: string[] = [];

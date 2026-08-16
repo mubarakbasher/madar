@@ -15,6 +15,8 @@ import { useAuthStore } from "@/lib/auth/store";
 import { formatCurrency, minorToMajor } from "@/lib/currency";
 import { POStatusPill } from "./_components/POStatusPill";
 import "./purchases.css";
+import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
+import { useFormat } from "@/lib/i18n/format";
 
 type Tab = PurchaseOrderStatus | "all";
 
@@ -34,7 +36,7 @@ function pickName(i18n: { en: string; ar: string } | null, locale: string): stri
 function fmtDate(yyyyMmDd: string | null, locale: string): string {
   if (!yyyyMmDd) return "—";
   try {
-    return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-EG", {
+    return new Intl.DateTimeFormat(locale, {
       dateStyle: "medium",
     }).format(new Date(yyyyMmDd + "T00:00:00Z"));
   } catch {
@@ -44,7 +46,7 @@ function fmtDate(yyyyMmDd: string | null, locale: string): string {
 
 function fmtCreated(iso: string, locale: string): string {
   try {
-    return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-EG", {
+    return new Intl.DateTimeFormat(locale, {
       dateStyle: "medium",
     }).format(new Date(iso));
   } catch {
@@ -53,10 +55,11 @@ function fmtCreated(iso: string, locale: string): string {
 }
 
 export function PurchasesClient({ locale }: { locale: "en" | "ar" }) {
+  const f = useFormat();
   const t = useTranslations("purchases");
   const role = useAuthStore((s) => s.user?.role ?? "");
   const userBranchId = useAuthStore((s) => s.user?.branch_id ?? null);
-  const tenantCurrency = useAuthStore.getState().tenant?.default_currency_code ?? "USD";
+  const tenantCurrency = useTenantCurrency();
   const canCreate = role === "owner" || role === "manager";
   const isManager = role === "manager";
 
@@ -152,13 +155,13 @@ export function PurchasesClient({ locale }: { locale: "en" | "ar" }) {
         <div className="po-hero-cell">
           <div className="po-hero-label">{t("hero.openOwed")}</div>
           <div className="po-hero-value">
-            {formatCurrency(minorToMajor(hero.openOwed, tenantCurrency), tenantCurrency, locale)}
+            {formatCurrency(minorToMajor(hero.openOwed, tenantCurrency), tenantCurrency, f.locale)}
           </div>
         </div>
         <div className="po-hero-cell">
           <div className="po-hero-label">{t("hero.thisMonthSpend")}</div>
           <div className="po-hero-value">
-            {formatCurrency(minorToMajor(hero.thisMonthSpend, tenantCurrency), tenantCurrency, locale)}
+            {formatCurrency(minorToMajor(hero.thisMonthSpend, tenantCurrency), tenantCurrency, f.locale)}
           </div>
         </div>
       </div>
@@ -266,8 +269,8 @@ export function PurchasesClient({ locale }: { locale: "en" | "ar" }) {
                       <div className="po-table-sub">{r.branch.code}</div>
                     )}
                   </td>
-                  <td>{fmtCreated(r.created_at, locale)}</td>
-                  <td>{fmtDate(r.expected_at, locale)}</td>
+                  <td>{fmtCreated(r.created_at, f.locale)}</td>
+                  <td>{fmtDate(r.expected_at, f.locale)}</td>
                   <td>
                     <POStatusPill status={r.status} />
                     {r.has_discrepancy && (
@@ -284,7 +287,7 @@ export function PurchasesClient({ locale }: { locale: "en" | "ar" }) {
                     {formatCurrency(
                       minorToMajor(r.total_cents, r.currency_code),
                       r.currency_code,
-                      locale,
+                      f.locale,
                     )}
                   </td>
                 </tr>

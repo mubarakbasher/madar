@@ -16,6 +16,7 @@ import { branchesListRequest } from "@/lib/api/branches";
 import { useAuthStore } from "@/lib/auth/store";
 import { formatMoney as formatMoneyShared, minorToMajor } from "@/lib/currency";
 import { localDaysAgo, localIsoDate } from "@/lib/local-date";
+import { useFormat } from "@/lib/i18n/format";
 
 function todayIso(): string {
   return localIsoDate(new Date());
@@ -24,7 +25,7 @@ function thirtyDaysAgoIso(): string {
   return localIsoDate(localDaysAgo(new Date(), 30));
 }
 
-function formatMoney(cents: string, currency: string, locale: "en" | "ar"): string {
+function formatMoney(cents: string, currency: string, locale: string): string {
   try {
     return formatMoneyShared(cents, currency, locale);
   } catch {
@@ -37,10 +38,17 @@ function formatRate(rateBps: number): string {
 }
 
 export function TaxReportClient({ locale }: { locale: "en" | "ar" }) {
+  const f = useFormat();
   const t = useTranslations("reports.tax");
-  const defaultCurrency = useAuthStore((s) => s.tenant?.default_currency_code ?? "USD");
+  const tenantCurrency = useAuthStore((s) => s.tenant?.default_currency_code);
+  const bootstrapped = useAuthStore((s) => s.bootstrapped);
 
-  const [currency, setCurrency] = useState<string>(defaultCurrency);
+  // See pnl-client.tsx: seeding state from `tenant` freezes the fallback,
+  // because `tenant` is null for the whole first render. Derived instead, so
+  // the tenant's currency arrives when it does and a manual edit still wins.
+  const [currencyOverride, setCurrencyOverride] = useState<string | null>(null);
+  const currency = currencyOverride ?? tenantCurrency ?? "";
+  const setCurrency = setCurrencyOverride;
   const [from, setFrom] = useState<string>(thirtyDaysAgoIso());
   const [to, setTo] = useState<string>(todayIso());
   const [branchId, setBranchId] = useState<string>("");
@@ -61,6 +69,9 @@ export function TaxReportClient({ locale }: { locale: "en" | "ar" }) {
   const reportQ = useQuery<ApiTaxReport>({
     queryKey: ["reports", "tax", query],
     queryFn: () => taxReportRequest(query),
+    // Had no gate at all, so it fired immediately with the wrong currency and
+    // rendered "no taxable sales" over a period that had them.
+    enabled: bootstrapped && currency.length === 3,
     staleTime: 30_000,
   });
 
@@ -209,10 +220,10 @@ export function TaxReportClient({ locale }: { locale: "en" | "ar" }) {
                     </td>
                     <td className="rep-tax-td-end rep-tax-num">{formatRate(it.rate_bps)}</td>
                     <td className="rep-tax-td-end rep-tax-num">
-                      {formatMoney(it.taxable_sales_cents, report.currency, locale)}
+                      {formatMoney(it.taxable_sales_cents, report.currency, f.locale)}
                     </td>
                     <td className="rep-tax-td-end rep-tax-num">
-                      {formatMoney(it.tax_collected_cents, report.currency, locale)}
+                      {formatMoney(it.tax_collected_cents, report.currency, f.locale)}
                     </td>
                     <td className="rep-tax-td-end rep-tax-num">{it.transactions}</td>
                   </tr>
@@ -225,12 +236,12 @@ export function TaxReportClient({ locale }: { locale: "en" | "ar" }) {
                 <td className="rep-tax-td-end" />
                 <td className="rep-tax-td-end rep-tax-num">
                   <strong>
-                    {formatMoney(report.totals.taxable_sales_cents, report.currency, locale)}
+                    {formatMoney(report.totals.taxable_sales_cents, report.currency, f.locale)}
                   </strong>
                 </td>
                 <td className="rep-tax-td-end rep-tax-num">
                   <strong>
-                    {formatMoney(report.totals.tax_collected_cents, report.currency, locale)}
+                    {formatMoney(report.totals.tax_collected_cents, report.currency, f.locale)}
                   </strong>
                 </td>
                 <td className="rep-tax-td-end rep-tax-num">

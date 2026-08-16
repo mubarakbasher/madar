@@ -14,10 +14,12 @@ import {
   SplitSquareHorizontal,
 } from "lucide-react";
 import { ApiError } from "@/lib/api/client";
-import { currencySymbol, majorToMinor, minorToMajor } from "@/lib/currency";
+import { majorToMinor, minorToMajor } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 import { CardPaymentBody } from "./CardPaymentBody";
 import { StoreCreditBody } from "./StoreCreditBody";
 import { SplitTenderBody, type SplitPaymentSlice } from "./SplitTenderBody";
+import { TransferBody } from "./TransferBody";
 
 type PaymentMethodId = "cash" | "card" | "tx" | "sc" | "split";
 
@@ -61,6 +63,7 @@ export function PaymentSheet({
   taxInclusive,
   currency,
   customer,
+  branchId,
   onClose,
   onSubmit,
 }: {
@@ -71,6 +74,8 @@ export function PaymentSheet({
   taxInclusive?: boolean;
   currency: string;
   customer?: PaymentSheetCustomer | null;
+  /** Selects the branch's receiving account for the bank-transfer panel. */
+  branchId?: string | null;
   onClose: () => void;
   onSubmit: (payment: PaymentSubmit) => Promise<void>;
 }) {
@@ -78,6 +83,7 @@ export function PaymentSheet({
   const total = minorToMajor(total_cents, currency);
   const t = useTranslations("pos.payment");
   const locale = useLocale();
+  const f = useFormat();
   const tMethods = useTranslations("pos.payment.methods");
   const tStoreCredit = useTranslations("pos.payment.storeCredit");
   const tTaxBreakdown = useTranslations("pos.payment.taxBreakdown");
@@ -97,11 +103,15 @@ export function PaymentSheet({
 
   const change = cashTendered - total;
   const cashOk = method !== "cash" || cashTendered >= total;
+  // Guards the receipt-stage SUBMIT only. It must not guard the compose-stage
+  // button, which is the only way to reach the stage where these three inputs
+  // exist — that circular gate made bank transfer unreachable in both locales.
   const transferOk =
     method !== "tx" || (receiptRef.length > 0 && receiptFile !== null && payerName.trim().length > 0);
   // Bottom "Complete sale" button only used for cash + bank transfer.
   const useBottomRow = method === "cash" || method === "tx";
-  const canConfirm = useBottomRow && cashOk && transferOk && !submitting;
+  // For "tx" this only advances a stage; the real submit is gated separately.
+  const canConfirm = useBottomRow && cashOk && !submitting;
 
   const storeCreditMinor = customer?.store_credit_balance_cents ?? null;
   const totalMinor = total_cents;
@@ -179,15 +189,15 @@ export function PaymentSheet({
       <div className="pos-modal" style={{ width: 500 }} onClick={(e) => e.stopPropagation()}>
         <header className="pos-modal-head">
           <div style={{ flex: 1 }}>
-            <span className="kicker">{t("kicker", { id: "2848" })}</span>
+            <span className="kicker">{t("kicker")}</span>
             <div
               className="serif tnum"
               style={{ fontSize: 42, fontWeight: 500, marginTop: "var(--space-1)", letterSpacing: "-0.025em", lineHeight: 1 }}
             >
               <span style={{ fontSize: "0.5em", color: "var(--ink-3)", marginInlineEnd: "var(--space-1)" }}>
-                {currencySymbol(currency, locale)}
+                {f.currencySymbol(currency)}
               </span>
-              {Math.round(total)}
+              {f.number(Math.round(total))}
             </div>
             {tax !== undefined && tax > 0 && (
               <div
@@ -203,8 +213,8 @@ export function PaymentSheet({
               >
                 <span className="kicker">{tTaxBreakdown("label")}</span>
                 <span className="tnum">
-                  {taxInclusive ? "incl. " : "+ "}
-                  {Math.round(tax)} {currency}
+                  {taxInclusive ? tTaxBreakdown("inclusivePrefix") : tTaxBreakdown("addedPrefix")}{" "}
+                  {f.moneyMajor(tax, currency)}
                 </span>
                 <span style={{ color: "var(--ink-4)" }}>·</span>
                 <span style={{ color: "var(--ink-4)" }}>
@@ -308,7 +318,7 @@ export function PaymentSheet({
                         >
                           {c.l}
                           <span className="tnum" style={{ color: "var(--ink-3)", marginInlineStart: "var(--space-1)" }}>
-                            {c.v} {currency}
+                            {f.moneyMajor(c.v, currency)}
                           </span>
                         </button>
                       ))}
@@ -330,7 +340,7 @@ export function PaymentSheet({
                         {t("changeDueLabel")}
                       </span>
                       <span className="serif tnum" style={{ fontSize: 22, fontWeight: 500 }}>
-                        {change} {currency}
+                        {f.moneyMajor(change, currency)}
                       </span>
                     </div>
                   )}
@@ -356,6 +366,15 @@ export function PaymentSheet({
                   customerName={customer?.name ?? null}
                   submitting={submitting}
                   onSubmit={() => void dispatchSubmit({ method: "store_credit" })}
+                />
+              )}
+
+              {method === "tx" && (
+                <TransferBody
+                  locale={locale === "ar" ? "ar" : "en"}
+                  branchId={branchId ?? null}
+                  totalCents={totalMinor}
+                  currency={currency}
                 />
               )}
 

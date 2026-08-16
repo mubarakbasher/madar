@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { useAuthStore } from "@/lib/auth/store";
+import { useAuthStore, type AuthTenant, type AuthUser } from "@/lib/auth/store";
 import { writeImpersonation } from "@/lib/auth/impersonation";
 import { apiFetch, ApiError } from "@/lib/api/client";
 
@@ -15,30 +15,12 @@ interface ExchangeResponse {
   target_user: { id: string; email: string; name: string; role: string };
 }
 
+// Reuses the store's shapes rather than re-declaring them: this was a
+// fourth hand-rolled copy of the tenant DTO, and every field added to the
+// tenant since has had to be typed into each copy by hand.
 interface MeResponse {
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    role: string;
-    locale: string;
-    branch_id: string | null;
-    email_verified: boolean;
-    mfa_enabled: boolean;
-  };
-  tenant: {
-    id: string;
-    slug: string;
-    name: string;
-    default_locale: string;
-    default_currency_code: string;
-    country_code: string;
-    status: string;
-    trial_ends_at: string | null;
-    default_tax_class_id: string | null;
-    tax_inclusive_default: boolean;
-    plan: { code: string; name_i18n: unknown } | null;
-  };
+  user: AuthUser;
+  tenant: AuthTenant;
 }
 
 /**
@@ -93,6 +75,9 @@ export function ImpersonationHandoffClient({ code }: { code: string }) {
           trial_ends_at: null,
           default_tax_class_id: null,
           tax_inclusive_default: false,
+          // Product defaults; the real values arrive with /v1/auth/me below.
+          use_arabic_indic_digits: false,
+          use_hijri_calendar: false,
           plan: null,
         },
       });

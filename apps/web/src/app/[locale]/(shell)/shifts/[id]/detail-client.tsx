@@ -6,21 +6,23 @@ import { Printer } from "lucide-react";
 import { Link } from "../../../../../../i18n/routing";
 import { shiftGetRequest } from "@/lib/api/shifts";
 import { formatMoney } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
-function fmtMoney(amountMinor: string | null, currency: string, locale: "en" | "ar"): string {
+function fmtMoney(amountMinor: string | null, currency: string, locale: string): string {
   if (amountMinor == null) return "—";
   return formatMoney(amountMinor, currency, locale);
 }
 
-function fmtDate(iso: string | null, locale: "en" | "ar"): string {
+function fmtDate(iso: string | null, locale: string): string {
   if (!iso) return "—";
-  return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-US", {
+  return new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(iso));
 }
 
 export function ShiftDetailClient({ locale, shiftId }: { locale: "en" | "ar"; shiftId: string }) {
+  const f = useFormat();
   const t = useTranslations("shifts");
   const q = useQuery({
     queryKey: ["shifts", "detail", shiftId],
@@ -64,8 +66,8 @@ export function ShiftDetailClient({ locale, shiftId }: { locale: "en" | "ar"; sh
           <div>
             <h1 className="sh-title">{t("detail.title")}</h1>
             <p className="sh-subtitle">
-              {s.cashier_name ?? "—"} · {s.branch_code} · {fmtDate(s.opened_at, locale)}
-              {s.status === "closed" && <> → {fmtDate(s.closed_at, locale)}</>}
+              {s.cashier_name ?? "—"} · {s.branch_code} · {fmtDate(s.opened_at, f.locale)}
+              {s.status === "closed" && <> → {fmtDate(s.closed_at, f.locale)}</>}
             </p>
           </div>
           <div>
@@ -88,28 +90,28 @@ export function ShiftDetailClient({ locale, shiftId }: { locale: "en" | "ar"; sh
             <div className="sh-zr-label">{t("detail.cashHeader")}</div>
             <div className="sh-zr-row">
               <span>{t("detail.openingFloat")}</span>
-              <strong>{fmtMoney(s.opening_float_cents, s.currency_code, locale)}</strong>
+              <strong>{fmtMoney(s.opening_float_cents, s.currency_code, f.locale)}</strong>
             </div>
             <div className="sh-zr-row">
               <span>{t("detail.cashSales")}</span>
-              <strong>{fmtMoney(z.cash_sales_cents, s.currency_code, locale)}</strong>
+              <strong>{fmtMoney(z.cash_sales_cents, s.currency_code, f.locale)}</strong>
             </div>
             <div className="sh-zr-row">
               <span>{t("detail.cashRefunds")}</span>
-              <strong>− {fmtMoney(z.cash_refunds_cents, s.currency_code, locale)}</strong>
+              <strong>− {fmtMoney(z.cash_refunds_cents, s.currency_code, f.locale)}</strong>
             </div>
             <div className="sh-zr-row">
               <span>{t("detail.expectedCash")}</span>
-              <strong>{fmtMoney(s.expected_closing_cash_cents, s.currency_code, locale)}</strong>
+              <strong>{fmtMoney(s.expected_closing_cash_cents, s.currency_code, f.locale)}</strong>
             </div>
             <div className="sh-zr-row">
               <span>{t("detail.declaredCash")}</span>
-              <strong>{fmtMoney(s.declared_closing_cash_cents, s.currency_code, locale)}</strong>
+              <strong>{fmtMoney(s.declared_closing_cash_cents, s.currency_code, f.locale)}</strong>
             </div>
             <div className="sh-zr-row">
               <span>{t("detail.variance")}</span>
               <strong className={varianceClass}>
-                {fmtMoney(s.variance_cents, s.currency_code, locale)}
+                {fmtMoney(s.variance_cents, s.currency_code, f.locale)}
               </strong>
             </div>
           </div>
@@ -126,7 +128,7 @@ export function ShiftDetailClient({ locale, shiftId }: { locale: "en" | "ar"; sh
                     <span className="sh-zr-label" style={{ alignSelf: "center" }}>
                       ×{p.count}
                     </span>
-                    <strong>{fmtMoney(p.amount_cents, s.currency_code, locale)}</strong>
+                    <strong>{fmtMoney(p.amount_cents, s.currency_code, f.locale)}</strong>
                   </span>
                 </div>
               ))
@@ -148,7 +150,7 @@ export function ShiftDetailClient({ locale, shiftId }: { locale: "en" | "ar"; sh
                     <span className="sh-zr-label" style={{ alignSelf: "center" }}>
                       ×{p.units}
                     </span>
-                    <strong>{fmtMoney(p.revenue_cents, s.currency_code, locale)}</strong>
+                    <strong>{fmtMoney(p.revenue_cents, s.currency_code, f.locale)}</strong>
                   </span>
                 </div>
               ))
@@ -160,7 +162,7 @@ export function ShiftDetailClient({ locale, shiftId }: { locale: "en" | "ar"; sh
           <div className="sh-zr-card">
             <div className="sh-zr-label">{t("detail.summary")}</div>
             <div className="sh-zr-amount" style={{ marginBlockStart: "var(--space-2)" }}>
-              {fmtMoney(z.gross_revenue_cents, s.currency_code, locale)}
+              {fmtMoney(z.gross_revenue_cents, s.currency_code, f.locale)}
             </div>
             <p className="sh-zr-label" style={{ marginBlockStart: "var(--space-1)" }}>
               {t("detail.grossRevenue")}

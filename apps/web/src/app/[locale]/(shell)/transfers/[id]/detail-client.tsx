@@ -13,6 +13,7 @@ import {
   transferDeleteRequest,
   type ApiTransferDetail,
 } from "@/lib/api/stock-transfers";
+import { useFormat } from "@/lib/i18n/format";
 
 function pickName(i18n: { en: string; ar: string } | null, locale: string): string {
   if (!i18n) return "—";
@@ -22,7 +23,7 @@ function pickName(i18n: { en: string; ar: string } | null, locale: string): stri
 function relTime(iso: string | null, locale: string): string {
   if (!iso) return "—";
   const diffMs = Date.now() - new Date(iso).getTime();
-  const fmt = new Intl.RelativeTimeFormat(locale === "ar" ? "ar-EG" : "en-EG", { numeric: "auto" });
+  const fmt = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
   const mins = Math.floor(diffMs / 60_000);
   if (mins < 60) return fmt.format(-mins, "minute");
   const hrs = Math.floor(mins / 60);
@@ -32,6 +33,7 @@ function relTime(iso: string | null, locale: string): string {
 }
 
 export function TransferDetailClient({ locale, id }: { locale: "en" | "ar"; id: string }) {
+  const f = useFormat();
   const t = useTranslations("transfers");
   const tErr = useTranslations("transfers.errors");
   const qc = useQueryClient();
@@ -175,7 +177,7 @@ export function TransferDetailClient({ locale, id }: { locale: "en" | "ar"; id: 
         </div>
       </div>
 
-      {actionError && <div className="xfer-field-error">{actionError}</div>}
+      {actionError && <div className="xfer-field-error" role="alert">{actionError}</div>}
 
       {x.status === "draft" && !canManageDraft && (
         <div className="xfer-status-banner">
@@ -245,24 +247,24 @@ export function TransferDetailClient({ locale, id }: { locale: "en" | "ar"; id: 
         <ul className="xfer-lines">
           <li className="xfer-line-row" style={{ gridTemplateColumns: "1fr auto" }}>
             <span>{t("detail.events.created")}</span>
-            <span className="xfer-meta">{relTime(x.created_at, locale)}</span>
+            <span className="xfer-meta">{relTime(x.created_at, f.locale)}</span>
           </li>
           {x.sent_at && (
             <li className="xfer-line-row" style={{ gridTemplateColumns: "1fr auto" }}>
               <span>{t("detail.events.sent")}</span>
-              <span className="xfer-meta">{relTime(x.sent_at, locale)}</span>
+              <span className="xfer-meta">{relTime(x.sent_at, f.locale)}</span>
             </li>
           )}
           {x.received_at && (
             <li className="xfer-line-row" style={{ gridTemplateColumns: "1fr auto" }}>
               <span>{t("detail.events.received")}</span>
-              <span className="xfer-meta">{relTime(x.received_at, locale)}</span>
+              <span className="xfer-meta">{relTime(x.received_at, f.locale)}</span>
             </li>
           )}
           {x.cancelled_at && (
             <li className="xfer-line-row" style={{ gridTemplateColumns: "1fr auto" }}>
               <span>{t("detail.events.cancelled")}</span>
-              <span className="xfer-meta">{relTime(x.cancelled_at, locale)}</span>
+              <span className="xfer-meta">{relTime(x.cancelled_at, f.locale)}</span>
             </li>
           )}
         </ul>

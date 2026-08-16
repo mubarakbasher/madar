@@ -111,7 +111,7 @@ export function DisableMfaModal({ onClose }: { onClose: (disabled: boolean) => v
               fontFamily: "inherit",
             }}
           />
-          {error && <div className="br-field-error" style={{ marginBlockStart: "var(--space-2)" }}>{error}</div>}
+          {error && <div className="br-field-error" role="alert" style={{ marginBlockStart: "var(--space-2)" }}>{error}</div>}
           <div style={{ display: "flex", justifyContent: "flex-end", gap: "var(--space-2)", marginBlockStart: "var(--space-4)" }}>
             <button
               type="button"

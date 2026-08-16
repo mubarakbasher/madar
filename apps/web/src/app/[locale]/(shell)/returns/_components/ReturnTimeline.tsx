@@ -2,11 +2,12 @@
 
 import { useTranslations } from "next-intl";
 import type { ApiReturnDetail } from "@/lib/api/supplier-returns";
+import { useFormat } from "@/lib/i18n/format";
 
 function fmtDateTime(iso: string | null, locale: string): string {
   if (!iso) return "";
   try {
-    return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-EG", {
+    return new Intl.DateTimeFormat(locale, {
       dateStyle: "medium",
       timeStyle: "short",
     }).format(new Date(iso));
@@ -31,6 +32,7 @@ export function ReturnTimeline({
   rma: ApiReturnDetail;
   locale: "en" | "ar";
 }) {
+  const f = useFormat();
   const t = useTranslations("returns.detail.timeline");
 
   const isCancelled = rma.status === "cancelled";
@@ -108,7 +110,7 @@ export function ReturnTimeline({
               </span>
               {r.when && (
                 <span className="rma-timeline-meta">
-                  {fmtDateTime(r.when, locale)}
+                  {fmtDateTime(r.when, f.locale)}
                 </span>
               )}
             </div>

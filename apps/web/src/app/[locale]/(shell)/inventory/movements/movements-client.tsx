@@ -18,6 +18,8 @@ import {
 } from "@/lib/branch-scope/store";
 import { useAuthStore } from "@/lib/auth/store";
 import { currencyMinorUnits, formatMoney, minorToMajor } from "@/lib/currency";
+import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
+import { useFormat } from "@/lib/i18n/format";
 
 type KindFilter = "all" | StockMovementKind;
 
@@ -32,14 +34,14 @@ const KIND_OPTIONS: KindFilter[] = [
   "waste",
 ];
 
-function fmtDate(iso: string, locale: "en" | "ar"): string {
-  return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-US", {
+function fmtDate(iso: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(iso));
 }
 
-function fmtMoney(cents: string | null, currency: string, locale: "en" | "ar"): string {
+function fmtMoney(cents: string | null, currency: string, locale: string): string {
   if (cents == null) return "—";
   try {
     return formatMoney(cents, currency, locale);
@@ -87,9 +89,10 @@ function referenceHref(
 }
 
 export function MovementsClient({ locale }: { locale: "en" | "ar" }) {
+  const f = useFormat();
   const t = useTranslations("inventory.movements");
   const tenant = useAuthStore((s) => s.tenant);
-  const currency = tenant?.default_currency_code ?? "USD";
+  const currency = useTenantCurrency();
   const selectedBranch = useBranchScopeStore((s) => s.selectedBranchId);
 
   const [kind, setKind] = useState<KindFilter>("all");
@@ -276,7 +279,7 @@ export function MovementsClient({ locale }: { locale: "en" | "ar" }) {
                     aria-selected={selectedId === m.id}
                     onClick={() => setSelectedId(m.id)}
                   >
-                    <td>{fmtDate(m.occurred_at, locale)}</td>
+                    <td>{fmtDate(m.occurred_at, f.locale)}</td>
                     <td>
                       <div className="sm-sku">{m.product_sku}</div>
                       <div>{name}</div>
@@ -364,7 +367,7 @@ export function MovementsClient({ locale }: { locale: "en" | "ar" }) {
             <div className="sm-drawer-head">
               <div>
                 <h2 className="sm-drawer-title">{t("drawer.title")}</h2>
-                <div className="sm-drawer-when">{fmtDate(selected.occurred_at, locale)}</div>
+                <div className="sm-drawer-when">{fmtDate(selected.occurred_at, f.locale)}</div>
               </div>
               <button
                 type="button"
@@ -418,7 +421,7 @@ export function MovementsClient({ locale }: { locale: "en" | "ar" }) {
               <div className="sm-drawer-row">
                 <span className="sm-drawer-key">{t("drawer.cost")}</span>
                 <span className="sm-drawer-value">
-                  {fmtMoney(selected.unit_cost_cents, currency, locale)}
+                  {fmtMoney(selected.unit_cost_cents, currency, f.locale)}
                 </span>
               </div>
               <div className="sm-drawer-row">

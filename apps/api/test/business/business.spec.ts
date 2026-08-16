@@ -63,6 +63,10 @@ describe("Business settings (/v1/tenant) — PAGES §46", () => {
     expect(res.body.timezone).toBe("Africa/Cairo");
     expect(res.body.fiscal_year_start_month).toBe(1);
     expect(res.body.tax_inclusive_default).toBe(false);
+    // Western digits + Gregorian are the documented product defaults
+    // (docs/i18n-guide.md §5.1, §5.2), not a per-tenant accident.
+    expect(res.body.use_arabic_indic_digits).toBe(false);
+    expect(res.body.use_hijri_calendar).toBe(false);
     expect(res.body.legal_name).toBeNull();
     expect(res.body.business_type).toBeNull();
     expect(res.body.plan).toEqual(
@@ -155,5 +159,46 @@ describe("Business settings (/v1/tenant) — PAGES §46", () => {
     // Fields that didn't change shouldn't appear in the diff.
     expect(before).not.toHaveProperty("default_currency_code");
     expect(after).not.toHaveProperty("default_currency_code");
+  });
+
+  // ─── display preferences ────────────────────────────────────────────
+  //
+  // These reach the client through TWO paths — the business snapshot and the
+  // auth tenant DTO — and the tenant app needs both, because it resolves the
+  // formatting locale before the settings page is ever opened. A narrowing
+  // `select` on any of the auth queries would silently return the defaults
+  // and make a saved preference look like it never persisted.
+  it("PATCH /v1/tenant: display prefs persist and reach the auth tenant DTO", async () => {
+    const patch = await request(booted.http)
+      .patch("/v1/tenant")
+      .set("Authorization", `Bearer ${ownerToken}`)
+      .send({ use_arabic_indic_digits: true, use_hijri_calendar: true });
+    expect(patch.status).toBe(200);
+    expect(patch.body.use_arabic_indic_digits).toBe(true);
+    expect(patch.body.use_hijri_calendar).toBe(true);
+
+    const row = await adminPrisma.tenant.findUnique({ where: { id: fix.tenantId } });
+    expect(row?.use_arabic_indic_digits).toBe(true);
+    expect(row?.use_hijri_calendar).toBe(true);
+
+    const me = await request(booted.http)
+      .get("/v1/auth/me")
+      .set("Authorization", `Bearer ${ownerToken}`);
+    expect(me.status).toBe(200);
+    expect(me.body.tenant.use_arabic_indic_digits).toBe(true);
+    expect(me.body.tenant.use_hijri_calendar).toBe(true);
+
+    const audit = await readAuditLog(fix.tenantId, "tenant_updated");
+    const after = audit[0]!.after as Record<string, unknown>;
+    expect(after.use_arabic_indic_digits).toBe(true);
+    expect(after.use_hijri_calendar).toBe(true);
+  });
+
+  it("PATCH /v1/tenant: rejects a non-boolean display pref", async () => {
+    const res = await request(booted.http)
+      .patch("/v1/tenant")
+      .set("Authorization", `Bearer ${ownerToken}`)
+      .send({ use_arabic_indic_digits: "yes" });
+    expect(res.status).toBe(400);
   });
 });

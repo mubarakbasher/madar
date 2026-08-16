@@ -12,6 +12,7 @@ import {
   type UpdateBranchBody,
 } from "@/lib/api/branches";
 import { useAuthStore } from "@/lib/auth/store";
+import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
 
 const COMMON_TIMEZONES = [
   "Africa/Cairo",
@@ -52,9 +53,13 @@ export function BranchForm({
   const [nameAr, setNameAr] = useState(initial?.name_i18n.ar ?? "");
   const [addressEn, setAddressEn] = useState(initial?.address_i18n?.en ?? "");
   const [addressAr, setAddressAr] = useState(initial?.address_i18n?.ar ?? "");
-  const [currencyCode, setCurrencyCode] = useState(
-    initial?.currency_code ?? useAuthStore.getState().tenant?.default_currency_code ?? "USD",
-  );
+  // Derived rather than seeded: `getState()` inside a render is a one-shot
+  // read, and `tenant` is null for the whole first render — so a new branch
+  // defaulted to the fallback currency no matter what the tenant uses.
+  const tenantCurrency = useTenantCurrency();
+  const [currencyOverride, setCurrencyOverride] = useState<string | null>(null);
+  const currencyCode = currencyOverride ?? initial?.currency_code ?? tenantCurrency;
+  const setCurrencyCode = setCurrencyOverride;
   const [timezone, setTimezone] = useState(initial?.timezone ?? "Africa/Cairo");
   const [openedAt, setOpenedAt] = useState(initial?.opened_at ?? "");
   const [isActive, setIsActive] = useState(initial?.is_active ?? true);
@@ -175,7 +180,7 @@ export function BranchForm({
         <h1 className="br-title">{isEdit ? t("titleEdit") : t("titleCreate")}</h1>
       </header>
 
-      {errors.general && <div className="br-field-error">{errors.general}</div>}
+      {errors.general && <div className="br-field-error" role="alert">{errors.general}</div>}
 
       <form onSubmit={onSubmit}>
         <section className="br-form-section">
@@ -192,7 +197,7 @@ export function BranchForm({
               required
             />
             <span className="br-field-hint">{t("fields.codeHint")}</span>
-            {errors.code && <span className="br-field-error">{errors.code}</span>}
+            {errors.code && <span className="br-field-error" role="alert">{errors.code}</span>}
           </label>
 
           {!bilingual && (
@@ -212,7 +217,7 @@ export function BranchForm({
                   required
                 />
                 {(errors.name_en ?? errors.name_ar) && (
-                  <span className="br-field-error">{errors.name_en ?? errors.name_ar}</span>
+                  <span className="br-field-error" role="alert">{errors.name_en ?? errors.name_ar}</span>
                 )}
               </label>
               <label className="br-field">
@@ -253,7 +258,7 @@ export function BranchForm({
                   maxLength={120}
                   required
                 />
-                {errors.name_en && <span className="br-field-error">{errors.name_en}</span>}
+                {errors.name_en && <span className="br-field-error" role="alert">{errors.name_en}</span>}
               </label>
               <label className="br-field">
                 <span className="br-field-label">{t("fields.addressEn")}</span>
@@ -275,7 +280,7 @@ export function BranchForm({
                   maxLength={120}
                   required
                 />
-                {errors.name_ar && <span className="br-field-error">{errors.name_ar}</span>}
+                {errors.name_ar && <span className="br-field-error" role="alert">{errors.name_ar}</span>}
               </label>
               <label className="br-field" dir="rtl">
                 <span className="br-field-label">{t("fields.addressAr")}</span>

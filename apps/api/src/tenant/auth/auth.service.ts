@@ -70,6 +70,8 @@ interface TenantDto {
   trial_ends_at: string | null;
   default_tax_class_id: string | null;
   tax_inclusive_default: boolean;
+  use_arabic_indic_digits: boolean;
+  use_hijri_calendar: boolean;
   plan: { code: string; name_i18n: unknown } | null;
 }
 
@@ -906,6 +908,12 @@ export class AuthService {
       country_code: string;
       status: string;
       trial_ends_at: Date | null;
+      // Declared so a narrowing `select` on any caller's tenant query becomes
+      // a compile error. Without them the display preferences would silently
+      // resolve to the defaults on login and the tenant's saved choice would
+      // appear not to stick.
+      use_arabic_indic_digits: boolean;
+      use_hijri_calendar: boolean;
     },
     plan: { code: string; name_i18n: unknown } | null,
     tokens: Awaited<ReturnType<TokenService["mintPair"]>>,
@@ -1160,6 +1168,8 @@ export class AuthService {
       trial_ends_at: Date | null;
       default_tax_class_id?: string | null;
       tax_inclusive_default?: boolean | null;
+      use_arabic_indic_digits?: boolean | null;
+      use_hijri_calendar?: boolean | null;
     },
     plan: { code: string; name_i18n: unknown } | null,
   ): TenantDto {
@@ -1174,6 +1184,12 @@ export class AuthService {
       trial_ends_at: t.trial_ends_at?.toISOString() ?? null,
       default_tax_class_id: t.default_tax_class_id ?? null,
       tax_inclusive_default: Boolean(t.tax_inclusive_default),
+      // Optional on the input so a narrowing `select` can't break the DTO; a
+      // missing column reads as the product default (Western / Gregorian)
+      // rather than throwing. Every caller's select is expected to include
+      // them — see the query audit in the accompanying commit.
+      use_arabic_indic_digits: Boolean(t.use_arabic_indic_digits),
+      use_hijri_calendar: Boolean(t.use_hijri_calendar),
       plan: plan ? { code: plan.code, name_i18n: plan.name_i18n } : null,
     };
   }

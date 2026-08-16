@@ -4,10 +4,11 @@ import { useTranslations } from "next-intl";
 import { Activity, Receipt } from "lucide-react";
 import type { ApiSupplierActivity, ApiSupplierDetail } from "@/lib/api/suppliers";
 import { formatCurrency, formatMoney } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 function formatRelative(iso: string, locale: string): string {
   const diffMs = Date.now() - new Date(iso).getTime();
-  const rtf = new Intl.RelativeTimeFormat(locale === "ar" ? "ar-EG" : "en-EG", { numeric: "auto" });
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
   const minutes = Math.floor(diffMs / 60_000);
   if (minutes < 60) return rtf.format(-Math.max(1, minutes), "minute");
   const hours = Math.floor(minutes / 60);
@@ -62,8 +63,9 @@ function ActivityRow({
   locale: "en" | "ar";
   supplierCurrency: string;
 }) {
+  const f = useFormat();
   const t = useTranslations("suppliers.activity");
-  const when = formatRelative(row.occurred_at, locale);
+  const when = formatRelative(row.occurred_at, f.locale);
 
   if (row.kind === "po") {
     const total = row.total_cents ? Number(row.total_cents) : null;
@@ -85,7 +87,7 @@ function ActivityRow({
         </div>
         {total !== null && (
           <div className="sup-activity-amount">
-            {formatMoney(total, supplierCurrency, locale)}
+            {formatMoney(total, supplierCurrency, f.locale)}
           </div>
         )}
       </li>

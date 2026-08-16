@@ -14,6 +14,7 @@ import {
   type PnlQueryOpts,
 } from "@/lib/api/reports/pnl";
 import { formatMoney as formatMoneyShared, minorToMajor } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 import {
   localDaysAgo,
   localIsoDate,
@@ -60,16 +61,33 @@ function formatMoney(cents: string, currency: string, locale: string): string {
 
 export function PnlClient({ locale }: { locale: string }): JSX.Element {
   const t = useTranslations("reports.pnl");
+  const f = useFormat();
+  // The API used to send this as English prose ("Custom range", "August 2026")
+  // and it was rendered verbatim in the statement header. It now sends a
+  // descriptor so the period follows the tenant's language and calendar.
+  const periodLabel = (p: ApiPnlReport["period"]): string => {
+    if (p.kind === "day") return f.date(p.date, "long");
+    if (p.kind === "month") return f.monthYear(new Date(Date.UTC(p.year, p.month - 1, 1)));
+    return t("period.custom", { from: f.date(p.from), to: f.date(p.to) });
+  };
   const role = useAuthStore((s) => s.user?.role ?? "");
   const tenant = useAuthStore((s) => s.tenant);
   const accessToken = useAuthStore((s) => s.accessToken);
   const canRead = READER_ROLES.has(role);
 
-  const tenantCurrency = tenant?.default_currency_code ?? "USD";
+  const bootstrapped = useAuthStore((s) => s.bootstrapped);
 
   const [preset, setPreset] = useState<Preset>("thisMonth");
   const [range, setRange] = useState<DateRange>(() => rangeForPreset("thisMonth"));
-  const [currency, setCurrency] = useState<string>(tenantCurrency);
+  // Derived, not seeded. `useState(tenant?.x ?? "USD")` reads its initialiser
+  // only on the first render — and `tenant` is null for the whole of that
+  // render — so an EGP tenant froze on USD permanently, priced its P&L in
+  // dollars, and got a zero statement because the currency filter excluded
+  // every real sale. `null` here means "not chosen by the user yet", so the
+  // tenant value flows in when it arrives and a manual edit still wins.
+  const [currencyOverride, setCurrencyOverride] = useState<string | null>(null);
+  const currency = currencyOverride ?? tenant?.default_currency_code ?? "";
+  const setCurrency = setCurrencyOverride;
   const [branchId, setBranchId] = useState<string>("");
   const [categoryId, setCategoryId] = useState<string>("");
   const [groupBy, setGroupBy] = useState<GroupBy>("period");
@@ -104,7 +122,7 @@ export function PnlClient({ locale }: { locale: string }): JSX.Element {
   const reportQ = useQuery<ApiPnlReport>({
     queryKey: ["reports", "pnl", queryOpts],
     queryFn: () => pnlReportRequest(queryOpts),
-    enabled: canRead && currency.length === 3,
+    enabled: canRead && bootstrapped && currency.length === 3,
     staleTime: 30_000,
   });
 
@@ -293,26 +311,26 @@ export function PnlClient({ locale }: { locale: string }): JSX.Element {
         <>
           <article className="pnl-statement" aria-label={t("title")}>
             <span className="pnl-statement-kicker">{report.currency}</span>
-            <h2 className="pnl-statement-period">{report.period_label}</h2>
+            <h2 className="pnl-statement-period">{periodLabel(report.period)}</h2>
 
             <span className="pnl-row-label">{t("statement.revenue")}</span>
             <span className="pnl-row-value">
-              {formatMoney(report.revenue_cents, report.currency, locale)}
+              {formatMoney(report.revenue_cents, report.currency, f.locale)}
             </span>
 
             <span className="pnl-row-label">{t("statement.discount")}</span>
             <span className="pnl-row-value">
-              −{formatMoney(report.discount_cents, report.currency, locale)}
+              −{formatMoney(report.discount_cents, report.currency, f.locale)}
             </span>
 
             <span className="pnl-row-label">{t("statement.tax")}</span>
             <span className="pnl-row-value">
-              −{formatMoney(report.tax_cents, report.currency, locale)}
+              −{formatMoney(report.tax_cents, report.currency, f.locale)}
             </span>
 
             <span className="pnl-row-label">{t("statement.cogs")}</span>
             <span className="pnl-row-value">
-              −{formatMoney(report.cogs_cents, report.currency, locale)}
+              −{formatMoney(report.cogs_cents, report.currency, f.locale)}
             </span>
 
             <div className="pnl-row-rule" />
@@ -321,7 +339,7 @@ export function PnlClient({ locale }: { locale: string }): JSX.Element {
               <span className="pnl-row-label">{t("statement.grossProfit")}</span>
             </span>
             <span className="pnl-row-value pnl-row-total">
-              {formatMoney(report.gross_profit_cents, report.currency, locale)}
+              {formatMoney(report.gross_profit_cents, report.currency, f.locale)}
               <span
                 style={{
                   display: "inline-block",
@@ -337,7 +355,7 @@ export function PnlClient({ locale }: { locale: string }): JSX.Element {
 
             <span className="pnl-row-label">{t("statement.refunds")}</span>
             <span className="pnl-row-value">
-              −{formatMoney(report.refunds_cents, report.currency, locale)}
+              −{formatMoney(report.refunds_cents, report.currency, f.locale)}
             </span>
 
             <div className="pnl-row-rule" />
@@ -345,7 +363,7 @@ export function PnlClient({ locale }: { locale: string }): JSX.Element {
             <div className="pnl-row-net" style={{ display: "contents" }}>
               <span className="pnl-row-label">{t("statement.netRevenue")}</span>
               <span className="pnl-row-value">
-                {formatMoney(report.net_revenue_cents, report.currency, locale)}
+                {formatMoney(report.net_revenue_cents, report.currency, f.locale)}
               </span>
             </div>
 
@@ -405,9 +423,9 @@ export function PnlClient({ locale }: { locale: string }): JSX.Element {
                   {report.breakdown.map((row) => (
                     <tr key={row.key}>
                       <td>{labelForRow(row)}</td>
-                      <td>{formatMoney(row.revenue_cents, report.currency, locale)}</td>
-                      <td>{formatMoney(row.cogs_cents, report.currency, locale)}</td>
-                      <td>{formatMoney(row.gross_profit_cents, report.currency, locale)}</td>
+                      <td>{formatMoney(row.revenue_cents, report.currency, f.locale)}</td>
+                      <td>{formatMoney(row.cogs_cents, report.currency, f.locale)}</td>
+                      <td>{formatMoney(row.gross_profit_cents, report.currency, f.locale)}</td>
                       <td>{row.transactions}</td>
                     </tr>
                   ))}

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Printer, X } from "lucide-react";
+import { useFormat } from "@/lib/i18n/format";
 
 interface PrintRow {
   sku: string;
@@ -27,6 +28,7 @@ export function PrintLabelsSheet({
   currency: string;
   onClose: () => void;
 }) {
+  const f = useFormat();
   const t = useTranslations("inventory.bulk.printLabels");
 
   useEffect(() => {
@@ -73,7 +75,7 @@ export function PrintLabelsSheet({
         }}
       >
         <h2 style={{ margin: 0, fontFamily: "var(--serif)", fontSize: 18 }}>
-          {t("title", { count: rows.length })}
+          {t("title", { count: rows.length, count_n: f.number(rows.length) })}
         </h2>
         <div style={{ display: "flex", gap: "var(--space-2)" }}>
           <button

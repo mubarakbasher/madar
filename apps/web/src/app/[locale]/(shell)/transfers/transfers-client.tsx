@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Plus } from "lucide-react";
 import { transfersListRequest, type TransferStatus, type ApiTransferSummary } from "@/lib/api/stock-transfers";
 import { useAuthStore } from "@/lib/auth/store";
+import { useFormat } from "@/lib/i18n/format";
 import "./transfers.css";
 
 const STATUSES: { id: TransferStatus | "all"; key: "tabs.all" | "tabs.draft" | "tabs.in_transit" | "tabs.received" | "tabs.cancelled" }[] = [
@@ -23,7 +24,7 @@ function pickName(i18n: { en: string; ar: string } | null, locale: string): stri
 
 function relTime(iso: string, locale: string): string {
   const diffMs = Date.now() - new Date(iso).getTime();
-  const fmt = new Intl.RelativeTimeFormat(locale === "ar" ? "ar-EG" : "en-EG", { numeric: "auto" });
+  const fmt = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
   const mins = Math.floor(diffMs / 60_000);
   if (mins < 60) return fmt.format(-mins, "minute");
   const hrs = Math.floor(mins / 60);
@@ -33,6 +34,7 @@ function relTime(iso: string, locale: string): string {
 }
 
 export function TransfersClient({ locale }: { locale: "en" | "ar" }) {
+  const f = useFormat();
   const t = useTranslations("transfers");
   const role = useAuthStore((s) => s.user?.role ?? "");
   const canCreate = role === "owner" || role === "manager";
@@ -122,7 +124,7 @@ export function TransfersClient({ locale }: { locale: "en" | "ar" }) {
                 <td>
                   <span className={`xfer-pill xfer-pill-${r.status}`}>{t(`status.${r.status}`)}</span>
                 </td>
-                <td className="xfer-meta">{relTime(r.created_at, locale)}</td>
+                <td className="xfer-meta">{relTime(r.created_at, f.locale)}</td>
               </tr>
             ))}
           </tbody>

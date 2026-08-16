@@ -6,6 +6,7 @@ import { ExternalLink, MapPin, Package, TrendingUp } from "lucide-react";
 import type { ApiBranchSummary } from "@/lib/api/branches";
 import { formatCurrency, minorToMajor } from "@/lib/currency";
 import type { LngLatLike, Map as MapInstance, Marker } from "maplibre-gl";
+import { useFormat } from "@/lib/i18n/format";
 
 /**
  * Map view of all geocoded branches. Uses MapLibre GL + OpenFreeMap's
@@ -19,6 +20,7 @@ export function BranchMapView({
   branches: ApiBranchSummary[];
   locale: "en" | "ar";
 }) {
+  const f = useFormat();
   const t = useTranslations("branches.detail.map");
   const tBr = useTranslations("branches");
   const mapEl = useRef<HTMLDivElement>(null);
@@ -181,7 +183,7 @@ export function BranchMapView({
                 {formatCurrency(
                   minorToMajor(selected.today_revenue_cents, selected.currency_code),
                   selected.currency_code,
-                  locale,
+                  f.locale,
                 )}
               </dd>
             </div>

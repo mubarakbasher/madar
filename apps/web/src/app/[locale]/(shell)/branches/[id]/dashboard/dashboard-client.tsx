@@ -7,8 +7,10 @@ import { branchDashboardRequest, type ApiBranchDashboard } from "@/lib/api/branc
 import { formatCurrency, formatNumber, minorToMajor } from "@/lib/currency";
 import { HourlyChart } from "../../_components/HourlyChart";
 import { CategoriesDonut } from "../../_components/CategoriesDonut";
+import { useFormat } from "@/lib/i18n/format";
 
 export function DashboardClient({ locale, id }: { locale: "en" | "ar"; id: string }) {
+  const f = useFormat();
   const t = useTranslations("branches.detail.performance");
   const tBr = useTranslations("branches");
   const tChart = useTranslations("branches.detail.performance.charts");
@@ -65,7 +67,7 @@ export function DashboardClient({ locale, id }: { locale: "en" | "ar"; id: strin
           className="br-title"
           style={{ fontSize: "clamp(48px, 8vw, 72px)", textAlign: "center", lineHeight: 1.05 }}
         >
-          {formatCurrency(todayMajor, d.currency_code, locale)}
+          {formatCurrency(todayMajor, d.currency_code, f.locale)}
         </div>
         {d.vs_yesterday_pct !== null && (
           <div
@@ -91,21 +93,21 @@ export function DashboardClient({ locale, id }: { locale: "en" | "ar"; id: strin
       <div className="br-kpi-row">
         <div className="br-kpi">
           <div className="br-kpi-label">{t("cards.transactions")}</div>
-          <div className="br-kpi-value">{formatNumber(d.transactions_today, locale)}</div>
+          <div className="br-kpi-value">{formatNumber(d.transactions_today, f.locale)}</div>
         </div>
         <div className="br-kpi">
           <div className="br-kpi-label">{t("cards.avgBasket")}</div>
           <div className="br-kpi-value">
-            {formatCurrency(avgBasketMajor, d.currency_code, locale)}
+            {formatCurrency(avgBasketMajor, d.currency_code, f.locale)}
           </div>
         </div>
         <div className="br-kpi">
           <div className="br-kpi-label">{t("cards.itemsSold")}</div>
-          <div className="br-kpi-value">{formatNumber(d.items_sold_today, locale)}</div>
+          <div className="br-kpi-value">{formatNumber(d.items_sold_today, f.locale)}</div>
         </div>
         <div className="br-kpi">
           <div className="br-kpi-label">{t("cards.returns")}</div>
-          <div className="br-kpi-value">{formatNumber(d.returns_today, locale)}</div>
+          <div className="br-kpi-value">{formatNumber(d.returns_today, f.locale)}</div>
         </div>
       </div>
 
@@ -152,7 +154,7 @@ export function DashboardClient({ locale, id }: { locale: "en" | "ar"; id: strin
                     {isMe ? ` · ${t("leaderboard.thisBranch")}` : ""}
                   </span>
                   <span className="br-list-meta">
-                    {formatCurrency(minorToMajor(row.today_cents, d.currency_code), d.currency_code, locale)}
+                    {formatCurrency(minorToMajor(row.today_cents, d.currency_code), d.currency_code, f.locale)}
                   </span>
                 </li>
               );

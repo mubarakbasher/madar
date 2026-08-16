@@ -11,11 +11,12 @@ import { useAuthStore } from "../../../../lib/auth/store";
 import type { ApiPlan } from "../../../../lib/api/billing";
 import { publicPlansRequest, selectPlanRequest } from "../../../../lib/api/onboarding";
 import { currencyMinorUnits, minorToMajor } from "../../../../lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 function formatPrice(cents: string, currency: string, locale: string): string {
   const code = currency || "EGP";
   const major = minorToMajor(cents, code);
-  return new Intl.NumberFormat(locale === "ar" ? "ar" : "en-US", {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: code,
     // Whole prices stay compact ("$29"); fractional ones use the currency's
@@ -28,13 +29,14 @@ function pickName(name_i18n: { en: string; ar: string }, locale: string): string
   return locale === "ar" ? name_i18n.ar || name_i18n.en : name_i18n.en || name_i18n.ar;
 }
 
-function formatLimit(n: unknown, unlimitedLabel: string): string {
+function formatLimit(n: unknown, unlimitedLabel: string, locale: string): string {
   if (typeof n !== "number") return "—";
   if (n === -1) return unlimitedLabel;
-  return new Intl.NumberFormat("en-US").format(n);
+  return new Intl.NumberFormat(locale).format(n);
 }
 
 export function SelectPlanClient() {
+  const f = useFormat();
   const t = useTranslations("onboarding.selectPlan");
   const locale = useLocale();
   const router = useRouter();
@@ -224,6 +226,7 @@ function PlanCard({
   disabled: boolean;
   onPick: () => void;
 }) {
+  const f = useFormat();
   const limits = plan.limits as Partial<Record<"txns" | "users" | "branches" | "storage_gb", number>>;
 
   return (
@@ -263,19 +266,19 @@ function PlanCard({
       <ul className="flex flex-col gap-2" style={{ fontSize: 13, color: "var(--ink-2)" }}>
         <LimitRow
           icon
-          label={`${formatLimit(limits.txns, unlimitedLabel)} ${limitsLabels.txns}`}
+          label={`${formatLimit(limits.txns, unlimitedLabel, f.locale)} ${limitsLabels.txns}`}
         />
         <LimitRow
           icon
-          label={`${formatLimit(limits.users, unlimitedLabel)} ${limitsLabels.users}`}
+          label={`${formatLimit(limits.users, unlimitedLabel, f.locale)} ${limitsLabels.users}`}
         />
         <LimitRow
           icon
-          label={`${formatLimit(limits.branches, unlimitedLabel)} ${limitsLabels.branches}`}
+          label={`${formatLimit(limits.branches, unlimitedLabel, f.locale)} ${limitsLabels.branches}`}
         />
         <LimitRow
           icon
-          label={`${formatLimit(limits.storage_gb, unlimitedLabel)} ${limitsLabels.storage}`}
+          label={`${formatLimit(limits.storage_gb, unlimitedLabel, f.locale)} ${limitsLabels.storage}`}
         />
       </ul>
 

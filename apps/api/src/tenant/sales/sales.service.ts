@@ -824,7 +824,10 @@ export class SalesService {
         ? []
         : scoped.branch.findMany({
             where: { id: { in: branchIds } },
-            select: { id: true, code: true },
+            // name_i18n was never selected, so the client could only render
+            // the lowercase code ("zamalek") — the one raw value in an
+            // otherwise fully localised row.
+            select: { id: true, code: true, name_i18n: true },
           }),
       cashierIds.length === 0
         ? []
@@ -840,7 +843,7 @@ export class SalesService {
             _count: { _all: true },
           }),
     ]);
-    const branchById = new Map(branches.map((b) => [b.id, b.code]));
+    const branchById = new Map(branches.map((b) => [b.id, b]));
     const cashierById = new Map(cashiers.map((u) => [u.id, u.name]));
     const lineCountBySale = new Map(
       lineCounts.map((r) => [r.sale_id, r._count._all]),
@@ -851,7 +854,8 @@ export class SalesService {
         id: r.id,
         code: r.code,
         branch_id: r.branch_id,
-        branch_code: branchById.get(r.branch_id) ?? "",
+        branch_code: branchById.get(r.branch_id)?.code ?? "",
+        branch_name_i18n: pickI18n(branchById.get(r.branch_id)),
         cashier_id: r.cashier_id,
         cashier_name: cashierById.get(r.cashier_id) ?? null,
         customer_id: r.customer_id,
@@ -1180,6 +1184,7 @@ export interface SaleSummary {
   code: string;
   branch_id: string;
   branch_code: string;
+  branch_name_i18n: { en: string; ar: string } | null;
   cashier_id: string;
   cashier_name: string | null;
   customer_id: string | null;
@@ -1227,4 +1232,15 @@ export interface SaleResponse {
   offline_completed: boolean;
   lines: SaleLineResponse[];
   payments: SalePaymentResponse[];
+}
+
+/** Shape a branch row's translatable name for the wire, mirroring
+ *  reconcile.service.ts. Null when the branch is missing rather than
+ *  inventing a label. */
+function pickI18n(
+  branch: { code: string; name_i18n: unknown } | undefined,
+): { en: string; ar: string } | null {
+  if (!branch) return null;
+  const n = (branch.name_i18n ?? {}) as { en?: string; ar?: string };
+  return { en: n.en ?? branch.code, ar: n.ar ?? n.en ?? branch.code };
 }

@@ -10,6 +10,7 @@ import {
   type ApiReorderLine,
   type ApiReorderSuggestions,
 } from "@/lib/api/reorder";
+import { useFormat } from "@/lib/i18n/format";
 
 const HORIZON_DAYS = 7;
 const MAX_ITEMS = 3;
@@ -45,6 +46,7 @@ export function AiReorderNudge({
   canReorder: boolean;
   locale: "en" | "ar";
 }) {
+  const f = useFormat();
   const t = useTranslations("inventory.ai");
   const [showWhy, setShowWhy] = useState(false);
 
@@ -83,7 +85,7 @@ export function AiReorderNudge({
       <div className="inv-ai-inner">
         <Sparkles size={16} strokeWidth={1.5} style={{ color: "var(--accent)", flexShrink: 0 }} />
         <p className="inv-ai-text">
-          <strong>{t("summaryLead", { count: data.at_risk_count, days: data.horizon_days })}</strong>{" "}
+          <strong>{t("summaryLead", { count: data.at_risk_count, count_n: f.number(data.at_risk_count), days: data.horizon_days })}</strong>{" "}
           {suggest}
           {showWhy && <span className="inv-ai-why"> {t("whyExplain")}</span>}
         </p>

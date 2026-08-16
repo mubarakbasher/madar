@@ -7,6 +7,7 @@ import { Link } from "../../../../../../i18n/routing";
 import { formatCurrency, formatNumber } from "@/lib/currency";
 import { ImportCsvModal } from "./ImportCsvModal";
 import { useAuthStore } from "@/lib/auth/store";
+import { useFormat } from "@/lib/i18n/format";
 
 export function InventoryHeader({
   skuCount,
@@ -23,6 +24,7 @@ export function InventoryHeader({
   branchId: string | null;
   canReorder: boolean;
 }) {
+  const f = useFormat();
   const t = useTranslations("inventory");
   const currencyCode = useAuthStore((s) => s.tenant?.default_currency_code ?? "EGP");
   const showReorder = canReorder && lowCount > 0 && !!branchId;
@@ -35,17 +37,17 @@ export function InventoryHeader({
         <h1 className="inv-head-title">{t("title")}</h1>
         <p className="inv-head-sub">
           <span>
-            <strong className="tnum">{formatNumber(skuCount, locale)}</strong>{" "}
+            <strong className="tnum">{formatNumber(skuCount, f.locale)}</strong>{" "}
             {t("summary.skus")}
           </span>
           <span>·</span>
           <span>
-            <strong className="tnum">{formatCurrency(onHandValue, currencyCode, locale)}</strong>{" "}
+            <strong className="tnum">{formatCurrency(onHandValue, currencyCode, f.locale)}</strong>{" "}
             {t("summary.onHand")}
           </span>
           <span>·</span>
           <span>
-            <strong className="tnum">{formatNumber(lowCount, locale)}</strong>{" "}
+            <strong className="tnum">{formatNumber(lowCount, f.locale)}</strong>{" "}
             {t("summary.lowStock")}
           </span>
         </p>

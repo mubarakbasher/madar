@@ -12,11 +12,7 @@ import { RegenerateRecoveryCodesModal } from "../_components/RegenerateRecoveryC
 async function refreshMe(): Promise<void> {
   try {
     const me = await meRequest();
-    useAuthStore.setState((s) => ({
-      ...s,
-      user: me.user,
-      tenant: me.tenant,
-    }));
+    useAuthStore.getState().setSession({ user: me.user, tenant: me.tenant });
   } catch {
     /* ignore */
   }

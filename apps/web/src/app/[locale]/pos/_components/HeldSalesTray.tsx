@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { ArrowRight, X } from "lucide-react";
 import type { ApiHeldSaleSummary } from "@/lib/api/held-sales";
 import { minorToMajor } from "@/lib/currency";
+import { useFormat, type Formatter } from "@/lib/i18n/format";
 
 export type HeldTicket = ApiHeldSaleSummary;
 
@@ -20,6 +21,7 @@ export function HeldSalesTray({
   onResume: (t: HeldTicket) => void;
   onDelete: (t: HeldTicket) => void;
 }) {
+  const f = useFormat();
   const t = useTranslations("pos.held");
   const tCommon = useTranslations("common");
 
@@ -29,7 +31,7 @@ export function HeldSalesTray({
         <header className="pos-modal-head">
           <div>
             <span className="kicker">{t("kicker")}</span>
-            <h3 className="serif">{t("title", { count: held.length })}</h3>
+            <h3 className="serif">{t("title", { count: held.length, count_n: f.number(held.length) })}</h3>
           </div>
           <button type="button" className="pos-icon-btn" onClick={onClose} aria-label={tCommon("close")}>
             <X size={14} strokeWidth={1.5} />
@@ -50,7 +52,7 @@ export function HeldSalesTray({
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 14, fontWeight: 500 }}>{h.name}</div>
                     <div style={{ fontSize: 11.5, color: "var(--ink-3)" }}>
-                      {t("items", { count: h.line_count })} · {formatAgo(h.held_at, t)} · {who}
+                      {t("items", { count: h.line_count, count_n: f.number(h.line_count) })} · {formatAgo(h.held_at, t, f)} · {who}
                     </div>
                   </div>
                   <div
@@ -86,12 +88,16 @@ export function HeldSalesTray({
   );
 }
 
-function formatAgo(iso: string, t: (key: string, vals?: Record<string, number>) => string): string {
+function formatAgo(
+  iso: string,
+  t: (key: string, vals?: Record<string, number | string>) => string,
+  f: Formatter,
+): string {
   const now = Date.now();
   const then = new Date(iso).getTime();
   const diffMin = Math.max(0, Math.floor((now - then) / 60_000));
   if (diffMin < 1) return t("justNow");
   if (diffMin < 60) return t("minutesAgo", { minutes: diffMin });
   const diffH = Math.floor(diffMin / 60);
-  return t("hoursAgo", { hours: diffH });
+  return t("hoursAgo", { hours: diffH, hours_n: f.number(diffH) });
 }

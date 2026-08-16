@@ -10,6 +10,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { currencySymbol, formatNumber, minorToMajor } from "@/lib/currency";
+import { useFormat, type Formatter } from "@/lib/i18n/format";
 import type {
   ApiOwnerDashboardRecentTx,
 } from "@/lib/api/dashboard";
@@ -48,22 +49,10 @@ const STATUS_CLASS: Record<
 // Render an ISO timestamp as "Xm ago" / "Xh ago" via Intl.RelativeTimeFormat
 // (locale-aware: "منذ ١٢ دقيقة" in Arabic). Falls back to the date string on
 // invalid input.
-function formatAgo(iso: string, locale: string): string {
+function formatAgo(iso: string, f: Formatter): string {
   const ts = Date.parse(iso);
   if (!Number.isFinite(ts)) return iso;
-  const diffMs = Date.now() - ts;
-  const rtf = new Intl.RelativeTimeFormat(
-    locale === "ar" ? "ar-EG" : "en-EG",
-    { numeric: "auto" },
-  );
-  const sec = Math.round(diffMs / 1000);
-  if (sec < 60) return rtf.format(-sec, "second");
-  const min = Math.round(sec / 60);
-  if (min < 60) return rtf.format(-min, "minute");
-  const hr = Math.round(min / 60);
-  if (hr < 24) return rtf.format(-hr, "hour");
-  const day = Math.round(hr / 24);
-  return rtf.format(-day, "day");
+  return f.relative(ts);
 }
 
 interface RecentTxCardProps {
@@ -80,7 +69,8 @@ export function RecentTxCard({
   const t = useTranslations("dashboard.recent");
   const tMethod = useTranslations("dashboard.recent.method");
   const tStatus = useTranslations("dashboard.recent.status");
-  const cur = currencySymbol(currency_code, locale);
+  const f = useFormat();
+  const cur = f.currencySymbol(currency_code);
 
   if (recent_transactions.length === 0) {
     return (
@@ -130,17 +120,19 @@ export function RecentTxCard({
               <div style={{ minWidth: 0 }}>
                 <div className="dash-tx-id">{tx.code}</div>
                 <div className="dash-tx-meta">
-                  {tx.branch_code}
+                  {tx.branch_name_i18n?.[locale as "en" | "ar"] ||
+                    tx.branch_name_i18n?.en ||
+                    tx.branch_code}
                   {tx.cashier_name ? ` · ${tx.cashier_name}` : ""}
                   {" · "}
-                  {t("items", { count: tx.items })}
+                  {t("items", { count: tx.items, count_n: f.number(tx.items) })}
                 </div>
               </div>
               <span className={STATUS_CLASS[tx.payment_status]}>
                 {tStatus(tx.payment_status)}
               </span>
               <span style={{ fontSize: 11, color: "var(--ink-3)" }}>
-                {formatAgo(tx.occurred_at, locale)}
+                {formatAgo(tx.occurred_at, f)}
               </span>
               <span className="dash-tx-total">
                 <span
@@ -152,7 +144,7 @@ export function RecentTxCard({
                 >
                   {cur}
                 </span>
-                {formatNumber(total, locale)}
+                {f.number(total)}
               </span>
             </div>
           );

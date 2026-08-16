@@ -6,21 +6,22 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "../../../../../i18n/routing";
 import { shiftsListRequest, type ApiCashierShift } from "@/lib/api/shifts";
 import { formatMoney } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 type Tab = "open" | "closed" | "all";
 
 function fmtCurrencyMinor(
   amountMinor: string | null | undefined,
   currency: string,
-  locale: "en" | "ar",
+  locale: string,
 ): string {
   if (amountMinor == null) return "—";
   return formatMoney(amountMinor, currency, locale);
 }
 
-function fmtDate(iso: string | null, locale: "en" | "ar"): string {
+function fmtDate(iso: string | null, locale: string): string {
   if (!iso) return "—";
-  return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-US", {
+  return new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(iso));
@@ -99,6 +100,7 @@ export function ShiftsListClient({ locale }: { locale: "en" | "ar" }) {
 }
 
 function Row({ s, locale }: { s: ApiCashierShift; locale: "en" | "ar" }) {
+  const f = useFormat();
   const t = useTranslations("shifts");
   const varianceClass =
     s.variance_cents == null
@@ -116,10 +118,10 @@ function Row({ s, locale }: { s: ApiCashierShift; locale: "en" | "ar" }) {
     >
       <td>{s.cashier_name ?? s.cashier_id.slice(0, 6)}</td>
       <td>{s.branch_code}</td>
-      <td>{fmtDate(s.opened_at, locale)}</td>
-      <td>{fmtDate(s.closed_at, locale)}</td>
-      <td>{fmtCurrencyMinor(s.opening_float_cents, s.currency_code, locale)}</td>
-      <td className={varianceClass}>{fmtCurrencyMinor(s.variance_cents, s.currency_code, locale)}</td>
+      <td>{fmtDate(s.opened_at, f.locale)}</td>
+      <td>{fmtDate(s.closed_at, f.locale)}</td>
+      <td>{fmtCurrencyMinor(s.opening_float_cents, s.currency_code, f.locale)}</td>
+      <td className={varianceClass}>{fmtCurrencyMinor(s.variance_cents, s.currency_code, f.locale)}</td>
       <td>
         <span className={`sh-pill sh-pill-${s.status}`}>
           {t(`status.${s.status}`)}

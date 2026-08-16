@@ -133,7 +133,7 @@ export function RegenerateRecoveryCodesModal({ onClose }: { onClose: () => void 
                 }}
               />
               {error && (
-                <div className="br-field-error" style={{ marginBlockStart: "var(--space-2)" }}>
+                <div className="br-field-error" role="alert" style={{ marginBlockStart: "var(--space-2)" }}>
                   {error}
                 </div>
               )}

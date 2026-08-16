@@ -25,6 +25,8 @@ import { useAuthStore } from "@/lib/auth/store";
 import { formatCurrency, minorToMajor } from "@/lib/currency";
 import { POLineEditor, type DraftPOLine } from "./POLineEditor";
 import { SendToSupplierDialog } from "./SendToSupplierDialog";
+import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
+import { useFormat } from "@/lib/i18n/format";
 
 type Step = 1 | 2 | 3;
 
@@ -62,7 +64,7 @@ function blankLine(): DraftPOLine {
 function fmtDate(yyyyMmDd: string | null | undefined, locale: string): string {
   if (!yyyyMmDd) return "—";
   try {
-    return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-EG", {
+    return new Intl.DateTimeFormat(locale, {
       dateStyle: "medium",
     }).format(new Date(yyyyMmDd + "T00:00:00Z"));
   } catch {
@@ -99,13 +101,13 @@ export function POWizard({
   prefillBranchId,
   prefillSupplierId,
 }: POWizardProps) {
+  const f = useFormat();
   const t = useTranslations("purchases.wizard");
   const tErr = useTranslations("purchases.errors");
   const tCommon = useTranslations("common");
   const role = useAuthStore((s) => s.user?.role ?? "");
   const userBranchId = useAuthStore((s) => s.user?.branch_id ?? null);
-  const tenantCurrency =
-    useAuthStore.getState().tenant?.default_currency_code ?? "USD";
+  const tenantCurrency = useTenantCurrency();
 
   const [step, setStep] = useState<Step>(1);
   const [supplierId, setSupplierId] = useState<string>(initial?.supplier_id ?? prefillSupplierId ?? "");
@@ -496,7 +498,7 @@ export function POWizard({
             <div className="po-subtotal-box">
               <span className="po-subtotal-label">{t("step2.subtotal")}</span>
               <span className="po-subtotal-value">
-                {formatCurrency(minorToMajor(subtotalCents, currency), currency, locale)}
+                {formatCurrency(minorToMajor(subtotalCents, currency), currency, f.locale)}
               </span>
             </div>
 
@@ -582,7 +584,7 @@ export function POWizard({
                   <div>
                     <div className="po-field-label">{t("step3.expectedAt")}</div>
                     <div style={{ fontSize: 14, color: "var(--ink)" }}>
-                      {fmtDate(expectedAt, locale)}
+                      {fmtDate(expectedAt, f.locale)}
                     </div>
                   </div>
                   <div>
@@ -616,10 +618,10 @@ export function POWizard({
                             </td>
                             <td className="po-num">{qty}</td>
                             <td className="po-num">
-                              {formatCurrency(minorToMajor(cost, currency), currency, locale)}
+                              {formatCurrency(minorToMajor(cost, currency), currency, f.locale)}
                             </td>
                             <td className="po-num">
-                              {formatCurrency(minorToMajor(qty * cost, currency), currency, locale)}
+                              {formatCurrency(minorToMajor(qty * cost, currency), currency, f.locale)}
                             </td>
                           </tr>
                         );
@@ -642,20 +644,20 @@ export function POWizard({
               <div className="po-totals">
                 <div className="po-totals-row">
                   <span className="po-totals-row-label">{t("step3.subtotal")}</span>
-                  <span>{formatCurrency(minorToMajor(subtotalCents, currency), currency, locale)}</span>
+                  <span>{formatCurrency(minorToMajor(subtotalCents, currency), currency, f.locale)}</span>
                 </div>
                 <div className="po-totals-row">
                   <span className="po-totals-row-label">{t("step3.tax")}</span>
-                  <span>{formatCurrency(minorToMajor(taxNum, currency), currency, locale)}</span>
+                  <span>{formatCurrency(minorToMajor(taxNum, currency), currency, f.locale)}</span>
                 </div>
                 <div className="po-totals-row">
                   <span className="po-totals-row-label">{t("step3.shipping")}</span>
-                  <span>{formatCurrency(minorToMajor(shippingNum, currency), currency, locale)}</span>
+                  <span>{formatCurrency(minorToMajor(shippingNum, currency), currency, f.locale)}</span>
                 </div>
                 <div className="po-totals-grand">
                   <span className="po-field-label">{t("step3.grandTotal")}</span>
                   <span className="po-totals-grand-value">
-                    {formatCurrency(minorToMajor(grandCents, currency), currency, locale)}
+                    {formatCurrency(minorToMajor(grandCents, currency), currency, f.locale)}
                   </span>
                 </div>
               </div>

@@ -19,7 +19,12 @@ export interface ApiPnlReport {
   currency: string;
   from: string;
   to: string;
+  /** English prose, kept for CSV/email. Prefer `period` for display. */
   period_label: string;
+  period:
+    | { kind: "day"; date: string }
+    | { kind: "month"; year: number; month: number }
+    | { kind: "custom"; from: string; to: string };
   revenue_cents: string;
   discount_cents: string;
   tax_cents: string;

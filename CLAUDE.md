@@ -33,7 +33,7 @@ Build phase by phase per `tasks.md`. Each numbered item ends with tests + commit
 | Search | PostgreSQL FTS (Arabic config) |
 | Storage / Scan | S3-compatible (MinIO locally) / ClamAV |
 | Realtime | socket.io |
-| i18n | next-intl (FE) + nestjs-i18n (BE) |
+| i18n | next-intl (FE); API ships `{ en, ar }` pairs (BE — see note) |
 | Fonts | Fraunces, Geist, IBM Plex Sans Arabic |
 | Icons / Charts / Motion | Lucide React / Recharts (restyled) / Motion |
 | Email | Resend or SMTP |

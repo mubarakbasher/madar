@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { Pencil, Package, Users } from "lucide-react";
 import type { ApiBranchSummary } from "@/lib/api/branches";
 import { formatCurrency, minorToMajor } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 function pickName(i18n: { en: string; ar: string } | undefined, locale: string): string {
   if (!i18n) return "";
@@ -22,6 +23,7 @@ export function BranchCard({
   branch: ApiBranchSummary;
   locale: string;
 }) {
+  const f = useFormat();
   const t = useTranslations("branches");
   const cents = Number(branch.today_revenue_cents);
   const name = pickName(branch.name_i18n, locale);
@@ -44,7 +46,7 @@ export function BranchCard({
         <div className="br-stat">
           <div className="br-stat-label">{t("salesToday")}</div>
           <div className="br-stat-value">
-            {formatCurrency(minorToMajor(cents, branch.currency_code), branch.currency_code, locale)}
+            {formatCurrency(minorToMajor(cents, branch.currency_code), branch.currency_code, f.locale)}
           </div>
         </div>
         <div className="br-stat">

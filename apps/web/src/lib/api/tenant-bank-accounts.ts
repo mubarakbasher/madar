@@ -3,6 +3,9 @@ import { apiFetch } from "./client";
 
 export interface TenantBankAccount {
   id: string;
+  /** Translatable label for the account; bank_name/account_holder are the
+   *  institution's own strings and are never translated. */
+  name_i18n: { en: string; ar: string };
   bank_name: string;
   account_holder: string;
   account_number_last4: string;

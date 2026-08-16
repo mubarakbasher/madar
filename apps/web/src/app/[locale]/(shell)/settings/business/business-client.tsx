@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { ApiError } from "@/lib/api/client";
 import {
   businessGetRequest,
@@ -17,6 +17,7 @@ import {
 } from "@/lib/api/business";
 import { meRequest } from "@/lib/api/auth";
 import { useAuthStore } from "@/lib/auth/store";
+import { LanguageRegionCard } from "./_components/LanguageRegionCard";
 
 type NameLocale = "en" | "ar";
 
@@ -31,6 +32,8 @@ interface FormState {
   tax_registration_number: string;
   tax_inclusive_default: boolean;
   default_locale: "en" | "ar";
+  use_arabic_indic_digits: boolean;
+  use_hijri_calendar: boolean;
 }
 
 const CURRENCY_OPTIONS = [
@@ -86,6 +89,8 @@ function snapshotToForm(s: BusinessSnapshot): FormState {
     tax_registration_number: s.tax_registration_number ?? "",
     tax_inclusive_default: s.tax_inclusive_default,
     default_locale: (s.default_locale === "ar" ? "ar" : "en") as "en" | "ar",
+    use_arabic_indic_digits: s.use_arabic_indic_digits,
+    use_hijri_calendar: s.use_hijri_calendar,
   };
 }
 
@@ -123,11 +128,39 @@ function diff(
   if (form.default_locale !== snap.default_locale) {
     body.default_locale = form.default_locale;
   }
+  if (form.use_arabic_indic_digits !== snap.use_arabic_indic_digits) {
+    body.use_arabic_indic_digits = form.use_arabic_indic_digits;
+  }
+  if (form.use_hijri_calendar !== snap.use_hijri_calendar) {
+    body.use_hijri_calendar = form.use_hijri_calendar;
+  }
   return { body, dirty: Object.keys(body).length > 0 };
+}
+
+const TENANT_STATUSES = new Set([
+  "trialing",
+  "active",
+  "grace_period",
+  "suspended",
+  "cancelled",
+]);
+
+/** The API sends `plan.name_i18n` but types it `unknown`, so callers reached
+ *  for `plan.code` and shipped the raw enum ("growth") to users instead. */
+function planName(
+  plan: { code: string; name_i18n: unknown } | null,
+  locale: "en" | "ar",
+): string | null {
+  if (!plan) return null;
+  const n = plan.name_i18n as { en?: string; ar?: string } | null;
+  return n?.[locale] || n?.en || plan.code;
 }
 
 export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
   const t = useTranslations("settings.business");
+  const tStatus = useTranslations("settings.business.lifecycle.statuses");
+  const statusLabel = (status: string) =>
+    TENANT_STATUSES.has(status) ? tStatus(status as "active") : status;
   const tErr = useTranslations("settings.business.errors");
   const qc = useQueryClient();
   const user = useAuthStore((s) => s.user);
@@ -157,7 +190,7 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
       // Refresh /me so the topbar greeting + locale follow the new tenant defaults.
       meRequest()
         .then((me) =>
-          useAuthStore.setState((s) => ({ ...s, user: me.user, tenant: me.tenant })),
+          useAuthStore.getState().setSession({ user: me.user, tenant: me.tenant }),
         )
         .catch(() => {});
       setTimeout(() => setSavedAt(null), 2500);
@@ -200,7 +233,7 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
   };
 
   const monthNames = useMemo(() => {
-    const fmt = new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-US", {
+    const fmt = new Intl.DateTimeFormat(locale, {
       month: "long",
     });
     return Array.from({ length: 12 }, (_, i) =>
@@ -397,7 +430,7 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
             ))}
           </select>
           {fieldError.key === "timezone" && fieldError.msg && (
-            <div className="bz-field-error">{fieldError.msg}</div>
+            <div className="bz-field-error" role="alert">{fieldError.msg}</div>
           )}
         </div>
 
@@ -489,7 +522,8 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
             {snap.default_tax_class_id ? snap.default_tax_class_id : "—"}
           </div>
           <a className="bz-hint" href={`/${locale}/settings/tax-classes`}>
-            {t("tax.manageClasses")} →
+            {t("tax.manageClasses")}{" "}
+            <ArrowRight size={12} strokeWidth={1.5} className="rtl:rotate-180" />
           </a>
         </div>
       </section>
@@ -503,13 +537,20 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
         }}
       />
 
+      <LanguageRegionCard
+        locale={locale}
+        arabicIndic={form.use_arabic_indic_digits}
+        hijri={form.use_hijri_calendar}
+        onChange={(patch) => setForm((prev) => (prev ? { ...prev, ...patch } : prev))}
+      />
+
       {/* Lifecycle (read-only) */}
       <section className="bz-card">
         <h2 className="bz-card-title">{t("lifecycle.title")}</h2>
         <div className="bz-lifecycle-grid">
           <div>
             <div className="bz-meta-key">{t("lifecycle.plan")}</div>
-            <div className="bz-meta-value">{snap.plan?.code ?? "—"}</div>
+            <div className="bz-meta-value">{planName(snap.plan, locale) ?? "—"}</div>
           </div>
           <div>
             <div className="bz-meta-key">{t("lifecycle.status")}</div>
@@ -525,7 +566,7 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
                         : "bz-pill-muted"
                 }`}
               >
-                {snap.status}
+                {statusLabel(snap.status)}
               </span>
             </div>
           </div>
@@ -533,7 +574,7 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
             <div>
               <div className="bz-meta-key">{t("lifecycle.trialEnds")}</div>
               <div className="bz-meta-value">
-                {new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-US", {
+                {new Intl.DateTimeFormat(locale, {
                   dateStyle: "medium",
                 }).format(new Date(snap.trial_ends_at))}
               </div>
@@ -549,7 +590,8 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
           style={{ marginBlockStart: 14 }}
           href={`/${locale}/billing`}
         >
-          {t("lifecycle.manage")} →
+          {t("lifecycle.manage")}{" "}
+          <ArrowRight size={13} strokeWidth={1.5} className="rtl:rotate-180" />
         </a>
       </section>
 
@@ -695,7 +737,7 @@ function LogoSection({
             </button>
           )}
           <span className="bz-hint">{t("hint")}</span>
-          {error && <div className="bz-field-error">{error}</div>}
+          {error && <div className="bz-field-error" role="alert">{error}</div>}
         </div>
       </div>
     </section>

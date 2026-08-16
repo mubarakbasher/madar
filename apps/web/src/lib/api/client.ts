@@ -94,6 +94,8 @@ interface AuthTenantShape {
   trial_ends_at: string | null;
   default_tax_class_id: string | null;
   tax_inclusive_default: boolean;
+  use_arabic_indic_digits: boolean;
+  use_hijri_calendar: boolean;
   plan: { code: string; name_i18n: unknown } | null;
 }
 

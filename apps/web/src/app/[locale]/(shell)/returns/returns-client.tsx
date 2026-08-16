@@ -15,6 +15,8 @@ import { useAuthStore } from "@/lib/auth/store";
 import { formatCurrency, minorToMajor } from "@/lib/currency";
 import { ReturnStatusPill } from "./_components/ReturnStatusPill";
 import "./returns.css";
+import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
+import { useFormat } from "@/lib/i18n/format";
 
 type Tab = SupplierReturnStatus | "all";
 
@@ -48,7 +50,7 @@ function pickName(
 
 function fmtCreated(iso: string, locale: string): string {
   try {
-    return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-EG", {
+    return new Intl.DateTimeFormat(locale, {
       dateStyle: "medium",
     }).format(new Date(iso));
   } catch {
@@ -62,11 +64,11 @@ function truncate(s: string, n: number): string {
 }
 
 export function ReturnsClient({ locale }: { locale: "en" | "ar" }) {
+  const f = useFormat();
   const t = useTranslations("returns");
   const role = useAuthStore((s) => s.user?.role ?? "");
   const userBranchId = useAuthStore((s) => s.user?.branch_id ?? null);
-  const tenantCurrency =
-    useAuthStore.getState().tenant?.default_currency_code ?? "USD";
+  const tenantCurrency = useTenantCurrency();
   const canCreate = role === "owner" || role === "manager";
   const isManager = role === "manager";
 
@@ -166,13 +168,13 @@ export function ReturnsClient({ locale }: { locale: "en" | "ar" }) {
         <div className="rma-hero-cell">
           <div className="rma-hero-label">{t("hero.refundPending")}</div>
           <div className="rma-hero-value">
-            {formatCurrency(minorToMajor(hero.refundPending, tenantCurrency), tenantCurrency, locale)}
+            {formatCurrency(minorToMajor(hero.refundPending, tenantCurrency), tenantCurrency, f.locale)}
           </div>
         </div>
         <div className="rma-hero-cell">
           <div className="rma-hero-label">{t("hero.thisMonthRefunded")}</div>
           <div className="rma-hero-value">
-            {formatCurrency(minorToMajor(hero.thisMonthRefunded, tenantCurrency), tenantCurrency, locale)}
+            {formatCurrency(minorToMajor(hero.thisMonthRefunded, tenantCurrency), tenantCurrency, f.locale)}
           </div>
         </div>
       </div>
@@ -292,7 +294,7 @@ export function ReturnsClient({ locale }: { locale: "en" | "ar" }) {
                       <div className="rma-table-sub">{r.branch.code}</div>
                     )}
                   </td>
-                  <td>{fmtCreated(r.created_at, locale)}</td>
+                  <td>{fmtCreated(r.created_at, f.locale)}</td>
                   <td>
                     <div className="rma-table-reason" title={r.reason}>
                       {truncate(r.reason, 40)}
@@ -305,7 +307,7 @@ export function ReturnsClient({ locale }: { locale: "en" | "ar" }) {
                     {formatCurrency(
                       minorToMajor(r.total_cents, r.currency_code),
                       r.currency_code,
-                      locale,
+                      f.locale,
                     )}
                   </td>
                 </tr>

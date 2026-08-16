@@ -6,6 +6,7 @@ import { Trash2 } from "lucide-react";
 import type { ApiProduct } from "@/lib/api/catalog";
 import type { ApiSupplierCatalogEntry } from "@/lib/api/suppliers";
 import { formatCurrency, minorToMajor } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 export interface DraftPOLine {
   /** Stable key so React doesn't lose focus when reordering. */
@@ -52,6 +53,7 @@ export function POLineEditor({
   currencyCode: string;
   locale: "en" | "ar";
 }) {
+  const f = useFormat();
   const t = useTranslations("purchases.wizard.step2");
 
   const productById = useMemo(() => {
@@ -219,7 +221,7 @@ export function POLineEditor({
       />
 
       <div className="po-line-total">
-        {formatCurrency(minorToMajor(lineTotal, currencyCode), currencyCode, locale)}
+        {formatCurrency(minorToMajor(lineTotal, currencyCode), currencyCode, f.locale)}
       </div>
 
       <button

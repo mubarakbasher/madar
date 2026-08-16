@@ -79,7 +79,7 @@ export function SettingsTab({ branch, locale }: { branch: ApiBranchDetail; local
         )}
       </div>
       {!isOwner && <div className="br-field-hint">{t("deleteHint")}</div>}
-      {error && <div className="br-field-error" style={{ marginBlockStart: 10 }}>{error}</div>}
+      {error && <div className="br-field-error" role="alert" style={{ marginBlockStart: 10 }}>{error}</div>}
     </section>
   );
 }

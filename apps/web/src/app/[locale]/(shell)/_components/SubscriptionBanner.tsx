@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { AlertTriangle, CreditCard } from "lucide-react";
 import { Link, usePathname, useRouter } from "../../../../../i18n/routing";
 import { useAuthStore } from "@/lib/auth/store";
+import { useFormat } from "@/lib/i18n/format";
 
 const TRIAL_REMINDER_THRESHOLD_DAYS = 3;
 
@@ -32,6 +33,7 @@ function daysUntil(iso: string | null): number | null {
 }
 
 export function SubscriptionBanner() {
+  const f = useFormat();
   const tenant = useAuthStore((s) => s.tenant);
   const pathname = usePathname();
   const router = useRouter();
@@ -62,7 +64,7 @@ export function SubscriptionBanner() {
       <SubscriptionBannerShell tone="coral">
         <AlertTriangle size={14} strokeWidth={1.5} aria-hidden />
         <span style={{ flex: 1 }}>
-          {t("trialEndingBody", { days: trialDaysLeft })}
+          {t("trialEndingBody", { days: trialDaysLeft, days_n: f.number(trialDaysLeft) })}
         </span>
         <BannerCta href="/billing" label={t("trialEndingCta")} tone="coral" />
       </SubscriptionBannerShell>

@@ -5,6 +5,7 @@ import type {
   ApiOwnerDashboardInsight,
   ApiOwnerDashboardInsightKind,
 } from "@/lib/api/dashboard";
+import { useFormat } from "@/lib/i18n/format";
 
 // Map each API insight kind to an accent token + icon hint. Kinds and design
 // choices are independent of the legacy `reorder | anomaly | …` enum.
@@ -27,6 +28,7 @@ export function AIInsightCard({
   onDismiss: (id: string) => void;
 }) {
   const t = useTranslations("dashboard.insights");
+  const f = useFormat();
   const tU = useTranslations("dashboard.insights.urgency");
   const isAr = locale === "ar";
 
@@ -44,7 +46,7 @@ export function AIInsightCard({
         <span className="dash-insight-dot" style={{ background: dot }} />
         <span className="kicker">{tU(insight.urgency)}</span>
         <span className="dash-insight-conf">
-          {t("confidence", { percent: Math.round(insight.confidence * 100) })}
+          {t("confidence", { percent: f.number(Math.round(insight.confidence * 100)) })}
         </span>
       </header>
       <h4 className="dash-insight-headline">{headline}</h4>

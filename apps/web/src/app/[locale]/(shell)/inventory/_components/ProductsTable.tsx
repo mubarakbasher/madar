@@ -7,7 +7,8 @@ import type { Product } from "@/lib/mock-data/products";
 import { productImagePublicUrl } from "@/lib/api/catalog";
 import { useAuthStore } from "@/lib/auth/store";
 import { RowActionsMenu } from "./RowActionsMenu";
-import { formatCurrency, formatNumber } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
+import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
 
 export type SortKey = "sku" | "name" | "price" | "cost" | "stock" | "vel";
 export type SortState = { key: SortKey; dir: "asc" | "desc" };
@@ -30,7 +31,8 @@ export function ProductsTable({
   locale: string;
 }) {
   const t = useTranslations("inventory");
-  const currencyCode = useAuthStore((s) => s.tenant?.default_currency_code ?? "EGP");
+  const currencyCode = useTenantCurrency();
+  const f = useFormat();
   const tenantId = useAuthStore((s) => s.tenant?.id ?? null);
   const allSelected = selected.length === rows.length && rows.length > 0;
 
@@ -119,7 +121,11 @@ export function ProductsTable({
         <tbody>
           {rows.map((p) => {
             const isLow = p.stock < p.low;
-            const margin = Math.round(((p.price - p.cost) / p.price) * 100);
+            // Fraction, not percentage points — f.percent applies the ×100 and
+            // the locale's own percent sign. Concatenating a Western "%" after
+            // Arabic-Indic digits rendered "%٧٨": a trailing ET character in an
+            // RTL run is reordered to the left of the number.
+            const margin = (p.price - p.cost) / p.price;
             // Floor the denominator at 1 so a zero-stock product with no reorder
             // point (low = -Infinity) yields 0%, not 0/0 = NaN.
             const stockPct = Math.min(
@@ -175,15 +181,15 @@ export function ProductsTable({
                     </div>
                   </div>
                 </td>
-                <td className="inv-td inv-td-end">{formatCurrency(p.price, currencyCode, locale)}</td>
+                <td className="inv-td inv-td-end">{f.moneyMajor(p.price, currencyCode)}</td>
                 <td className="inv-td inv-td-end inv-cell-cost">
-                  {formatCurrency(p.cost, currencyCode, locale)}
+                  {f.moneyMajor(p.cost, currencyCode)}
                 </td>
-                <td className="inv-td inv-td-end inv-cell-margin">{formatNumber(margin, locale)}%</td>
+                <td className="inv-td inv-td-end inv-cell-margin">{f.percent(margin)}</td>
                 <td className="inv-td">
                   <div className="inv-stock">
                     <span className="inv-stock-qty" data-low={isLow ? "true" : undefined}>
-                      {formatNumber(p.stock, locale)}
+                      {f.number(p.stock)}
                     </span>
                     <div className="inv-stock-bar">
                       <div
@@ -195,7 +201,7 @@ export function ProductsTable({
                     {isLow && <span className="inv-low-badge">{t("row.lowBadge")}</span>}
                   </div>
                 </td>
-                <td className="inv-td inv-td-end inv-cell-vel">{formatNumber(p.vel, locale)}</td>
+                <td className="inv-td inv-td-end inv-cell-vel">{f.number(p.vel)}</td>
                 <td className="inv-td inv-td-end">
                   <RowActionsMenu productId={p.id} productName={p.name} />
                 </td>

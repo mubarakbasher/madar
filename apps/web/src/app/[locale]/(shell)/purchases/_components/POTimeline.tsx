@@ -2,11 +2,12 @@
 
 import { useTranslations } from "next-intl";
 import type { ApiPODetail } from "@/lib/api/purchase-orders";
+import { useFormat } from "@/lib/i18n/format";
 
 function fmtDateTime(iso: string | null, locale: string): string {
   if (!iso) return "";
   try {
-    return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-EG", {
+    return new Intl.DateTimeFormat(locale, {
       dateStyle: "medium",
       timeStyle: "short",
     }).format(new Date(iso));
@@ -29,6 +30,7 @@ export function POTimeline({
   po: ApiPODetail;
   locale: "en" | "ar";
 }) {
+  const f = useFormat();
   const t = useTranslations("purchases.detail.timeline");
 
   const isCancelled = po.status === "cancelled";
@@ -82,7 +84,7 @@ export function POTimeline({
                 {r.label}
               </span>
               {r.when && (
-                <span className="po-timeline-meta">{fmtDateTime(r.when, locale)}</span>
+                <span className="po-timeline-meta">{fmtDateTime(r.when, f.locale)}</span>
               )}
             </div>
           </li>

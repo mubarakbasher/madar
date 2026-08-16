@@ -9,6 +9,7 @@ import type {
   ApiOwnerDashboardVsPrevWeek,
   ApiOwnerDashboardWeek,
 } from "@/lib/api/dashboard";
+import { useFormat } from "@/lib/i18n/format";
 
 interface KpiRowProps {
   week: ApiOwnerDashboardWeek;
@@ -34,8 +35,9 @@ export function KpiRow({
   currency_code,
   locale,
 }: KpiRowProps) {
+  const f = useFormat();
   const t = useTranslations("dashboard.kpi");
-  const cur = currencySymbol(currency_code, locale);
+  const cur = currencySymbol(currency_code, f.locale);
 
   const revenueSpark = sparklines.revenue_cents.map((c) => centsToUnits(c, currency_code));
   const grossSpark = sparklines.gross_profit_cents.map((c) => centsToUnits(c, currency_code));
@@ -45,7 +47,7 @@ export function KpiRow({
     <section className="dash-kpi-row">
       <KPICard
         label={t("revenueLabel")}
-        value={formatNumber(centsToUnits(week.revenue_cents, currency_code), locale)}
+        value={formatNumber(centsToUnits(week.revenue_cents, currency_code), f.locale)}
         unit={cur}
         delta={vs_prev_week.revenue_pct}
         deltaLabel={t("vsLastWeek")}
@@ -53,7 +55,7 @@ export function KpiRow({
       />
       <KPICard
         label={t("grossProfitLabel")}
-        value={formatNumber(centsToUnits(week.gross_profit_cents, currency_code), locale)}
+        value={formatNumber(centsToUnits(week.gross_profit_cents, currency_code), f.locale)}
         unit={cur}
         delta={vs_prev_week.gross_profit_pct}
         deltaLabel={t("vsLastWeek")}
@@ -61,7 +63,7 @@ export function KpiRow({
       />
       <KPICard
         label={t("transactionsLabel")}
-        value={formatNumber(week.transactions, locale)}
+        value={formatNumber(week.transactions, f.locale)}
         delta={vs_prev_week.transactions_pct}
         deltaLabel={t("vsLastWeek")}
         spark={txSpark}

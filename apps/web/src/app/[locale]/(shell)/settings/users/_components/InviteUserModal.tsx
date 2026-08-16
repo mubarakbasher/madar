@@ -121,7 +121,7 @@ export function InviteUserModal({
                 maxLength={254}
                 required
               />
-              {errors.email && <span className="usr-field-error">{errors.email}</span>}
+              {errors.email && <span className="usr-field-error" role="alert">{errors.email}</span>}
             </label>
 
             <label className="usr-field">
@@ -133,7 +133,7 @@ export function InviteUserModal({
                 maxLength={100}
                 required
               />
-              {errors.name && <span className="usr-field-error">{errors.name}</span>}
+              {errors.name && <span className="usr-field-error" role="alert">{errors.name}</span>}
             </label>
 
             <label className="usr-field">
@@ -175,7 +175,7 @@ export function InviteUserModal({
                 ))}
               </select>
               {errors.branch_id && (
-                <span className="usr-field-error">{errors.branch_id}</span>
+                <span className="usr-field-error" role="alert">{errors.branch_id}</span>
               )}
             </label>
           </div>

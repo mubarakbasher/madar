@@ -91,7 +91,15 @@ export default async function Page() {
 }
 ```
 
-### 3.2 Backend (`nestjs-i18n`)
+### 3.2 Backend
+
+> **Correction (2026-08-16).** Everything below describes `nestjs-i18n` and an
+> `apps/api/src/i18n/` tree. Neither exists — the dependency was never
+> installed and there is no request-locale resolution on the API. Today the
+> API ships `{ en, ar }` pairs, or a machine-readable descriptor for the client
+> to format. Treat this section as a proposal, not a description.
+
+#### Proposed (not built)
 
 Files:
 ```
@@ -263,36 +271,54 @@ The thermal printer driver handles UTF-8 with Arabic shaping; test on real hardw
 ### 5.1 Numerals
 
 - **Default:** Western digits (1, 2, 3) for all users, regardless of locale.
-- **Optional Arabic-Indic** (١، ٢، ٣) — a tenant setting toggles display only. **Never** stored in DB, **never** sent over API.
-- Implementation:
+- **Optional Arabic-Indic** (١، ٢، ٣) — the `tenants.use_arabic_indic_digits` flag, display only. **Never** stored in DB, **never** sent over API.
+- **Never build the tag by hand.** `packages/ui/src/format-locale.ts` owns it:
 
 ```typescript
-function formatNumber(value: number, locale: 'en' | 'ar', useArabicIndic: boolean) {
-  return new Intl.NumberFormat(
-    locale === 'ar' && useArabicIndic ? 'ar-EG' : 'en-US'
-  ).format(value);
-}
+buildFormatLocale("ar")                                  // "ar-EG-u-nu-latn"
+buildFormatLocale("ar", { numerals: "arab", calendar: "gregory" })  // "ar-EG-u-nu-arab"
 ```
+
+Two traps this replaces:
+
+- **Don't fall back to `en-US` for Western digits.** That also reverts the
+  currency glyph to `EGP` and the month names to English. `-u-nu-latn` changes
+  the digits and nothing else.
+- **A malformed extension fails silently.** `Intl.NumberFormat("ar-EG-u-nu-bogus").format(5)`
+  returns `٥` — an unrecognised subtag is dropped and the region default wins.
+  `format-locale.spec.ts` therefore asserts `resolvedOptions().numberingSystem`,
+  not the rendered string.
+
+**Bare `ar` vs `ar-EG` matters.** Modern CLDR gives the bare tag `latn`; only a
+regioned tag defaults to `arab`. next-intl formats through the bare routing
+locale, so anything that upgrades to `ar-EG` behind its back puts two numbering
+systems on one screen — the 2026-08-15 bug.
+
+**Known gap:** static copy (`"Step 1 of 3"`, `"up to 5 MB"`) carries literal
+digits and cannot follow the toggle. It is written in the default (Western).
 
 ### 5.2 Dates
 
 - **Storage:** always ISO 8601 UTC in PostgreSQL (`TIMESTAMPTZ`).
-- **Display:** locale-formatted using `Intl.DateTimeFormat`.
-- **Calendar:** Gregorian default. Tenant setting opt-in to Hijri display:
+- **Display:** `packages/ui/src/datetime.ts` (`formatDate`, `formatDateTime`,
+  `formatRelative`, `formatDuration`) — never a hand-rolled `Intl.DateTimeFormat`
+  at the call site. In the tenant app go through `useFormat()`, which resolves
+  the tenant's language, numerals and calendar together.
+- **Calendar:** Gregorian default; `tenants.use_hijri_calendar` opts in.
+
+Hijri needs **no dependency** — the guide previously suggested dayjs plus a
+plugin. `Intl` supports it natively via the `-u-ca-islamic` extension, which
+`buildFormatLocale` adds:
 
 ```typescript
-import dayjs from 'dayjs';
-import 'dayjs/plugin/hijri';
-
-function formatDate(date: Date, locale: 'en' | 'ar', useHijri: boolean) {
-  if (useHijri) {
-    return dayjs(date).format('iYYYY/iMM/iDD');
-  }
-  return new Intl.DateTimeFormat(locale, {
-    year: 'numeric', month: 'long', day: 'numeric'
-  }).format(date);
-}
+new Intl.DateTimeFormat("ar-EG-u-ca-islamic", { dateStyle: "medium" })
+  .format(new Date("2026-08-15"))        // "٣ ربيع الأول ١٤٤٨ هـ"
 ```
+
+**Do not route machine-readable dates through the formatter.**
+`lib/local-date.ts` produces the `from`/`to` query params and `<input type="date">`
+values; a Hijri or Arabic-Indic string there breaks the API request. Use
+`f.gregorianDate()` when a display string must stay Gregorian.
 
 ### 5.3 Currency
 

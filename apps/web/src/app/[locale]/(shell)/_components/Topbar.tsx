@@ -7,6 +7,7 @@ import { usePathname } from "../../../../../i18n/routing";
 import { BranchSwitcher } from "./BranchSwitcher";
 import { LangSwitcher } from "./LangSwitcher";
 import { UserMenu } from "./UserMenu";
+import { useFormat } from "@/lib/i18n/format";
 
 function crumbKeyFor(pathname: string): "dashboard" | "checkout" | "inventory" | null {
   if (pathname === "/" || pathname === "") return "dashboard";
@@ -20,19 +21,22 @@ function crumbKeyFor(pathname: string): "dashboard" | "checkout" | "inventory" |
  * Formatted in an effect so the server (its own timezone) and the browser
  * never disagree during hydration — the sub appears client-side only.
  */
-function useTodaySub(locale: string): string {
+function useTodaySub(): string {
+  const f = useFormat();
   const [sub, setSub] = useState("");
   useEffect(() => {
-    const tag = locale === "ar" ? "ar-EG" : "en-GB";
+    // Deliberately not f.date(): the crumb wants the spelled-out month
+    // ("8 Jun 2026" / "8 يونيو 2026"), which no dateStyle produces. f.locale
+    // still carries the tenant's numeral and calendar choice.
     const now = new Date();
-    const weekday = new Intl.DateTimeFormat(tag, { weekday: "short" }).format(now);
-    const date = new Intl.DateTimeFormat(tag, {
+    const weekday = new Intl.DateTimeFormat(f.locale, { weekday: "short" }).format(now);
+    const date = new Intl.DateTimeFormat(f.locale, {
       day: "numeric",
       month: "short",
       year: "numeric",
     }).format(now);
     setSub(`${weekday} · ${date}`);
-  }, [locale]);
+  }, [f]);
   return sub;
 }
 
@@ -42,7 +46,7 @@ export function Topbar({ locale }: { locale: string }) {
   const tCrumb = useTranslations("shell.crumb");
   const pathname = usePathname();
   const key = crumbKeyFor(pathname);
-  const todaySub = useTodaySub(locale);
+  const todaySub = useTodaySub();
   const crumb = key ? tCrumb(key) : tShell("brand");
   const sub = key === "dashboard" ? todaySub : key ? tCrumb(`${key}Sub`) : "";
 

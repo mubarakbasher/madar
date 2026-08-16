@@ -36,6 +36,8 @@ export interface BusinessSnapshot {
   tax_registration_number: string | null;
   tax_inclusive_default: boolean;
   default_locale: string;
+  use_arabic_indic_digits: boolean;
+  use_hijri_calendar: boolean;
   default_tax_class_id: string | null;
   logo_url: string | null;
   status: string;
@@ -170,6 +172,12 @@ export class BusinessService {
       beforeSnap.tax_inclusive_default,
     );
     tryDiff("default_locale", input.default_locale, beforeSnap.default_locale);
+    tryDiff(
+      "use_arabic_indic_digits",
+      input.use_arabic_indic_digits,
+      beforeSnap.use_arabic_indic_digits,
+    );
+    tryDiff("use_hijri_calendar", input.use_hijri_calendar, beforeSnap.use_hijri_calendar);
 
     if (Object.keys(data).length === 0) {
       // Nothing to change — return the snapshot as-is without an audit row.
@@ -383,6 +391,8 @@ export class BusinessService {
     tax_registration_number: string | null;
     tax_inclusive_default: boolean;
     default_locale: string;
+    use_arabic_indic_digits: boolean;
+    use_hijri_calendar: boolean;
     default_tax_class_id: string | null;
     logo_url: string | null;
     status: string;
@@ -404,6 +414,8 @@ export class BusinessService {
       tax_registration_number: t.tax_registration_number,
       tax_inclusive_default: t.tax_inclusive_default,
       default_locale: t.default_locale,
+      use_arabic_indic_digits: t.use_arabic_indic_digits,
+      use_hijri_calendar: t.use_hijri_calendar,
       default_tax_class_id: t.default_tax_class_id,
       logo_url: t.logo_url,
       status: t.status,

@@ -23,6 +23,8 @@ export interface BusinessSnapshot {
   tax_registration_number: string | null;
   tax_inclusive_default: boolean;
   default_locale: string;
+  use_arabic_indic_digits: boolean;
+  use_hijri_calendar: boolean;
   default_tax_class_id: string | null;
   logo_url: string | null;
   status: string;
@@ -41,6 +43,8 @@ export interface UpdateBusinessBody {
   tax_registration_number?: string | null;
   tax_inclusive_default?: boolean;
   default_locale?: "en" | "ar";
+  use_arabic_indic_digits?: boolean;
+  use_hijri_calendar?: boolean;
 }
 
 export function businessGetRequest(): Promise<BusinessSnapshot> {

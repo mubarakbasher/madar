@@ -119,7 +119,7 @@ export function MfaEnrollWizard({
           <>
             <h3 style={{ fontSize: 14, fontWeight: 500, marginBlockEnd: 6 }}>{t("step1Title")}</h3>
             <p style={{ fontSize: 13, color: "var(--ink-3)" }}>{t("step1Body")}</p>
-            {startError && <div className="br-field-error" style={{ marginBlockStart: "var(--space-2)" }}>{startError}</div>}
+            {startError && <div className="br-field-error" role="alert" style={{ marginBlockStart: "var(--space-2)" }}>{startError}</div>}
             {start && (
               <div style={{ marginBlockStart: 14, textAlign: "center" }}>
                 <div
@@ -192,7 +192,7 @@ export function MfaEnrollWizard({
               }}
             />
             {verifyError && (
-              <div className="br-field-error" style={{ marginBlockStart: "var(--space-2)" }}>{verifyError}</div>
+              <div className="br-field-error" role="alert" style={{ marginBlockStart: "var(--space-2)" }}>{verifyError}</div>
             )}
             <div style={{ marginBlockStart: 18, display: "flex", justifyContent: "space-between" }}>
               <button type="button" onClick={() => setStep("scan")} style={btn("ghost")}>

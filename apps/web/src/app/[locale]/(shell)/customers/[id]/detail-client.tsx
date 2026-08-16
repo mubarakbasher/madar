@@ -14,20 +14,21 @@ import {
   type ApiCustomerSale,
 } from "@/lib/api/customers";
 import { formatMoney } from "@/lib/currency";
+import { useFormat } from "@/lib/i18n/format";
 
 type Tab = "overview" | "credit" | "sales";
 
 function fmtMoney(
   amountMinor: string | null | undefined,
   currency: string | null | undefined,
-  locale: "en" | "ar",
+  locale: string,
 ): string {
   if (!amountMinor || !currency) return "—";
   return formatMoney(amountMinor, currency, locale);
 }
 
-function fmtDate(iso: string, locale: "en" | "ar"): string {
-  return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-US", {
+function fmtDate(iso: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -41,6 +42,7 @@ export function CustomerDetailClient({
   locale: "en" | "ar";
   customerId: string;
 }) {
+  const f = useFormat();
   const t = useTranslations("customers");
   const tErr = useTranslations("customers.errors");
   const router = useRouter();
@@ -108,9 +110,9 @@ export function CustomerDetailClient({
           <h1 className="cu-title">{c.name}</h1>
           <div className="cu-detail-meta">
             {c.code && <span>{c.code}</span>}
-            {c.phone && <span>{c.phone}</span>}
+            {c.phone && <span dir="ltr">{c.phone}</span>}
             {c.email && <span>{c.email}</span>}
-            <span>· {t("memberSince", { date: fmtDate(c.created_at, locale) })}</span>
+            <span>· {t("memberSince", { date: fmtDate(c.created_at, f.locale) })}</span>
           </div>
         </div>
         <div className="cu-actions">
@@ -211,6 +213,7 @@ export function CustomerDetailClient({
 }
 
 function OverviewTab({ c, locale }: { c: ApiCustomerDetail; locale: "en" | "ar" }) {
+  const f = useFormat();
   const t = useTranslations("customers");
   return (
     <>
@@ -218,7 +221,7 @@ function OverviewTab({ c, locale }: { c: ApiCustomerDetail; locale: "en" | "ar" 
         <div className="cu-card">
           <div className="cu-card-label">{t("kpi.balance")}</div>
           <div className="cu-card-value">
-            {fmtMoney(c.store_credit_balance_minor, c.store_credit_currency_code, locale)}
+            {fmtMoney(c.store_credit_balance_minor, c.store_credit_currency_code, f.locale)}
           </div>
         </div>
         <div className="cu-card">
@@ -228,7 +231,7 @@ function OverviewTab({ c, locale }: { c: ApiCustomerDetail; locale: "en" | "ar" 
         <div className="cu-card">
           <div className="cu-card-label">{t("kpi.lastSale")}</div>
           <div className="cu-card-value" style={{ fontSize: 16, fontFamily: "inherit" }}>
-            {c.last_sale_at ? fmtDate(c.last_sale_at, locale) : "—"}
+            {c.last_sale_at ? fmtDate(c.last_sale_at, f.locale) : "—"}
           </div>
         </div>
       </div>
@@ -244,12 +247,13 @@ function OverviewTab({ c, locale }: { c: ApiCustomerDetail; locale: "en" | "ar" 
 }
 
 function CreditTab({ c, locale }: { c: ApiCustomerDetail; locale: "en" | "ar" }) {
+  const f = useFormat();
   const t = useTranslations("customers");
   return (
     <div className="cu-card">
       <div className="cu-card-label">{t("credit.balance")}</div>
       <div className="cu-card-value">
-        {fmtMoney(c.store_credit_balance_minor, c.store_credit_currency_code, locale)}
+        {fmtMoney(c.store_credit_balance_minor, c.store_credit_currency_code, f.locale)}
       </div>
       <p className="cu-muted" style={{ marginBlockStart: "var(--space-4)" }}>
         {t("credit.body")}
@@ -267,6 +271,7 @@ function CreditTab({ c, locale }: { c: ApiCustomerDetail; locale: "en" | "ar" })
 }
 
 function SalesTab({ c, locale }: { c: ApiCustomerDetail; locale: "en" | "ar" }) {
+  const f = useFormat();
   const t = useTranslations("customers");
   if (c.recent_sales.length === 0) {
     return (
@@ -290,8 +295,8 @@ function SalesTab({ c, locale }: { c: ApiCustomerDetail; locale: "en" | "ar" }) 
         {c.recent_sales.map((s: ApiCustomerSale) => (
           <tr key={s.id}>
             <td className="cu-name">{s.code}</td>
-            <td className="cu-muted">{fmtDate(s.occurred_at, locale)}</td>
-            <td>{fmtMoney(s.total_cents, s.currency_code, locale)}</td>
+            <td className="cu-muted">{fmtDate(s.occurred_at, f.locale)}</td>
+            <td>{fmtMoney(s.total_cents, s.currency_code, f.locale)}</td>
             <td className="cu-muted">{s.payment_status}</td>
           </tr>
         ))}

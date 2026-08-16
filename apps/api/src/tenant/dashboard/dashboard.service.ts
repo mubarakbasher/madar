@@ -55,6 +55,7 @@ export interface ApiOwnerDashboard {
     code: string;
     branch_id: string;
     branch_code: string;
+    branch_name_i18n: { en: string; ar: string } | null;
     cashier_id: string | null;
     cashier_name: string | null;
     items: number;
@@ -121,6 +122,7 @@ interface RecentTxRow {
   code: string;
   branch_id: string;
   branch_code: string;
+  branch_name_i18n: unknown;
   cashier_id: string | null;
   cashier_name: string | null;
   items: bigint | number | null;
@@ -332,6 +334,7 @@ export class DashboardService {
                 s.code,
                 s.branch_id,
                 b.code AS branch_code,
+                b.name_i18n AS branch_name_i18n,
                 s.cashier_id,
                 u.name AS cashier_name,
                 COALESCE(line_counts.items, 0)::bigint AS items,
@@ -476,6 +479,7 @@ export class DashboardService {
       code: r.code,
       branch_id: r.branch_id,
       branch_code: r.branch_code,
+      branch_name_i18n: shapeBranchName(r.branch_name_i18n, r.branch_code),
       cashier_id: r.cashier_id,
       cashier_name: r.cashier_name ?? "—",
       items: toNumber(r.items),
@@ -577,4 +581,14 @@ function toIsoDate(d: Date): string {
   const m = String(d.getUTCMonth() + 1).padStart(2, "0");
   const day = String(d.getUTCDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
+}
+
+/** Shape a branch's translatable name from a raw SQL jsonb column. */
+function shapeBranchName(
+  raw: unknown,
+  code: string,
+): { en: string; ar: string } | null {
+  if (!code) return null;
+  const n = (raw ?? {}) as { en?: string; ar?: string };
+  return { en: n.en ?? code, ar: n.ar ?? n.en ?? code };
 }
