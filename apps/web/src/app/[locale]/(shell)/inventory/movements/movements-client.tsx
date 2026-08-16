@@ -18,6 +18,7 @@ import {
 } from "@/lib/branch-scope/store";
 import { useAuthStore } from "@/lib/auth/store";
 import { currencyMinorUnits, formatMoney, minorToMajor } from "@/lib/currency";
+import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
 
 type KindFilter = "all" | StockMovementKind;
 
@@ -89,7 +90,7 @@ function referenceHref(
 export function MovementsClient({ locale }: { locale: "en" | "ar" }) {
   const t = useTranslations("inventory.movements");
   const tenant = useAuthStore((s) => s.tenant);
-  const currency = tenant?.default_currency_code ?? "USD";
+  const currency = useTenantCurrency();
   const selectedBranch = useBranchScopeStore((s) => s.selectedBranchId);
 
   const [kind, setKind] = useState<KindFilter>("all");

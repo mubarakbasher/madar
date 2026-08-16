@@ -15,6 +15,7 @@ import { useAuthStore } from "@/lib/auth/store";
 import { formatCurrency, minorToMajor } from "@/lib/currency";
 import { POStatusPill } from "./_components/POStatusPill";
 import "./purchases.css";
+import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
 
 type Tab = PurchaseOrderStatus | "all";
 
@@ -56,7 +57,7 @@ export function PurchasesClient({ locale }: { locale: "en" | "ar" }) {
   const t = useTranslations("purchases");
   const role = useAuthStore((s) => s.user?.role ?? "");
   const userBranchId = useAuthStore((s) => s.user?.branch_id ?? null);
-  const tenantCurrency = useAuthStore.getState().tenant?.default_currency_code ?? "USD";
+  const tenantCurrency = useTenantCurrency();
   const canCreate = role === "owner" || role === "manager";
   const isManager = role === "manager";
 

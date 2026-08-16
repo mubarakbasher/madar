@@ -15,6 +15,7 @@ import { useAuthStore } from "@/lib/auth/store";
 import { formatCurrency, minorToMajor } from "@/lib/currency";
 import { ReturnStatusPill } from "./_components/ReturnStatusPill";
 import "./returns.css";
+import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
 
 type Tab = SupplierReturnStatus | "all";
 
@@ -65,8 +66,7 @@ export function ReturnsClient({ locale }: { locale: "en" | "ar" }) {
   const t = useTranslations("returns");
   const role = useAuthStore((s) => s.user?.role ?? "");
   const userBranchId = useAuthStore((s) => s.user?.branch_id ?? null);
-  const tenantCurrency =
-    useAuthStore.getState().tenant?.default_currency_code ?? "USD";
+  const tenantCurrency = useTenantCurrency();
   const canCreate = role === "owner" || role === "manager";
   const isManager = role === "manager";
 

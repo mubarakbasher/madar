@@ -9,12 +9,12 @@ import { useAuthStore } from "@/lib/auth/store";
 import { formatCurrency, formatMoney } from "@/lib/currency";
 import { SupplierCard } from "./_components/SupplierCard";
 import "./suppliers.css";
+import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
 
 export function SuppliersClient({ locale }: { locale: "en" | "ar" }) {
   const t = useTranslations("suppliers");
   const role = useAuthStore((s) => s.user?.role ?? "");
-  const tenantCurrency =
-    useAuthStore.getState().tenant?.default_currency_code ?? "USD";
+  const tenantCurrency = useTenantCurrency();
   const canCreate = role === "owner" || role === "manager";
 
   const [search, setSearch] = useState("");

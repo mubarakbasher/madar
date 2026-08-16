@@ -22,6 +22,7 @@ import {
 import { useAuthStore } from "@/lib/auth/store";
 import { formatCurrency, minorToMajor } from "@/lib/currency";
 import { ReturnLineEditor, type DraftRMALine } from "./ReturnLineEditor";
+import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
 
 interface InitialDraft {
   supplier_id?: string;
@@ -79,8 +80,7 @@ export function ReturnForm({ locale, mode, editingId, initial }: ReturnFormProps
   const tErr = useTranslations("returns.errors");
   const role = useAuthStore((s) => s.user?.role ?? "");
   const userBranchId = useAuthStore((s) => s.user?.branch_id ?? null);
-  const tenantCurrency =
-    useAuthStore.getState().tenant?.default_currency_code ?? "USD";
+  const tenantCurrency = useTenantCurrency();
   const isManager = role === "manager";
 
   const [supplierId, setSupplierId] = useState<string>(initial?.supplier_id ?? "");

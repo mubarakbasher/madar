@@ -14,6 +14,7 @@ import { branchScopeParam, useBranchScopeStore } from "@/lib/branch-scope/store"
 import { useAuthStore } from "@/lib/auth/store";
 import { currencyMinorUnits } from "@/lib/currency";
 import { Sparkline } from "../../_dashboard/Sparkline";
+import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
 
 /**
  * Movers / margin analysis. PAGES §39.
@@ -44,7 +45,7 @@ export function MoversClient({ locale }: { locale: "en" | "ar" }) {
   const defaultTo = isoDate(today);
   const [from, setFrom] = useState(defaultFrom);
   const [to, setTo] = useState(defaultTo);
-  const currency = tenant?.default_currency_code ?? "USD";
+  const currency = useTenantCurrency();
   const branchParam = branchScopeParam(selectedBranchId);
 
   const setMetric = (m: MoversMetric) => {

@@ -11,6 +11,7 @@ import {
 } from "@/lib/api/reconcile";
 import { useAuthStore } from "@/lib/auth/store";
 import { currencyMinorUnits, formatMoney, minorToMajor } from "@/lib/currency";
+import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
@@ -27,7 +28,7 @@ function fmtMoney(cents: string, currency: string, locale: "en" | "ar"): string 
 export function ReconcileClient({ locale }: { locale: "en" | "ar" }) {
   const t = useTranslations("reconcile");
   const tenant = useAuthStore((s) => s.tenant);
-  const currency = tenant?.default_currency_code ?? "USD";
+  const currency = useTenantCurrency();
 
   const [date, setDate] = useState(todayIso());
 

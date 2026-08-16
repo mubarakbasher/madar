@@ -65,11 +65,19 @@ export function PnlClient({ locale }: { locale: string }): JSX.Element {
   const accessToken = useAuthStore((s) => s.accessToken);
   const canRead = READER_ROLES.has(role);
 
-  const tenantCurrency = tenant?.default_currency_code ?? "USD";
+  const bootstrapped = useAuthStore((s) => s.bootstrapped);
 
   const [preset, setPreset] = useState<Preset>("thisMonth");
   const [range, setRange] = useState<DateRange>(() => rangeForPreset("thisMonth"));
-  const [currency, setCurrency] = useState<string>(tenantCurrency);
+  // Derived, not seeded. `useState(tenant?.x ?? "USD")` reads its initialiser
+  // only on the first render — and `tenant` is null for the whole of that
+  // render — so an EGP tenant froze on USD permanently, priced its P&L in
+  // dollars, and got a zero statement because the currency filter excluded
+  // every real sale. `null` here means "not chosen by the user yet", so the
+  // tenant value flows in when it arrives and a manual edit still wins.
+  const [currencyOverride, setCurrencyOverride] = useState<string | null>(null);
+  const currency = currencyOverride ?? tenant?.default_currency_code ?? "";
+  const setCurrency = setCurrencyOverride;
   const [branchId, setBranchId] = useState<string>("");
   const [categoryId, setCategoryId] = useState<string>("");
   const [groupBy, setGroupBy] = useState<GroupBy>("period");
@@ -104,7 +112,7 @@ export function PnlClient({ locale }: { locale: string }): JSX.Element {
   const reportQ = useQuery<ApiPnlReport>({
     queryKey: ["reports", "pnl", queryOpts],
     queryFn: () => pnlReportRequest(queryOpts),
-    enabled: canRead && currency.length === 3,
+    enabled: canRead && bootstrapped && currency.length === 3,
     staleTime: 30_000,
   });
 

@@ -12,6 +12,7 @@ import {
   type UpdateSupplierBody,
 } from "@/lib/api/suppliers";
 import { useAuthStore } from "@/lib/auth/store";
+import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
 
 const COMMON_CURRENCIES = ["EGP", "SDG", "SAR", "AED", "USD", "EUR", "GBP", "TRY", "JOD", "KWD"];
 
@@ -34,8 +35,7 @@ export function SupplierForm({
 }) {
   const t = useTranslations("suppliers.form");
   const qc = useQueryClient();
-  const tenantCurrency =
-    useAuthStore.getState().tenant?.default_currency_code ?? "USD";
+  const tenantCurrency = useTenantCurrency();
 
   const isEdit = mode === "edit";
 

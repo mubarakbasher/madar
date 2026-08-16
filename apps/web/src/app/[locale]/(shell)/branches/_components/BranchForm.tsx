@@ -12,6 +12,7 @@ import {
   type UpdateBranchBody,
 } from "@/lib/api/branches";
 import { useAuthStore } from "@/lib/auth/store";
+import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
 
 const COMMON_TIMEZONES = [
   "Africa/Cairo",
@@ -52,9 +53,13 @@ export function BranchForm({
   const [nameAr, setNameAr] = useState(initial?.name_i18n.ar ?? "");
   const [addressEn, setAddressEn] = useState(initial?.address_i18n?.en ?? "");
   const [addressAr, setAddressAr] = useState(initial?.address_i18n?.ar ?? "");
-  const [currencyCode, setCurrencyCode] = useState(
-    initial?.currency_code ?? useAuthStore.getState().tenant?.default_currency_code ?? "USD",
-  );
+  // Derived rather than seeded: `getState()` inside a render is a one-shot
+  // read, and `tenant` is null for the whole first render — so a new branch
+  // defaulted to the fallback currency no matter what the tenant uses.
+  const tenantCurrency = useTenantCurrency();
+  const [currencyOverride, setCurrencyOverride] = useState<string | null>(null);
+  const currencyCode = currencyOverride ?? initial?.currency_code ?? tenantCurrency;
+  const setCurrencyCode = setCurrencyOverride;
   const [timezone, setTimezone] = useState(initial?.timezone ?? "Africa/Cairo");
   const [openedAt, setOpenedAt] = useState(initial?.opened_at ?? "");
   const [isActive, setIsActive] = useState(initial?.is_active ?? true);

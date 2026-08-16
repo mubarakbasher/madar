@@ -15,6 +15,7 @@ import {
   type TrendsWindow,
 } from "@/lib/api/reports/trends";
 import "./trends.css";
+import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
 
 const WINDOW_OPTIONS: TrendsWindow[] = [7, 30, 90];
 const METRIC_OPTIONS: TrendsMetric[] = ["revenue", "transactions", "gross_profit"];
@@ -49,7 +50,7 @@ function shortDate(iso: string, locale: "en" | "ar"): string {
 export function TrendsClient({ locale }: { locale: "en" | "ar" }) {
   const t = useTranslations("reports.trends");
   const tenant = useAuthStore((s) => s.tenant);
-  const currency = tenant?.default_currency_code ?? "USD";
+  const currency = useTenantCurrency();
 
   const [windowDays, setWindow] = useState<TrendsWindow>(30);
   const [metric, setMetric] = useState<TrendsMetric>("revenue");

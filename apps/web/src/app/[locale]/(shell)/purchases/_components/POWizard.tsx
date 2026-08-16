@@ -25,6 +25,7 @@ import { useAuthStore } from "@/lib/auth/store";
 import { formatCurrency, minorToMajor } from "@/lib/currency";
 import { POLineEditor, type DraftPOLine } from "./POLineEditor";
 import { SendToSupplierDialog } from "./SendToSupplierDialog";
+import { useTenantCurrency } from "@/lib/auth/use-tenant-currency";
 
 type Step = 1 | 2 | 3;
 
@@ -104,8 +105,7 @@ export function POWizard({
   const tCommon = useTranslations("common");
   const role = useAuthStore((s) => s.user?.role ?? "");
   const userBranchId = useAuthStore((s) => s.user?.branch_id ?? null);
-  const tenantCurrency =
-    useAuthStore.getState().tenant?.default_currency_code ?? "USD";
+  const tenantCurrency = useTenantCurrency();
 
   const [step, setStep] = useState<Step>(1);
   const [supplierId, setSupplierId] = useState<string>(initial?.supplier_id ?? prefillSupplierId ?? "");

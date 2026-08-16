@@ -38,9 +38,15 @@ function formatRate(rateBps: number): string {
 
 export function TaxReportClient({ locale }: { locale: "en" | "ar" }) {
   const t = useTranslations("reports.tax");
-  const defaultCurrency = useAuthStore((s) => s.tenant?.default_currency_code ?? "USD");
+  const tenantCurrency = useAuthStore((s) => s.tenant?.default_currency_code);
+  const bootstrapped = useAuthStore((s) => s.bootstrapped);
 
-  const [currency, setCurrency] = useState<string>(defaultCurrency);
+  // See pnl-client.tsx: seeding state from `tenant` freezes the fallback,
+  // because `tenant` is null for the whole first render. Derived instead, so
+  // the tenant's currency arrives when it does and a manual edit still wins.
+  const [currencyOverride, setCurrencyOverride] = useState<string | null>(null);
+  const currency = currencyOverride ?? tenantCurrency ?? "";
+  const setCurrency = setCurrencyOverride;
   const [from, setFrom] = useState<string>(thirtyDaysAgoIso());
   const [to, setTo] = useState<string>(todayIso());
   const [branchId, setBranchId] = useState<string>("");
@@ -61,6 +67,9 @@ export function TaxReportClient({ locale }: { locale: "en" | "ar" }) {
   const reportQ = useQuery<ApiTaxReport>({
     queryKey: ["reports", "tax", query],
     queryFn: () => taxReportRequest(query),
+    // Had no gate at all, so it fired immediately with the wrong currency and
+    // rendered "no taxable sales" over a period that had them.
+    enabled: bootstrapped && currency.length === 3,
     staleTime: 30_000,
   });
 
