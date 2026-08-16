@@ -9,11 +9,19 @@ import { AuthBootstrap } from "../../lib/auth/bootstrap";
 import { pickMessages } from "../../lib/i18n/pick-messages";
 import { FormatProvider } from "../../lib/i18n/format";
 import { ThemeWatcher } from "../../lib/theme/theme";
+import { THEME_COOKIE, resolvedThemeFromCookie } from "../../lib/theme/cookie";
 
-/* Runs before first paint: resolves stored preference (madar_theme) or the
-   OS setting onto <html data-theme> so a dark-preference user never sees a
-   light flash. Mirrors lib/theme/theme.ts (keep in sync). */
-const THEME_INIT = `(function(){try{var s=localStorage.getItem("madar_theme");var t=(s==="light"||s==="dark")?s:(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","light");}})();`;
+/* First-visit only: no theme cookie exists yet, so the server cannot know the
+   OS preference and renders <html> without data-theme. This resolves it before
+   first paint so a dark-preference user never sees a light flash; ThemeWatcher
+   then persists it, and every later render — including a language switch —
+   gets the attribute from the server instead.
+
+   It no longer writes localStorage: the value has to be a cookie so the server
+   can read it. Falling back to "dark" rather than "light" on failure, because
+   the only way to reach the catch is a broken matchMedia, and guessing light
+   for a dark-mode user is the more jarring of the two. */
+const THEME_INIT = `(function(){try{if(document.documentElement.hasAttribute("data-theme"))return;var t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();`;
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -36,12 +44,18 @@ export default async function LocaleLayout({
   // Worst case is one paint in the previous tenant's numerals on a shared
   // device; the store corrects it as soon as bootstrap returns.
   const displayPrefs = decodeDisplayPrefs(cookies().get(DISPLAY_COOKIE)?.value);
+  // Rendered as a real prop, not set imperatively. <html> lives inside the
+  // [locale] segment, so a language switch re-renders it — and React strips
+  // any attribute it did not itself render. That is what silently reverted the
+  // whole app to light mode on every language switch.
+  const theme = resolvedThemeFromCookie(cookies().get(THEME_COOKIE)?.value);
 
   return (
     <html
       lang={locale}
       dir={dir}
       data-accent="terracotta"
+      {...(theme ? { "data-theme": theme } : {})}
       className={fontVariables}
       suppressHydrationWarning
     >
