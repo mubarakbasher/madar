@@ -17,7 +17,7 @@ import { ChangeEmailModal } from "./_components/ChangeEmailModal";
 async function refreshMe(): Promise<void> {
   try {
     const me = await meRequest();
-    useAuthStore.setState((s) => ({ ...s, user: me.user, tenant: me.tenant }));
+    useAuthStore.getState().setSession({ user: me.user, tenant: me.tenant });
   } catch {
     /* ignore */
   }
@@ -40,11 +40,7 @@ export function ProfileClient({ locale }: { locale: "en" | "ar" }) {
     mutationFn: (body: { name?: string; locale?: "en" | "ar" }) =>
       updateProfileRequest(body),
     onSuccess: (data, variables) => {
-      useAuthStore.setState((s) => ({
-        ...s,
-        user: data.user,
-        tenant: data.tenant,
-      }));
+      useAuthStore.getState().setSession({ user: data.user, tenant: data.tenant });
       qc.invalidateQueries({ queryKey: ["auth", "me"] }).catch(() => {});
       if (variables.name !== undefined) {
         setSavedName(true);

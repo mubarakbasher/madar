@@ -157,7 +157,7 @@ export function BusinessClient({ locale }: { locale: "en" | "ar" }) {
       // Refresh /me so the topbar greeting + locale follow the new tenant defaults.
       meRequest()
         .then((me) =>
-          useAuthStore.setState((s) => ({ ...s, user: me.user, tenant: me.tenant })),
+          useAuthStore.getState().setSession({ user: me.user, tenant: me.tenant }),
         )
         .catch(() => {});
       setTimeout(() => setSavedAt(null), 2500);

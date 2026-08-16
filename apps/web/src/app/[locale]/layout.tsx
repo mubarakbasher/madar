@@ -1,11 +1,13 @@
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { fontVariables } from "@madar/ui";
+import { cookies } from "next/headers";
+import { DISPLAY_COOKIE, decodeDisplayPrefs, fontVariables } from "@madar/ui";
 import { routing, type Locale } from "../../../i18n/routing";
 import { QueryProvider } from "../../lib/query/provider";
 import { AuthBootstrap } from "../../lib/auth/bootstrap";
 import { pickMessages } from "../../lib/i18n/pick-messages";
+import { FormatProvider } from "../../lib/i18n/format";
 import { ThemeWatcher } from "../../lib/theme/theme";
 
 /* Runs before first paint: resolves stored preference (madar_theme) or the
@@ -30,6 +32,10 @@ export default async function LocaleLayout({
 
   const messages = await getMessages();
   const dir = locale === "ar" ? "rtl" : "ltr";
+  // No tenant id to check against yet — the session isn't resolved server-side.
+  // Worst case is one paint in the previous tenant's numerals on a shared
+  // device; the store corrects it as soon as bootstrap returns.
+  const displayPrefs = decodeDisplayPrefs(cookies().get(DISPLAY_COOKIE)?.value);
 
   return (
     <html
@@ -45,10 +51,17 @@ export default async function LocaleLayout({
             (error boundary) need; each route group layers its own provider
             with its namespaces — (shell) passes the full dictionary. */}
         <NextIntlClientProvider messages={pickMessages(messages, ["common", "brand"])}>
-          <QueryProvider>
-            <ThemeWatcher />
-            <AuthBootstrap>{children}</AuthBootstrap>
-          </QueryProvider>
+          {/* Display preferences come from the tenants row, but the auth store
+              is empty on first render — so the server resolves them from the
+              madar_display cookie and FormatProvider uses that until bootstrap
+              lands the real tenant. Same value on both sides, so no hydration
+              mismatch and no flash of the wrong numeral system. */}
+          <FormatProvider lang={locale === "ar" ? "ar" : "en"} initialPrefs={displayPrefs}>
+            <QueryProvider>
+              <ThemeWatcher />
+              <AuthBootstrap>{children}</AuthBootstrap>
+            </QueryProvider>
+          </FormatProvider>
         </NextIntlClientProvider>
       </body>
     </html>
