@@ -18,7 +18,7 @@ function todayIso(): string {
 
 function fmtMoney(cents: string, currency: string, locale: "en" | "ar"): string {
   try {
-    return formatMoney(cents, currency || "USD", locale);
+    return formatMoney(cents, currency || "EGP", locale);
   } catch {
     return `${currency} ${minorToMajor(cents, currency).toFixed(currencyMinorUnits(currency))}`;
   }

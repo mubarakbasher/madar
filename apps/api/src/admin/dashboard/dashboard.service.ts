@@ -31,6 +31,27 @@ export interface TrendsResponse {
   mrr_trend: Array<{ date: string; amount_cents: string; currency_code: string }>;
 }
 
+/**
+ * MRR grouped by the plan's own currency. Returns the currency billed to the
+ * most tenants and that currency's total — so the number and its label always
+ * agree, and amounts in different currencies are never added together.
+ */
+function summarizeMrr(
+  rows: Array<{ plan: { monthly_price_cents: bigint; currency_code: string } | null }>,
+): { currency: string; cents: bigint } {
+  const totals = new Map<string, { cents: bigint; tenants: number }>();
+  for (const row of rows) {
+    // Tenants without a plan carry no commercial signal yet.
+    if (!row.plan) continue;
+    const entry = totals.get(row.plan.currency_code) ?? { cents: 0n, tenants: 0 };
+    entry.cents += row.plan.monthly_price_cents;
+    entry.tenants += 1;
+    totals.set(row.plan.currency_code, entry);
+  }
+  const top = [...totals.entries()].sort((a, b) => b[1].tenants - a[1].tenants)[0];
+  return top ? { currency: top[0], cents: top[1].cents } : { currency: "EGP", cents: 0n };
+}
+
 const TRIALS_WINDOW_DAYS = 7;
 const ACTIVE_STATUSES = ["active", "trialing"] as const;
 const MRR_STATUSES = ["active", "trialing", "grace_period"] as const;
@@ -47,8 +68,7 @@ export class DashboardService {
         adminPrisma.tenant.findMany({
           where: { status: { in: [...MRR_STATUSES] } },
           select: {
-            default_currency_code: true,
-            plan: { select: { monthly_price_cents: true } },
+            plan: { select: { monthly_price_cents: true, currency_code: true } },
           },
         }),
         adminPrisma.tenant.count({ where: { status: { in: [...ACTIVE_STATUSES] } } }),
@@ -68,20 +88,12 @@ export class DashboardService {
         }),
       ]);
 
-    let mrrCents = 0n;
-    const currencyCounts = new Map<string, number>();
-    for (const t of mrrTenants) {
-      // Tenants without a plan contribute 0 to MRR and aren't counted in
-      // the dominant-currency tally either (no commercial signal yet).
-      if (!t.plan) continue;
-      mrrCents += t.plan.monthly_price_cents;
-      currencyCounts.set(
-        t.default_currency_code,
-        (currencyCounts.get(t.default_currency_code) ?? 0) + 1,
-      );
-    }
-    const dominantCurrency =
-      [...currencyCounts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? "USD";
+    // Money is grouped by the PLAN's currency, never the tenant's: the amount
+    // summed here comes from plan.monthly_price_cents, so labelling it with the
+    // tenant's default_currency_code reported (say) USD prices as EGP. Grouping
+    // also means totals are never summed across currencies — the reported
+    // figure and its label always describe the same set of plans.
+    const { currency: dominantCurrency, cents: mrrCents } = summarizeMrr(mrrTenants);
 
     const pendingCount = proofAgg._count._all;
     const oldestPending = proofAgg._min.created_at;
@@ -110,24 +122,14 @@ export class DashboardService {
   }
 
   async computeTrends(): Promise<TrendsResponse> {
-    // ── Dominant currency (same logic as computeKpi) ──────────────
+    // ── Reporting currency (same logic as computeKpi) ─────────────
     const mrrTenants = await adminPrisma.tenant.findMany({
       where: { status: { in: [...MRR_STATUSES] } },
       select: {
-        default_currency_code: true,
-        plan: { select: { monthly_price_cents: true } },
+        plan: { select: { monthly_price_cents: true, currency_code: true } },
       },
     });
-    const currencyCounts = new Map<string, number>();
-    for (const t of mrrTenants) {
-      if (!t.plan) continue;
-      currencyCounts.set(
-        t.default_currency_code,
-        (currencyCounts.get(t.default_currency_code) ?? 0) + 1,
-      );
-    }
-    const dominantCurrency =
-      [...currencyCounts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? "USD";
+    const { currency: dominantCurrency } = summarizeMrr(mrrTenants);
 
     // ── Tenant growth (90 days) ──────────────────────────────────
     const growthRows = await adminPrisma.$queryRaw<
@@ -168,7 +170,9 @@ export class DashboardService {
       FROM dates
       LEFT JOIN tenants t ON t.created_at::date <= d
         AND t.status IN ('active', 'trialing', 'grace_period')
-      LEFT JOIN plans p ON p.id = t.plan_id
+      -- Constrained to the reported currency: the series is labelled with one
+      -- currency, so it must not sum plans priced in another.
+      LEFT JOIN plans p ON p.id = t.plan_id AND p.currency_code = ${dominantCurrency}
       GROUP BY d ORDER BY d
     `;
 

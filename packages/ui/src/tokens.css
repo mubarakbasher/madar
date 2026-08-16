@@ -155,6 +155,11 @@ html[lang="ar"] body { font-family: var(--font-arabic); }
 
 button { font-family: inherit; cursor: pointer; }
 input, select, textarea { font-family: inherit; color: inherit; }
+/* Checkboxes and radios were rendering in the browser's default blue — OS
+   chrome in a design system that forbids hardcoded colour. `accent-color`
+   tints the native control, so it follows the tenant/admin accent and both
+   themes for free, without the regression surface of a fully custom control. */
+input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); }
 
 /* Tabular numerals — apply broadly to data */
 .tnum { font-variant-numeric: tabular-nums lining-nums; }
@@ -208,6 +213,18 @@ html[lang="ar"] .serif { font-family: var(--font-arabic); }
 @keyframes skel { 0%{background-position:0% 50%} 100%{background-position:-200% 50%} }
 
 /* ─── App shell ─────────────────────────────────────── */
+
+/* Full-width shell banners (impersonation, subscription state). These sit
+   OUTSIDE .app: placed inside it, the grid auto-placed them into an implicit
+   row after the named sidebar/topbar/content areas — i.e. the page footer,
+   below the fold, where nobody ever saw them. */
+.app-banners {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 60;
+}
+
 .app {
   display: grid;
   grid-template-columns: var(--sidebar-w) 1fr;
@@ -225,7 +242,7 @@ html[lang="ar"] .serif { font-family: var(--font-arabic); }
   background: var(--paper);
   border-inline-end: 1px solid var(--rule);
   display: flex; flex-direction: column;
-  position: sticky; top: 0; height: 100vh;
+  position: sticky; inset-block-start: 0; height: 100vh;
   z-index: 10;
   overflow: hidden;
 }
@@ -349,7 +366,7 @@ html[lang="ar"] .serif { font-family: var(--font-arabic); }
   padding: 0 24px;
   border-bottom: 1px solid var(--rule);
   background: var(--bg);
-  position: sticky; top: 0; z-index: 9;
+  position: sticky; inset-block-start: 0; z-index: 9;
 }
 .tb-crumb {
   font-family: var(--serif); font-size: 17px; font-weight: 500;

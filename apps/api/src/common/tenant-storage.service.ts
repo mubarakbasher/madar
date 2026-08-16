@@ -183,6 +183,24 @@ export class TenantStorageService {
   }
 
   /**
+   * Like {@link getObject}, but returns null when the object is not in storage
+   * instead of throwing. A row can outlive its file (a failed upload, a
+   * restored database, seeded fixtures) and that is a 404, not a 500 — the raw
+   * ENOENT used to escape as an unhandled exception with a stack trace.
+   */
+  async getObjectOrNull(key: string): Promise<Buffer | null> {
+    if (!(await this.storage.exists(key))) return null;
+    try {
+      return await this.storage.get(key);
+    } catch (e) {
+      // Raced with a delete between exists() and get().
+      const code = (e as NodeJS.ErrnoException).code;
+      if (code === "ENOENT") return null;
+      throw e;
+    }
+  }
+
+  /**
    * Deletes an object. Idempotent: missing objects do NOT throw.
    */
   async deleteObject(key: string): Promise<void> {

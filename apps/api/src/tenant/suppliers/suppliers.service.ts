@@ -993,7 +993,14 @@ export class SuppliersService {
         message: "Document not found",
       });
     }
-    const buffer = await this.tenantStorage.getObject(row.file_path);
+    // The row can outlive its file; that is a 404, not an unhandled ENOENT.
+    const buffer = await this.tenantStorage.getObjectOrNull(row.file_path);
+    if (!buffer) {
+      throw new NotFoundException({
+        code: "document_file_missing",
+        message: "Document file is missing from storage",
+      });
+    }
     return { buffer, mime: row.mime_type, filename: row.original_filename };
   }
 

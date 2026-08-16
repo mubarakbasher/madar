@@ -55,6 +55,27 @@ function majorToCents(major: string, currencyCode: string): number {
   return n;
 }
 
+// API validation keys that have an input to attach the message to. Anything the
+// server rejects outside this set is shown in the error banner instead, so no
+// field error is ever silently swallowed. Keep in sync with the `error=` props below.
+const RENDERED_FIELD_KEYS = new Set([
+  "sku",
+  "name",
+  "name_en",
+  "name_ar",
+  "name_i18n",
+  "name_i18n.en",
+  "name_i18n.ar",
+  "price_major",
+  "price_cents",
+  "cost_major",
+  "cost_cents",
+  "description_i18n",
+  "description_i18n.en",
+  "description_i18n.ar",
+  "barcode",
+]);
+
 export function ProductForm({
   mode,
   product,
@@ -73,6 +94,7 @@ export function ProductForm({
   const [activeLang, setActiveLang] = useState<"en" | "ar">(locale === "ar" ? "ar" : "en");
   const [serverError, setServerError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [unmappedErrors, setUnmappedErrors] = useState<string[]>([]);
 
   // Image state.
   // Create flow: pendingImageFile is held until product is created, then uploaded.
@@ -187,7 +209,19 @@ export function ProductForm({
 
   function handleApiError(err: unknown) {
     if (err instanceof ApiError) {
-      if (err.fields) setFieldErrors(err.fields);
+      if (err.fields) {
+        setFieldErrors(err.fields);
+        // The API keys errors by its own dotted schema path (`description_i18n`,
+        // `initial_stock.0.qty`, `currency_code`); only some of those have an
+        // input to hang a message on. Anything unrenderable goes to the banner
+        // instead of being dropped — it used to surface as a bare
+        // "Validation failed" with no field highlighted anywhere.
+        setUnmappedErrors(
+          Object.entries(err.fields)
+            .filter(([key]) => !RENDERED_FIELD_KEYS.has(key))
+            .map(([key, message]) => `${key}: ${message}`),
+        );
+      }
       setServerError(err.message);
     } else {
       setServerError(t("errors.network"));
@@ -269,6 +303,7 @@ export function ProductForm({
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setServerError(null);
+    setUnmappedErrors([]);
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setFieldErrors(errs);
@@ -421,7 +456,15 @@ export function ProductForm({
                   autoFocus
                 />
               </Field>
-              <Field label={t("fields.description")} optional>
+              <Field
+                label={t("fields.description")}
+                optional
+                error={
+                  fieldErrors.description_i18n ??
+                  fieldErrors["description_i18n.en"] ??
+                  fieldErrors["description_i18n.ar"]
+                }
+              >
                 <Textarea
                   value={form.description_en}
                   onChange={(v) => {
@@ -525,7 +568,7 @@ export function ProductForm({
               placeholder="BNS-001"
             />
           </Field>
-          <Field label={t("fields.barcode")} optional>
+          <Field label={t("fields.barcode")} optional error={fieldErrors.barcode}>
             <Input value={form.barcode} onChange={(v) => set("barcode", v)} />
           </Field>
         </Section>
@@ -723,6 +766,13 @@ export function ProductForm({
             }}
           >
             {serverError}
+            {unmappedErrors.length > 0 && (
+              <ul style={{ margin: "6px 0 0", paddingInlineStart: "var(--space-4)" }}>
+                {unmappedErrors.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
 

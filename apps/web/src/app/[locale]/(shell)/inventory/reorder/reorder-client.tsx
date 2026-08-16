@@ -24,7 +24,7 @@ function i18nName(n: { en?: string; ar?: string } | null, fallback: string, loca
 
 function fmtMoney(cents: string | number, currency: string, locale: "en" | "ar"): string {
   try {
-    return formatMoney(cents, currency || "USD", locale);
+    return formatMoney(cents, currency || "EGP", locale);
   } catch {
     return `${currency} ${minorToMajor(cents, currency).toFixed(currencyMinorUnits(currency))}`;
   }

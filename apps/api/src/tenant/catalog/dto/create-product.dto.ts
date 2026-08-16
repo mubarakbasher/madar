@@ -3,11 +3,15 @@ import { i18nText } from "../../../shared/dto/i18n-text";
 
 const I18N_TEXT = i18nText(200);
 
+// `.nullable()` is load-bearing: the product form sends `description_i18n: null`
+// when the (optional) description is left blank, and `.optional()` alone accepts
+// only `undefined` — which rejected every product created without a description.
 const I18N_TEXT_OPTIONAL = z
   .object({
     en: z.string().trim().max(2000).optional(),
     ar: z.string().trim().max(2000).optional(),
   })
+  .nullable()
   .optional();
 
 const SKU = z

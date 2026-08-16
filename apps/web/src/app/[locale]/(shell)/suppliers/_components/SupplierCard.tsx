@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import type { ApiSupplierSummary } from "@/lib/api/suppliers";
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency, formatMoney } from "@/lib/currency";
 import { ReliabilityDial } from "./ReliabilityDial";
 
 function pickName(
@@ -38,7 +38,7 @@ export function SupplierCard({
   // Real reliability is on the detail page.
   const name = pickName(supplier.name_i18n, locale, supplier.code);
   const owed = Number(supplier.owed_cents);
-  const owedFormatted = formatCurrency(owed / 100, supplier.currency_code, locale);
+  const owedFormatted = formatMoney(owed, supplier.currency_code, locale);
   const lastOrder = formatLastOrder(supplier.last_order_at, locale);
   const isHighOwed = owed > 1_000_000; // 10k major units
 

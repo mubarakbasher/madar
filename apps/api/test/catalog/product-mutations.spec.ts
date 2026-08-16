@@ -65,6 +65,55 @@ describe("Product mutations (POST/PATCH/DELETE /v1/products)", () => {
     expect(audit.some((r) => (r.after as { sku?: string })?.sku === sku)).toBe(true);
   });
 
+  // Regression: the product form sends `description_i18n: null` when the
+  // optional description is left blank. The create schema was `.optional()`
+  // without `.nullable()`, so every such product was rejected with 400
+  // validation_failed — i.e. a description was de facto required.
+  it("POST /v1/products accepts a null description_i18n", async () => {
+    const sku = `NULLDESC-${randomUUID().slice(0, 6).toUpperCase()}`;
+    const res = await request(booted.http)
+      .post("/v1/products")
+      .set("Authorization", `Bearer ${ownerToken}`)
+      .set("Idempotency-Key", randomUUID())
+      .send({
+        sku,
+        name_i18n: { en: "No description", ar: "بدون وصف" },
+        description_i18n: null,
+        price_cents: 1000,
+        cost_cents: 400,
+        currency_code: "USD",
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body.sku).toBe(sku);
+    expect(res.body.description_i18n).toBeNull();
+  });
+
+  it("PATCH /v1/products/:id accepts a null description_i18n", async () => {
+    const sku = `CLEARDESC-${randomUUID().slice(0, 6).toUpperCase()}`;
+    const created = await request(booted.http)
+      .post("/v1/products")
+      .set("Authorization", `Bearer ${ownerToken}`)
+      .set("Idempotency-Key", randomUUID())
+      .send({
+        sku,
+        name_i18n: { en: "Has description", ar: "له وصف" },
+        description_i18n: { en: "Something", ar: "شيء" },
+        price_cents: 1000,
+        cost_cents: 400,
+        currency_code: "USD",
+      });
+    expect(created.status).toBe(201);
+
+    const res = await request(booted.http)
+      .patch(`/v1/products/${created.body.id}`)
+      .set("Authorization", `Bearer ${ownerToken}`)
+      .send({ description_i18n: null });
+
+    expect(res.status).toBe(200);
+    expect(res.body.description_i18n).toBeNull();
+  });
+
   it("POST /v1/products with initial_stock writes branch_stock + stock_movement", async () => {
     const sku = `STK-${randomUUID().slice(0, 6).toUpperCase()}`;
     const res = await request(booted.http)

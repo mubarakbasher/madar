@@ -15,7 +15,7 @@ import { useAdminAuthStore } from "@/lib/auth/store";
 import { t } from "@/lib/i18n";
 
 function formatCents(cents: string, currency: string): string {
-  return formatMoney(cents, currency || "USD", "en-US", { min: 0 });
+  return formatMoney(cents, currency || "EGP", "en-US", { min: 0 });
 }
 
 function formatLimit(n: number): string {

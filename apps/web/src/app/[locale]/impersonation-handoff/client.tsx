@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useAuthStore } from "@/lib/auth/store";
+import { writeImpersonation } from "@/lib/auth/impersonation";
 import { apiFetch, ApiError } from "@/lib/api/client";
 
 interface ExchangeResponse {
@@ -60,14 +61,15 @@ export function ImpersonationHandoffClient({ code }: { code: string }) {
         method: "POST",
         body: { code },
       });
-      sessionStorage.setItem(
-        "madar_impersonation",
-        JSON.stringify({
-          admin_email: ex.impersonator_email,
-          target_tenant_name: ex.target_tenant.name,
-          expires_at: ex.expires_at,
-        }),
-      );
+      // Includes the access token: the redirect below is a full page load,
+      // so anything left only in the Zustand store is gone (see
+      // lib/auth/impersonation.ts).
+      writeImpersonation({
+        admin_email: ex.impersonator_email,
+        target_tenant_name: ex.target_tenant.name,
+        expires_at: ex.expires_at,
+        access_token: ex.access_token,
+      });
       useAuthStore.getState().setAuth({
         accessToken: ex.access_token,
         user: {

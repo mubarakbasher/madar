@@ -5,14 +5,11 @@ import { useTranslations } from "next-intl";
 import { LogOut } from "lucide-react";
 import { apiFetch, ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/lib/auth/store";
-
-const SS_KEY = "madar_impersonation";
-
-interface ImpersonationState {
-  admin_email: string;
-  target_tenant_name: string;
-  expires_at: string;
-}
+import {
+  clearImpersonation,
+  readImpersonation,
+  type ImpersonationSession,
+} from "@/lib/auth/impersonation";
 
 const ADMIN_ORIGIN =
   (typeof process !== "undefined" && process.env.NEXT_PUBLIC_ADMIN_WEB_ORIGIN) ||
@@ -20,41 +17,39 @@ const ADMIN_ORIGIN =
 
 export function ImpersonationBanner() {
   const t = useTranslations("shell.impersonation");
-  const [state, setState] = useState<ImpersonationState | null>(null);
+  const [state, setState] = useState<ImpersonationSession | null>(null);
   const [exiting, setExiting] = useState(false);
+  const [exitError, setExitError] = useState<string | null>(null);
 
   useEffect(() => {
-    const raw = typeof window !== "undefined" ? sessionStorage.getItem(SS_KEY) : null;
-    if (raw) {
-      try {
-        setState(JSON.parse(raw) as ImpersonationState);
-      } catch {
-        sessionStorage.removeItem(SS_KEY);
-      }
-    }
+    setState(readImpersonation());
   }, []);
 
   if (!state) return null;
 
   async function exit() {
     setExiting(true);
+    setExitError(null);
     try {
+      // Only tear down on success. A failed exit means the server never wrote
+      // `impersonation_ended`, so the session stays open in the platform audit
+      // — swallowing the error here made that invisible, and the admin was
+      // returned to the console as if everything had gone fine.
       await apiFetch("/v1/impersonation/exit", { method: "POST" });
     } catch (err) {
-      // Even if the API call fails, clear the session so the user isn't stuck.
-      if (!(err instanceof ApiError)) console.error(err);
-    } finally {
-      sessionStorage.removeItem(SS_KEY);
-      useAuthStore.getState().clearAuth();
-      window.location.href = ADMIN_ORIGIN + "/tenants";
+      setExiting(false);
+      setExitError(err instanceof ApiError ? err.message : t("exitFailed"));
+      return;
     }
+    clearImpersonation();
+    useAuthStore.getState().clearAuth();
+    window.location.href = ADMIN_ORIGIN + "/tenants";
   }
 
   return (
     <div
       role="status"
       style={{
-        gridColumn: "1 / -1",
         background: "linear-gradient(90deg, var(--rose) 0%, color-mix(in oklab, var(--rose) 75%, #000) 100%)",
         color: "white",
         padding: "10px 20px",
@@ -62,9 +57,6 @@ export function ImpersonationBanner() {
         alignItems: "center",
         gap: "var(--space-4)",
         fontSize: 13,
-        position: "sticky",
-        top: 0,
-        zIndex: 50,
       }}
     >
       <span
@@ -105,8 +97,13 @@ export function ImpersonationBanner() {
         }}
       >
         <LogOut size={13} strokeWidth={1.5} />
-        {exiting ? "Exiting…" : "Exit impersonation"}
+        {exiting ? t("exiting") : t("exit")}
       </button>
+      {exitError && (
+        <span role="alert" style={{ fontSize: 12, fontWeight: 600 }}>
+          {exitError}
+        </span>
+      )}
     </div>
   );
 }

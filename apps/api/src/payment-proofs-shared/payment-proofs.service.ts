@@ -910,7 +910,13 @@ export class PaymentProofsService {
     proofId: string,
   ): Promise<{ buffer: Buffer; mime: string; filename: string }> {
     const proof = await this.fetchRow(actor, proofId);
-    const buffer = await this.tenantStorage.getObject(proof.receipt_image_url);
+    const buffer = await this.tenantStorage.getObjectOrNull(proof.receipt_image_url);
+    if (!buffer) {
+      throw new NotFoundException({
+        code: "receipt_not_found",
+        message: "Receipt file is missing from storage",
+      });
+    }
     const mime = mimeFromExtension(proof.receipt_image_url);
     const filename = proof.receipt_image_url.split("/").pop() ?? `${proofId}.bin`;
     return { buffer, mime, filename };

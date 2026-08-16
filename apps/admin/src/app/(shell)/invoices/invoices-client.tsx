@@ -26,7 +26,7 @@ const STATUS_TONE: Record<string, { color: string; bg: string }> = {
 };
 
 function formatCents(cents: string, currency: string): string {
-  return formatMoney(cents, currency || "USD", "en-US", { min: 0, max: 0 });
+  return formatMoney(cents, currency || "EGP", "en-US", { min: 0, max: 0 });
 }
 
 function overdueTone(days: number): string {

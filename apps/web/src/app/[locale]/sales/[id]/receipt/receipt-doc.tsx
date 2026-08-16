@@ -22,7 +22,7 @@ const SIZES: Size[] = ["58mm", "80mm", "a4"];
 
 // Receipts always print Western digits ("en") regardless of UI locale.
 function centsMajor(cents: string | bigint, currency: string): string {
-  return formatMoney(cents, currency || "USD", "en");
+  return formatMoney(cents, currency || "EGP", "en");
 }
 
 function fmtDate(iso: string, locale: "en" | "ar"): string {

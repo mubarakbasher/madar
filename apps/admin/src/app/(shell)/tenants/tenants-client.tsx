@@ -29,7 +29,7 @@ const STATUSES: Array<{ value: TenantStatus | "all"; labelKey: "all" | "trial" |
 const PAGE_SIZE = 50;
 
 function formatCents(cents: string, currency: string): string {
-  return formatMoney(cents, currency || "USD", "en-US", { min: 0, max: 0 });
+  return formatMoney(cents, currency || "EGP", "en-US", { min: 0, max: 0 });
 }
 
 function relativeTime(iso: string | null): string {

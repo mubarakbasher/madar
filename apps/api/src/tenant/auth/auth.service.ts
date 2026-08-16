@@ -161,7 +161,10 @@ export class AuthService {
           name: input.business_name,
           name_i18n: { en: input.business_name, ar: input.business_name },
           country_code: input.country_code,
-          default_currency_code: input.default_currency_code ?? "USD",
+          // Matches NEXT_PUBLIC_DEFAULT_CURRENCY and the platform receiving
+          // account. Defaulting to USD silently created tenants whose money
+          // disagreed with the bank details they were told to transfer to.
+          default_currency_code: input.default_currency_code ?? "EGP",
           default_locale: input.default_locale,
           // plan_id intentionally omitted — tenant picks their plan post-signup
           // via /v1/onboarding/select-plan. Until they pick, TenantAuthGuard

@@ -10,7 +10,7 @@ interface Props {
 }
 
 function formatCents(cents: string, currency: string): string {
-  return formatMoney(cents, currency || "USD", "en-US", { min: 0, max: 0 });
+  return formatMoney(cents, currency || "EGP", "en-US", { min: 0, max: 0 });
 }
 
 export function MrrTrendChart({ data }: Props) {

@@ -34,7 +34,7 @@ const ACTIVITY_DOT_COLOR: Record<ActivityItem["kind"], string> = {
 };
 
 function formatCents(cents: string, currency: string): string {
-  return formatMoney(cents, currency || "USD", "en-US", { min: 0, max: 0 });
+  return formatMoney(cents, currency || "EGP", "en-US", { min: 0, max: 0 });
 }
 
 function relativeTime(iso: string): string {

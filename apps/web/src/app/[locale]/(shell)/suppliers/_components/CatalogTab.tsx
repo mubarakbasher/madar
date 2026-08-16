@@ -13,7 +13,7 @@ import {
 } from "@/lib/api/suppliers";
 import { productsListRequest, type ApiProduct } from "@/lib/api/catalog";
 import { useAuthStore } from "@/lib/auth/store";
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency, formatMoney } from "@/lib/currency";
 
 const COMMON_CURRENCIES = ["EGP", "SDG", "SAR", "AED", "USD", "EUR", "GBP", "TRY", "JOD", "KWD"];
 
@@ -262,7 +262,7 @@ function EditableRow({
         <div className="sup-typeahead-sku">{entry.product_sku}</div>
       </td>
       <td>{entry.supplier_sku ?? "—"}</td>
-      <td>{formatCurrency(unitCostCents / 100, entry.currency_code, locale)}</td>
+      <td>{formatMoney(unitCostCents, entry.currency_code, locale)}</td>
       <td>{entry.currency_code}</td>
       <td>
         <button

@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Activity, Receipt } from "lucide-react";
 import type { ApiSupplierActivity, ApiSupplierDetail } from "@/lib/api/suppliers";
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency, formatMoney } from "@/lib/currency";
 
 function formatRelative(iso: string, locale: string): string {
   const diffMs = Date.now() - new Date(iso).getTime();
@@ -85,7 +85,7 @@ function ActivityRow({
         </div>
         {total !== null && (
           <div className="sup-activity-amount">
-            {formatCurrency(total / 100, supplierCurrency, locale)}
+            {formatMoney(total, supplierCurrency, locale)}
           </div>
         )}
       </li>

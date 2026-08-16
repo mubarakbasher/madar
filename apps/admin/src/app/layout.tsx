@@ -9,15 +9,23 @@ export const metadata: Metadata = {
   description: "Super-admin console for the Madar platform.",
 };
 
+// Pre-paint theme resolution, mirroring apps/web's root layout — keep the two
+// in sync. Previously the theme was only resolved by a useEffect inside the
+// shell's topbar, so `data-theme="light"` was baked into the server HTML and
+// the auth pages (/login, MFA, accept-invite) stayed light forever for
+// dark-mode users, while the shell behind them flipped to dark after hydration.
+// Storage key stays admin-specific: the two apps have separate toggles.
+const THEME_INIT = `(function(){try{var s=localStorage.getItem("madar_admin_theme");var t=(s==="light"||s==="dark")?s:(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","light");}})();`;
+
 /**
  * The admin app is English-only and pins the slate-teal accent via
- * `class="theme-admin"`. `data-theme="light"` is the default; dark-mode
- * toggle ships with the dashboard slice (1.14).
+ * `class="theme-admin"`.
  */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="light" className={`theme-admin ${fontVariables}`}>
+    <html lang="en" className={`theme-admin ${fontVariables}`} suppressHydrationWarning>
       <body>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
         <QueryProvider>
           <AdminAuthBootstrap>{children}</AdminAuthBootstrap>
         </QueryProvider>
