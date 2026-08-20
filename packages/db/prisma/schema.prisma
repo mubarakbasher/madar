@@ -60,6 +60,7 @@ enum PaymentMethod {
   bank_transfer
   store_credit
   split
+  on_account
 }
 
 enum SalePaymentStatus {
@@ -67,6 +68,8 @@ enum SalePaymentStatus {
   payment_pending
   disputed
   refunded
+  partially_paid
+  unpaid
 }
 
 enum CashierShiftStatus {
@@ -139,6 +142,12 @@ enum StoreCreditReference {
   manual_adjust
   expiration
   cancel
+}
+
+enum ReceivableReference {
+  sale
+  sale_payment
+  manual_adjust
 }
 
 enum SyncConflictKind {
@@ -445,12 +454,15 @@ model Customer {
   notes                       String?
   store_credit_balance_minor  BigInt    @default(0)
   store_credit_currency_code  String?   @db.Char(3)
+  receivable_balance_minor    BigInt    @default(0)
+  receivable_currency_code    String?   @db.Char(3)
   created_at                  DateTime  @default(now()) @db.Timestamptz
   updated_at                  DateTime  @default(now()) @db.Timestamptz
   created_by                  String?   @db.Uuid
   deleted_at                  DateTime? @db.Timestamptz
 
   store_credit_ledger StoreCreditLedger[]
+  receivable_ledger   CustomerReceivableLedger[]
 
   // (tenant_id, phone) and (tenant_id, email) unique via partial indexes
   // WHERE deleted_at IS NULL.
@@ -653,6 +665,7 @@ model Sale {
   discount_cents      BigInt            @default(0)
   tax_cents           BigInt            @default(0)
   total_cents         BigInt
+  balance_due_cents   BigInt            @default(0)
   currency_code       String            @db.Char(3)
   payment_method      PaymentMethod
   payment_status      SalePaymentStatus @default(paid)
@@ -681,6 +694,7 @@ model Sale {
   @@index([tenant_id, branch_id, occurred_at(sort: Desc)])
   @@index([tenant_id, payment_status])
   @@index([tenant_id, device_id, client_sequence(sort: Desc)])
+  @@index([tenant_id, customer_id, payment_status])
   @@map("sales")
 }
 
@@ -1115,6 +1129,27 @@ model StoreCreditLedger {
   @@index([tenant_id, customer_id, created_at(sort: Desc)])
   @@index([tenant_id, reference_table, reference_id])
   @@map("store_credit_ledger")
+}
+
+model CustomerReceivableLedger {
+  id                  String              @id @default(uuid()) @db.Uuid
+  tenant_id           String              @db.Uuid
+  customer_id         String              @db.Uuid
+  amount_minor        BigInt
+  balance_after_minor BigInt
+  currency_code       String              @db.Char(3)
+  reference_table     ReceivableReference
+  reference_id        String?             @db.Uuid
+  note_i18n           Json?
+  created_by          String?             @db.Uuid
+  created_at          DateTime            @default(now()) @db.Timestamptz
+
+  // Restrict: a hard customer delete must never erase financial history.
+  customer Customer @relation(fields: [customer_id], references: [id], onDelete: Restrict)
+
+  @@index([tenant_id, customer_id, created_at(sort: Desc)])
+  @@index([tenant_id, reference_table, reference_id])
+  @@map("customer_receivable_ledger")
 }
 
 model SalePayment {
