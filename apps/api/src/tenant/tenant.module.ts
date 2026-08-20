@@ -17,6 +17,7 @@ import { SalesModule } from "./sales/sales.module";
 import { ShiftsModule } from "./shifts/shifts.module";
 import { TenantPaymentProofsModule } from "./payment-proofs/payment-proofs.module";
 import { PurchaseOrdersModule } from "./purchase-orders/purchase-orders.module";
+import { ReceivablesModule } from "./receivables/receivables.module";
 import { ReconcileModule } from "./reconcile/reconcile.module";
 import { ReorderModule } from "./reorder/reorder.module";
 import { ReportsModule } from "./reports/reports.module";
@@ -48,6 +49,7 @@ import { UsersModule } from "./users/users.module";
     ReorderModule,
     StockTransfersModule,
     StoreCreditModule,
+    ReceivablesModule,
     SuppliersModule,
     PurchaseOrdersModule,
     ReconcileModule,
