@@ -51,9 +51,11 @@ export const CreateSaleSchema = z
     lines: z.array(CartLineSchema).min(1, "At least one line is required"),
     cash_tendered_cents: z.number().int().nonnegative().nullable().optional(),
     payments: z.array(SalePaymentInputSchema).min(1).max(8).optional(),
+    // Credit sale: minor units left owing on the customer's account.
+    on_account_cents: BigIntable.optional(),
   })
   .superRefine((data, ctx) => {
-    if (!data.payments && !data.payment_method) {
+    if (!data.payments && !data.payment_method && !data.on_account_cents) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["payment_method"],
