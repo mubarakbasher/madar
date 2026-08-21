@@ -130,3 +130,61 @@ export function customerStoreCreditAdjustRequest(
     body,
   });
 }
+
+// ─── receivables (credit sales) ───────────────────────────────────────
+
+export interface ApiReceivableOpenSale {
+  sale_id: string;
+  code: string;
+  occurred_at: string;
+  total_cents: string;
+  balance_due_cents: string;
+  payment_status: string;
+}
+
+export interface ApiReceivableLedgerEntry {
+  id: string;
+  amount_minor: string;
+  balance_after_minor: string;
+  reference_table: string;
+  reference_id: string | null;
+  note_i18n: { en?: string; ar?: string } | null;
+  created_by: string | null;
+  created_at: string;
+}
+
+export interface ApiReceivablesSummary {
+  customer_id: string;
+  balance_minor: string;
+  currency_code: string | null;
+  open_sales: ApiReceivableOpenSale[];
+  ledger: ApiReceivableLedgerEntry[];
+}
+
+export type SettleReceivableMethod = "cash" | "card" | "bank_transfer";
+
+export interface SettleReceivableBody {
+  sale_id: string;
+  method: SettleReceivableMethod;
+  amount_cents: number;
+  approval_code?: string;
+  cash_tendered_cents?: number;
+}
+
+export interface SettleReceivableResponse extends ApiReceivablesSummary {
+  sale_payment_id: string;
+}
+
+export function customerReceivablesRequest(id: string): Promise<ApiReceivablesSummary> {
+  return apiFetch(`/v1/customers/${id}/receivables`);
+}
+
+export function customerReceivablesSettleRequest(
+  id: string,
+  body: SettleReceivableBody,
+): Promise<SettleReceivableResponse> {
+  return apiFetch(`/v1/customers/${id}/receivables/settle`, {
+    method: "POST",
+    body,
+  });
+}

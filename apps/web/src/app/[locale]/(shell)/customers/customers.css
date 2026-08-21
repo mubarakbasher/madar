@@ -400,3 +400,84 @@
   border-color: color-mix(in oklab, var(--rose) 40%, var(--rule));
   color: var(--rose);
 }
+
+/* balance tab */
+
+.cu-balance-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin-block-end: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 20px;
+}
+
+.cu-balance-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+}
+
+.cu-balance-value {
+  margin-block-start: 6px;
+  font-family: var(--serif);
+  font-size: 48px;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.cu-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-block: 24px 12px;
+}
+
+.cu-section-title {
+  font-family: var(--serif);
+  font-size: 18px;
+  color: var(--ink);
+  margin: 0;
+  font-weight: 500;
+}
+
+.cu-method-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.cu-method-tab {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  color: var(--ink-3);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+}
+
+.cu-method-tab[aria-selected="true"] {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.cu-select {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--bg-elev);
+  color: var(--ink);
+  font-family: inherit;
+}

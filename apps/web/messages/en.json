@@ -3440,6 +3440,7 @@
     "tabs": {
       "overview": "Overview",
       "credit": "Store credit",
+      "balance": "Balance",
       "sales": "Sales history"
     },
     "kpi": {
@@ -3544,6 +3545,69 @@
       "page": "Page {page} of {total}",
       "prev": "Previous",
       "next": "Next"
+    },
+    "balance": {
+      "title": "Balance",
+      "outstanding": "Outstanding balance",
+      "openSales": "Open sales",
+      "history": "History",
+      "receivePayment": "Receive payment",
+      "loading": "Loading balance…",
+      "empty": {
+        "title": "No open balance",
+        "body": "Credit sales this customer hasn't paid off yet will show up here.",
+        "cta": "Go to POS"
+      },
+      "settledToast": "Payment recorded.",
+      "colCode": "Receipt",
+      "colDate": "Date",
+      "colTotal": "Total",
+      "colBalanceDue": "Balance due",
+      "columns": {
+        "date": "Date",
+        "reference": "Reference",
+        "amount": "Amount",
+        "balanceAfter": "Balance after",
+        "note": "Note"
+      },
+      "error": {
+        "title": "Couldn't load balance",
+        "body": "We hit a snag fetching this customer's receivables.",
+        "retry": "Try again"
+      },
+      "modal": {
+        "title": "Receive payment",
+        "saleLabel": "Sale",
+        "amountLabel": "Amount",
+        "methodLabel": "Method",
+        "methods": {
+          "cash": "Cash",
+          "card": "Card",
+          "bank_transfer": "Bank transfer"
+        },
+        "cashTendered": "Cash tendered",
+        "approvalCode": "Approval code",
+        "bankTransferHint": "After you record the payment, upload the transfer receipt to complete the proof — the tenant sales team verifies it before the payment shows as confirmed.",
+        "submit": "Record payment",
+        "uploadReceipt": "Upload receipt",
+        "payerName": "Payer name",
+        "bankAccount": "Receiving account",
+        "transferDate": "Transfer date",
+        "transferReference": "Transfer reference",
+        "receiptFile": "Receipt file",
+        "done": "Done",
+        "settledAwaitingReceipt": "Payment recorded. Now upload the transfer receipt.",
+        "errors": {
+          "sale_not_open": "This sale isn't open for payment anymore.",
+          "amount_exceeds_balance": "That amount is more than the balance due.",
+          "customer_mismatch": "This sale doesn't belong to this customer.",
+          "insufficient_tendered": "The cash tendered is less than the amount.",
+          "approval_code_required": "Enter the terminal approval code.",
+          "forbidden_role": "Only owners and managers can receive payments.",
+          "validation_failed": "Check the highlighted fields and try again.",
+          "generic": "Something went wrong. Please try again."
+        }
+      }
     }
   },
   "refunds": {

@@ -3440,6 +3440,7 @@
     "tabs": {
       "overview": "نظرة عامة",
       "credit": "رصيد المتجر",
+      "balance": "الرصيد",
       "sales": "سجل المبيعات"
     },
     "kpi": {
@@ -3544,6 +3545,69 @@
       "page": "صفحة {page} من {total}",
       "prev": "السابق",
       "next": "التالي"
+    },
+    "balance": {
+      "title": "الرصيد",
+      "outstanding": "الرصيد المستحق",
+      "openSales": "المبيعات المفتوحة",
+      "history": "السجل",
+      "receivePayment": "استلام دفعة",
+      "loading": "جارٍ تحميل الرصيد…",
+      "empty": {
+        "title": "لا يوجد رصيد مستحق",
+        "body": "ستظهر هنا المبيعات الآجلة التي لم يسددها هذا العميل بعد.",
+        "cta": "الذهاب إلى نقطة البيع"
+      },
+      "settledToast": "تم تسجيل الدفعة.",
+      "colCode": "الإيصال",
+      "colDate": "التاريخ",
+      "colTotal": "الإجمالي",
+      "colBalanceDue": "الرصيد المستحق",
+      "columns": {
+        "date": "التاريخ",
+        "reference": "المرجع",
+        "amount": "المبلغ",
+        "balanceAfter": "الرصيد بعد",
+        "note": "ملاحظة"
+      },
+      "error": {
+        "title": "تعذّر تحميل الرصيد",
+        "body": "واجهنا مشكلة في جلب مستحقات هذا العميل.",
+        "retry": "أعد المحاولة"
+      },
+      "modal": {
+        "title": "استلام دفعة",
+        "saleLabel": "المبيعة",
+        "amountLabel": "المبلغ",
+        "methodLabel": "طريقة الدفع",
+        "methods": {
+          "cash": "نقدًا",
+          "card": "بطاقة",
+          "bank_transfer": "تحويل بنكي"
+        },
+        "cashTendered": "المبلغ المقدَّم نقدًا",
+        "approvalCode": "رمز الموافقة",
+        "bankTransferHint": "بعد تسجيل الدفعة، ارفع إيصال التحويل لإكمال إثبات الدفع — يتحقق فريق المبيعات منه قبل تأكيد الدفعة.",
+        "submit": "تسجيل الدفعة",
+        "uploadReceipt": "رفع الإيصال",
+        "payerName": "اسم الدافع",
+        "bankAccount": "الحساب المستلم",
+        "transferDate": "تاريخ التحويل",
+        "transferReference": "مرجع التحويل",
+        "receiptFile": "ملف الإيصال",
+        "done": "تم",
+        "settledAwaitingReceipt": "تم تسجيل الدفعة. الآن ارفع إيصال التحويل.",
+        "errors": {
+          "sale_not_open": "هذه المبيعة لم تعد مفتوحة للدفع.",
+          "amount_exceeds_balance": "هذا المبلغ أكبر من الرصيد المستحق.",
+          "customer_mismatch": "هذه المبيعة لا تخص هذا العميل.",
+          "insufficient_tendered": "المبلغ النقدي المقدَّم أقل من المبلغ المطلوب.",
+          "approval_code_required": "أدخل رمز موافقة الجهاز.",
+          "forbidden_role": "المالك أو المدير فقط يمكنهما استلام الدفعات.",
+          "validation_failed": "تحقق من الحقول المظللة وحاول مرة أخرى.",
+          "generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
+        }
+      }
     }
   },
   "refunds": {
