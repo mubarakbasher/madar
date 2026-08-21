@@ -11,34 +11,47 @@
  * scope to build from scratch.
  *
  * This spec is written to the shape a Playwright e2e harness would need
- * (fixtures, `test.describe.parallel` over locales, page-object-free direct
- * locators keyed to the real component tree) so it can be dropped in and run
- * once #harness lands. It could NOT be executed in this environment — see
- * task-7-report.md for exactly what was and wasn't run.
+ * (fixtures, `test.describe` per locale, direct locators keyed to the real
+ * component tree — verified against source, not guessed) so it can be
+ * dropped in and run once #harness lands. It could NOT be executed in this
+ * environment — see task-7-report.md for exactly what was and wasn't run.
  *
  * Flow covered:
- *   1. Manager logs in (owner@acme.test / Demo123!, seeded demo tenant).
- *   2. POS: add a line, attach a customer, pay partially on account
- *      (cash now + remainder on account) -> sale is `partially_paid`.
+ *   1. Owner/manager logs in (owner@acme.test / Demo123!, seeded demo
+ *      tenant; seeded customer "Nadia Hosny" / code C-001, see
+ *      packages/db/prisma/seed-data.ts).
+ *   2. POS: add a line, attach the seeded customer, pay partially on
+ *      account (cash now + remainder on account) -> sale is
+ *      `partially_paid`. Captures the sale code from the completion toast
+ *      (POS never auto-navigates to the receipt — pos-client.tsx shows a
+ *      dismissable toast with an "Open receipt" link that opens a new tab).
  *   3. Sales list: the new sale shows the "Partially paid" badge; the
  *      partially-paid filter chip narrows to it.
  *   4. Customer detail -> Balance tab: the sale appears in "Open sales"
  *      with the correct balance due.
- *   5. Receive payment (cash, full remaining balance) via the modal.
- *   6. Balance tab shows no open sales for that sale; sales list now shows
- *      the sale as "Paid".
+ *   5. Receive payment (cash, full remaining balance) via the modal. Cash
+ *      settlement resolves immediately (ReceivePaymentModal.tsx calls
+ *      onSuccess() straight from the settle mutation for non-bank-transfer
+ *      methods — there is no "Done" stage/button for cash, that stage only
+ *      exists for the bank_transfer proof-upload path).
+ *   6. Balance tab shows no open balance for that customer; sales list now
+ *      shows the sale as "Paid".
  */
 import { test, expect, type Page } from "@playwright/test";
 
 const OWNER_EMAIL = "owner@acme.test";
 const OWNER_PASSWORD = "Demo123!";
+const CUSTOMER_SEARCH = "Nadia";
 
 async function login(page: Page, locale: "en" | "ar") {
   await page.goto(`/${locale}/login`);
   await page.locator('input[type="email"]').fill(OWNER_EMAIL);
   await page.locator('input[type="password"]').fill(OWNER_PASSWORD);
   await page.locator('button[type="submit"]').click();
-  await page.waitForURL(new RegExp(`/${locale}/(pos)?$`));
+  // No fixed post-login route is guaranteed (goPostLogin() in login/page.tsx
+  // lands on the dashboard "/" unless a `returnTo` is present) — the only
+  // reliable signal is leaving /login.
+  await page.waitForURL((url) => !url.pathname.includes("/login"));
 }
 
 for (const locale of ["en", "ar"] as const) {
@@ -46,79 +59,121 @@ for (const locale of ["en", "ar"] as const) {
     test("partial on-account sale, then settled to paid", async ({ page }) => {
       await login(page, locale);
 
-      // ── POS: add a product, attach a customer ──────────────────────
+      // ── POS: add a product, attach the seeded customer ──────────────
       await page.goto(`/${locale}/pos`);
-      const firstTile = page.locator(".pos-tile").first();
-      await firstTile.click();
+      await page.locator(".pos-tile").first().click();
 
+      // Cart.tsx: "Add customer" trigger is <button class="pos-customer">.
       await page.locator(".pos-customer").click();
+      // CustomerPickerModal.tsx: search input has no accessible label, only
+      // a placeholder (pos.customerPicker.searchPlaceholder); result rows
+      // are <button class="pos-picker-row">, not [role='option'].
       await page
-        .getByPlaceholder(locale === "en" ? "Search customers" : "بحث عن العملاء")
-        .fill("Acme");
-      // Pick the first matching customer in the picker list.
-      await page.locator(".pos-customer-row, [role='option']").first().click();
+        .getByPlaceholder(
+          locale === "en"
+            ? "Search by name, phone, email, or code…"
+            : "بحث بالاسم أو الهاتف أو البريد أو الكود…",
+        )
+        .fill(CUSTOMER_SEARCH);
+      await page.locator(".pos-picker-row").first().click();
 
       // ── Payment sheet: On account tab, partial cash-now + remainder ──
-      await page.locator(".pos-cart-pay, button[aria-label*='Pay'], button[aria-label*='دفع']").click();
-      await page.getByRole("tab", { name: locale === "en" ? "On account" : "آجل" }).click();
-
-      // Pay part of the total now in cash, leave the rest on account.
-      // OnAccountBody.tsx (apps/web/src/app/[locale]/pos/_components/OnAccountBody.tsx)
-      // exposes a "pay now" toggle, a cash/card method choice, and a
-      // paid-amount input; exact labels/ids to be confirmed once the
-      // harness exists and this spec can actually run against the DOM.
-      await page.getByLabel(locale === "en" ? "Paid now" : "مدفوع الآن").check();
-
+      // Cart.tsx: pay trigger is <button class="pos-pay"> (its aria-label
+      // includes the live formatted total, so match on class, not name).
+      await page.locator(".pos-pay").click();
+      // PaymentSheet.tsx (lines ~255-306): method switcher is a row of
+      // plain <button> elements with NO role="tab" — only
+      // ReceivePaymentModal's method tabs (used later) are real
+      // role="tab" elements. Match by accessible button name instead.
       await page
-        .getByRole("button", { name: locale === "en" ? /Complete sale/ : /إتمام البيع/ })
+        .getByRole("button", { name: locale === "en" ? "On account" : "آجل" })
         .click();
 
-      // Sale completed — expect redirect to the receipt.
-      await page.waitForURL(new RegExp(`/${locale}/sales/.+/receipt`));
-      const saleCodeText = await page.locator(".pos-receipt-code, .sl-code").first().innerText();
+      // OnAccountBody.tsx: BOTH the "Paid now" checkbox (wrapped by a
+      // <label> whose text is t("payNowLabel")) and the paid-amount
+      // <input type="number"> (aria-label={t("payNowLabel")} directly)
+      // share the same accessible name — disambiguate by ARIA role
+      // (checkbox vs. the number input's implicit "spinbutton" role)
+      // rather than getByLabel, which would be ambiguous between them.
+      const payNowLabel = locale === "en" ? "Paid now" : "المدفوع الآن";
+      await page.getByRole("checkbox", { name: payNowLabel }).check();
+      // Default paid-now method is cash; type a concrete partial amount
+      // (major units) so the sale actually lands as partially_paid rather
+      // than fully unpaid.
+      await page.getByRole("spinbutton", { name: payNowLabel }).fill("1");
+      // Cash requires cash_tendered_cents >= the paid amount (OnAccountBody
+      // .tsx's `valid` check) — the tendered input is a separate field,
+      // placeholder-labeled (aria-label = t("cashTenderedPlaceholder")).
+      await page
+        .getByPlaceholder(locale === "en" ? "Amount tendered" : "المبلغ المُسلَّم")
+        .fill("1");
+
+      await page
+        .getByRole("button", {
+          name: locale === "en" ? /Complete sale/ : /إتمام البيع/,
+        })
+        .click();
+
+      // POS never auto-navigates on sale completion — pos-client.tsx shows
+      // a toast (role="status") with the sale code embedded in its text
+      // (`${t("payment.completeSale")} · ${result.code}`) and a
+      // target="_blank" link to the receipt. Read the code out of the
+      // toast instead of assuming a redirect.
+      const toastText = await page.getByRole("status").innerText();
+      const saleCode = toastText.split("·").pop()?.trim() ?? "";
+      expect(saleCode.length).toBeGreaterThan(0);
 
       // ── Sales list: badge + filter ──────────────────────────────────
       await page.goto(`/${locale}/sales`);
       await page
         .getByRole("button", { name: locale === "en" ? "Partially paid" : "مدفوعة جزئياً" })
         .click();
-      const row = page.locator("tr", { hasText: saleCodeText });
+      const row = page.locator("tr", { hasText: saleCode });
       await expect(row.locator(".sl-pill-partial")).toBeVisible();
       await expect(row.locator(".sl-pill-partial")).toHaveText(
         locale === "en" ? "Partially paid" : "مدفوعة جزئياً",
       );
 
       // ── Customer detail -> Balance tab ───────────────────────────────
-      await row.click();
-      // Follow through to the customer from the receipt/sale detail, or
-      // navigate directly via the customers list — exact nav TBD once the
-      // harness exists and the receipt page's customer link is confirmed.
+      // customers-list-client.tsx: rows are <tr onClick={navigate}>, name
+      // is in <div class="cu-name">.
       await page.goto(`/${locale}/customers`);
-      await page.getByText("Acme").first().click();
+      await page
+        .getByPlaceholder(
+          locale === "en"
+            ? "Search by name, phone, email, or code…"
+            : "بحث بالاسم أو الهاتف أو البريد أو الكود…",
+        )
+        .fill(CUSTOMER_SEARCH);
+      await page.locator(".cu-name", { hasText: CUSTOMER_SEARCH }).first().click();
+      // detail-client.tsx: tabs ARE real role="tab" elements.
       await page.getByRole("tab", { name: locale === "en" ? "Balance" : "الرصيد" }).click();
 
       await expect(
-        page.locator(".cu-table").first().locator("tr", { hasText: saleCodeText }),
+        page.locator(".cu-table").first().locator("tr", { hasText: saleCode }),
       ).toBeVisible();
 
       // ── Receive payment: settle the remaining balance in cash ───────
       await page
         .getByRole("button", { name: locale === "en" ? "Receive payment" : "استلام دفعة" })
         .click();
-      // Amount defaults to the full balance due for the selected sale.
+      // ReceivePaymentModal.tsx: amount defaults to the full balance due
+      // for the selected (first) open sale; cash is the default method.
       await page
         .getByRole("button", { name: locale === "en" ? "Record payment" : "تسجيل الدفعة" })
         .click();
-      await page
-        .getByRole("button", { name: locale === "en" ? "Done" : "تم" })
-        .click();
-
-      await expect(page.getByText(locale === "en" ? "No open balance" : "لا يوجد رصيد مفتوح")).toBeVisible();
+      // Cash settlement resolves immediately — ReceivePaymentModal.tsx's
+      // settle mutation calls onSuccess() (closing the modal) straight
+      // away for any method other than bank_transfer. There is no "Done"
+      // button on this path; asserting the post-close state directly.
+      await expect(
+        page.getByText(locale === "en" ? "No open balance" : "لا يوجد رصيد مستحق"),
+      ).toBeVisible();
 
       // ── Sales list: sale now shows Paid ──────────────────────────────
       await page.goto(`/${locale}/sales`);
       await page.getByRole("button", { name: locale === "en" ? "Paid" : "مدفوعة" }).click();
-      const settledRow = page.locator("tr", { hasText: saleCodeText });
+      const settledRow = page.locator("tr", { hasText: saleCode });
       await expect(settledRow.locator(".sl-pill-paid")).toBeVisible();
     });
   });
