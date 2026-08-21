@@ -168,7 +168,6 @@ export function SalesListClient({ locale }: { locale: "en" | "ar" }) {
           >
             <option value="all">{t("filters.allMethods")}</option>
             <option value="cash">{t("methods.cash")}</option>
-            <option value="card">{t("methods.card")}</option>
             <option value="bank_transfer">{t("methods.bank_transfer")}</option>
             <option value="store_credit">{t("methods.store_credit")}</option>
             <option value="split">{t("methods.split")}</option>
