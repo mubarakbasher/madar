@@ -3737,14 +3737,17 @@
       "paid": "مدفوعة",
       "payment_pending": "قيد التحقق",
       "disputed": "متنازع عليها",
-      "refunded": "مستردة"
+      "refunded": "مستردة",
+      "partially_paid": "مدفوعة جزئياً",
+      "unpaid": "غير مدفوعة"
     },
     "methods": {
       "cash": "نقدًا",
       "card": "بطاقة",
       "bank_transfer": "تحويل",
       "store_credit": "رصيد المتجر",
-      "split": "مقسّم"
+      "split": "مقسّم",
+      "on_account": "آجل"
     },
     "columns": {
       "code": "التذكرة",

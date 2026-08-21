@@ -3737,14 +3737,17 @@
       "paid": "Paid",
       "payment_pending": "Pending",
       "disputed": "Disputed",
-      "refunded": "Refunded"
+      "refunded": "Refunded",
+      "partially_paid": "Partially paid",
+      "unpaid": "Unpaid"
     },
     "methods": {
       "cash": "Cash",
       "card": "Card",
       "bank_transfer": "Transfer",
       "store_credit": "Store credit",
-      "split": "Split"
+      "split": "Split",
+      "on_account": "On account"
     },
     "columns": {
       "code": "Ticket",

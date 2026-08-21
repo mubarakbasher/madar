@@ -151,8 +151,14 @@ export interface SaleSummary {
   total_cents: string;
   refunded_amount_cents: string;
   currency_code: string;
-  payment_method: PaymentMethodId | "split";
-  payment_status: "paid" | "payment_pending" | "disputed" | "refunded";
+  payment_method: PaymentMethodId | "split" | "on_account";
+  payment_status:
+    | "paid"
+    | "payment_pending"
+    | "disputed"
+    | "refunded"
+    | "partially_paid"
+    | "unpaid";
   line_count: number;
 }
 
@@ -167,7 +173,13 @@ export interface SalesListQuery {
   branch_id?: string;
   customer_id?: string;
   payment_method?: PaymentMethodId | "split";
-  payment_status?: "paid" | "payment_pending" | "disputed" | "refunded";
+  payment_status?:
+    | "paid"
+    | "payment_pending"
+    | "disputed"
+    | "refunded"
+    | "partially_paid"
+    | "unpaid";
   from?: string;
   to?: string;
   page?: number;
