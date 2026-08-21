@@ -5,7 +5,6 @@ import { useLocale, useTranslations } from "next-intl";
 import {
   X,
   Banknote,
-  CreditCard,
   Landmark,
   Check,
   Camera,
@@ -17,13 +16,14 @@ import {
 import { ApiError } from "@/lib/api/client";
 import { majorToMinor, minorToMajor } from "@/lib/currency";
 import { useFormat } from "@/lib/i18n/format";
-import { CardPaymentBody } from "./CardPaymentBody";
 import { StoreCreditBody } from "./StoreCreditBody";
 import { SplitTenderBody, type SplitPaymentSlice } from "./SplitTenderBody";
 import { TransferBody } from "./TransferBody";
 import { OnAccountBody } from "./OnAccountBody";
 
-type PaymentMethodId = "cash" | "card" | "tx" | "sc" | "split" | "oa";
+// "card" is intentionally excluded from cashier-facing selection — the API and
+// historical-sale rendering still support it (see PaymentSubmit below).
+type PaymentMethodId = "cash" | "tx" | "sc" | "split" | "oa";
 
 const ACCEPTED_MIMES = new Set(["image/jpeg", "image/png", "application/pdf"]);
 const MAX_BYTES = 5 * 1024 * 1024;
@@ -43,7 +43,6 @@ export type PaymentSubmit =
 
 const METHOD_ICONS = {
   cash: Banknote,
-  card: CreditCard,
   tx: Landmark,
   sc: Wallet,
   split: SplitSquareHorizontal,
@@ -58,7 +57,8 @@ export interface PaymentSheetCustomer {
 }
 
 /**
- * 1.10c+ scope: cash + card + bank transfer + store credit + split.
+ * 1.10c+ scope: cash + bank transfer + store credit + split + on account.
+ * Card is intentionally not offered in the cashier UI (API/history unaffected).
  * Each non-cash body owns its own submit button; cash uses the bottom row.
  */
 export function PaymentSheet({
@@ -253,7 +253,7 @@ export function PaymentSheet({
                 }}
               >
                 {(
-                  ["cash", "card", "tx", "sc", "split", ...(canSellOnAccount ? (["oa"] as const) : [])] as const
+                  ["cash", "tx", "sc", "split", ...(canSellOnAccount ? (["oa"] as const) : [])] as const
                 ).map((m) => {
                   const Ico = METHOD_ICONS[m];
                   const disabled = (m === "sc" && storeCreditDisabled) || (m === "oa" && !customer);
@@ -357,15 +357,6 @@ export function PaymentSheet({
                     </div>
                   )}
                 </div>
-              )}
-
-              {method === "card" && (
-                <CardPaymentBody
-                  submitting={submitting}
-                  onSubmit={(approval_code) =>
-                    dispatchSubmit({ method: "card", approval_code })
-                  }
-                />
               )}
 
               {method === "sc" && (

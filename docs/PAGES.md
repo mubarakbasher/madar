@@ -240,11 +240,13 @@ Every authenticated page sits in this shell.
 **Layout:** Full-height sheet from end-side, 480px wide on desktop, full-screen mobile
 
 - Header: "Payment" title, total in display serif at 48px, customer name if attached, X to close.
-- Tabs: Cash · Bank Transfer · Card · Store Credit · Split · **On account**
+- Tabs: Cash · Bank Transfer · Store Credit · Split · **On account**
+  (Card disabled in UI; API support retained — historical card sales still
+  render their labels/badges everywhere.)
 - **On account tab** (see `docs/billing-flow.md` §4A): only visible to
   owner/manager (`credit_sale_not_permitted` otherwise); disabled with a
-  tooltip until a customer is attached to the sale. One optional paid-now
-  slice (cash or card) plus the remainder posts as `on_account_cents` — a
+  tooltip until a customer is attached to the sale. One optional cash
+  paid-now slice plus the remainder posts as `on_account_cents` — a
   zero-slice tab balance means the whole sale goes on account
   (invoice-only). Confirmation and the resulting receipt show the balance
   due prominently ("Invoice · balance due" banner, §10).
@@ -257,8 +259,7 @@ Every authenticated page sits in this shell.
   - QR code (256px square, centered) — encodes tenant's default bank account + amount.
   - Below QR: bank account text in both languages.
   - "Customer has paid" button → opens receipt capture (next screen).
-- **Card tab:** Simple text "Process on your card terminal, then enter the approval code below" + approval code input.
-- **Split tender:** lets cashier add multiple payment lines summing to total.
+- **Split tender:** lets cashier add multiple payment lines summing to total (cash, store credit).
 
 ---
 
@@ -631,11 +632,12 @@ Same fields as onboarding step 2, plus: currency override, timezone, opening dat
   append-only, mirrors the Store Credit tab's history table.
 - "Receive payment" button — owner/manager only; accountant sees the tab
   read-only (no button). Opens a modal: pick an open sale (amount defaults to
-  that sale's balance due), method tabs (Cash · Card · Bank Transfer). Cash
-  and card settle immediately; Bank Transfer settles immediately too, then
-  advances to a receipt-capture stage (payer name, receiving account,
-  transfer date/reference, receipt file) that submits the proof — same
-  "commit now, verify later" pattern as the POS Bank Transfer flow.
+  that sale's balance due), method tabs (Cash · Bank Transfer). (Card disabled
+  in UI; API support retained.) Cash settles immediately; Bank Transfer
+  settles immediately too, then advances to a receipt-capture stage (payer
+  name, receiving account, transfer date/reference, receipt file) that
+  submits the proof — same "commit now, verify later" pattern as the POS Bank
+  Transfer flow.
 - Empty state: no open balance → oversized icon, display-font headline,
   supporting sentence, "Go to POS" CTA.
 

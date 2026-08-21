@@ -2,20 +2,21 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Banknote, CreditCard } from "lucide-react";
 import { currencyMinorUnits, majorToMinor, minorToMajor } from "@/lib/currency";
 import type { SplitPaymentSlice, SplitMethod } from "./SplitTenderBody";
 
 /**
  * Compose-stage body for "On account" (credit sale).
  *
- * v1 scope: ONE paid-now slice (cash or card, optional) + the remainder goes
+ * v1 scope: ONE paid-now slice (cash, optional) + the remainder goes
  * on the customer's account. Defaults to paid-now = 0 (full credit). Split
  * tender combined with an on-account remainder is explicitly out of scope for
  * v1 — see task-5-brief.md Step 2.
+ *
+ * Card is not offered as a "paid now" sub-method in the cashier UI. The
+ * `method` state is kept (rather than hardcoding cash inline) so another
+ * method can be re-added without restructuring this component.
  */
-const APPROVAL_MIN = 4;
-const APPROVAL_MAX = 20;
 
 export function OnAccountBody({
   total_cents,
@@ -32,9 +33,10 @@ export function OnAccountBody({
   const tSplitMethods = useTranslations("pos.payment.split.methods");
 
   const [payNow, setPayNow] = useState(false);
-  const [method, setMethod] = useState<Extract<SplitMethod, "cash" | "card">>("cash");
+  // Cash is the only "paid now" sub-method offered in the cashier UI; kept as
+  // state (not a literal) so a future method can be re-added here.
+  const [method] = useState<Extract<SplitMethod, "cash">>("cash");
   const [paidCents, setPaidCents] = useState(0);
-  const [approvalCode, setApprovalCode] = useState("");
   const [cashTenderedCents, setCashTenderedCents] = useState(0);
 
   const fractionDigits = currencyMinorUnits(currency);
@@ -46,13 +48,9 @@ export function OnAccountBody({
   const valid = useMemo(() => {
     if (!payNow) return true;
     if (effectivePaidCents <= 0 || effectivePaidCents > total_cents) return false;
-    if (method === "card") {
-      const trimmed = approvalCode.trim();
-      if (trimmed.length < APPROVAL_MIN || trimmed.length > APPROVAL_MAX) return false;
-    }
-    if (method === "cash" && cashTenderedCents < effectivePaidCents) return false;
+    if (cashTenderedCents < effectivePaidCents) return false;
     return true;
-  }, [payNow, effectivePaidCents, total_cents, method, approvalCode, cashTenderedCents]);
+  }, [payNow, effectivePaidCents, total_cents, cashTenderedCents]);
 
   const canSubmit = valid && !submitting;
 
@@ -60,9 +58,11 @@ export function OnAccountBody({
     if (!canSubmit) return;
     const paid_payments: SplitPaymentSlice[] = [];
     if (payNow && effectivePaidCents > 0) {
-      const slice: SplitPaymentSlice = { method, amount_cents: effectivePaidCents };
-      if (method === "card") slice.approval_code = approvalCode.trim();
-      if (method === "cash") slice.cash_tendered_cents = cashTenderedCents;
+      const slice: SplitPaymentSlice = {
+        method,
+        amount_cents: effectivePaidCents,
+        cash_tendered_cents: cashTenderedCents,
+      };
       paid_payments.push(slice);
     }
     void onSubmit({ paid_payments, on_account_cents: remainingCents });
@@ -82,7 +82,6 @@ export function OnAccountBody({
             setPayNow(e.target.checked);
             if (!e.target.checked) {
               setPaidCents(0);
-              setApprovalCode("");
               setCashTenderedCents(0);
             }
           }}
@@ -104,39 +103,8 @@ export function OnAccountBody({
           }}
         >
           <label style={{ fontSize: 11.5, color: "var(--ink-3)", fontWeight: 500 }}>
-            {t("payNowLabel")}
+            {t("payNowLabel")} · {tSplitMethods("cash")}
           </label>
-          <div style={{ display: "flex", gap: "var(--space-1)" }}>
-            {(["cash", "card"] as const).map((m) => {
-              const Icon = m === "cash" ? Banknote : CreditCard;
-              return (
-                <button
-                  type="button"
-                  key={m}
-                  onClick={() => setMethod(m)}
-                  style={{
-                    flex: 1,
-                    padding: "var(--space-2) 6px",
-                    borderRadius: "var(--radius-sm)",
-                    border: 0,
-                    background: method === m ? "var(--bg-sunk)" : "transparent",
-                    color: method === m ? "var(--ink)" : "var(--ink-3)",
-                    fontWeight: method === m ? 500 : 400,
-                    fontSize: 12,
-                    cursor: "pointer",
-                    fontFamily: "inherit",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 5,
-                  }}
-                >
-                  <Icon size={13} strokeWidth={1.5} />
-                  {tSplitMethods(m)}
-                </button>
-              );
-            })}
-          </div>
 
           <input
             type="number"
@@ -152,19 +120,6 @@ export function OnAccountBody({
             className="pos-input tnum"
             aria-label={t("payNowLabel")}
           />
-
-          {method === "card" && (
-            <input
-              value={approvalCode}
-              onChange={(e) => setApprovalCode(e.target.value.toUpperCase())}
-              minLength={APPROVAL_MIN}
-              maxLength={APPROVAL_MAX}
-              className="pos-input tnum"
-              autoComplete="off"
-              placeholder={t("approvalCodePlaceholder")}
-              aria-label={t("approvalCodePlaceholder")}
-            />
-          )}
 
           {method === "cash" && (
             <input

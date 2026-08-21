@@ -71,10 +71,11 @@ export function ReceivePaymentModal({
     [openSales, saleId],
   );
 
+  // "card" remains a valid SettleReceivableMethod for the API/history but is
+  // not offered as a selectable tab here — only cash and bank transfer.
   const [method, setMethod] = useState<SettleReceivableMethod>("cash");
   const [amount, setAmount] = useState(selectedSale ? selectedSale.balance_due_cents : "");
   const [cashTendered, setCashTendered] = useState("");
-  const [approvalCode, setApprovalCode] = useState("");
   const [error, setError] = useState<SettleError | null>(null);
   const [stage, setStage] = useState<Stage>("form");
   const [salePaymentId, setSalePaymentId] = useState<string | null>(null);
@@ -107,7 +108,6 @@ export function ReceivePaymentModal({
         sale_id: saleId,
         method,
         amount_cents: amount,
-        ...(method === "card" ? { approval_code: approvalCode.trim() } : {}),
         ...(method === "cash" ? { cash_tendered_cents: cashTendered } : {}),
       }),
     onSuccess: (res) => {
@@ -159,10 +159,6 @@ export function ReceivePaymentModal({
     setError(null);
     if (!saleId || !isPositiveIntString(amount)) {
       setError("validation_failed");
-      return;
-    }
-    if (method === "card" && !approvalCode.trim()) {
-      setError("approval_code_required");
       return;
     }
     if (
@@ -226,7 +222,7 @@ export function ReceivePaymentModal({
             <div className="cu-field">
               <div className="cu-field-label">{t("methodLabel")}</div>
               <div className="cu-method-tabs" role="tablist">
-                {(["cash", "card", "bank_transfer"] as const).map((m) => (
+                {(["cash", "bank_transfer"] as const).map((m) => (
                   <button
                     key={m}
                     type="button"
@@ -252,20 +248,6 @@ export function ReceivePaymentModal({
                   inputMode="numeric"
                   value={cashTendered}
                   onChange={(e) => setCashTendered(e.target.value)}
-                />
-              </div>
-            )}
-
-            {method === "card" && (
-              <div className="cu-field">
-                <label className="cu-field-label" htmlFor="rp-approval">
-                  {t("approvalCode")}
-                </label>
-                <input
-                  id="rp-approval"
-                  className="cu-input"
-                  value={approvalCode}
-                  onChange={(e) => setApprovalCode(e.target.value)}
                 />
               </div>
             )}
