@@ -137,6 +137,31 @@ async function seedTenantFixtures() {
       },
     });
 
+    // ── Quotations (2026-08-22 plan) ──────────────────────────────────
+    const quotation = await adminPrisma.quotation.create({
+      data: {
+        tenant_id: tenantId,
+        branch_id: branch.id,
+        cashier_id: user.id,
+        code: `QT-${suffix}`,
+        currency_code: "EGP",
+        subtotal_cents: 1000n,
+        total_cents: 1000n,
+        valid_until: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+      },
+    });
+
+    await adminPrisma.quotationLine.create({
+      data: {
+        tenant_id: tenantId,
+        quotation_id: quotation.id,
+        product_id: product.id,
+        name_i18n: { en: "Product", ar: "منتج" },
+        qty: 1,
+        unit_price_cents: 1000n,
+      },
+    });
+
     const tba = await adminPrisma.tenantBankAccount.create({
       data: {
         tenant_id: tenantId,

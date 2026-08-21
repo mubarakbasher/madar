@@ -49,6 +49,9 @@ const TENANT_SCOPED_MODELS = [
   "scheduledReport",
   // Fixed assets — per-branch furniture/equipment register
   "fixedAsset",
+  // Quotations (2026-08-22 plan) — saved priced quotes, convertible to sales
+  "quotation",
+  "quotationLine",
 ] as const;
 
 type ModelName = (typeof TENANT_SCOPED_MODELS)[number];

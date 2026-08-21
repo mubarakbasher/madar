@@ -1109,6 +1109,63 @@ model HeldSaleLine {
   @@map("held_sale_lines")
 }
 
+enum QuotationStatus {
+  open
+  converted
+  cancelled
+}
+
+model Quotation {
+  id                String          @id @default(uuid()) @db.Uuid
+  tenant_id         String          @db.Uuid
+  branch_id         String          @db.Uuid
+  cashier_id        String          @db.Uuid
+  customer_id       String?         @db.Uuid
+  code              String          // QT-XXXXXX
+  note              String?
+  status            QuotationStatus @default(open)
+  subtotal_cents    BigInt          @default(0)
+  discount_cents    BigInt          @default(0)
+  tax_cents         BigInt          @default(0)
+  total_cents       BigInt          @default(0)
+  currency_code     String          @db.Char(3)
+  valid_until       DateTime        @db.Timestamptz
+  converted_sale_id String?         @db.Uuid
+  converted_at      DateTime?       @db.Timestamptz
+  cancelled_at      DateTime?       @db.Timestamptz
+  created_at        DateTime        @default(now()) @db.Timestamptz
+  updated_at        DateTime        @default(now()) @db.Timestamptz
+  created_by        String?         @db.Uuid
+  deleted_at        DateTime?       @db.Timestamptz
+
+  lines QuotationLine[]
+
+  @@unique([tenant_id, code])
+  @@index([tenant_id, branch_id, status, created_at(sort: Desc)])
+  @@index([tenant_id, customer_id])
+  @@index([tenant_id, deleted_at])
+  @@map("quotations")
+}
+
+model QuotationLine {
+  id               String   @id @default(uuid()) @db.Uuid
+  tenant_id        String   @db.Uuid
+  quotation_id     String   @db.Uuid
+  product_id       String   @db.Uuid
+  name_i18n        Json     // snapshot — quote must render after product rename/delete
+  sku              String?
+  qty              Int
+  unit_price_cents BigInt
+  discount_cents   BigInt   @default(0)
+  note             String?
+  created_at       DateTime @default(now()) @db.Timestamptz
+
+  quotation Quotation @relation(fields: [quotation_id], references: [id], onDelete: Cascade)
+
+  @@index([tenant_id, quotation_id])
+  @@map("quotation_lines")
+}
+
 model StoreCreditLedger {
   id                  String               @id @default(uuid()) @db.Uuid
   tenant_id           String               @db.Uuid
