@@ -33,7 +33,7 @@ import {
   type HeldSalesListResponse,
 } from "@/lib/api/held-sales";
 import { syncConflictsSummaryRequest } from "@/lib/api/sync-conflicts";
-import { majorToMinor, minorToMajor } from "@/lib/currency";
+import { minorToMajor } from "@/lib/currency";
 import { getDeviceUuid } from "@/lib/offline/device";
 import { dispatchSale } from "@/lib/offline/dispatch";
 import { startSyncEngine } from "@/lib/offline/sync";
@@ -715,6 +715,7 @@ function PosView({
             name: c.name,
             visits: c.salesCount,
             credit: Math.round(minorToMajor(c.storeCreditMinor, c.storeCreditCurrency ?? currency)),
+            creditMinor: Number(c.storeCreditMinor),
             currency: c.storeCreditCurrency,
           });
           setCustomerPickerOpen(false);
@@ -734,7 +735,7 @@ function PosView({
                   id: customer.id,
                   name: customer.name,
                   store_credit_balance_cents:
-                    customer.currency != null ? majorToMinor(customer.credit, customer.currency) : null,
+                    customer.currency != null ? customer.creditMinor : null,
                 }
               : null
           }

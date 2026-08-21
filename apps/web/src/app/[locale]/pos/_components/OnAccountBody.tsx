@@ -162,6 +162,7 @@ export function OnAccountBody({
               className="pos-input tnum"
               autoComplete="off"
               placeholder={t("approvalCodePlaceholder")}
+              aria-label={t("approvalCodePlaceholder")}
             />
           )}
 
@@ -179,6 +180,7 @@ export function OnAccountBody({
               }}
               className="pos-input tnum"
               placeholder={t("cashTenderedPlaceholder")}
+              aria-label={t("cashTenderedPlaceholder")}
             />
           )}
         </div>

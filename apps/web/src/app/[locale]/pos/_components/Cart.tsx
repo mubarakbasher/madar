@@ -27,7 +27,10 @@ export type CartCustomer = {
   id: string;
   name: string;
   visits: number;
+  /** Major-unit mirror, display-rounded — never feed this back into a minor-unit calc. */
   credit: number;
+  /** Raw integer minor units — the authoritative balance for payment math. */
+  creditMinor: number;
   currency: string | null;
 };
 
