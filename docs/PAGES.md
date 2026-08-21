@@ -240,7 +240,14 @@ Every authenticated page sits in this shell.
 **Layout:** Full-height sheet from end-side, 480px wide on desktop, full-screen mobile
 
 - Header: "Payment" title, total in display serif at 48px, customer name if attached, X to close.
-- Tabs: Cash · Bank Transfer · Card · Store Credit · Split
+- Tabs: Cash · Bank Transfer · Card · Store Credit · Split · **On account**
+- **On account tab** (see `docs/billing-flow.md` §4A): only visible to
+  owner/manager (`credit_sale_not_permitted` otherwise); disabled with a
+  tooltip until a customer is attached to the sale. One optional paid-now
+  slice (cash or card) plus the remainder posts as `on_account_cents` — a
+  zero-slice tab balance means the whole sale goes on account
+  (invoice-only). Confirmation and the resulting receipt show the balance
+  due prominently ("Invoice · balance due" banner, §10).
 - **Cash tab:**
   - Big amount-tendered field, autofocus, opens number pad.
   - Quick-tap chips: "Exact" / next-round-up amounts (e.g., 100, 200, 500).
@@ -566,7 +573,7 @@ Same fields as onboarding step 2, plus: currency override, timezone, opening dat
 **Audience:** Owner, Manager, Cashier (own sales)
 **Layout:** Filterable table
 
-- Filters: Date range, Branch, Cashier, Payment method, Status (Paid / Pending / Disputed / Refunded).
+- Filters: Date range, Branch, Cashier, Payment method (incl. **On account**), Status (Paid / Pending / **Partially paid** / **Unpaid** / Disputed / Refunded).
 - Columns: Receipt #, Date, Branch, Cashier, Customer, Items, Total, Payment, Status.
 - Row click → sale detail.
 
@@ -614,7 +621,23 @@ Same fields as onboarding step 2, plus: currency override, timezone, opening dat
 
 - Header: Avatar (monogram), name display serif, contact, segment chip.
 - Stats row: Total spent, Visits, Avg basket, Last visit.
-- Tabs: Purchase history · Notes · Store credit · Activity.
+- Tabs: Purchase history · Notes · Store credit · **Balance** · Activity.
+
+**Balance tab** (receivables, see `docs/billing-flow.md` §4A):
+- Outstanding-balance card, display serif figure.
+- Open sales table: receipt code, date, total, balance due — one row per
+  sale with `balance_due_cents > 0`.
+- Ledger history table: date, reference, amount, balance after, note —
+  append-only, mirrors the Store Credit tab's history table.
+- "Receive payment" button — owner/manager only; accountant sees the tab
+  read-only (no button). Opens a modal: pick an open sale (amount defaults to
+  that sale's balance due), method tabs (Cash · Card · Bank Transfer). Cash
+  and card settle immediately; Bank Transfer settles immediately too, then
+  advances to a receipt-capture stage (payer name, receiving account,
+  transfer date/reference, receipt file) that submits the proof — same
+  "commit now, verify later" pattern as the POS Bank Transfer flow.
+- Empty state: no open balance → oversized icon, display-font headline,
+  supporting sentence, "Go to POS" CTA.
 
 ---
 

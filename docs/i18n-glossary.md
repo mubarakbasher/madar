@@ -45,6 +45,13 @@ The canonical English-to-Arabic glossary for domain terms used throughout the pl
 | Void | إلغاء | Cancel a transaction before payment. |
 | Tender | وسيلة الدفع | The means of payment. |
 | Split tender | دفع مقسم | Paying with multiple methods. |
+| On account (credit sale) | آجل | Payment method label for the unpaid portion of a sale; also "البيع بالآجل" (selling on credit) in longer phrases. |
+| Paid now | المدفوع الآن | The tendered slice of a partial/credit sale. |
+| Remaining on account | المتبقي على الحساب | The unpaid remainder posted as a receivable. |
+| Outstanding balance | الرصيد المستحق | A customer's total unpaid receivable balance. |
+| Balance due | الرصيد المستحق | Same term, sale-level context (amount still owed on one sale). |
+| Receive payment | استلام دفعة | Action: record a payment against an open (credit) sale. |
+| Open sale (unsettled) | مفتوحة | Reuses "Open" (status term, §8) for a sale with `balance_due_cents > 0`. |
 
 ---
 
