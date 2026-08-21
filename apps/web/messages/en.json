@@ -1654,7 +1654,8 @@
         "card": "Card",
         "transfer": "Transfer",
         "storeCredit": "Credit",
-        "split": "Split"
+        "split": "Split",
+        "onAccount": "On account"
       },
       "upload": {
         "pickReceipt": "Pick or capture receipt",
@@ -1721,6 +1722,16 @@
           "currency_mismatch": "Customer credit is in a different currency."
         }
       },
+      "onAccount": {
+        "title": "Sell on account",
+        "needsCustomer": "Attach a customer to sell on account",
+        "notPermitted": "Only managers can sell on account",
+        "payNowLabel": "Paid now",
+        "balanceLabel": "Left on account",
+        "confirm": "Complete sale · on account",
+        "approvalCodePlaceholder": "e.g. APP1234",
+        "cashTenderedPlaceholder": "Amount tendered"
+      },
       "roundUp": "↑{amount}",
       "transfer": {
         "loading": "Loading account…",
@@ -1778,6 +1789,8 @@
       "paid": "PAID",
       "pending": "PENDING VERIFY"
     },
+    "invoiceLabel": "Invoice · balance due",
+    "balanceDue": "Balance due",
     "thanks": "Thank you — visit again soon.",
     "footer": {
       "tagline": "Madar — calm bilingual POS."

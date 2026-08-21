@@ -145,6 +145,8 @@ export function ReceiptDoc({
     : null;
   const isPaid = sale.payment_status === "paid";
   const isA4 = size === "a4";
+  const balanceDueCents = BigInt(sale.balance_due_cents || "0");
+  const hasBalanceDue = balanceDueCents > 0n;
 
   const stamp = (
     <span className={`receipt-stamp ${isPaid ? "" : "receipt-stamp-pending"}`}>
@@ -254,6 +256,30 @@ export function ReceiptDoc({
           </>
         )}
 
+        {hasBalanceDue && (
+          <div
+            role="status"
+            style={{
+              background: "var(--bg-sunk)",
+              border: "1px solid var(--rule)",
+              borderRadius: "var(--radius)",
+              padding: "var(--space-2) var(--space-3)",
+              marginBottom: "var(--space-2)",
+              fontSize: 12,
+              color: "var(--ink-2)",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "baseline",
+              gap: "var(--space-2)",
+            }}
+          >
+            <span className="kicker">{t("invoiceLabel")}</span>
+            <span className="tnum" style={{ fontWeight: 500 }}>
+              {t("balanceDue")}: {centsMajor(sale.balance_due_cents, sale.currency_code)}
+            </span>
+          </div>
+        )}
+
         <section className="receipt-items">
           {isA4 && (
             <div className="receipt-line receipt-col-head">
@@ -317,7 +343,7 @@ export function ReceiptDoc({
           </div>
         )}
 
-        {sale.payment_method === "bank_transfer" && bank_account && (
+        {(sale.payment_method === "bank_transfer" || hasBalanceDue) && bank_account && (
           <section className="receipt-bank">
             <div style={{ fontWeight: 600, marginBottom: "var(--space-1)" }}>{t("bank.heading")}</div>
             <div>

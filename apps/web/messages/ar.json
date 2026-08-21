@@ -1654,7 +1654,8 @@
         "card": "بطاقة",
         "transfer": "تحويل",
         "storeCredit": "رصيد",
-        "split": "قسمة"
+        "split": "قسمة",
+        "onAccount": "آجل"
       },
       "upload": {
         "pickReceipt": "اختر أو التقط صورة الإيصال",
@@ -1721,6 +1722,16 @@
           "currency_mismatch": "رصيد العميل بعملة مختلفة."
         }
       },
+      "onAccount": {
+        "title": "البيع بالآجل",
+        "needsCustomer": "اربط عميلاً للبيع بالآجل",
+        "notPermitted": "المديرون فقط يمكنهم البيع بالآجل",
+        "payNowLabel": "المدفوع الآن",
+        "balanceLabel": "المتبقي على الحساب",
+        "confirm": "إتمام البيع · آجل",
+        "approvalCodePlaceholder": "مثال: APP1234",
+        "cashTenderedPlaceholder": "المبلغ المُسلَّم"
+      },
       "roundUp": "↑{amount}",
       "transfer": {
         "loading": "جارٍ تحميل الحساب…",
@@ -1778,6 +1789,8 @@
       "paid": "مدفوع",
       "pending": "بانتظار التحقق"
     },
+    "invoiceLabel": "فاتورة · مبلغ مستحق",
+    "balanceDue": "المبلغ المستحق",
     "thanks": "شكراً — نتطلع لزيارتك القادمة.",
     "footer": {
       "tagline": "مدار — نقطة بيع ثنائية اللغة."

@@ -31,6 +31,9 @@ export interface CreateSaleInput {
   // New shape: when present, server uses this for everything; the legacy
   // single-method fields above are ignored.
   payments?: SalePaymentInput[];
+  // Credit-sale remainder (minor units). Requires customer_id; the paid slice
+  // (payment_method/payments) plus on_account_cents must sum to the total.
+  on_account_cents?: number;
   client_uuid: string;
   client_sequence: number | null;
   // Stable per-installation id (ADR 0005) — subject for the server's
@@ -83,13 +86,15 @@ export interface SaleResponse {
   cash_tendered_cents: string | null;
   change_due_cents: string | null;
   currency_code: string;
-  payment_method: PaymentMethodId | "split";
-  payment_status: "paid" | "payment_pending" | "disputed" | "refunded";
+  payment_method: PaymentMethodId | "split" | "on_account";
+  payment_status: "paid" | "payment_pending" | "disputed" | "refunded" | "partially_paid" | "unpaid";
   approval_code: string | null;
   client_uuid: string;
   client_occurred_at: string | null;
   has_negative_stock: boolean;
   offline_completed: boolean;
+  /** Minor units. Non-zero for on-account / partially-paid sales. */
+  balance_due_cents: string;
   lines: SaleLineResponse[];
   payments: SalePaymentResponse[];
 }

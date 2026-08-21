@@ -33,7 +33,7 @@ import {
   type HeldSalesListResponse,
 } from "@/lib/api/held-sales";
 import { syncConflictsSummaryRequest } from "@/lib/api/sync-conflicts";
-import { minorToMajor } from "@/lib/currency";
+import { majorToMinor, minorToMajor } from "@/lib/currency";
 import { getDeviceUuid } from "@/lib/offline/device";
 import { dispatchSale } from "@/lib/offline/dispatch";
 import { startSyncEngine } from "@/lib/offline/sync";
@@ -472,6 +472,21 @@ function PosView({
         return slice;
       });
       body.payments = payments;
+    } else if (payment.method === "on_account") {
+      // v1 scope: at most one paid-now slice; the remainder is on_account_cents.
+      if (payment.paid_payments.length > 0) {
+        const payments: SalePaymentInput[] = payment.paid_payments.map((p) => {
+          const slice: SalePaymentInput = {
+            method: p.method,
+            amount_cents: p.amount_cents,
+          };
+          if (p.approval_code !== undefined) slice.approval_code = p.approval_code;
+          if (p.cash_tendered_cents !== undefined) slice.cash_tendered_cents = p.cash_tendered_cents;
+          return slice;
+        });
+        body.payments = payments;
+      }
+      body.on_account_cents = payment.on_account_cents;
     } else if (payment.method === "cash") {
       body.payment_method = "cash";
       body.cash_tendered_cents = payment.cash_tendered_cents;
@@ -511,6 +526,7 @@ function PosView({
         client_occurred_at: null,
         has_negative_stock: false,
         offline_completed: true,
+        balance_due_cents: payment.method === "on_account" ? String(payment.on_account_cents) : "0",
         lines: [],
         payments: [],
       } satisfies SaleResponse;
@@ -712,8 +728,18 @@ function PosView({
           tax={tax}
           taxInclusive={taxInclusive}
           currency={currency}
-          customer={null}
+          customer={
+            customer
+              ? {
+                  id: customer.id,
+                  name: customer.name,
+                  store_credit_balance_cents:
+                    customer.currency != null ? majorToMinor(customer.credit, customer.currency) : null,
+                }
+              : null
+          }
           branchId={branchId}
+          canSellOnAccount={userRole === "owner" || userRole === "manager"}
           onClose={() => setPayOpen(false)}
           onSubmit={async (payment) => {
             const result = await handlePaymentSubmit(payment);
