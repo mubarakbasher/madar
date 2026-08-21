@@ -20,6 +20,11 @@ export const SubmitProofSchema = z.object({
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "transfer_date must be YYYY-MM-DD"),
   transfer_reference: z.string().min(1).max(80),
+  // Sale-context only: disambiguates which sale_payments row this receipt
+  // evidences when a sale has more than one unlinked bank-transfer payment
+  // (e.g. the original POS payment plus a later settlement, both awaiting
+  // proof). Required in that case — see PaymentProofsService.submit().
+  sale_payment_id: z.string().uuid().optional(),
 });
 
 export type SubmitProofBody = z.infer<typeof SubmitProofSchema>;

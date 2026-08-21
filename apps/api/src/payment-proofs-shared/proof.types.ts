@@ -39,6 +39,7 @@ export interface SubmitProofInput {
   payer_bank?: string | null;
   transfer_date: string;
   transfer_reference: string;
+  sale_payment_id?: string;
 }
 
 export interface SubmitProofCtx {
