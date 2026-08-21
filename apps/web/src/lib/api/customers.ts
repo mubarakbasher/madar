@@ -166,9 +166,11 @@ export type SettleReceivableMethod = "cash" | "card" | "bank_transfer";
 export interface SettleReceivableBody {
   sale_id: string;
   method: SettleReceivableMethod;
-  amount_cents: number;
+  /** Integer cents, decimal string — never a JS number (precision). */
+  amount_cents: string;
   approval_code?: string;
-  cash_tendered_cents?: number;
+  /** Integer cents, decimal string — never a JS number (precision). */
+  cash_tendered_cents?: string;
 }
 
 export interface SettleReceivableResponse extends ApiReceivablesSummary {

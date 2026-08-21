@@ -42,6 +42,11 @@ function mapErrorCode(code: string): SettleError {
 
 type Stage = "form" | "proof" | "done";
 
+/** True for a non-empty string of digits representing a positive integer. */
+function isPositiveIntString(s: string): boolean {
+  return /^\d+$/.test(s) && BigInt(s) > 0n;
+}
+
 export function ReceivePaymentModal({
   customerId,
   openSales,
@@ -101,9 +106,9 @@ export function ReceivePaymentModal({
       customerReceivablesSettleRequest(customerId, {
         sale_id: saleId,
         method,
-        amount_cents: Number(amount),
+        amount_cents: amount,
         ...(method === "card" ? { approval_code: approvalCode.trim() } : {}),
-        ...(method === "cash" ? { cash_tendered_cents: Number(cashTendered) } : {}),
+        ...(method === "cash" ? { cash_tendered_cents: cashTendered } : {}),
       }),
     onSuccess: (res) => {
       setSalePaymentId(res.sale_payment_id);
@@ -152,7 +157,7 @@ export function ReceivePaymentModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!saleId || !amount || Number(amount) <= 0) {
+    if (!saleId || !isPositiveIntString(amount)) {
       setError("validation_failed");
       return;
     }
@@ -160,7 +165,10 @@ export function ReceivePaymentModal({
       setError("approval_code_required");
       return;
     }
-    if (method === "cash" && (!cashTendered || Number(cashTendered) < Number(amount))) {
+    if (
+      method === "cash" &&
+      (!isPositiveIntString(cashTendered) || BigInt(cashTendered) < BigInt(amount))
+    ) {
       setError("insufficient_tendered");
       return;
     }
