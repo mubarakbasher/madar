@@ -195,6 +195,28 @@ export class PaymentProofsService {
           },
           data: { status: "in_review" },
         });
+      } else {
+        // Back-link this proof to the sale_payment it evidences, so a later
+        // rejection can find the exact payment to reverse (a receivable
+        // settlement, or the original POS bank-transfer payment) instead of
+        // guessing by sale + method. Most recent unlinked bank-transfer
+        // payment on this sale — settlements and the original sale payment
+        // are always created before their proof is submitted.
+        const unlinkedPayment = await tx.salePayment.findFirst({
+          where: {
+            tenant_id: ctx.tenantId,
+            sale_id: input.reference_id,
+            method: "bank_transfer",
+            payment_proof_id: null,
+          },
+          orderBy: { created_at: "desc" },
+        });
+        if (unlinkedPayment) {
+          await tx.salePayment.update({
+            where: { id: unlinkedPayment.id },
+            data: { payment_proof_id: proofId },
+          });
+        }
       }
       return row;
     });
@@ -578,9 +600,16 @@ export class PaymentProofsService {
 
     const now = new Date();
     let updatedRow: ProofRow;
+    let reopened: {
+      saleId: string;
+      restoredDueCents: bigint;
+      newStatus: "partially_paid" | "unpaid";
+      salePaymentId: string;
+      amountCents: bigint;
+    } | null = null;
 
     if (proof.context === "sale") {
-      updatedRow = (await withTenantTx(proof.tenant_id, async (tx) => {
+      const txResult = await withTenantTx(proof.tenant_id, async (tx) => {
         const claimed = await tx.paymentProof.updateMany({
           where: { id: proofId, status: "pending" },
           data: {
@@ -603,8 +632,78 @@ export class PaymentProofsService {
           where: { id: proof.reference_id, payment_status: "payment_pending" },
           data: { payment_status: "disputed" },
         });
-        return tx.paymentProof.findUniqueOrThrow({ where: { id: proofId } });
-      })) as unknown as ProofRow;
+
+        // If this proof evidences a receivable settlement (a sale_payment
+        // back-linked at submit time, with a matching negative ledger row),
+        // rejecting it must reopen the balance it closed. Append-only: a
+        // reversing positive ledger row, never an edit to the original.
+        let reopenedInTx: typeof reopened = null;
+        const payment = await tx.salePayment.findFirst({
+          where: { tenant_id: proof.tenant_id, payment_proof_id: proofId },
+        });
+        if (payment) {
+          const ledgerRow = await tx.customerReceivableLedger.findFirst({
+            where: {
+              tenant_id: proof.tenant_id,
+              reference_table: "sale_payment",
+              reference_id: payment.id,
+            },
+          });
+          if (ledgerRow) {
+            const sale = await tx.sale.findUnique({ where: { id: payment.sale_id } });
+            if (sale && sale.customer_id) {
+              const custRows = await tx.$queryRawUnsafe<
+                Array<{ id: string; receivable_balance_minor: bigint }>
+              >(
+                `SELECT id, receivable_balance_minor FROM customers WHERE id = $1::uuid FOR UPDATE`,
+                sale.customer_id,
+              );
+              const customer = custRows[0];
+              if (customer) {
+                const rawDue = sale.balance_due_cents + payment.amount_cents;
+                const restoredDue = rawDue > sale.total_cents ? sale.total_cents : rawDue;
+                const newStatus = restoredDue === sale.total_cents ? "unpaid" : "partially_paid";
+                await tx.sale.update({
+                  where: { id: sale.id },
+                  data: { balance_due_cents: restoredDue, payment_status: newStatus },
+                });
+
+                const beforeCustBalance = BigInt(customer.receivable_balance_minor);
+                const afterCustBalance = beforeCustBalance + payment.amount_cents;
+                await tx.customerReceivableLedger.create({
+                  data: {
+                    tenant_id: proof.tenant_id,
+                    customer_id: sale.customer_id,
+                    amount_minor: payment.amount_cents,
+                    balance_after_minor: afterCustBalance,
+                    currency_code: sale.currency_code,
+                    reference_table: "sale_payment",
+                    reference_id: payment.id,
+                    created_by: actor.userId,
+                  },
+                });
+                await tx.customer.update({
+                  where: { id: sale.customer_id },
+                  data: { receivable_balance_minor: afterCustBalance },
+                });
+
+                reopenedInTx = {
+                  saleId: sale.id,
+                  restoredDueCents: restoredDue,
+                  newStatus,
+                  salePaymentId: payment.id,
+                  amountCents: payment.amount_cents,
+                };
+              }
+            }
+          }
+        }
+
+        const proofRow = await tx.paymentProof.findUniqueOrThrow({ where: { id: proofId } });
+        return { proofRow, reopenedInTx };
+      });
+      updatedRow = txResult.proofRow as unknown as ProofRow;
+      reopened = txResult.reopenedInTx;
 
       await this.tenantAudit
         .writeTenantScoped(
@@ -623,6 +722,34 @@ export class PaymentProofsService {
           },
         )
         .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));
+
+      if (reopened) {
+        const reopenedResult = reopened;
+        await this.tenantAudit
+          .writeTenantScoped(
+            {
+              tenantId: proof.tenant_id,
+              userId: actor.userId,
+              ip: actor.ip,
+              userAgent: actor.userAgent,
+              ...(actor.impersonatorId ? { impersonatorId: actor.impersonatorId } : {}),
+            },
+            {
+              action: "receivable_reopened",
+              entity: "sale",
+              entityId: reopenedResult.saleId,
+              after: {
+                sale_payment_id: reopenedResult.salePaymentId,
+                amount_cents: reopenedResult.amountCents.toString(),
+                balance_due_cents: reopenedResult.restoredDueCents.toString(),
+                payment_status: reopenedResult.newStatus,
+                reason: "payment_proof_rejected",
+                payment_proof_id: proofId,
+              },
+            },
+          )
+          .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));
+      }
     } else {
       updatedRow = (await withAdminTx(async (tx) => {
         const claimed = await tx.paymentProof.updateMany({
