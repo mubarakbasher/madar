@@ -794,6 +794,7 @@ function PosView({
           customer={customer}
           branchId={branchId}
           currency={currency}
+          locale={locale}
           apiProductById={apiProductById}
           onClose={() => setSaveQuoteOpen(false)}
           onSaved={(quotation) => {
@@ -921,7 +922,7 @@ function PosView({
                 {t("quote.viewToastAction")}
               </a>
               <a
-                href={`/${locale}/sales/quotations/${toast.quotation.id}/print`}
+                href={`/${locale}/sales/quotations-print/${toast.quotation.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: "var(--accent)", textDecoration: "underline", fontWeight: 500 }}

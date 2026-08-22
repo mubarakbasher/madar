@@ -351,3 +351,18 @@
     font-size: 11px;
   }
 }
+
+/* ── Print-only portal (POS quick-print estimate) ────────────────────── */
+/* Portal root is appended as a direct child of <body>. When present, print
+   only that subtree — everything else in the app (POS chrome, other body
+   children) is hidden for the duration of the print. */
+body.pos-printing > *:not(.pos-print-portal-root) {
+  display: none !important;
+}
+
+.pos-print-portal-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: auto;
+}

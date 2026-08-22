@@ -1635,7 +1635,8 @@
       "printToastAction": "Print",
       "convertingBanner": "Converting quotation {code} — quoted prices apply",
       "exitQuoteMode": "Exit quote mode — revert to catalog prices",
-      "droppedLinesToast": "{count, plural, one {1 item was removed — no longer in the catalog} other {{count_n} items were removed — no longer in the catalog}}"
+      "droppedLinesToast": "{count, plural, one {1 item was removed — no longer in the catalog} other {{count_n} items were removed — no longer in the catalog}}",
+      "printEstimate": "Print estimate"
     },
     "offline": {
       "statusOnline": "Online",
@@ -1826,6 +1827,11 @@
       "popDrawerPending": "Opening…",
       "popDrawerDone": "Drawer opened",
       "popDrawerRetry": "Open drawer — retry"
+    },
+    "quote": {
+      "title": "Quotation — not a tax invoice",
+      "validUntil": "Valid until",
+      "estimateNote": "This is an estimate only — prices may change until the valid-until date."
     }
   },
   "verification": {

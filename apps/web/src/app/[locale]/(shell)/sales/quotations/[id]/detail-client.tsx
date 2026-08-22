@@ -106,7 +106,7 @@ export function QuotationDetailClient({
   const currency = q.currency_code;
   const fmt = (cents: string) => fmtMoney(cents, currency, f.locale);
 
-  const printHref = `/${locale}/sales/quotations/${id}/print`;
+  const printHref = `/${locale}/sales/quotations-print/${id}`;
 
   return (
     <div className="qt-detail-page">
