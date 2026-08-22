@@ -319,20 +319,27 @@ export class QuotationsService {
     }
     this.assertCanAccess(row.cashier_id, actorId, role);
 
-    if (row.status === "cancelled") {
-      return this.toPayload(tenantId, id);
-    }
-    if (row.status === "converted") {
+    // Conditional update (not read-then-write): a concurrent convert() could
+    // otherwise flip status to "converted" between our read above and an
+    // unconditional write here, and this cancel would silently overwrite it
+    // back to "cancelled". The WHERE clause makes that race lose cleanly —
+    // count 0 means the status changed under us, so re-read and react.
+    const claimed = await scoped.quotation.updateMany({
+      where: { id, status: "open" },
+      data: { status: "cancelled", cancelled_at: new Date() },
+    });
+
+    if (claimed.count === 0) {
+      const current = await scoped.quotation.findUnique({ where: { id } });
+      if (current?.status === "cancelled") {
+        // Already cancelled (e.g. a duplicate request) — idempotent success.
+        return this.toPayload(tenantId, id);
+      }
       throw new ConflictException({
         code: "quotation_not_open",
         message: "Quotation has already been converted to a sale",
       });
     }
-
-    await scoped.quotation.update({
-      where: { id },
-      data: { status: "cancelled", cancelled_at: new Date() },
-    });
 
     await this.audit
       .writeTenantScoped(ctx, {

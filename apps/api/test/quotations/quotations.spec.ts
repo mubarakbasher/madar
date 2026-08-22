@@ -251,6 +251,40 @@ describe("Quotations (/v1/quotations)", () => {
     expect(cancelConverted.body.code).toBe("quotation_not_open");
   });
 
+  it("cancel after a real convert (POST /v1/sales) → 409 quotation_not_open, status stays converted", async () => {
+    const product = t.products[2]!;
+    const created = await createQuote({ token: cashierAToken, productId: product.id });
+    expect(created.status).toBe(201);
+    const id = created.body.id as string;
+
+    const convert = await request(booted.http)
+      .post("/v1/sales")
+      .set("Authorization", `Bearer ${cashierAToken}`)
+      .set("Idempotency-Key", randomUUID())
+      .send({
+        branch_id: t.branchId,
+        currency_code: "USD",
+        client_uuid: randomUUID(),
+        client_sequence: 1,
+        quotation_id: id,
+        lines: [
+          { product_id: product.id, qty: 1, line_discount_cents: 0, note: null },
+        ],
+        payment_method: "cash",
+        cash_tendered_cents: 3500,
+      });
+    expect(convert.status).toBe(201);
+
+    const cancelAfterConvert = await request(booted.http)
+      .post(`/v1/quotations/${id}/cancel`)
+      .set("Authorization", `Bearer ${cashierAToken}`);
+    expect(cancelAfterConvert.status).toBe(409);
+    expect(cancelAfterConvert.body.code).toBe("quotation_not_open");
+
+    const row = await adminPrisma.quotation.findUnique({ where: { id } });
+    expect(row!.status).toBe("converted");
+  });
+
   it("cashier cannot cancel another cashier's quote (403); manager (owner) can", async () => {
     const product = t.products[0]!;
     const created = await createQuote({ token: cashierAToken, productId: product.id });

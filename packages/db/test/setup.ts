@@ -119,12 +119,25 @@ async function seedTenantFixtures() {
       },
     });
 
-    await adminPrisma.customer.create({
+    const customer = await adminPrisma.customer.create({
       data: {
         tenant_id: tenantId,
         name: `Customer ${suffix}`,
         phone: `+1000000${suffix}`,
         email: `customer-${suffix}@example.test`,
+      },
+    });
+
+    // ── Receivables (2026-08-22 plan) — credit-sale settlement ledger ──
+    await adminPrisma.customerReceivableLedger.create({
+      data: {
+        tenant_id: tenantId,
+        customer_id: customer.id,
+        amount_minor: -500n,
+        balance_after_minor: 500n,
+        currency_code: "EGP",
+        reference_table: "manual_adjust",
+        created_by: user.id,
       },
     });
 

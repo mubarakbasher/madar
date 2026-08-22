@@ -52,6 +52,8 @@ const TENANT_SCOPED_MODELS = [
   // Quotations (2026-08-22 plan) — saved priced quotes, convertible to sales
   "quotation",
   "quotationLine",
+  // Receivables (2026-08-22 plan) — credit-sale settlement ledger
+  "customerReceivableLedger",
 ] as const;
 
 type ModelName = (typeof TENANT_SCOPED_MODELS)[number];

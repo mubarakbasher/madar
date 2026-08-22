@@ -405,4 +405,100 @@ describe("Rejecting a settlement's payment proof reopens the receivable balance"
     const resettledAudit = await readAuditLog(t.tenantId, "receivable_resettled");
     expect(resettledAudit.length).toBeGreaterThan(0);
   });
+
+  it("F1/F2: reject a full-balance settlement, settle part of it another way, then verifying the resubmitted proof must not overwrite the balance — 409 settlement_already_covered", async () => {
+    const customer = await makeCustomer();
+    const { saleId, total } = await makeFullCreditSale(customer.id, 0);
+
+    // Settle the whole balance via bank transfer, evidenced by a proof.
+    const settle = await postSettle(customer.id, {
+      sale_id: saleId,
+      method: "bank_transfer",
+      amount_cents: total,
+    });
+    expect(settle.status).toBe(200);
+    const salePaymentId = settle.body.sale_payment_id as string;
+
+    const bank = await makeTenantBankAccount(t.tenantId);
+    const jpg = await tinyJpegBuffer();
+    const submit = await request(booted.http)
+      .post("/v1/payment-proofs")
+      .set("Authorization", `Bearer ${ownerToken}`)
+      .set("Idempotency-Key", randomUUID())
+      .field("context", "sale")
+      .field("reference_id", saleId)
+      .field("amount_cents", String(total))
+      .field("currency_code", "USD")
+      .field("bank_account_kind", "tenant")
+      .field("bank_account_id", bank.id)
+      .field("payer_name", "Payer")
+      .field("transfer_date", "2026-05-15")
+      .field("transfer_reference", "TR-COVERED")
+      .attach("receipt", jpg, { filename: "r.jpg", contentType: "image/jpeg" });
+    expect(submit.status).toBe(201);
+    const proofA = submit.body.id as string;
+
+    // Reject it — reopens the full balance back to unpaid.
+    const reject = await request(booted.http)
+      .post(`/v1/payment-proofs/${proofA}/reject`)
+      .set("Authorization", `Bearer ${ownerToken}`)
+      .send({ rejection_reason: "Illegible receipt" });
+    expect(reject.status).toBe(200);
+
+    const saleAfterReject = await adminPrisma.sale.findUnique({ where: { id: saleId } });
+    expect(saleAfterReject!.balance_due_cents).toBe(BigInt(total));
+    expect(saleAfterReject!.payment_status).toBe("unpaid");
+
+    // Resubmit the rejected proof (chain of custody preserved to salePaymentId).
+    const resubmit = await request(booted.http)
+      .post(`/v1/payment-proofs/${proofA}/resubmit`)
+      .set("Authorization", `Bearer ${ownerToken}`)
+      .attach("receipt", jpg, { filename: "r2.jpg", contentType: "image/jpeg" });
+    expect(resubmit.status).toBe(200);
+    const proofB = resubmit.body.id as string;
+
+    // Meanwhile a DIFFERENT settlement (cash, partial) covers part of the
+    // balance — simulating a concurrent settle landing between reject and
+    // verify. This is the interleaving the corruption race allowed through
+    // stale sale-read math; now it must be caught explicitly.
+    const cashSlice = 40;
+    const cashSettle = await postSettle(customer.id, {
+      sale_id: saleId,
+      method: "cash",
+      amount_cents: cashSlice,
+      cash_tendered_cents: cashSlice,
+    });
+    expect(cashSettle.status).toBe(200);
+
+    const saleAfterCashSettle = await adminPrisma.sale.findUnique({ where: { id: saleId } });
+    expect(saleAfterCashSettle!.balance_due_cents).toBe(BigInt(total - cashSlice));
+    expect(saleAfterCashSettle!.payment_status).toBe("partially_paid");
+
+    // Verifying the resubmitted full-amount proof must NOT blindly subtract
+    // `total` from the now-smaller balance (which would go negative / wrongly
+    // flip to paid/0). It must detect the balance no longer covers the
+    // proof's amount and fail with a distinct, actionable code.
+    const verify = await request(booted.http)
+      .post(`/v1/payment-proofs/${proofB}/verify`)
+      .set("Authorization", `Bearer ${ownerToken}`);
+    expect(verify.status).toBe(409);
+    expect(verify.body.code).toBe("settlement_already_covered");
+
+    // Balance/state from the cash settlement must be untouched by the failed verify.
+    const saleAfterVerify = await adminPrisma.sale.findUnique({ where: { id: saleId } });
+    expect(saleAfterVerify!.balance_due_cents).toBe(BigInt(total - cashSlice));
+    expect(saleAfterVerify!.payment_status).toBe("partially_paid");
+
+    const custAfterVerify = await adminPrisma.customer.findUnique({ where: { id: customer.id } });
+    expect(custAfterVerify!.receivable_balance_minor).toBe(BigInt(total - cashSlice));
+
+    // The whole transaction rolled back on the thrown 409 — proofB is still
+    // pending (not stuck half-verified), and the payment link is untouched.
+    const proofBRow = await adminPrisma.paymentProof.findUnique({ where: { id: proofB } });
+    expect(proofBRow!.status).toBe("pending");
+    const linkedPayment = await adminPrisma.salePayment.findUnique({
+      where: { id: salePaymentId },
+    });
+    expect(linkedPayment!.payment_proof_id).toBe(proofB);
+  });
 });

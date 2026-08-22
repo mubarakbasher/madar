@@ -389,16 +389,38 @@ export class PaymentProofsService {
           });
           const wasReversed = ledgerRows.length > 0 && ledgerRows[0]!.amount_minor > 0n;
           if (wasReversed) {
-            const sale = await tx.sale.findUnique({ where: { id: payment.sale_id } });
-            if (sale && sale.customer_id && sale.balance_due_cents >= payment.amount_cents) {
+            // Lock the customer row FIRST — before re-reading the sale — so a
+            // concurrent settle() (which locks the customer first too, per
+            // its own ordering) can't commit its balance decrement in between
+            // our sale read and our write and get silently overwritten by
+            // stale math computed from a sale row we read too early.
+            const sale0 = await tx.sale.findUnique({ where: { id: payment.sale_id } });
+            if (sale0 && sale0.customer_id) {
               const custRows = await tx.$queryRawUnsafe<
                 Array<{ id: string; receivable_balance_minor: bigint }>
               >(
                 `SELECT id, receivable_balance_minor FROM customers WHERE id = $1::uuid FOR UPDATE`,
-                sale.customer_id,
+                sale0.customer_id,
               );
               const customer = custRows[0];
-              if (customer) {
+              // Re-read the sale AFTER acquiring the customer lock — a
+              // concurrent settle() holding/waiting on the same customer lock
+              // may have changed balance_due_cents between our first read and
+              // now.
+              const sale = await tx.sale.findUnique({ where: { id: payment.sale_id } });
+              if (customer && sale && sale.customer_id) {
+                if (sale.balance_due_cents < payment.amount_cents) {
+                  // A concurrent settlement already re-covered enough of the
+                  // balance that resettling this proof's amount on top would
+                  // overshoot — distinct from "sale gone/refunded" below so
+                  // the verifier UI can explain exactly what happened.
+                  throw new ConflictException({
+                    code: "settlement_already_covered",
+                    message:
+                      "Another payment already covered this balance — review the sale before deciding.",
+                  });
+                }
+
                 const newDue = sale.balance_due_cents - payment.amount_cents;
                 const newStatus = newDue === 0n ? "paid" : "partially_paid";
                 await tx.sale.update({
@@ -802,16 +824,22 @@ export class PaymentProofsService {
           // was already reopened — a stray/duplicate reject must not double
           // it up.
           if (ledgerRow && ledgerRow.amount_minor < 0n) {
-            const sale = await tx.sale.findUnique({ where: { id: payment.sale_id } });
-            if (sale && sale.customer_id) {
+            // Lock the customer row FIRST (matches settle()'s ordering in
+            // receivables.service.ts), then re-read the sale — a concurrent
+            // settle() waiting on the same customer lock could otherwise
+            // commit its balance change in between our sale read and our
+            // write, and this reopen's math would silently clobber it.
+            const sale0 = await tx.sale.findUnique({ where: { id: payment.sale_id } });
+            if (sale0 && sale0.customer_id) {
               const custRows = await tx.$queryRawUnsafe<
                 Array<{ id: string; receivable_balance_minor: bigint }>
               >(
                 `SELECT id, receivable_balance_minor FROM customers WHERE id = $1::uuid FOR UPDATE`,
-                sale.customer_id,
+                sale0.customer_id,
               );
               const customer = custRows[0];
-              if (customer) {
+              const sale = await tx.sale.findUnique({ where: { id: payment.sale_id } });
+              if (customer && sale && sale.customer_id) {
                 // Reverse exactly what the settlement ledger row moved, not
                 // the payment's face amount — defensively self-consistent
                 // even if the two were ever to diverge.
