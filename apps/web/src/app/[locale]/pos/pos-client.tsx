@@ -1,6 +1,7 @@
 "use client";
 
 import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import "./pos.css";
@@ -32,10 +33,17 @@ import {
   type ApiHeldSalePayload,
   type HeldSalesListResponse,
 } from "@/lib/api/held-sales";
+import {
+  quotationDetailRequest,
+  type ApiQuotationPayload,
+} from "@/lib/api/quotations";
+import { SaveQuoteModal } from "./_components/SaveQuoteModal";
+import type { QuoteContext } from "./_components/Cart";
 import { syncConflictsSummaryRequest } from "@/lib/api/sync-conflicts";
 import { minorToMajor } from "@/lib/currency";
 import { getDeviceUuid } from "@/lib/offline/device";
 import { dispatchSale } from "@/lib/offline/dispatch";
+import { useOnlineStatus } from "@/lib/offline/online-status";
 import { startSyncEngine } from "@/lib/offline/sync";
 import { saveCatalogSnapshot } from "@/lib/offline/catalog-cache";
 import { Link } from "../../../../i18n/routing";
@@ -173,7 +181,21 @@ function PosView({
   const [lineSheet, setLineSheet] = useState<CartLineEx | null>(null);
   const [payOpen, setPayOpen] = useState(false);
   const [clientUuid, setClientUuid] = useState<string | null>(null);
-  const [toast, setToast] = useState<{ message: string; saleId?: string } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    saleId?: string;
+    quotation?: { id: string; code: string };
+  } | null>(null);
+  const [quoteContext, setQuoteContext] = useState<QuoteContext | null>(null);
+  const [saveQuoteOpen, setSaveQuoteOpen] = useState(false);
+  const searchParams = useSearchParams();
+  // Header's online/offline badge reads the same store. A quote-mode sale
+  // completed offline would queue a payload with quotation_id +
+  // offline_completed=true — the DTO rejects that combination outright, so
+  // it can never sync (see create-sale.dto.ts). Blocking Pay here (and the
+  // defense-in-depth strip in offline/sync.ts) keeps that from happening.
+  const isOnline = useOnlineStatus((s) => s.online);
+  const offlineQuoteBlocked = !!quoteContext && !isOnline;
 
   // Held-sales server-side query. Cashiers always see only their own; the
   // server enforces this even when mine_only=false slips through.
@@ -222,7 +244,11 @@ function PosView({
           const p = products.find((x) => x.id === c.id);
           const apiProd = apiProductById.get(c.id);
           if (!p || !apiProd) return null;
-          const grossCents = BigInt(apiProd.price_cents) * BigInt(c.qty);
+          const unitCents =
+            c.unitPriceOverrideCents != null
+              ? BigInt(c.unitPriceOverrideCents)
+              : BigInt(apiProd.price_cents);
+          const grossCents = unitCents * BigInt(c.qty);
           const discountCents = Number((grossCents * BigInt(c.discount)) / 100n);
           const priceCents = Number(grossCents) - discountCents;
           return { ...c, p, priceCents, discountCents, price: minorToMajor(priceCents, currency) };
@@ -325,6 +351,7 @@ function PosView({
   const clearCart = () => {
     setCart([]);
     setClientUuid(null);
+    setQuoteContext(null);
   };
 
   // ── Held-sales mutations ───────────────────────────────────────────
@@ -386,6 +413,85 @@ function PosView({
     setCart(next);
     setClientUuid(crypto.randomUUID());
   }
+
+  // Quote-mode hydration: sibling of hydrateCartFromPayload but for quotation
+  // snapshots. When `withOverrides` is true (the default — plain `?quote=id`),
+  // each line carries `unitPriceOverrideCents` so cart math and the eventual
+  // sale match the quoted price, and `quoteContext` is set so the banner shows
+  // and CreateSale carries `quotation_id`. `&reprice=1` hydrates the same
+  // lines at live catalog prices with no override and no quoteContext — a
+  // plain cart the cashier can sell normally (expired quotes).
+  function hydrateCartFromQuotation(
+    payload: ApiQuotationPayload,
+    withOverrides: boolean,
+  ): { droppedCount: number } {
+    let dropped = 0;
+    const next: CartLine[] = payload.lines
+      .map<CartLine | null>((line) => {
+        const apiProd = apiProductById.get(line.product_id);
+        if (!apiProd) {
+          dropped += 1;
+          return null;
+        }
+        const grossCents = BigInt(line.unit_price_cents) * BigInt(line.qty);
+        const discountCents = BigInt(line.discount_cents || "0");
+        let discountPct = 0;
+        if (grossCents > 0n) {
+          discountPct = Math.min(
+            100,
+            Math.max(0, Math.round(Number((discountCents * 100n) / grossCents))),
+          );
+        }
+        return {
+          id: line.product_id,
+          qty: line.qty,
+          discount: discountPct,
+          note: line.note ?? "",
+          ...(withOverrides
+            ? { unitPriceOverrideCents: Number(line.unit_price_cents) }
+            : {}),
+        };
+      })
+      .filter((l): l is CartLine => l !== null);
+    setCart(next);
+    setClientUuid(crypto.randomUUID());
+    if (payload.customer_id) {
+      // Customer name isn't in the quotation payload; the cart chip will
+      // simply show no customer if we can't resolve it here. Callers that
+      // need the name can re-pick via the customer picker.
+    }
+    setQuoteContext(withOverrides ? { id: payload.id, code: payload.code } : null);
+    return { droppedCount: dropped };
+  }
+
+  const quoteParam = searchParams.get("quote");
+  const repriceParam = searchParams.get("reprice") === "1";
+  const quoteDetailQ = useQuery({
+    queryKey: ["quotations", "detail", quoteParam],
+    queryFn: () => quotationDetailRequest(quoteParam!),
+    enabled: !!quoteParam,
+    staleTime: 0,
+  });
+
+  const hydratedQuoteRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!quoteParam || !quoteDetailQ.data) return;
+    if (hydratedQuoteRef.current === quoteParam) return;
+    hydratedQuoteRef.current = quoteParam;
+    const { droppedCount } = hydrateCartFromQuotation(quoteDetailQ.data, !repriceParam);
+    if (droppedCount > 0) {
+      setToast({ message: t("quote.droppedLinesToast", { count: droppedCount }) });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quoteParam, repriceParam, quoteDetailQ.data]);
+
+  const exitQuoteMode = () => {
+    setQuoteContext(null);
+    setCart((c) => c.map((line) => {
+      const { unitPriceOverrideCents: _drop, ...rest } = line;
+      return rest;
+    }));
+  };
 
   const holdCurrent = () => {
     if (cart.length === 0 || !branchId || holdMut.isPending) return;
@@ -460,6 +566,7 @@ function PosView({
       device_id: getDeviceUuid() || null,
       lines,
       cash_tendered_cents: null,
+      ...(quoteContext ? { quotation_id: quoteContext.id } : {}),
     };
     if (payment.method === "split") {
       const payments: SalePaymentInput[] = payment.payments.map((p) => {
@@ -472,6 +579,21 @@ function PosView({
         return slice;
       });
       body.payments = payments;
+    } else if (payment.method === "on_account") {
+      // v1 scope: at most one paid-now slice; the remainder is on_account_cents.
+      if (payment.paid_payments.length > 0) {
+        const payments: SalePaymentInput[] = payment.paid_payments.map((p) => {
+          const slice: SalePaymentInput = {
+            method: p.method,
+            amount_cents: p.amount_cents,
+          };
+          if (p.approval_code !== undefined) slice.approval_code = p.approval_code;
+          if (p.cash_tendered_cents !== undefined) slice.cash_tendered_cents = p.cash_tendered_cents;
+          return slice;
+        });
+        body.payments = payments;
+      }
+      body.on_account_cents = payment.on_account_cents;
     } else if (payment.method === "cash") {
       body.payment_method = "cash";
       body.cash_tendered_cents = payment.cash_tendered_cents;
@@ -511,6 +633,7 @@ function PosView({
         client_occurred_at: null,
         has_negative_stock: false,
         offline_completed: true,
+        balance_due_cents: payment.method === "on_account" ? String(payment.on_account_cents) : "0",
         lines: [],
         payments: [],
       } satisfies SaleResponse;
@@ -642,8 +765,12 @@ function PosView({
           total={total}
           customer={customer}
           taxInclusive={taxInclusive}
+          quoteContext={quoteContext}
+          offlineQuoteBlocked={offlineQuoteBlocked}
           onClear={clearCart}
           onHold={holdCurrent}
+          onSaveQuote={() => setSaveQuoteOpen(true)}
+          onExitQuoteMode={exitQuoteMode}
           onAdjustQty={adjustQty}
           onTapLine={(line) => setLineSheet(line)}
           onToggleCustomer={() => {
@@ -666,6 +793,26 @@ function PosView({
           onRemove={() => {
             removeLine(lineSheet.id);
             setLineSheet(null);
+          }}
+        />
+      )}
+
+      {saveQuoteOpen && branchId && (
+        <SaveQuoteModal
+          cart={cart}
+          customer={customer}
+          branchId={branchId}
+          currency={currency}
+          locale={locale}
+          apiProductById={apiProductById}
+          onClose={() => setSaveQuoteOpen(false)}
+          onSaved={(quotation) => {
+            setSaveQuoteOpen(false);
+            clearCart();
+            setToast({
+              message: `${t("quote.savedToast")} · ${quotation.code}`,
+              quotation: { id: quotation.id, code: quotation.code },
+            });
           }}
         />
       )}
@@ -699,6 +846,7 @@ function PosView({
             name: c.name,
             visits: c.salesCount,
             credit: Math.round(minorToMajor(c.storeCreditMinor, c.storeCreditCurrency ?? currency)),
+            creditMinor: Number(c.storeCreditMinor),
             currency: c.storeCreditCurrency,
           });
           setCustomerPickerOpen(false);
@@ -712,8 +860,18 @@ function PosView({
           tax={tax}
           taxInclusive={taxInclusive}
           currency={currency}
-          customer={null}
+          customer={
+            customer
+              ? {
+                  id: customer.id,
+                  name: customer.name,
+                  store_credit_balance_cents:
+                    customer.currency != null ? customer.creditMinor : null,
+                }
+              : null
+          }
           branchId={branchId}
+          canSellOnAccount={userRole === "owner" || userRole === "manager"}
           onClose={() => setPayOpen(false)}
           onSubmit={async (payment) => {
             const result = await handlePaymentSubmit(payment);
@@ -761,6 +919,26 @@ function PosView({
             >
               {t("payment.openReceipt")}
             </a>
+          )}
+          {toast.quotation && (
+            <>
+              <a
+                href={`/${locale}/sales/quotations/${toast.quotation.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "var(--accent)", textDecoration: "underline", fontWeight: 500 }}
+              >
+                {t("quote.viewToastAction")}
+              </a>
+              <a
+                href={`/${locale}/sales/quotations-print/${toast.quotation.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "var(--accent)", textDecoration: "underline", fontWeight: 500 }}
+              >
+                {t("quote.printToastAction")}
+              </a>
+            </>
           )}
         </div>
       )}

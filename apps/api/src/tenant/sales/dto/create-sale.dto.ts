@@ -51,9 +51,20 @@ export const CreateSaleSchema = z
     lines: z.array(CartLineSchema).min(1, "At least one line is required"),
     cash_tendered_cents: z.number().int().nonnegative().nullable().optional(),
     payments: z.array(SalePaymentInputSchema).min(1).max(8).optional(),
+    // Credit sale: minor units left owing on the customer's account.
+    on_account_cents: BigIntable.optional(),
+    // Convert an open quotation to a sale at its snapshot prices.
+    quotation_id: UuidSchema.optional(),
   })
   .superRefine((data, ctx) => {
-    if (!data.payments && !data.payment_method) {
+    if (data.quotation_id && data.offline_completed) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["quotation_id"],
+        message: "quotation_id cannot be combined with offline_completed",
+      });
+    }
+    if (!data.payments && !data.payment_method && !data.on_account_cents) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["payment_method"],

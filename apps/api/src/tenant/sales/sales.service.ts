@@ -17,6 +17,7 @@ import { randomUUID } from "node:crypto";
 // eslint-disable-next-line no-restricted-imports
 import { adminPrisma, basePrisma, tenantScoped } from "@madar/db";
 import { AuditService } from "../auth/audit.service";
+import { QuotationsService } from "../quotations/quotations.service";
 import type {
   CreateSaleInput,
   SalePaymentInput,
@@ -56,7 +57,8 @@ type PaymentMethodLiteral =
   | "cash"
   | "card"
   | "bank_transfer"
-  | "store_credit";
+  | "store_credit"
+  | "on_account";
 
 interface NormalizedPayment {
   method: PaymentMethodLiteral;
@@ -75,7 +77,10 @@ interface PersistedPayment extends NormalizedPayment {
 export class SalesService {
   private readonly logger = new Logger(SalesService.name);
 
-  constructor(private readonly audit: AuditService) {}
+  constructor(
+    private readonly audit: AuditService,
+    private readonly quotations: QuotationsService,
+  ) {}
 
   async completeSale(input: CreateSaleInput, ctx: SaleCtx): Promise<SaleResponse> {
     const scoped = tenantScoped(ctx.tenantId);
@@ -112,6 +117,16 @@ export class SalesService {
         throw new ForbiddenException({
           code: "branch_not_allowed",
           message: "You can only sell at your assigned branch.",
+        });
+      }
+    }
+    // Credit-sale role gate: only owners and managers can sell on account.
+    // Reuses the `actor` row read above — do not add a second query.
+    if (input.on_account_cents != null && input.on_account_cents > 0n) {
+      if (actor?.role !== "owner" && actor?.role !== "manager") {
+        throw new ForbiddenException({
+          code: "credit_sale_not_permitted",
+          message: "Only owners and managers can complete credit sales",
         });
       }
     }
@@ -158,6 +173,32 @@ export class SalesService {
         throw new UnprocessableEntityException({
           code: "unknown_product",
           message: `Product not found: ${line.product_id}`,
+        });
+      }
+    }
+
+    // Quotation conversion: validate the quote is open/unexpired and snapshot
+    // its per-product prices. getOpenForConvert throws quotation_not_found
+    // (404) / quotation_not_open (409) / quotation_expired (409) — these
+    // propagate as-is. Runs AFTER the client_uuid idempotency replay check
+    // above so a retry of a successful conversion returns the original sale
+    // rather than re-validating a now-converted quote.
+    const quotedPriceMap = new Map<
+      string,
+      { unit_price_cents: bigint; discount_cents: bigint }
+    >();
+    if (input.quotation_id) {
+      const quote = await this.quotations.getOpenForConvert(ctx.tenantId, input.quotation_id);
+      if (quote.currency_code !== input.currency_code) {
+        throw new BadRequestException({
+          code: "quotation_currency_mismatch",
+          message: "Sale currency does not match the quotation currency",
+        });
+      }
+      for (const line of quote.lines) {
+        quotedPriceMap.set(line.product_id, {
+          unit_price_cents: line.unit_price_cents,
+          discount_cents: line.discount_cents,
         });
       }
     }
@@ -209,7 +250,8 @@ export class SalesService {
     const prepared: PreparedLine[] = input.lines.map((l) => {
       const product = productMap.get(l.product_id)!;
       const qtyBig = BigInt(l.qty);
-      let unitPrice = product.price_cents;
+      const quoted = quotedPriceMap.get(l.product_id);
+      let unitPrice = quoted?.unit_price_cents ?? product.price_cents;
       if (input.offline_completed && l.unit_price_cents != null) {
         const clientPrice = l.unit_price_cents;
         if (clientPrice !== product.price_cents) {
@@ -259,13 +301,31 @@ export class SalesService {
       : subtotalCents - discountCents + taxCents;
 
     // ── normalize payments[] (slice 5 chassis) ───────────────────────
-    const payments = normalizePayments(input, totalCents);
+    const payments =
+      input.on_account_cents != null && !input.payments && !input.payment_method
+        ? [] // full-credit sale: no tender slices
+        : normalizePayments(input, totalCents);
+    const onAccountCents = input.on_account_cents ?? 0n;
     const sumCents = payments.reduce((acc, p) => acc + p.amount_cents, 0n);
-    if (sumCents !== totalCents) {
+    if (sumCents + onAccountCents !== totalCents) {
       throw new BadRequestException({
         code: "split_total_mismatch",
-        message: `Sum of payments (${sumCents}) does not equal total (${totalCents})`,
+        message: `Payments (${sumCents}) + on_account (${onAccountCents}) does not equal total (${totalCents})`,
       });
+    }
+    if (onAccountCents < 0n) {
+      throw new BadRequestException({
+        code: "invalid_payment_amount",
+        message: "on_account_cents must be non-negative",
+      });
+    }
+    if (onAccountCents > 0n) {
+      if (!input.customer_id) {
+        throw new BadRequestException({
+          code: "credit_requires_customer",
+          message: "A customer must be attached to sell on account",
+        });
+      }
     }
 
     // Pre-validate (cheap checks, fail fast before opening the tx).
@@ -307,8 +367,16 @@ export class SalesService {
     }
 
     const anyBankTransfer = payments.some((p) => p.method === "bank_transfer");
-    const derivedMethod = payments.length >= 2 ? "split" : payments[0]!.method;
-    const derivedStatus: "paid" | "payment_pending" = anyBankTransfer ? "payment_pending" : "paid";
+    const derivedStatus: "paid" | "payment_pending" | "partially_paid" | "unpaid" =
+      onAccountCents > 0n
+        ? payments.length === 0
+          ? "unpaid"
+          : "partially_paid"
+        : anyBankTransfer
+          ? "payment_pending"
+          : "paid";
+    const derivedMethod =
+      payments.length >= 2 ? "split" : payments.length === 1 ? payments[0]!.method : "on_account";
 
     // For receipt convenience: persist Sale.approval_code only when there is
     // exactly one card payment (legacy/non-split shape).
@@ -334,6 +402,7 @@ export class SalesService {
     let saleCode: string | null = null;
     let persistedPayments: PersistedPayment[] = [];
     let hasNegativeStock = false;
+    let receivableLedgerId: string | null = null;
 
     for (let attempt = 0; attempt < 3; attempt++) {
       const candidate = generateSaleCode();
@@ -369,6 +438,7 @@ export class SalesService {
               discount_cents: discountCents,
               tax_cents: taxCents,
               total_cents: totalCents,
+              balance_due_cents: onAccountCents,
               currency_code: input.currency_code,
               payment_method: derivedMethod,
               payment_status: derivedStatus,
@@ -385,6 +455,22 @@ export class SalesService {
               created_by: ctx.cashierId,
             },
           });
+
+          // Stamp the quotation converted, race-safe: only flips it while it
+          // is still "open" (a concurrent convert attempt or cancel loses the
+          // race and the sale rolls back with the tx).
+          if (input.quotation_id) {
+            const upd = await tx.quotation.updateMany({
+              where: { id: input.quotation_id, status: "open" },
+              data: { status: "converted", converted_sale_id: sale.id, converted_at: new Date() },
+            });
+            if (upd.count === 0) {
+              throw new ConflictException({
+                code: "quotation_not_open",
+                message: "Quotation is not open",
+              });
+            }
+          }
 
           // Sale lines.
           for (const line of prepared) {
@@ -642,12 +728,74 @@ export class SalesService {
             });
           }
 
-          return { sale, persisted, negativeStock: negativeLines.length > 0 };
+          // Credit-sale receivable write: FOR UPDATE the customer row, same
+          // pattern as the store_credit slice above.
+          let receivableLedgerId: string | null = null;
+          if (onAccountCents > 0n) {
+            const rows = await tx.$queryRawUnsafe<
+              {
+                id: string;
+                tenant_id: string;
+                receivable_balance_minor: bigint;
+                receivable_currency_code: string | null;
+                deleted_at: Date | null;
+              }[]
+            >(
+              `SELECT id, tenant_id, receivable_balance_minor,
+                      receivable_currency_code, deleted_at
+               FROM customers
+               WHERE id = $1::uuid
+               FOR UPDATE`,
+              input.customer_id!,
+            );
+            const customer = rows[0];
+            if (!customer || customer.deleted_at || customer.tenant_id !== ctx.tenantId) {
+              throw new UnprocessableEntityException({
+                code: "unknown_customer",
+                message: "Customer not found",
+              });
+            }
+            if (
+              customer.receivable_currency_code &&
+              customer.receivable_currency_code !== input.currency_code
+            ) {
+              throw new BadRequestException({
+                code: "currency_mismatch",
+                message: "Customer receivable currency does not match this sale",
+              });
+            }
+            const after = BigInt(customer.receivable_balance_minor) + onAccountCents;
+            const ledger = await tx.customerReceivableLedger.create({
+              data: {
+                tenant_id: ctx.tenantId,
+                customer_id: input.customer_id!,
+                amount_minor: onAccountCents,
+                balance_after_minor: after,
+                currency_code: input.currency_code,
+                reference_table: "sale",
+                reference_id: sale.id,
+                created_by: ctx.cashierId,
+              },
+            });
+            receivableLedgerId = ledger.id;
+            await tx.customer.update({
+              where: { id: input.customer_id! },
+              data: { receivable_balance_minor: after, receivable_currency_code: input.currency_code },
+            });
+          }
+
+          return {
+            sale,
+            persisted,
+            negativeStock: negativeLines.length > 0,
+            receivableLedgerId,
+          };
         });
         saleId = created.sale.id;
         saleCode = created.sale.code;
         persistedPayments = created.persisted;
         hasNegativeStock = created.negativeStock;
+        receivableLedgerId = created.receivableLedgerId;
         break;
       } catch (err) {
         const code = (err as { code?: string } | undefined)?.code;
@@ -698,6 +846,9 @@ export class SalesService {
             line_count: prepared.length,
             has_negative_stock: hasNegativeStock,
             offline_completed: offlineCompleted,
+            balance_due_cents: onAccountCents.toString(),
+            ...(input.quotation_id ? { quotation_id: input.quotation_id } : {}),
+            ...(receivableLedgerId ? { receivable_ledger_id: receivableLedgerId } : {}),
             ...(singleCardCode
               ? { approval_code_last4: singleCardCode.slice(-4) }
               : {}),
@@ -712,6 +863,26 @@ export class SalesService {
         },
       )
       .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));
+
+    if (input.quotation_id) {
+      await this.audit
+        .writeTenantScoped(
+          {
+            tenantId: ctx.tenantId,
+            userId: ctx.cashierId,
+            ip: ctx.ip,
+            userAgent: ctx.userAgent,
+            ...(ctx.impersonatorId ? { impersonatorId: ctx.impersonatorId } : {}),
+          },
+          {
+            action: "quotation_converted",
+            entity: "quotation",
+            entityId: input.quotation_id,
+            after: { sale_id: saleId, code: saleCode },
+          },
+        )
+        .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));
+    }
 
     // Echo cash totals for the receipt UI: sum across cash slices.
     const cashSlice = persistedPayments.find((p) => p.method === "cash");
@@ -807,6 +978,7 @@ export class SalesService {
           tax_cents: true,
           total_cents: true,
           refunded_amount_cents: true,
+          balance_due_cents: true,
           currency_code: true,
           payment_method: true,
           payment_status: true,
@@ -864,6 +1036,7 @@ export class SalesService {
         tax_cents: r.tax_cents.toString(),
         total_cents: r.total_cents.toString(),
         refunded_amount_cents: r.refunded_amount_cents.toString(),
+        balance_due_cents: r.balance_due_cents.toString(),
         currency_code: r.currency_code,
         payment_method: r.payment_method as SaleSummary["payment_method"],
         payment_status: r.payment_status as SaleSummary["payment_status"],
@@ -984,6 +1157,7 @@ export class SalesService {
 
   private hasBankTransfer(sale: SaleResponse): boolean {
     if (sale.payment_method === "bank_transfer") return true;
+    if (BigInt(sale.balance_due_cents) > 0n) return true; // open balance → show where to pay
     return (sale.payments ?? []).some((p) => p.method === "bank_transfer");
   }
 
@@ -1019,6 +1193,7 @@ export class SalesService {
       discount_cents: sale.discount_cents.toString(),
       tax_cents: sale.tax_cents.toString(),
       total_cents: sale.total_cents.toString(),
+      balance_due_cents: sale.balance_due_cents.toString(),
       cash_tendered_cents: null,
       change_due_cents: null,
       currency_code: sale.currency_code,
@@ -1194,13 +1369,21 @@ export interface SaleSummary {
   total_cents: string;
   refunded_amount_cents: string;
   currency_code: string;
+  balance_due_cents: string;
   payment_method:
     | "cash"
     | "card"
     | "bank_transfer"
     | "store_credit"
-    | "split";
-  payment_status: "paid" | "payment_pending" | "disputed" | "refunded";
+    | "split"
+    | "on_account";
+  payment_status:
+    | "paid"
+    | "payment_pending"
+    | "disputed"
+    | "refunded"
+    | "partially_paid"
+    | "unpaid";
   line_count: number;
 }
 
@@ -1215,6 +1398,7 @@ export interface SaleResponse {
   discount_cents: string;
   tax_cents: string;
   total_cents: string;
+  balance_due_cents: string;
   cash_tendered_cents: string | null;
   change_due_cents: string | null;
   currency_code: string;
@@ -1223,8 +1407,15 @@ export interface SaleResponse {
     | "card"
     | "bank_transfer"
     | "store_credit"
-    | "split";
-  payment_status: "paid" | "payment_pending" | "disputed" | "refunded";
+    | "split"
+    | "on_account";
+  payment_status:
+    | "paid"
+    | "payment_pending"
+    | "disputed"
+    | "refunded"
+    | "partially_paid"
+    | "unpaid";
   approval_code: string | null;
   client_uuid: string;
   client_occurred_at: string | null;

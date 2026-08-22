@@ -62,7 +62,6 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
   const [step, setStep] = useState<Step>("lines");
   const [picks, setPicks] = useState<Record<string, PickedLine>>({});
   const [method, setMethod] = useState<Method>("cash");
-  const [approvalCode, setApprovalCode] = useState("");
   const [customerId, setCustomerId] = useState<string | null>(null);
   const [customerName, setCustomerName] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
@@ -211,7 +210,6 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
         {
           method,
           amount_cents: totals.totalCents.toString(),
-          ...(method === "card" && approvalCode ? { approval_code: approvalCode } : {}),
         },
       ],
       notes: notes.trim() ? notes.trim() : null,
@@ -257,9 +255,7 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
 
   const canAdvanceToMethod = totals.qtyPicked > 0;
   const canAdvanceToReview =
-    canAdvanceToMethod &&
-    (method !== "card" || approvalCode.trim().length >= 4) &&
-    (method !== "store_credit" || !!customerId);
+    canAdvanceToMethod && (method !== "store_credit" || !!customerId);
 
   return (
     <div className="rf-page">
@@ -357,7 +353,8 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
           <p className="rf-card-sub">{t("method.subtitle")}</p>
 
           <div className="rf-radio-row">
-            {(["cash", "card", "bank_transfer", "store_credit"] as Method[]).map((m) => (
+            {/* "card" intentionally excluded — not offered as a refund method in the cashier UI. */}
+            {(["cash", "bank_transfer", "store_credit"] as Method[]).map((m) => (
               <label
                 key={m}
                 className={`rf-radio ${method === m ? "rf-radio-active" : ""}`}
@@ -376,19 +373,6 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
               </label>
             ))}
           </div>
-
-          {method === "card" && (
-            <div className="rf-method-detail">
-              <label className="rf-label">{t("method.approvalCode")}</label>
-              <input
-                className="rf-input"
-                value={approvalCode}
-                onChange={(e) => setApprovalCode(e.target.value)}
-                placeholder={t("method.approvalCodePlaceholder")}
-                maxLength={20}
-              />
-            </div>
-          )}
 
           {method === "store_credit" && (
             <div className="rf-method-detail">
@@ -467,14 +451,6 @@ export function RefundClient({ saleId, locale }: { saleId: string; locale: "en" 
               <div className="rf-summary-row">
                 <span style={{ color: "var(--ink-3)" }}>{t("review.customer")}</span>
                 <span>{customerName ?? t("method.attachedFromSale")}</span>
-              </div>
-            )}
-            {method === "card" && (
-              <div className="rf-summary-row">
-                <span style={{ color: "var(--ink-3)" }}>{t("method.approvalCode")}</span>
-                <span style={{ fontFamily: "var(--mono)" }}>
-                  {approvalCode || "—"}
-                </span>
               </div>
             )}
             {notes && (

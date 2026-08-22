@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { Pause, Plus, Minus, User, X } from "lucide-react";
+import { Pause, Plus, Minus, User, X, FileText } from "lucide-react";
 import type { Product } from "@/lib/mock-data/products";
 import { EmptyBasket } from "./EmptyBasket";
 import { useFormat } from "@/lib/i18n/format";
@@ -11,6 +11,15 @@ export type CartLine = {
   qty: number;
   discount: number;
   note: string;
+  /** Quote-mode price snapshot in integer minor units — when set, cart math
+   *  uses this instead of the live catalog price so totals match server
+   *  pricing on conversion. Cleared when the quote banner is dismissed. */
+  unitPriceOverrideCents?: number;
+};
+
+export type QuoteContext = {
+  id: string;
+  code: string;
 };
 
 export type CartLineEx = CartLine & {
@@ -27,7 +36,10 @@ export type CartCustomer = {
   id: string;
   name: string;
   visits: number;
+  /** Major-unit mirror, display-rounded — never feed this back into a minor-unit calc. */
   credit: number;
+  /** Raw integer minor units — the authoritative balance for payment math. */
+  creditMinor: number;
   currency: string | null;
 };
 
@@ -39,8 +51,12 @@ export function Cart({
   total,
   customer,
   taxInclusive = false,
+  quoteContext = null,
+  offlineQuoteBlocked = false,
   onClear,
   onHold,
+  onSaveQuote,
+  onExitQuoteMode,
   onAdjustQty,
   onTapLine,
   onToggleCustomer,
@@ -54,8 +70,16 @@ export function Cart({
   total: number;
   customer: CartCustomer | null;
   taxInclusive?: boolean;
+  quoteContext?: QuoteContext | null;
+  /** True when the till is offline while in quote-conversion mode — the
+   *  DTO rejects quotation_id + offline_completed, so an offline "complete"
+   *  here would queue a sale that can never sync. Disables Pay + shows a
+   *  reconnect notice instead of letting the cashier hit that wall later. */
+  offlineQuoteBlocked?: boolean;
   onClear: () => void;
   onHold: () => void;
+  onSaveQuote?: () => void;
+  onExitQuoteMode?: () => void;
   onAdjustQty: (id: string, delta: number) => void;
   onTapLine: (line: CartLineEx) => void;
   onToggleCustomer: () => void;
@@ -76,12 +100,53 @@ export function Cart({
               <Pause size={12} strokeWidth={1.5} />
               {t("cart.hold")}
             </button>
+            {onSaveQuote && (
+              <button type="button" className="pos-link" onClick={onSaveQuote}>
+                <FileText size={12} strokeWidth={1.5} />
+                {t("quote.save")}
+              </button>
+            )}
             <button type="button" className="pos-link" onClick={onClear}>
               {t("cart.clear")}
             </button>
           </>
         )}
       </header>
+
+      {quoteContext && (
+        <div
+          role="status"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "var(--space-3)",
+            padding: "8px var(--space-4)",
+            background: "color-mix(in oklab, var(--accent) 12%, var(--bg))",
+            color: "var(--ink-2)",
+            fontSize: 12,
+            borderBottom: "1px solid var(--rule)",
+          }}
+        >
+          <span>{t("quote.convertingBanner", { code: quoteContext.code })}</span>
+          {offlineQuoteBlocked && (
+            <span style={{ color: "var(--ink-2)", fontWeight: 500 }}>
+              {t("quote.offlineBlocked")}
+            </span>
+          )}
+          {onExitQuoteMode && (
+            <button
+              type="button"
+              className="pos-icon-btn"
+              onClick={onExitQuoteMode}
+              aria-label={t("quote.exitQuoteMode")}
+              title={t("quote.exitQuoteMode")}
+            >
+              <X size={12} strokeWidth={1.5} />
+            </button>
+          )}
+        </div>
+      )}
 
       <button type="button" className="pos-customer" onClick={onToggleCustomer}>
         {customer ? (
@@ -197,7 +262,7 @@ export function Cart({
       <button
         type="button"
         className="pos-pay"
-        disabled={lines.length === 0}
+        disabled={lines.length === 0 || offlineQuoteBlocked}
         onClick={onPay}
         aria-label={`${t("cart.pay")} ${total}`}
       >

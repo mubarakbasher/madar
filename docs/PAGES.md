@@ -230,6 +230,22 @@ Every authenticated page sits in this shell.
 - "Hold sale" via long-press or menu → moves cart to held-sales tray.
 - Held sales tray icon in header with count badge.
 - All numeric input via tap (no keyboard required) — cart edit sheet has a number pad.
+- **Quote action** — next to Hold/Clear once the cart has lines: "Quote" opens a
+  Save Quote sheet (validity days 1–90, default 14, optional note; "For
+  {customer}" line when a customer is attached). Saving snapshots current
+  catalog prices into a numbered `QT-XXXXXX` quotation (see §31a) — no
+  inventory movement, no payment — clears the cart, and shows a toast with
+  the code plus "View" / "Print" links. The same sheet has a **"Print
+  estimate"** action that renders the current cart as an unsaved,
+  client-only estimate document (no `QT-` number, "—" in its place) and
+  goes straight to the print dialog — nothing is saved to the server.
+  Opening POS with `?quote={id}` (from the Quotations detail page's
+  "Convert to sale" action) hydrates the cart at the quotation's snapshotted
+  prices and shows a dismissable "Converting quotation {code}" banner above
+  the cart; paying through the normal Payment Screen completes the sale at
+  those quoted prices and marks the quotation Converted. `?quote={id}&reprice=1`
+  (from "Reprice & sell" on an expired quotation) hydrates the same lines at
+  current catalog prices instead, with no banner and no price lock.
 
 ---
 
@@ -240,7 +256,16 @@ Every authenticated page sits in this shell.
 **Layout:** Full-height sheet from end-side, 480px wide on desktop, full-screen mobile
 
 - Header: "Payment" title, total in display serif at 48px, customer name if attached, X to close.
-- Tabs: Cash · Bank Transfer · Card · Store Credit · Split
+- Tabs: Cash · Bank Transfer · Store Credit · Split · **On account**
+  (Card disabled in UI; API support retained — historical card sales still
+  render their labels/badges everywhere.)
+- **On account tab** (see `docs/billing-flow.md` §4A): only visible to
+  owner/manager (`credit_sale_not_permitted` otherwise); disabled with a
+  tooltip until a customer is attached to the sale. One optional cash
+  paid-now slice plus the remainder posts as `on_account_cents` — a
+  zero-slice tab balance means the whole sale goes on account
+  (invoice-only). Confirmation and the resulting receipt show the balance
+  due prominently ("Invoice · balance due" banner, §10).
 - **Cash tab:**
   - Big amount-tendered field, autofocus, opens number pad.
   - Quick-tap chips: "Exact" / next-round-up amounts (e.g., 100, 200, 500).
@@ -250,8 +275,7 @@ Every authenticated page sits in this shell.
   - QR code (256px square, centered) — encodes tenant's default bank account + amount.
   - Below QR: bank account text in both languages.
   - "Customer has paid" button → opens receipt capture (next screen).
-- **Card tab:** Simple text "Process on your card terminal, then enter the approval code below" + approval code input.
-- **Split tender:** lets cashier add multiple payment lines summing to total.
+- **Split tender:** lets cashier add multiple payment lines summing to total (cash, store credit).
 
 ---
 
@@ -281,6 +305,14 @@ Every authenticated page sits in this shell.
 - Receipt rendered as it would print (58mm or 80mm width per branch setting).
 - Buttons: Print, Email, SMS, Download PDF, Done.
 - For bank-transfer sales: shows payment status badge ("Awaiting verification", "Verified", "Disputed").
+- **Saved-quote print route:** `/{locale}/sales/quotations-print/{id}` is a
+  sibling, chrome-free route (outside `(shell)`, same placement pattern as
+  this receipt page) rendering the same underlying document component in a
+  `variant="quotation"` mode: `QT-` code, "Quotation — not a tax invoice /
+  عرض سعر — ليست فاتورة ضريبية" title, valid-until row, bank details when
+  available, no tender/payment-stamp rows. The POS "Print estimate" action
+  renders the equivalent document client-side from the current cart, with no
+  server round-trip and no quote number.
 
 ---
 
@@ -566,7 +598,7 @@ Same fields as onboarding step 2, plus: currency override, timezone, opening dat
 **Audience:** Owner, Manager, Cashier (own sales)
 **Layout:** Filterable table
 
-- Filters: Date range, Branch, Cashier, Payment method, Status (Paid / Pending / Disputed / Refunded).
+- Filters: Date range, Branch, Cashier, Payment method (incl. **On account**), Status (Paid / Pending / **Partially paid** / **Unpaid** / Disputed / Refunded).
 - Columns: Receipt #, Date, Branch, Cashier, Customer, Items, Total, Payment, Status.
 - Row click → sale detail.
 
@@ -595,6 +627,42 @@ Same fields as onboarding step 2, plus: currency override, timezone, opening dat
 
 ---
 
+### 31a. Quotations List
+
+**Route:** `/{locale}/sales/quotations`
+**Audience:** Any POS role (cashiers see their own branch scope, owner/manager branch-wide — same access pattern as held sales)
+**Layout:** Filterable table
+
+- Branch selector (a concrete branch is required, unlike Sales History's "all branches" tolerance).
+- Status filter chips: All · Open · Expired · Converted · Cancelled. "Expired" is
+  derived at read time from `valid_until` (no stored expired status, no cron).
+- Columns: Quote #, Customer (or "Cash customer"), Total, Valid until, Status.
+- Row click → quotation detail.
+- Empty state: oversized icon, "No quotations yet" headline, "Save a quote from
+  the POS cart" body, "Open POS" CTA.
+
+---
+
+### 31b. Quotation Detail
+
+**Route:** `/{locale}/sales/quotations/{id}`
+**Audience:** Any POS role (same access as the list)
+**Layout:** Single column, like Sale Detail
+
+- Header: status pill (Open / Expired / Converted / Cancelled), quote code,
+  customer, valid-until date, and (once acted on) converted-at or
+  cancelled-at timestamp; optional note.
+- Line table rendered from the quotation's own name/SKU snapshots — never
+  re-joined against the live catalog, so it still renders after a product is
+  renamed or deleted.
+- Actions by status:
+  - **Open:** "Convert to sale" (→ `/{locale}/pos?quote={id}`), "Print", "Cancel quotation" (confirm dialog; irreversible).
+  - **Expired:** "Reprice & sell" (→ `/{locale}/pos?quote={id}&reprice=1`, catalog prices, no lock), "Print", "Cancel quotation".
+  - **Converted:** "View sale" (→ the sale's receipt page), "Print".
+  - **Cancelled:** "Print" only.
+
+---
+
 ### 34. Customer List
 
 **Route:** `/{locale}/customers`
@@ -614,7 +682,24 @@ Same fields as onboarding step 2, plus: currency override, timezone, opening dat
 
 - Header: Avatar (monogram), name display serif, contact, segment chip.
 - Stats row: Total spent, Visits, Avg basket, Last visit.
-- Tabs: Purchase history · Notes · Store credit · Activity.
+- Tabs: Purchase history · Notes · Store credit · **Balance** · Activity.
+
+**Balance tab** (receivables, see `docs/billing-flow.md` §4A):
+- Outstanding-balance card, display serif figure.
+- Open sales table: receipt code, date, total, balance due — one row per
+  sale with `balance_due_cents > 0`.
+- Ledger history table: date, reference, amount, balance after, note —
+  append-only, mirrors the Store Credit tab's history table.
+- "Receive payment" button — owner/manager only; accountant sees the tab
+  read-only (no button). Opens a modal: pick an open sale (amount defaults to
+  that sale's balance due), method tabs (Cash · Bank Transfer). (Card disabled
+  in UI; API support retained.) Cash settles immediately; Bank Transfer
+  settles immediately too, then advances to a receipt-capture stage (payer
+  name, receiving account, transfer date/reference, receipt file) that
+  submits the proof — same "commit now, verify later" pattern as the POS Bank
+  Transfer flow.
+- Empty state: no open balance → oversized icon, display-font headline,
+  supporting sentence, "Go to POS" CTA.
 
 ---
 

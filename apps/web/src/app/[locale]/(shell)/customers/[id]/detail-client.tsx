@@ -15,8 +15,9 @@ import {
 } from "@/lib/api/customers";
 import { formatMoney } from "@/lib/currency";
 import { useFormat } from "@/lib/i18n/format";
+import { BalanceTab } from "./_components/BalanceTab";
 
-type Tab = "overview" | "credit" | "sales";
+type Tab = "overview" | "credit" | "balance" | "sales";
 
 function fmtMoney(
   amountMinor: string | null | undefined,
@@ -160,6 +161,15 @@ export function CustomerDetailClient({
         <button
           type="button"
           role="tab"
+          aria-selected={tab === "balance"}
+          className="cu-tab"
+          onClick={() => setTab("balance")}
+        >
+          {t("tabs.balance")}
+        </button>
+        <button
+          type="button"
+          role="tab"
           aria-selected={tab === "sales"}
           className="cu-tab"
           onClick={() => setTab("sales")}
@@ -170,6 +180,7 @@ export function CustomerDetailClient({
 
       {tab === "overview" && <OverviewTab c={c} locale={locale} />}
       {tab === "credit" && <CreditTab c={c} locale={locale} />}
+      {tab === "balance" && <BalanceTab customerId={customerId} locale={locale} />}
       {tab === "sales" && <SalesTab c={c} locale={locale} />}
 
       {confirmDelete && (

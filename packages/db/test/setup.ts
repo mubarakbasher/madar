@@ -119,12 +119,25 @@ async function seedTenantFixtures() {
       },
     });
 
-    await adminPrisma.customer.create({
+    const customer = await adminPrisma.customer.create({
       data: {
         tenant_id: tenantId,
         name: `Customer ${suffix}`,
         phone: `+1000000${suffix}`,
         email: `customer-${suffix}@example.test`,
+      },
+    });
+
+    // ── Receivables (2026-08-22 plan) — credit-sale settlement ledger ──
+    await adminPrisma.customerReceivableLedger.create({
+      data: {
+        tenant_id: tenantId,
+        customer_id: customer.id,
+        amount_minor: -500n,
+        balance_after_minor: 500n,
+        currency_code: "EGP",
+        reference_table: "manual_adjust",
+        created_by: user.id,
       },
     });
 
@@ -134,6 +147,31 @@ async function seedTenantFixtures() {
         branch_id: branch.id,
         name_i18n: { en: `Chairs ${suffix}`, ar: `كراسي ${suffix}` },
         quantity: 12,
+      },
+    });
+
+    // ── Quotations (2026-08-22 plan) ──────────────────────────────────
+    const quotation = await adminPrisma.quotation.create({
+      data: {
+        tenant_id: tenantId,
+        branch_id: branch.id,
+        cashier_id: user.id,
+        code: `QT-${suffix}`,
+        currency_code: "EGP",
+        subtotal_cents: 1000n,
+        total_cents: 1000n,
+        valid_until: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+      },
+    });
+
+    await adminPrisma.quotationLine.create({
+      data: {
+        tenant_id: tenantId,
+        quotation_id: quotation.id,
+        product_id: product.id,
+        name_i18n: { en: "Product", ar: "منتج" },
+        qty: 1,
+        unit_price_cents: 1000n,
       },
     });
 

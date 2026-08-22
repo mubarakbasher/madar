@@ -2,10 +2,12 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Banknote, CreditCard, Coins, Plus, Trash2 } from "lucide-react";
+import { Banknote, Coins, Plus, Trash2 } from "lucide-react";
 import { currencyMinorUnits, majorToMinor, minorToMajor } from "@/lib/currency";
 
-export type SplitMethod = "cash" | "card" | "store_credit";
+// "card" is intentionally not offered as a selectable slice method in the
+// cashier UI. The API still accepts card slices for historical/other paths.
+export type SplitMethod = "cash" | "store_credit";
 
 export interface SplitPaymentSlice {
   method: SplitMethod;
@@ -21,12 +23,9 @@ export interface SplitTenderCustomer {
 
 const MIN_SLICES = 2;
 const MAX_SLICES = 8;
-const APPROVAL_MIN = 4;
-const APPROVAL_MAX = 20;
 
 const METHOD_ICONS: Record<SplitMethod, typeof Banknote> = {
   cash: Banknote,
-  card: CreditCard,
   store_credit: Coins,
 };
 
@@ -64,7 +63,7 @@ export function SplitTenderBody({
   const t = useTranslations("pos.payment.split");
   const tMethods = useTranslations("pos.payment.split.methods");
 
-  const [slices, setSlices] = useState<SliceState[]>(() => [makeSlice("cash"), makeSlice("card")]);
+  const [slices, setSlices] = useState<SliceState[]>(() => [makeSlice("cash"), makeSlice("store_credit")]);
 
   // Currency-aware input granularity: KWD steps by 0.001, JPY by 1.
   const fractionDigits = currencyMinorUnits(currency);
@@ -83,12 +82,6 @@ export function SplitTenderBody({
     if (remainingCents !== 0) return { ok: false, code: "remaining_nonzero" as const };
     for (const s of slices) {
       if (s.amount_cents <= 0) return { ok: false, code: "remaining_nonzero" as const };
-      if (s.method === "card") {
-        const trimmed = s.approval_code.trim();
-        if (trimmed.length < APPROVAL_MIN || trimmed.length > APPROVAL_MAX) {
-          return { ok: false, code: "remaining_nonzero" as const };
-        }
-      }
       if (s.method === "cash" && s.cash_tendered_cents < s.amount_cents) {
         return { ok: false, code: "remaining_nonzero" as const };
       }
@@ -116,7 +109,6 @@ export function SplitTenderBody({
     if (!validity.ok || submitting) return;
     const payload: SplitPaymentSlice[] = slices.map((s) => {
       const base: SplitPaymentSlice = { method: s.method, amount_cents: s.amount_cents };
-      if (s.method === "card") base.approval_code = s.approval_code.trim();
       if (s.method === "cash") base.cash_tendered_cents = s.cash_tendered_cents;
       return base;
     });
@@ -178,7 +170,7 @@ export function SplitTenderBody({
                 {t("methodLabel")}
               </label>
               <div style={{ display: "flex", gap: "var(--space-1)" }}>
-                {(["cash", "card", "store_credit"] as const).map((m) => {
+                {(["cash", "store_credit"] as const).map((m) => {
                   const disabled = m === "store_credit" && storeCreditDisabled;
                   return (
                     <button
@@ -238,31 +230,6 @@ export function SplitTenderBody({
                 className="pos-input tnum"
                 aria-label={t("amountLabel")}
               />
-
-              {s.method === "card" && (
-                <>
-                  <label
-                    style={{
-                      fontSize: 11.5,
-                      color: "var(--ink-3)",
-                      fontWeight: 500,
-                    }}
-                  >
-                    {t("approvalCodeLabel")}
-                  </label>
-                  <input
-                    value={s.approval_code}
-                    onChange={(e) =>
-                      updateSlice(s.key, { approval_code: e.target.value.toUpperCase() })
-                    }
-                    minLength={APPROVAL_MIN}
-                    maxLength={APPROVAL_MAX}
-                    className="pos-input tnum"
-                    autoComplete="off"
-                    aria-label={t("approvalCodeLabel")}
-                  />
-                </>
-              )}
 
               {s.method === "cash" && (
                 <>

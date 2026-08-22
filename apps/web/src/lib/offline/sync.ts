@@ -157,9 +157,16 @@ export async function syncOnce(): Promise<SyncSummary> {
 type AttemptResult = "synced" | "permanent" | "transient";
 
 async function trySale(row: OutboxSaleRecord): Promise<AttemptResult> {
-  // Augment the payload with the offline-specific fields.
+  // Augment the payload with the offline-specific fields. Defense in depth:
+  // the DTO rejects quotation_id + offline_completed together (an offline
+  // quote-conversion can never sync), and the POS UI now blocks Pay before a
+  // sale like that can even be queued (see pos-client.tsx offlineQuoteBlocked)
+  // — but if one slipped into the outbox some other way (an older queued
+  // sale from before this fix, e.g.), strip quotation_id here rather than
+  // let it dead-letter permanently on every retry.
+  const { quotation_id: _droppedQuotationId, ...payloadWithoutQuotation } = row.payload;
   const body = {
-    ...row.payload,
+    ...payloadWithoutQuotation,
     client_uuid: row.client_uuid,
     client_sequence: row.client_sequence,
     client_occurred_at: row.occurred_at,

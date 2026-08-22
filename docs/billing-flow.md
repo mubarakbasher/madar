@@ -352,6 +352,121 @@ This is **different** from bank transfer flow — no `payment_proof` row created
 
 ---
 
+## 4A. Credit Sales & Customer Receivables (Partial / Deferred Payment)
+
+A credit sale extends the normal sale pipeline rather than adding a separate
+accounts-receivable module: it is a sale whose payment slices sum to **less**
+than `total_cents`, with the shortfall tracked as a receivable on the named
+customer. Three scenarios: **partial now + rest later**, **full credit (pay
+all later)**, **invoice-only sale** (no payment slices at all). No scheduled
+installment plans.
+
+### 4A.1 The `on_account_cents` contract
+
+`POST /v1/sales` accepts an explicit `on_account_cents` field alongside
+`payments[]`. The two must reconcile exactly: `sum(payments[].amount_cents) +
+on_account_cents === total_cents`. There is no implicit "underpayment becomes
+credit" behavior — a sale that doesn't balance to the total is rejected.
+
+Guardrails, enforced in `sales.service.ts`:
+- `on_account_cents > 0` requires a `customer_id` on the sale (unpaid balance
+  can never sit against an anonymous walk-in).
+- `on_account_cents > 0` requires the actor to be **owner or manager** —
+  cashiers cannot originate credit. Violation → 403 `credit_sale_not_permitted`.
+- Resulting `payment_status`: `sum(payments) === 0` → `unpaid`;
+  `0 < sum(payments) < total` → `partially_paid`; existing `paid` /
+  `payment_pending` logic is unchanged for fully-tendered sales (a
+  bank-transfer slice still forces `payment_pending` until verified).
+- A zero-slice, fully-credit sale (`on_account_cents === total_cents`, no
+  `payments[]`) derives a synthetic payment method of `on_account` for
+  display purposes (sales list, receipt) even though no `sale_payments` row
+  backs it.
+- `sales.balance_due_cents` is denormalized on the sale row; source of truth
+  is `total_cents - sum(non-rejected sale_payments)`.
+- Inventory commits at sale completion **regardless of the balance owed** —
+  same rule as bank-transfer `payment_pending` sales (§4.1).
+
+Out of scope, deliberately: per-customer credit limits (schema leaves room
+but nothing enforces one), installment schedules, due dates/reminders,
+statements or aging reports, and allocating one payment across multiple open
+sales.
+
+### 4A.2 The receivable ledger
+
+`customer_receivable_ledger` mirrors the existing `store_credit_ledger`
+table and discipline: append-only, signed `amount_minor`, running
+`balance_after_minor`, `currency_code`, a `reference_table` (`sale` |
+`sale_payment` | `manual_adjustment`) + `reference_id` pointer, `note_i18n`,
+`created_by`. `customers.receivable_balance_minor` +
+`receivable_currency_code` are the denormalized cache, updated in the same
+transaction as every ledger write — never mutated independently, exactly
+like `branch_stock.qty_on_hand` must never move without a `stock_movement`
+row.
+
+A credit sale writes a positive ledger row (balance goes up) in the same
+transaction as sale creation. A settlement writes a negative row (balance
+goes down). A rejected settlement proof writes a reversing positive row —
+the original rows are never edited or deleted.
+
+### 4A.3 Settling a receivable
+
+- `GET /v1/customers/:id/receivables` — open sales with balances + ledger
+  history + current balance. Owner/manager/accountant can read.
+- `POST /v1/customers/:id/receivables/settle` — owner/manager only. Body is
+  one sale + one payment slice (cash, card, or bank_transfer); reuses the
+  sale payment-slice validation. One call settles **one payment against one
+  sale** — there is no multi-sale allocation. Idempotency key required.
+  - Creates a `sale_payments` row on that sale.
+  - Decrements `balance_due_cents`; sale moves to `paid` once fully settled,
+    otherwise stays `partially_paid`.
+  - Appends a negative `customer_receivable_ledger` row + decrements
+    `customers.receivable_balance_minor`.
+  - Audit entry `receivable_settled`.
+  - Bank-transfer settlements: the payment is recorded **immediately** (not
+    deferred to proof verification) — the same "commit now, verify later"
+    posture as POS bank-transfer sales. The cashier/manager then uploads the
+    receipt via `POST /v1/payment-proofs` with `context: "sale"` and an
+    optional `sale_payment_id` to disambiguate which settlement the proof
+    belongs to when a sale has more than one open bank-transfer payment. Omit
+    or mismatch it and the API returns 422 `ambiguous_payment` or
+    `invalid_sale_payment` rather than guessing.
+
+### 4A.4 Proof rejection reopens the balance
+
+If a settlement's bank-transfer proof is later **rejected**, the receivable
+must reopen — mirroring the dispute behavior in §4.3 Step 7b, but for
+receivables instead of a fresh POS sale:
+- The rejected proof is matched back to its `sale_payments` row (linked at
+  proof submission time) and the corresponding negative ledger row.
+- A reversing positive ledger row is appended (never editing the original),
+  restoring `customers.receivable_balance_minor` and `sales.balance_due_cents`.
+- `payment_status` reverts to `partially_paid` or `unpaid` as appropriate.
+- Audit entry `receivable_reopened`.
+
+If the tenant later **resubmits** a proof for that same settlement and it is
+**verified**, the settlement is re-applied (negative ledger row re-written,
+balances re-decremented) — audit entry `receivable_resettled`. The
+resubmission re-links to the same `sale_payments` row rather than creating a
+new, disconnected one.
+
+### 4A.5 Receipt doubles as invoice
+
+A credit sale's receipt (§10 Receipt Preview) shows an "Invoice · balance
+due" banner and the tenant's bank details whenever `balance_due_cents > 0` —
+there is no separate invoice entity or invoice-numbering scheme. Fully-paid
+sales render the ordinary receipt.
+
+### 4A.6 Surfacing
+
+- Sales list: `partially_paid` and `unpaid` are filterable statuses with
+  their own badges; `on_account` renders as a payment-method value.
+- Customer Detail (§35) gains a **Balance** tab: outstanding total, open
+  sales with their balances, ledger history, and a "Receive payment" action
+  (owner/manager only; accountant is read-only) that opens the settle flow
+  described in §4A.3.
+
+---
+
 ## 5. Platform Bank Accounts (Our Side)
 
 Configured in the admin app at `/banking/accounts`.

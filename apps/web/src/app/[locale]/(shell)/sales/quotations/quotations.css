@@ -1,0 +1,180 @@
+/* quotations — list + detail pages. Extends sales.css (.sl-*) with a few
+   quotation-specific pill tones and a detail layout. All tokens from
+   packages/ui/tokens.css; logical CSS only. */
+
+.qt-pill-open {
+  background: color-mix(in oklab, var(--accent) 16%, var(--bg-elev));
+  color: var(--accent);
+}
+
+.qt-pill-expired {
+  background: color-mix(in oklab, var(--amber) 16%, var(--bg-elev));
+  color: var(--amber);
+}
+
+.qt-pill-converted {
+  background: color-mix(in oklab, var(--sage) 16%, var(--bg-elev));
+  color: var(--sage);
+}
+
+.qt-pill-cancelled {
+  background: var(--bg-sunk);
+  color: var(--ink-3);
+}
+
+.qt-detail-page {
+  padding: 28px 40px 64px;
+  max-width: 880px;
+  margin-inline: auto;
+}
+
+.qt-detail-header {
+  margin-block-end: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qt-detail-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.qt-detail-code {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+.qt-detail-title {
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--ink);
+  margin: 0;
+}
+
+.qt-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+.qt-detail-note {
+  font-size: 13px;
+  color: var(--ink-2);
+  background: var(--bg-sunk);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.qt-detail-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-block: 20px;
+}
+
+.qt-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+  background: var(--bg-elev);
+  color: var(--ink);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.qt-btn:hover {
+  background: var(--bg-sunk);
+}
+
+.qt-btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.qt-btn-primary:hover {
+  background: var(--accent);
+  opacity: 0.92;
+}
+
+.qt-btn-danger {
+  color: var(--rose);
+  border-color: color-mix(in oklab, var(--rose) 40%, var(--rule));
+}
+
+.qt-btn-danger:hover {
+  background: color-mix(in oklab, var(--rose) 10%, var(--bg-elev));
+}
+
+.qt-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.qt-totals {
+  margin-block-start: 16px;
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+  max-width: 320px;
+  margin-inline-start: auto;
+}
+
+.qt-totals-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.qt-totals-row b {
+  font-size: 16px;
+}
+
+.qt-modal-bg {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in oklab, var(--ink) 40%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 20px;
+}
+
+.qt-modal {
+  background: var(--bg-elev);
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.32);
+}
+
+.qt-modal-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+
+.qt-modal-body {
+  font-size: 13px;
+  color: var(--ink-3);
+  margin-block-end: 16px;
+}
+
+.qt-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

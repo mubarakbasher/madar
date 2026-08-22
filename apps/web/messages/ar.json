@@ -654,6 +654,7 @@
       "checkout": "الدفع",
       "checkoutBadge": "مباشر",
       "sales": "سجلات المبيعات",
+      "quotations": "عروض الأسعار",
       "inventory": "المخزون",
       "transfers": "تحويلات المخزون",
       "suppliers": "الموردون",
@@ -1618,6 +1619,26 @@
         "discardedToast": "تم تجاهل الفاتورة."
       }
     },
+    "quote": {
+      "save": "عرض سعر",
+      "modalKicker": "حفظ عرض السعر",
+      "modalTitle": "حفظ كعرض سعر",
+      "forCustomer": "للعميل {name}",
+      "noCustomer": "لا يوجد عميل مرتبط",
+      "validDaysLabel": "صالح لمدة (أيام)",
+      "noteLabel": "ملاحظة",
+      "notePlaceholder": "ملاحظة اختيارية لهذا العرض",
+      "saveError": "تعذّر حفظ عرض السعر. حاول مجدداً.",
+      "saving": "جارٍ الحفظ…",
+      "savedToast": "تم حفظ عرض السعر",
+      "viewToastAction": "عرض",
+      "printToastAction": "طباعة",
+      "convertingBanner": "تحويل عرض السعر {code} — الأسعار المعروضة سارية",
+      "exitQuoteMode": "الخروج من وضع عرض السعر — العودة لأسعار الكتالوج",
+      "droppedLinesToast": "{count, plural, zero {لم تتم إزالة أصناف} one {تمت إزالة صنف واحد — لم يعد في الكتالوج} two {تمت إزالة صنفين — لم يعودا في الكتالوج} few {تمت إزالة {count_n} أصناف — لم تعد في الكتالوج} many {تمت إزالة {count_n} صنفاً — لم تعد في الكتالوج} other {تمت إزالة {count_n} صنف — لم تعد في الكتالوج}}",
+      "printEstimate": "طباعة عرض تقديري",
+      "offlineBlocked": "أعد الاتصال لتحويل عرض السعر هذا"
+    },
     "offline": {
       "statusOnline": "متصل",
       "statusOffline": "غير متصل · {count, plural, zero {لا توجد} one {طلب معلّق} two {طلبان معلّقان} few {{count_n} طلبات معلّقة} many {{count_n} طلبًا معلّقًا} other {{count_n} طلب معلّق}}",
@@ -1654,7 +1675,8 @@
         "card": "بطاقة",
         "transfer": "تحويل",
         "storeCredit": "رصيد",
-        "split": "قسمة"
+        "split": "قسمة",
+        "onAccount": "آجل"
       },
       "upload": {
         "pickReceipt": "اختر أو التقط صورة الإيصال",
@@ -1721,6 +1743,16 @@
           "currency_mismatch": "رصيد العميل بعملة مختلفة."
         }
       },
+      "onAccount": {
+        "title": "البيع بالآجل",
+        "needsCustomer": "اربط عميلاً للبيع بالآجل",
+        "notPermitted": "المديرون فقط يمكنهم البيع بالآجل",
+        "payNowLabel": "المدفوع الآن",
+        "balanceLabel": "المتبقي على الحساب",
+        "confirm": "إتمام البيع · آجل",
+        "approvalCodePlaceholder": "مثال: APP1234",
+        "cashTenderedPlaceholder": "المبلغ المُسلَّم"
+      },
       "roundUp": "↑{amount}",
       "transfer": {
         "loading": "جارٍ تحميل الحساب…",
@@ -1778,6 +1810,8 @@
       "paid": "مدفوع",
       "pending": "بانتظار التحقق"
     },
+    "invoiceLabel": "فاتورة · مبلغ مستحق",
+    "balanceDue": "المبلغ المستحق",
     "thanks": "شكراً — نتطلع لزيارتك القادمة.",
     "footer": {
       "tagline": "مدار — نقطة بيع ثنائية اللغة."
@@ -1794,6 +1828,11 @@
       "popDrawerPending": "جارٍ الفتح…",
       "popDrawerDone": "تم فتح الدُّرج",
       "popDrawerRetry": "فتح الدُّرج — إعادة"
+    },
+    "quote": {
+      "title": "عرض سعر — ليست فاتورة ضريبية",
+      "validUntil": "صالح حتى",
+      "estimateNote": "هذا عرض سعر تقديري فقط — قد تتغير الأسعار حتى تاريخ الصلاحية."
     }
   },
   "verification": {
@@ -3427,6 +3466,7 @@
     "tabs": {
       "overview": "نظرة عامة",
       "credit": "رصيد المتجر",
+      "balance": "الرصيد",
       "sales": "سجل المبيعات"
     },
     "kpi": {
@@ -3531,6 +3571,69 @@
       "page": "صفحة {page} من {total}",
       "prev": "السابق",
       "next": "التالي"
+    },
+    "balance": {
+      "title": "الرصيد",
+      "outstanding": "الرصيد المستحق",
+      "openSales": "المبيعات المفتوحة",
+      "history": "السجل",
+      "receivePayment": "استلام دفعة",
+      "loading": "جارٍ تحميل الرصيد…",
+      "empty": {
+        "title": "لا يوجد رصيد مستحق",
+        "body": "ستظهر هنا المبيعات الآجلة التي لم يسددها هذا العميل بعد.",
+        "cta": "الذهاب إلى نقطة البيع"
+      },
+      "settledToast": "تم تسجيل الدفعة.",
+      "colCode": "الإيصال",
+      "colDate": "التاريخ",
+      "colTotal": "الإجمالي",
+      "colBalanceDue": "الرصيد المستحق",
+      "columns": {
+        "date": "التاريخ",
+        "reference": "المرجع",
+        "amount": "المبلغ",
+        "balanceAfter": "الرصيد بعد",
+        "note": "ملاحظة"
+      },
+      "error": {
+        "title": "تعذّر تحميل الرصيد",
+        "body": "واجهنا مشكلة في جلب مستحقات هذا العميل.",
+        "retry": "أعد المحاولة"
+      },
+      "modal": {
+        "title": "استلام دفعة",
+        "saleLabel": "المبيعة",
+        "amountLabel": "المبلغ",
+        "methodLabel": "طريقة الدفع",
+        "methods": {
+          "cash": "نقدًا",
+          "card": "بطاقة",
+          "bank_transfer": "تحويل بنكي"
+        },
+        "cashTendered": "المبلغ المقدَّم نقدًا",
+        "approvalCode": "رمز الموافقة",
+        "bankTransferHint": "بعد تسجيل الدفعة، ارفع إيصال التحويل لإكمال إثبات الدفع — يتحقق فريق المبيعات منه قبل تأكيد الدفعة.",
+        "submit": "تسجيل الدفعة",
+        "uploadReceipt": "رفع الإيصال",
+        "payerName": "اسم الدافع",
+        "bankAccount": "الحساب المستلم",
+        "transferDate": "تاريخ التحويل",
+        "transferReference": "مرجع التحويل",
+        "receiptFile": "ملف الإيصال",
+        "done": "تم",
+        "settledAwaitingReceipt": "تم تسجيل الدفعة. الآن ارفع إيصال التحويل.",
+        "errors": {
+          "sale_not_open": "هذه المبيعة لم تعد مفتوحة للدفع.",
+          "amount_exceeds_balance": "هذا المبلغ أكبر من الرصيد المستحق.",
+          "customer_mismatch": "هذه المبيعة لا تخص هذا العميل.",
+          "insufficient_tendered": "المبلغ النقدي المقدَّم أقل من المبلغ المطلوب.",
+          "approval_code_required": "أدخل رمز موافقة الجهاز.",
+          "forbidden_role": "المالك أو المدير فقط يمكنهما استلام الدفعات.",
+          "validation_failed": "تحقق من الحقول المظللة وحاول مرة أخرى.",
+          "generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
+        }
+      }
     }
   },
   "refunds": {
@@ -3660,14 +3763,17 @@
       "paid": "مدفوعة",
       "payment_pending": "قيد التحقق",
       "disputed": "متنازع عليها",
-      "refunded": "مستردة"
+      "refunded": "مستردة",
+      "partially_paid": "مدفوعة جزئياً",
+      "unpaid": "غير مدفوعة"
     },
     "methods": {
       "cash": "نقدًا",
       "card": "بطاقة",
       "bank_transfer": "تحويل",
       "store_credit": "رصيد المتجر",
-      "split": "مقسّم"
+      "split": "مقسّم",
+      "on_account": "آجل"
     },
     "columns": {
       "code": "التذكرة",
@@ -3684,6 +3790,88 @@
       "page": "صفحة {page} من {total}",
       "prev": "السابق",
       "next": "التالي"
+    }
+  },
+  "quotationsList": {
+    "kicker": "المبيعات",
+    "title": "عروض الأسعار",
+    "subtitle": "عروض أسعار محفوظة بأسعار مثبّتة، جاهزة للتحويل إلى بيع.",
+    "loading": "جارٍ تحميل عروض الأسعار…",
+    "error": "تعذّر تحميل عروض الأسعار — يرجى المحاولة مجدداً.",
+    "emptyTitle": "لا توجد عروض أسعار بعد",
+    "emptyBody": "احفظ عرض سعر من سلة نقطة البيع لتظهر هنا.",
+    "emptyCta": "فتح نقطة البيع",
+    "noCustomer": "عميل نقدي",
+    "filters": {
+      "branch": "الفرع"
+    },
+    "statuses": {
+      "all": "الكل",
+      "open": "ساري",
+      "expired": "منتهي",
+      "converted": "محوَّل",
+      "cancelled": "ملغى"
+    },
+    "columns": {
+      "code": "العرض",
+      "customer": "العميل",
+      "total": "الإجمالي",
+      "validUntil": "صالح حتى",
+      "status": "الحالة"
+    },
+    "pagination": {
+      "summary": "{shown} من {total}",
+      "page": "صفحة {page} من {total}",
+      "prev": "السابق",
+      "next": "التالي"
+    }
+  },
+  "quotationDetail": {
+    "title": "عرض السعر",
+    "back": "الرجوع إلى عروض الأسعار",
+    "loading": "جارٍ تحميل عرض السعر…",
+    "error": "تعذّر تحميل عرض السعر هذا — يرجى المحاولة مجدداً.",
+    "statuses": {
+      "open": "ساري",
+      "expired": "منتهي",
+      "converted": "محوَّل",
+      "cancelled": "ملغى"
+    },
+    "meta": {
+      "customer": "العميل",
+      "loading": "جارٍ التحميل…",
+      "noCustomer": "عميل نقدي",
+      "validUntil": "صالح حتى",
+      "convertedAt": "تاريخ التحويل",
+      "cancelledAt": "تاريخ الإلغاء"
+    },
+    "actions": {
+      "convert": "تحويل إلى بيع",
+      "reprice": "إعادة تسعير والبيع",
+      "print": "طباعة",
+      "cancel": "إلغاء عرض السعر",
+      "viewSale": "عرض عملية البيع"
+    },
+    "columns": {
+      "name": "الصنف",
+      "sku": "رمز الصنف",
+      "qty": "الكمية",
+      "unitPrice": "سعر الوحدة",
+      "discount": "الخصم",
+      "lineTotal": "إجمالي البند"
+    },
+    "totals": {
+      "subtotal": "المجموع الفرعي",
+      "discount": "الخصم",
+      "tax": "الضريبة",
+      "total": "الإجمالي"
+    },
+    "cancelConfirm": {
+      "title": "هل تريد إلغاء عرض السعر هذا؟",
+      "body": "لن يتمكن العميل بعد ذلك من تحويل عرض السعر هذا إلى عملية بيع. لا يمكن التراجع عن هذا الإجراء.",
+      "dismiss": "الاحتفاظ به",
+      "confirm": "إلغاء عرض السعر",
+      "submitting": "جارٍ الإلغاء…"
     }
   },
   "reconcile": {

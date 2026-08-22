@@ -5,23 +5,25 @@ import { useLocale, useTranslations } from "next-intl";
 import {
   X,
   Banknote,
-  CreditCard,
   Landmark,
   Check,
   Camera,
   FileText,
   Wallet,
   SplitSquareHorizontal,
+  NotebookPen,
 } from "lucide-react";
 import { ApiError } from "@/lib/api/client";
 import { majorToMinor, minorToMajor } from "@/lib/currency";
 import { useFormat } from "@/lib/i18n/format";
-import { CardPaymentBody } from "./CardPaymentBody";
 import { StoreCreditBody } from "./StoreCreditBody";
 import { SplitTenderBody, type SplitPaymentSlice } from "./SplitTenderBody";
 import { TransferBody } from "./TransferBody";
+import { OnAccountBody } from "./OnAccountBody";
 
-type PaymentMethodId = "cash" | "card" | "tx" | "sc" | "split";
+// "card" is intentionally excluded from cashier-facing selection — the API and
+// historical-sale rendering still support it (see PaymentSubmit below).
+type PaymentMethodId = "cash" | "tx" | "sc" | "split" | "oa";
 
 const ACCEPTED_MIMES = new Set(["image/jpeg", "image/png", "application/pdf"]);
 const MAX_BYTES = 5 * 1024 * 1024;
@@ -36,14 +38,15 @@ export type PaymentSubmit =
       receipt_file: File;
       transfer_reference: string;
       payer_name: string;
-    };
+    }
+  | { method: "on_account"; paid_payments: SplitPaymentSlice[]; on_account_cents: number };
 
 const METHOD_ICONS = {
   cash: Banknote,
-  card: CreditCard,
   tx: Landmark,
   sc: Wallet,
   split: SplitSquareHorizontal,
+  oa: NotebookPen,
 } as const;
 
 export interface PaymentSheetCustomer {
@@ -54,7 +57,8 @@ export interface PaymentSheetCustomer {
 }
 
 /**
- * 1.10c+ scope: cash + card + bank transfer + store credit + split.
+ * 1.10c+ scope: cash + bank transfer + store credit + split + on account.
+ * Card is intentionally not offered in the cashier UI (API/history unaffected).
  * Each non-cash body owns its own submit button; cash uses the bottom row.
  */
 export function PaymentSheet({
@@ -64,6 +68,7 @@ export function PaymentSheet({
   currency,
   customer,
   branchId,
+  canSellOnAccount,
   onClose,
   onSubmit,
 }: {
@@ -76,6 +81,8 @@ export function PaymentSheet({
   customer?: PaymentSheetCustomer | null;
   /** Selects the branch's receiving account for the bank-transfer panel. */
   branchId?: string | null;
+  /** Owner/manager role gate — the "On account" tab is hidden entirely when false. */
+  canSellOnAccount?: boolean;
   onClose: () => void;
   onSubmit: (payment: PaymentSubmit) => Promise<void>;
 }) {
@@ -245,10 +252,13 @@ export function PaymentSheet({
                   marginBottom: "var(--space-4)",
                 }}
               >
-                {(["cash", "card", "tx", "sc", "split"] as const).map((m) => {
+                {(
+                  ["cash", "tx", "sc", "split", ...(canSellOnAccount ? (["oa"] as const) : [])] as const
+                ).map((m) => {
                   const Ico = METHOD_ICONS[m];
-                  const disabled = m === "sc" && storeCreditDisabled;
-                  const tooltip = m === "sc" ? storeCreditTooltip : undefined;
+                  const disabled = (m === "sc" && storeCreditDisabled) || (m === "oa" && !customer);
+                  const tooltip =
+                    m === "sc" ? storeCreditTooltip : m === "oa" && !customer ? t("onAccount.needsCustomer") : undefined;
                   return (
                     <button
                       type="button"
@@ -287,7 +297,9 @@ export function PaymentSheet({
                             ? "storeCredit"
                             : m === "split"
                               ? "split"
-                              : m,
+                              : m === "oa"
+                                ? "onAccount"
+                                : m,
                       )}
                     </button>
                   );
@@ -347,15 +359,6 @@ export function PaymentSheet({
                 </div>
               )}
 
-              {method === "card" && (
-                <CardPaymentBody
-                  submitting={submitting}
-                  onSubmit={(approval_code) =>
-                    dispatchSubmit({ method: "card", approval_code })
-                  }
-                />
-              )}
-
               {method === "sc" && (
                 <StoreCreditBody
                   total={total}
@@ -393,6 +396,17 @@ export function PaymentSheet({
                   }
                   submitting={submitting}
                   onSubmit={(payments) => dispatchSubmit({ method: "split", payments })}
+                />
+              )}
+
+              {method === "oa" && customer && (
+                <OnAccountBody
+                  total_cents={totalMinor}
+                  currency={currency}
+                  submitting={submitting}
+                  onSubmit={({ paid_payments, on_account_cents }) =>
+                    dispatchSubmit({ method: "on_account", paid_payments, on_account_cents })
+                  }
                 />
               )}
 

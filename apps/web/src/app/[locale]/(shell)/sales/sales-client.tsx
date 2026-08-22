@@ -17,7 +17,14 @@ import {
 import { currencyMinorUnits, formatMoney, minorToMajor } from "@/lib/currency";
 import { useFormat } from "@/lib/i18n/format";
 
-type Status = "all" | "paid" | "payment_pending" | "disputed" | "refunded";
+type Status =
+  | "all"
+  | "paid"
+  | "payment_pending"
+  | "disputed"
+  | "refunded"
+  | "partially_paid"
+  | "unpaid";
 type Method =
   | "all"
   | "cash"
@@ -161,7 +168,6 @@ export function SalesListClient({ locale }: { locale: "en" | "ar" }) {
           >
             <option value="all">{t("filters.allMethods")}</option>
             <option value="cash">{t("methods.cash")}</option>
-            <option value="card">{t("methods.card")}</option>
             <option value="bank_transfer">{t("methods.bank_transfer")}</option>
             <option value="store_credit">{t("methods.store_credit")}</option>
             <option value="split">{t("methods.split")}</option>
@@ -170,7 +176,17 @@ export function SalesListClient({ locale }: { locale: "en" | "ar" }) {
       </div>
 
       <div className="sl-chips" style={{ marginBlockEnd: "var(--space-4)" }}>
-        {(["all", "paid", "payment_pending", "disputed", "refunded"] as const).map(
+        {(
+          [
+            "all",
+            "paid",
+            "payment_pending",
+            "partially_paid",
+            "unpaid",
+            "disputed",
+            "refunded",
+          ] as const
+        ).map(
           (s) => (
             <button
               key={s}
@@ -287,5 +303,9 @@ function statusToken(s: SaleSummary["payment_status"]): string {
       return "disputed";
     case "refunded":
       return "refunded";
+    case "partially_paid":
+      return "partial";
+    case "unpaid":
+      return "unpaid";
   }
 }

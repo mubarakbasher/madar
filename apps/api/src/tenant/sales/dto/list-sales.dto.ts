@@ -19,7 +19,14 @@ export const ListSalesQuerySchema = z.object({
     .enum(["cash", "card", "bank_transfer", "store_credit", "split"])
     .optional(),
   payment_status: z
-    .enum(["paid", "payment_pending", "disputed", "refunded"])
+    .enum([
+      "paid",
+      "payment_pending",
+      "disputed",
+      "refunded",
+      "partially_paid",
+      "unpaid",
+    ])
     .optional(),
   from: z.string().optional(),
   to: z.string().optional(),

@@ -54,6 +54,13 @@ export interface SubmitProofInput {
   transfer_date: string; // YYYY-MM-DD
   transfer_reference: string;
   receipt_file: File;
+  /**
+   * Links the proof to a specific sale_payment row. Required for context
+   * "sale" whenever the sale could carry more than one unlinked bank-transfer
+   * payment (e.g. receivables settlement) — omitting it there can 422 with
+   * `ambiguous_payment`.
+   */
+  sale_payment_id?: string;
 }
 
 export async function submitPaymentProof(input: SubmitProofInput): Promise<ProofItem> {
@@ -68,6 +75,7 @@ export async function submitPaymentProof(input: SubmitProofInput): Promise<Proof
   fd.append("transfer_date", input.transfer_date);
   fd.append("transfer_reference", input.transfer_reference);
   fd.append("receipt", input.receipt_file);
+  if (input.sale_payment_id) fd.append("sale_payment_id", input.sale_payment_id);
   return apiFetch<ProofItem>("/v1/payment-proofs", { method: "POST", body: fd });
 }
 

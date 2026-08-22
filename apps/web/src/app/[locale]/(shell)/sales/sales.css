@@ -177,6 +177,16 @@
   color: var(--ink-3);
 }
 
+.sl-pill-partial {
+  background: color-mix(in oklab, var(--amber) 16%, var(--bg-elev));
+  color: var(--amber);
+}
+
+.sl-pill-unpaid {
+  background: color-mix(in oklab, var(--rose) 16%, var(--bg-elev));
+  color: var(--rose);
+}
+
 .sl-method {
   font-size: 11px;
   text-transform: uppercase;

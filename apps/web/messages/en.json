@@ -654,6 +654,7 @@
       "checkout": "Checkout",
       "checkoutBadge": "Live",
       "sales": "Sales records",
+      "quotations": "Quotations",
       "inventory": "Inventory",
       "transfers": "Stock transfers",
       "suppliers": "Suppliers",
@@ -1618,6 +1619,26 @@
         "discardedToast": "Ticket discarded."
       }
     },
+    "quote": {
+      "save": "Quote",
+      "modalKicker": "Save quote",
+      "modalTitle": "Save as quotation",
+      "forCustomer": "For {name}",
+      "noCustomer": "No customer attached",
+      "validDaysLabel": "Valid for (days)",
+      "noteLabel": "Note",
+      "notePlaceholder": "Optional note for this quote",
+      "saveError": "Couldn't save the quotation. Try again.",
+      "saving": "Saving…",
+      "savedToast": "Quotation saved",
+      "viewToastAction": "View",
+      "printToastAction": "Print",
+      "convertingBanner": "Converting quotation {code} — quoted prices apply",
+      "exitQuoteMode": "Exit quote mode — revert to catalog prices",
+      "droppedLinesToast": "{count, plural, one {1 item was removed — no longer in the catalog} other {{count_n} items were removed — no longer in the catalog}}",
+      "printEstimate": "Print estimate",
+      "offlineBlocked": "Reconnect to convert this quotation"
+    },
     "offline": {
       "statusOnline": "Online",
       "statusOffline": "Offline · {count, plural, =0 {no pending} one {1 pending} other {{count_n} pending}}",
@@ -1654,7 +1675,8 @@
         "card": "Card",
         "transfer": "Transfer",
         "storeCredit": "Credit",
-        "split": "Split"
+        "split": "Split",
+        "onAccount": "On account"
       },
       "upload": {
         "pickReceipt": "Pick or capture receipt",
@@ -1721,6 +1743,16 @@
           "currency_mismatch": "Customer credit is in a different currency."
         }
       },
+      "onAccount": {
+        "title": "Sell on account",
+        "needsCustomer": "Attach a customer to sell on account",
+        "notPermitted": "Only managers can sell on account",
+        "payNowLabel": "Paid now",
+        "balanceLabel": "Left on account",
+        "confirm": "Complete sale · on account",
+        "approvalCodePlaceholder": "e.g. APP1234",
+        "cashTenderedPlaceholder": "Amount tendered"
+      },
       "roundUp": "↑{amount}",
       "transfer": {
         "loading": "Loading account…",
@@ -1778,6 +1810,8 @@
       "paid": "PAID",
       "pending": "PENDING VERIFY"
     },
+    "invoiceLabel": "Invoice · balance due",
+    "balanceDue": "Balance due",
     "thanks": "Thank you — visit again soon.",
     "footer": {
       "tagline": "Madar — calm bilingual POS."
@@ -1794,6 +1828,11 @@
       "popDrawerPending": "Opening…",
       "popDrawerDone": "Drawer opened",
       "popDrawerRetry": "Open drawer — retry"
+    },
+    "quote": {
+      "title": "Quotation — not a tax invoice",
+      "validUntil": "Valid until",
+      "estimateNote": "This is an estimate only — prices may change until the valid-until date."
     }
   },
   "verification": {
@@ -3427,6 +3466,7 @@
     "tabs": {
       "overview": "Overview",
       "credit": "Store credit",
+      "balance": "Balance",
       "sales": "Sales history"
     },
     "kpi": {
@@ -3531,6 +3571,69 @@
       "page": "Page {page} of {total}",
       "prev": "Previous",
       "next": "Next"
+    },
+    "balance": {
+      "title": "Balance",
+      "outstanding": "Outstanding balance",
+      "openSales": "Open sales",
+      "history": "History",
+      "receivePayment": "Receive payment",
+      "loading": "Loading balance…",
+      "empty": {
+        "title": "No open balance",
+        "body": "Credit sales this customer hasn't paid off yet will show up here.",
+        "cta": "Go to POS"
+      },
+      "settledToast": "Payment recorded.",
+      "colCode": "Receipt",
+      "colDate": "Date",
+      "colTotal": "Total",
+      "colBalanceDue": "Balance due",
+      "columns": {
+        "date": "Date",
+        "reference": "Reference",
+        "amount": "Amount",
+        "balanceAfter": "Balance after",
+        "note": "Note"
+      },
+      "error": {
+        "title": "Couldn't load balance",
+        "body": "We hit a snag fetching this customer's receivables.",
+        "retry": "Try again"
+      },
+      "modal": {
+        "title": "Receive payment",
+        "saleLabel": "Sale",
+        "amountLabel": "Amount",
+        "methodLabel": "Method",
+        "methods": {
+          "cash": "Cash",
+          "card": "Card",
+          "bank_transfer": "Bank transfer"
+        },
+        "cashTendered": "Cash tendered",
+        "approvalCode": "Approval code",
+        "bankTransferHint": "After you record the payment, upload the transfer receipt to complete the proof — the tenant sales team verifies it before the payment shows as confirmed.",
+        "submit": "Record payment",
+        "uploadReceipt": "Upload receipt",
+        "payerName": "Payer name",
+        "bankAccount": "Receiving account",
+        "transferDate": "Transfer date",
+        "transferReference": "Transfer reference",
+        "receiptFile": "Receipt file",
+        "done": "Done",
+        "settledAwaitingReceipt": "Payment recorded. Now upload the transfer receipt.",
+        "errors": {
+          "sale_not_open": "This sale isn't open for payment anymore.",
+          "amount_exceeds_balance": "That amount is more than the balance due.",
+          "customer_mismatch": "This sale doesn't belong to this customer.",
+          "insufficient_tendered": "The cash tendered is less than the amount.",
+          "approval_code_required": "Enter the terminal approval code.",
+          "forbidden_role": "Only owners and managers can receive payments.",
+          "validation_failed": "Check the highlighted fields and try again.",
+          "generic": "Something went wrong. Please try again."
+        }
+      }
     }
   },
   "refunds": {
@@ -3660,14 +3763,17 @@
       "paid": "Paid",
       "payment_pending": "Pending",
       "disputed": "Disputed",
-      "refunded": "Refunded"
+      "refunded": "Refunded",
+      "partially_paid": "Partially paid",
+      "unpaid": "Unpaid"
     },
     "methods": {
       "cash": "Cash",
       "card": "Card",
       "bank_transfer": "Transfer",
       "store_credit": "Store credit",
-      "split": "Split"
+      "split": "Split",
+      "on_account": "On account"
     },
     "columns": {
       "code": "Ticket",
@@ -3684,6 +3790,88 @@
       "page": "Page {page} of {total}",
       "prev": "Previous",
       "next": "Next"
+    }
+  },
+  "quotationsList": {
+    "kicker": "Sales",
+    "title": "Quotations",
+    "subtitle": "Saved quotes with locked-in prices, ready to convert to a sale.",
+    "loading": "Loading quotations…",
+    "error": "Couldn't load quotations — please retry.",
+    "emptyTitle": "No quotations yet",
+    "emptyBody": "Save a quote from the POS cart to see it here.",
+    "emptyCta": "Open POS",
+    "noCustomer": "Walk-in",
+    "filters": {
+      "branch": "Branch"
+    },
+    "statuses": {
+      "all": "All",
+      "open": "Open",
+      "expired": "Expired",
+      "converted": "Converted",
+      "cancelled": "Cancelled"
+    },
+    "columns": {
+      "code": "Quote",
+      "customer": "Customer",
+      "total": "Total",
+      "validUntil": "Valid until",
+      "status": "Status"
+    },
+    "pagination": {
+      "summary": "{shown} of {total}",
+      "page": "Page {page} of {total}",
+      "prev": "Previous",
+      "next": "Next"
+    }
+  },
+  "quotationDetail": {
+    "title": "Quotation",
+    "back": "Back to quotations",
+    "loading": "Loading quotation…",
+    "error": "Couldn't load this quotation — please retry.",
+    "statuses": {
+      "open": "Open",
+      "expired": "Expired",
+      "converted": "Converted",
+      "cancelled": "Cancelled"
+    },
+    "meta": {
+      "customer": "Customer",
+      "loading": "Loading…",
+      "noCustomer": "Walk-in",
+      "validUntil": "Valid until",
+      "convertedAt": "Converted",
+      "cancelledAt": "Cancelled"
+    },
+    "actions": {
+      "convert": "Convert to sale",
+      "reprice": "Reprice & sell",
+      "print": "Print",
+      "cancel": "Cancel quotation",
+      "viewSale": "View sale"
+    },
+    "columns": {
+      "name": "Item",
+      "sku": "SKU",
+      "qty": "Qty",
+      "unitPrice": "Unit price",
+      "discount": "Discount",
+      "lineTotal": "Line total"
+    },
+    "totals": {
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "tax": "Tax",
+      "total": "Total"
+    },
+    "cancelConfirm": {
+      "title": "Cancel this quotation?",
+      "body": "The customer will no longer be able to convert this quote to a sale. This can't be undone.",
+      "dismiss": "Keep it",
+      "confirm": "Cancel quotation",
+      "submitting": "Cancelling…"
     }
   },
   "reconcile": {
