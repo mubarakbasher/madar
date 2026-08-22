@@ -52,6 +52,7 @@ export function Cart({
   customer,
   taxInclusive = false,
   quoteContext = null,
+  offlineQuoteBlocked = false,
   onClear,
   onHold,
   onSaveQuote,
@@ -70,6 +71,11 @@ export function Cart({
   customer: CartCustomer | null;
   taxInclusive?: boolean;
   quoteContext?: QuoteContext | null;
+  /** True when the till is offline while in quote-conversion mode — the
+   *  DTO rejects quotation_id + offline_completed, so an offline "complete"
+   *  here would queue a sale that can never sync. Disables Pay + shows a
+   *  reconnect notice instead of letting the cashier hit that wall later. */
+  offlineQuoteBlocked?: boolean;
   onClear: () => void;
   onHold: () => void;
   onSaveQuote?: () => void;
@@ -123,6 +129,11 @@ export function Cart({
           }}
         >
           <span>{t("quote.convertingBanner", { code: quoteContext.code })}</span>
+          {offlineQuoteBlocked && (
+            <span style={{ color: "var(--ink-2)", fontWeight: 500 }}>
+              {t("quote.offlineBlocked")}
+            </span>
+          )}
           {onExitQuoteMode && (
             <button
               type="button"
@@ -251,7 +262,7 @@ export function Cart({
       <button
         type="button"
         className="pos-pay"
-        disabled={lines.length === 0}
+        disabled={lines.length === 0 || offlineQuoteBlocked}
         onClick={onPay}
         aria-label={`${t("cart.pay")} ${total}`}
       >

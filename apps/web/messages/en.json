@@ -1636,7 +1636,8 @@
       "convertingBanner": "Converting quotation {code} — quoted prices apply",
       "exitQuoteMode": "Exit quote mode — revert to catalog prices",
       "droppedLinesToast": "{count, plural, one {1 item was removed — no longer in the catalog} other {{count_n} items were removed — no longer in the catalog}}",
-      "printEstimate": "Print estimate"
+      "printEstimate": "Print estimate",
+      "offlineBlocked": "Reconnect to convert this quotation"
     },
     "offline": {
       "statusOnline": "Online",

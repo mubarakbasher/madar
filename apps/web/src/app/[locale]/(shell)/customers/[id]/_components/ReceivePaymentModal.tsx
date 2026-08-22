@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   customerReceivablesSettleRequest,
@@ -12,6 +12,7 @@ import { ApiError } from "@/lib/api/client";
 import { listTenantBankAccounts } from "@/lib/api/tenant-bank-accounts";
 import { submitPaymentProof } from "@/lib/api/payment-proofs";
 import { useFormat } from "@/lib/i18n/format";
+import { currencyMinorUnits, majorToMinor, minorToMajor } from "@/lib/currency";
 
 type SettleError =
   | "sale_not_open"
@@ -64,6 +65,14 @@ export function ReceivePaymentModal({
   const tBalance = useTranslations("customers.balance");
   const tCommon = useTranslations("common");
   const f = useFormat();
+  const locale = useLocale();
+
+  // Money inputs take MAJOR-unit strings (e.g. "1.40" EGP) but every value
+  // that leaves this component — state, validation, the API payload — stays
+  // a MINOR-unit integer string (bigint-safe). currencyCode can briefly be
+  // null before the sale/currency loads; "" falls back to 2 decimal places
+  // via currencyMinorUnits, same as the rest of the app's null-currency guard.
+  const minorUnits = currencyMinorUnits(currencyCode ?? "");
 
   const [saleId, setSaleId] = useState(openSales[0]?.sale_id ?? "");
   const selectedSale = useMemo(
@@ -95,6 +104,21 @@ export function ReceivePaymentModal({
   const [transferReference, setTransferReference] = useState("");
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [proofError, setProofError] = useState<string | null>(null);
+
+  /** Minor-unit integer string -> major-unit display string for an <input>. */
+  function toMajorInput(minorStr: string): string {
+    if (minorStr === "" || !isPositiveIntString(minorStr)) return "";
+    return minorToMajor(BigInt(minorStr), currencyCode ?? "").toFixed(minorUnits);
+  }
+
+  /** Major-unit user input -> minor-unit integer string, bigint-safe. */
+  function fromMajorInput(raw: string): string {
+    if (raw.trim() === "") return "";
+    const majorValue = Number(raw);
+    if (!Number.isFinite(majorValue) || majorValue < 0) return "";
+    const minorValue = majorToMinor(majorValue, currencyCode ?? "");
+    return String(Math.max(0, Math.round(minorValue)));
+  }
 
   function pickSale(id: string) {
     setSaleId(id);
@@ -212,10 +236,13 @@ export function ReceivePaymentModal({
               </label>
               <input
                 id="rp-amount"
+                type="number"
                 className="cu-input tnum"
-                inputMode="numeric"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                inputMode="decimal"
+                min={0}
+                step={1 / 10 ** minorUnits}
+                value={toMajorInput(amount)}
+                onChange={(e) => setAmount(fromMajorInput(e.target.value))}
               />
             </div>
 
@@ -244,10 +271,13 @@ export function ReceivePaymentModal({
                 </label>
                 <input
                   id="rp-tendered"
+                  type="number"
                   className="cu-input tnum"
-                  inputMode="numeric"
-                  value={cashTendered}
-                  onChange={(e) => setCashTendered(e.target.value)}
+                  inputMode="decimal"
+                  min={0}
+                  step={1 / 10 ** minorUnits}
+                  value={toMajorInput(cashTendered)}
+                  onChange={(e) => setCashTendered(fromMajorInput(e.target.value))}
                 />
               </div>
             )}
@@ -302,7 +332,7 @@ export function ReceivePaymentModal({
                 <option value="">—</option>
                 {bankAccountsQ.data?.items.map((a) => (
                   <option key={a.id} value={a.id}>
-                    {a.name_i18n.en} — {a.bank_name}
+                    {a.name_i18n[locale as "en" | "ar"] || a.name_i18n.en} — {a.bank_name}
                   </option>
                 ))}
               </select>

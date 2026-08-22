@@ -43,6 +43,7 @@ import { syncConflictsSummaryRequest } from "@/lib/api/sync-conflicts";
 import { minorToMajor } from "@/lib/currency";
 import { getDeviceUuid } from "@/lib/offline/device";
 import { dispatchSale } from "@/lib/offline/dispatch";
+import { useOnlineStatus } from "@/lib/offline/online-status";
 import { startSyncEngine } from "@/lib/offline/sync";
 import { saveCatalogSnapshot } from "@/lib/offline/catalog-cache";
 import { Link } from "../../../../i18n/routing";
@@ -188,6 +189,13 @@ function PosView({
   const [quoteContext, setQuoteContext] = useState<QuoteContext | null>(null);
   const [saveQuoteOpen, setSaveQuoteOpen] = useState(false);
   const searchParams = useSearchParams();
+  // Header's online/offline badge reads the same store. A quote-mode sale
+  // completed offline would queue a payload with quotation_id +
+  // offline_completed=true — the DTO rejects that combination outright, so
+  // it can never sync (see create-sale.dto.ts). Blocking Pay here (and the
+  // defense-in-depth strip in offline/sync.ts) keeps that from happening.
+  const isOnline = useOnlineStatus((s) => s.online);
+  const offlineQuoteBlocked = !!quoteContext && !isOnline;
 
   // Held-sales server-side query. Cashiers always see only their own; the
   // server enforces this even when mine_only=false slips through.
@@ -758,6 +766,7 @@ function PosView({
           customer={customer}
           taxInclusive={taxInclusive}
           quoteContext={quoteContext}
+          offlineQuoteBlocked={offlineQuoteBlocked}
           onClear={clearCart}
           onHold={holdCurrent}
           onSaveQuote={() => setSaveQuoteOpen(true)}
