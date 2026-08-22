@@ -230,6 +230,22 @@ Every authenticated page sits in this shell.
 - "Hold sale" via long-press or menu → moves cart to held-sales tray.
 - Held sales tray icon in header with count badge.
 - All numeric input via tap (no keyboard required) — cart edit sheet has a number pad.
+- **Quote action** — next to Hold/Clear once the cart has lines: "Quote" opens a
+  Save Quote sheet (validity days 1–90, default 14, optional note; "For
+  {customer}" line when a customer is attached). Saving snapshots current
+  catalog prices into a numbered `QT-XXXXXX` quotation (see §31a) — no
+  inventory movement, no payment — clears the cart, and shows a toast with
+  the code plus "View" / "Print" links. The same sheet has a **"Print
+  estimate"** action that renders the current cart as an unsaved,
+  client-only estimate document (no `QT-` number, "—" in its place) and
+  goes straight to the print dialog — nothing is saved to the server.
+  Opening POS with `?quote={id}` (from the Quotations detail page's
+  "Convert to sale" action) hydrates the cart at the quotation's snapshotted
+  prices and shows a dismissable "Converting quotation {code}" banner above
+  the cart; paying through the normal Payment Screen completes the sale at
+  those quoted prices and marks the quotation Converted. `?quote={id}&reprice=1`
+  (from "Reprice & sell" on an expired quotation) hydrates the same lines at
+  current catalog prices instead, with no banner and no price lock.
 
 ---
 
@@ -289,6 +305,14 @@ Every authenticated page sits in this shell.
 - Receipt rendered as it would print (58mm or 80mm width per branch setting).
 - Buttons: Print, Email, SMS, Download PDF, Done.
 - For bank-transfer sales: shows payment status badge ("Awaiting verification", "Verified", "Disputed").
+- **Saved-quote print route:** `/{locale}/sales/quotations-print/{id}` is a
+  sibling, chrome-free route (outside `(shell)`, same placement pattern as
+  this receipt page) rendering the same underlying document component in a
+  `variant="quotation"` mode: `QT-` code, "Quotation — not a tax invoice /
+  عرض سعر — ليست فاتورة ضريبية" title, valid-until row, bank details when
+  available, no tender/payment-stamp rows. The POS "Print estimate" action
+  renders the equivalent document client-side from the current cart, with no
+  server round-trip and no quote number.
 
 ---
 
@@ -600,6 +624,42 @@ Same fields as onboarding step 2, plus: currency override, timezone, opening dat
 
 - Columns: Refund #, Original sale, Date, Amount, Reason, Processed by.
 - Click → detail with reason history.
+
+---
+
+### 31a. Quotations List
+
+**Route:** `/{locale}/sales/quotations`
+**Audience:** Any POS role (cashiers see their own branch scope, owner/manager branch-wide — same access pattern as held sales)
+**Layout:** Filterable table
+
+- Branch selector (a concrete branch is required, unlike Sales History's "all branches" tolerance).
+- Status filter chips: All · Open · Expired · Converted · Cancelled. "Expired" is
+  derived at read time from `valid_until` (no stored expired status, no cron).
+- Columns: Quote #, Customer (or "Cash customer"), Total, Valid until, Status.
+- Row click → quotation detail.
+- Empty state: oversized icon, "No quotations yet" headline, "Save a quote from
+  the POS cart" body, "Open POS" CTA.
+
+---
+
+### 31b. Quotation Detail
+
+**Route:** `/{locale}/sales/quotations/{id}`
+**Audience:** Any POS role (same access as the list)
+**Layout:** Single column, like Sale Detail
+
+- Header: status pill (Open / Expired / Converted / Cancelled), quote code,
+  customer, valid-until date, and (once acted on) converted-at or
+  cancelled-at timestamp; optional note.
+- Line table rendered from the quotation's own name/SKU snapshots — never
+  re-joined against the live catalog, so it still renders after a product is
+  renamed or deleted.
+- Actions by status:
+  - **Open:** "Convert to sale" (→ `/{locale}/pos?quote={id}`), "Print", "Cancel quotation" (confirm dialog; irreversible).
+  - **Expired:** "Reprice & sell" (→ `/{locale}/pos?quote={id}&reprice=1`, catalog prices, no lock), "Print", "Cancel quotation".
+  - **Converted:** "View sale" (→ the sale's receipt page), "Print".
+  - **Cancelled:** "Print" only.
 
 ---
 

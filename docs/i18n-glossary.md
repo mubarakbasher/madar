@@ -42,6 +42,11 @@ The canonical English-to-Arabic glossary for domain terms used throughout the pl
 | Cash float | رصيد افتتاحي | Opening cash amount. |
 | Cash variance | فرق الصندوق | Difference between expected and counted cash. |
 | Hold / Park sale | تعليق البيع | Set aside a sale temporarily. |
+| Quotation | عرض سعر | Saved, numbered (`QT-`) price document with a validity period; distinct from a held sale (internal 24h cart park) and from an invoice (pre-payment on a real sale). |
+| Estimate | عرض تقديري | Client-only, unsaved quick-print of the current cart — no `QT-` number. Matches `pos.quote.printEstimate` in `ar.json`. |
+| Valid until | صالح حتى | Expiry date/time of a quotation; used as the list-column header and the detail-page meta label. |
+| Convert to sale | تحويل إلى بيع | Action: turn an open quotation into a real sale at its quoted prices. |
+| Reprice & sell | إعادة تسعير والبيع | Action on an expired quotation: convert at current catalog prices instead of the (expired) quoted ones. |
 | Void | إلغاء | Cancel a transaction before payment. |
 | Tender | وسيلة الدفع | The means of payment. |
 | Split tender | دفع مقسم | Paying with multiple methods. |
@@ -300,6 +305,14 @@ per branch with a quantity.
 | Completed | مكتمل |
 | In progress | قيد التنفيذ |
 | Failed | فشل |
+| Expired | منتهي |
+| Converted | محوَّل |
+
+Note — quotation statuses deliberately diverge from the generic "Open" row
+above: a quotation's open state reads **ساري** ("valid/in effect"), not
+**مفتوح**, because "مفتوح" reads as "unlocked/unresolved" for a document
+that's actually still honorable at its quoted price. See
+`quotationsList.statuses.*` / `quotationDetail.statuses.*` in `ar.json`.
 
 ---
 

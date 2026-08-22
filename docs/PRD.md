@@ -138,6 +138,13 @@ Seven core modules plus the super-admin platform app.
 - Customer attach (optional).
 - Receipts: thermal print (58/80mm), email, SMS, QR download. Bilingual or single-language per branch setting.
 - Offline mode: transactions cached locally, replayed on reconnect.
+- Quotations: cashiers can save the current cart as a numbered quote
+  (`QT-XXXXXX`, prices snapshotted, validity 1–90 days, default 14) that
+  lists separately from held sales, or print it as a one-off estimate with
+  no number and nothing saved. Converting a saved quote to a real sale
+  honors the quoted prices even if the catalog price changed since; an
+  expired quote must be repriced at current catalog prices to convert. No
+  inventory movement and no payment happen until conversion.
 
 **Acceptance criteria:**
 - Single-item cash sale in three taps or fewer.
