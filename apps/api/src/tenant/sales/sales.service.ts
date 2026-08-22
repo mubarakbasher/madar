@@ -17,6 +17,7 @@ import { randomUUID } from "node:crypto";
 // eslint-disable-next-line no-restricted-imports
 import { adminPrisma, basePrisma, tenantScoped } from "@madar/db";
 import { AuditService } from "../auth/audit.service";
+import { QuotationsService } from "../quotations/quotations.service";
 import type {
   CreateSaleInput,
   SalePaymentInput,
@@ -76,7 +77,10 @@ interface PersistedPayment extends NormalizedPayment {
 export class SalesService {
   private readonly logger = new Logger(SalesService.name);
 
-  constructor(private readonly audit: AuditService) {}
+  constructor(
+    private readonly audit: AuditService,
+    private readonly quotations: QuotationsService,
+  ) {}
 
   async completeSale(input: CreateSaleInput, ctx: SaleCtx): Promise<SaleResponse> {
     const scoped = tenantScoped(ctx.tenantId);
@@ -173,6 +177,32 @@ export class SalesService {
       }
     }
 
+    // Quotation conversion: validate the quote is open/unexpired and snapshot
+    // its per-product prices. getOpenForConvert throws quotation_not_found
+    // (404) / quotation_not_open (409) / quotation_expired (409) — these
+    // propagate as-is. Runs AFTER the client_uuid idempotency replay check
+    // above so a retry of a successful conversion returns the original sale
+    // rather than re-validating a now-converted quote.
+    const quotedPriceMap = new Map<
+      string,
+      { unit_price_cents: bigint; discount_cents: bigint }
+    >();
+    if (input.quotation_id) {
+      const quote = await this.quotations.getOpenForConvert(ctx.tenantId, input.quotation_id);
+      if (quote.currency_code !== input.currency_code) {
+        throw new BadRequestException({
+          code: "quotation_currency_mismatch",
+          message: "Sale currency does not match the quotation currency",
+        });
+      }
+      for (const line of quote.lines) {
+        quotedPriceMap.set(line.product_id, {
+          unit_price_cents: line.unit_price_cents,
+          discount_cents: line.discount_cents,
+        });
+      }
+    }
+
     // Tax-class resolution (slice 1). `tenants` is a platform table, so it's
     // read via adminPrisma; tax_classes is tenant-scoped, via `scoped`.
     const tenantRow = await adminPrisma.tenant.findUnique({
@@ -220,7 +250,8 @@ export class SalesService {
     const prepared: PreparedLine[] = input.lines.map((l) => {
       const product = productMap.get(l.product_id)!;
       const qtyBig = BigInt(l.qty);
-      let unitPrice = product.price_cents;
+      const quoted = quotedPriceMap.get(l.product_id);
+      let unitPrice = quoted?.unit_price_cents ?? product.price_cents;
       if (input.offline_completed && l.unit_price_cents != null) {
         const clientPrice = l.unit_price_cents;
         if (clientPrice !== product.price_cents) {
@@ -424,6 +455,22 @@ export class SalesService {
               created_by: ctx.cashierId,
             },
           });
+
+          // Stamp the quotation converted, race-safe: only flips it while it
+          // is still "open" (a concurrent convert attempt or cancel loses the
+          // race and the sale rolls back with the tx).
+          if (input.quotation_id) {
+            const upd = await tx.quotation.updateMany({
+              where: { id: input.quotation_id, status: "open" },
+              data: { status: "converted", converted_sale_id: sale.id, converted_at: new Date() },
+            });
+            if (upd.count === 0) {
+              throw new ConflictException({
+                code: "quotation_not_open",
+                message: "Quotation is not open",
+              });
+            }
+          }
 
           // Sale lines.
           for (const line of prepared) {
@@ -800,6 +847,7 @@ export class SalesService {
             has_negative_stock: hasNegativeStock,
             offline_completed: offlineCompleted,
             balance_due_cents: onAccountCents.toString(),
+            ...(input.quotation_id ? { quotation_id: input.quotation_id } : {}),
             ...(receivableLedgerId ? { receivable_ledger_id: receivableLedgerId } : {}),
             ...(singleCardCode
               ? { approval_code_last4: singleCardCode.slice(-4) }
@@ -815,6 +863,26 @@ export class SalesService {
         },
       )
       .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));
+
+    if (input.quotation_id) {
+      await this.audit
+        .writeTenantScoped(
+          {
+            tenantId: ctx.tenantId,
+            userId: ctx.cashierId,
+            ip: ctx.ip,
+            userAgent: ctx.userAgent,
+            ...(ctx.impersonatorId ? { impersonatorId: ctx.impersonatorId } : {}),
+          },
+          {
+            action: "quotation_converted",
+            entity: "quotation",
+            entityId: input.quotation_id,
+            after: { sale_id: saleId, code: saleCode },
+          },
+        )
+        .catch((e) => this.logger.warn(`audit write failed: ${(e as Error).message}`));
+    }
 
     // Echo cash totals for the receipt UI: sum across cash slices.
     const cashSlice = persistedPayments.find((p) => p.method === "cash");
