@@ -654,6 +654,7 @@
       "checkout": "Checkout",
       "checkoutBadge": "Live",
       "sales": "Sales records",
+      "quotations": "Quotations",
       "inventory": "Inventory",
       "transfers": "Stock transfers",
       "suppliers": "Suppliers",
@@ -3782,6 +3783,88 @@
       "page": "Page {page} of {total}",
       "prev": "Previous",
       "next": "Next"
+    }
+  },
+  "quotationsList": {
+    "kicker": "Sales",
+    "title": "Quotations",
+    "subtitle": "Saved quotes with locked-in prices, ready to convert to a sale.",
+    "loading": "Loading quotations…",
+    "error": "Couldn't load quotations — please retry.",
+    "emptyTitle": "No quotations yet",
+    "emptyBody": "Save a quote from the POS cart to see it here.",
+    "emptyCta": "Open POS",
+    "noCustomer": "Walk-in",
+    "filters": {
+      "branch": "Branch"
+    },
+    "statuses": {
+      "all": "All",
+      "open": "Open",
+      "expired": "Expired",
+      "converted": "Converted",
+      "cancelled": "Cancelled"
+    },
+    "columns": {
+      "code": "Quote",
+      "customer": "Customer",
+      "total": "Total",
+      "validUntil": "Valid until",
+      "status": "Status"
+    },
+    "pagination": {
+      "summary": "{shown} of {total}",
+      "page": "Page {page} of {total}",
+      "prev": "Previous",
+      "next": "Next"
+    }
+  },
+  "quotationDetail": {
+    "title": "Quotation",
+    "back": "Back to quotations",
+    "loading": "Loading quotation…",
+    "error": "Couldn't load this quotation — please retry.",
+    "statuses": {
+      "open": "Open",
+      "expired": "Expired",
+      "converted": "Converted",
+      "cancelled": "Cancelled"
+    },
+    "meta": {
+      "customer": "Customer",
+      "loading": "Loading…",
+      "noCustomer": "Walk-in",
+      "validUntil": "Valid until",
+      "convertedAt": "Converted",
+      "cancelledAt": "Cancelled"
+    },
+    "actions": {
+      "convert": "Convert to sale",
+      "reprice": "Reprice & sell",
+      "print": "Print",
+      "cancel": "Cancel quotation",
+      "viewSale": "View sale"
+    },
+    "columns": {
+      "name": "Item",
+      "sku": "SKU",
+      "qty": "Qty",
+      "unitPrice": "Unit price",
+      "discount": "Discount",
+      "lineTotal": "Line total"
+    },
+    "totals": {
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "tax": "Tax",
+      "total": "Total"
+    },
+    "cancelConfirm": {
+      "title": "Cancel this quotation?",
+      "body": "The customer will no longer be able to convert this quote to a sale. This can't be undone.",
+      "dismiss": "Keep it",
+      "confirm": "Cancel quotation",
+      "submitting": "Cancelling…"
     }
   },
   "reconcile": {

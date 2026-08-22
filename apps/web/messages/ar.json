@@ -654,6 +654,7 @@
       "checkout": "الدفع",
       "checkoutBadge": "مباشر",
       "sales": "سجلات المبيعات",
+      "quotations": "عروض الأسعار",
       "inventory": "المخزون",
       "transfers": "تحويلات المخزون",
       "suppliers": "الموردون",
@@ -3782,6 +3783,88 @@
       "page": "صفحة {page} من {total}",
       "prev": "السابق",
       "next": "التالي"
+    }
+  },
+  "quotationsList": {
+    "kicker": "المبيعات",
+    "title": "عروض الأسعار",
+    "subtitle": "عروض أسعار محفوظة بأسعار مثبّتة، جاهزة للتحويل إلى بيع.",
+    "loading": "جارٍ تحميل عروض الأسعار…",
+    "error": "تعذّر تحميل عروض الأسعار — يرجى المحاولة مجدداً.",
+    "emptyTitle": "لا توجد عروض أسعار بعد",
+    "emptyBody": "احفظ عرض سعر من سلة نقطة البيع لتظهر هنا.",
+    "emptyCta": "فتح نقطة البيع",
+    "noCustomer": "عميل نقدي",
+    "filters": {
+      "branch": "الفرع"
+    },
+    "statuses": {
+      "all": "الكل",
+      "open": "ساري",
+      "expired": "منتهي",
+      "converted": "محوَّل",
+      "cancelled": "ملغى"
+    },
+    "columns": {
+      "code": "العرض",
+      "customer": "العميل",
+      "total": "الإجمالي",
+      "validUntil": "صالح حتى",
+      "status": "الحالة"
+    },
+    "pagination": {
+      "summary": "{shown} من {total}",
+      "page": "صفحة {page} من {total}",
+      "prev": "السابق",
+      "next": "التالي"
+    }
+  },
+  "quotationDetail": {
+    "title": "عرض السعر",
+    "back": "الرجوع إلى عروض الأسعار",
+    "loading": "جارٍ تحميل عرض السعر…",
+    "error": "تعذّر تحميل عرض السعر هذا — يرجى المحاولة مجدداً.",
+    "statuses": {
+      "open": "ساري",
+      "expired": "منتهي",
+      "converted": "محوَّل",
+      "cancelled": "ملغى"
+    },
+    "meta": {
+      "customer": "العميل",
+      "loading": "جارٍ التحميل…",
+      "noCustomer": "عميل نقدي",
+      "validUntil": "صالح حتى",
+      "convertedAt": "تاريخ التحويل",
+      "cancelledAt": "تاريخ الإلغاء"
+    },
+    "actions": {
+      "convert": "تحويل إلى بيع",
+      "reprice": "إعادة تسعير والبيع",
+      "print": "طباعة",
+      "cancel": "إلغاء عرض السعر",
+      "viewSale": "عرض عملية البيع"
+    },
+    "columns": {
+      "name": "الصنف",
+      "sku": "رمز الصنف",
+      "qty": "الكمية",
+      "unitPrice": "سعر الوحدة",
+      "discount": "الخصم",
+      "lineTotal": "إجمالي البند"
+    },
+    "totals": {
+      "subtotal": "المجموع الفرعي",
+      "discount": "الخصم",
+      "tax": "الضريبة",
+      "total": "الإجمالي"
+    },
+    "cancelConfirm": {
+      "title": "هل تريد إلغاء عرض السعر هذا؟",
+      "body": "لن يتمكن العميل بعد ذلك من تحويل عرض السعر هذا إلى عملية بيع. لا يمكن التراجع عن هذا الإجراء.",
+      "dismiss": "الاحتفاظ به",
+      "confirm": "إلغاء عرض السعر",
+      "submitting": "جارٍ الإلغاء…"
     }
   },
   "reconcile": {

@@ -22,6 +22,7 @@ import {
   Users,
   ClipboardList,
   Armchair,
+  FileText,
   type LucideIcon,
 } from "lucide-react";
 import { MadarMark } from "@madar/ui";
@@ -52,6 +53,7 @@ const SECTIONS: NavSection[] = [
       { id: "dashboard", href: "/", icon: Home, enabled: true },
       { id: "checkout", href: "/pos", icon: ShoppingCart, enabled: true, badgeKey: "checkoutBadge" },
       { id: "sales", href: "/sales", icon: Receipt, enabled: true },
+      { id: "quotations", href: "/sales/quotations", icon: FileText, enabled: true },
       { id: "inventory", href: "/inventory", icon: Package, enabled: true },
       {
         id: "transfers",
@@ -244,6 +246,7 @@ export function Sidebar() {
                         | "/"
                         | "/pos"
                         | "/sales"
+                        | "/sales/quotations"
                         | "/inventory"
                         | "/transfers"
                         | "/suppliers"
