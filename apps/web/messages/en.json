@@ -1618,6 +1618,24 @@
         "discardedToast": "Ticket discarded."
       }
     },
+    "quote": {
+      "save": "Quote",
+      "modalKicker": "Save quote",
+      "modalTitle": "Save as quotation",
+      "forCustomer": "For {name}",
+      "noCustomer": "No customer attached",
+      "validDaysLabel": "Valid for (days)",
+      "noteLabel": "Note",
+      "notePlaceholder": "Optional note for this quote",
+      "saveError": "Couldn't save the quotation. Try again.",
+      "saving": "Saving…",
+      "savedToast": "Quotation saved",
+      "viewToastAction": "View",
+      "printToastAction": "Print",
+      "convertingBanner": "Converting quotation {code} — quoted prices apply",
+      "exitQuoteMode": "Exit quote mode — revert to catalog prices",
+      "droppedLinesToast": "{count, plural, one {1 item was removed — no longer in the catalog} other {{count_n} items were removed — no longer in the catalog}}"
+    },
     "offline": {
       "statusOnline": "Online",
       "statusOffline": "Offline · {count, plural, =0 {no pending} one {1 pending} other {{count_n} pending}}",

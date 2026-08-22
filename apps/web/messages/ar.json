@@ -1618,6 +1618,24 @@
         "discardedToast": "تم تجاهل الفاتورة."
       }
     },
+    "quote": {
+      "save": "عرض سعر",
+      "modalKicker": "حفظ عرض السعر",
+      "modalTitle": "حفظ كعرض سعر",
+      "forCustomer": "للعميل {name}",
+      "noCustomer": "لا يوجد عميل مرتبط",
+      "validDaysLabel": "صالح لمدة (أيام)",
+      "noteLabel": "ملاحظة",
+      "notePlaceholder": "ملاحظة اختيارية لهذا العرض",
+      "saveError": "تعذّر حفظ عرض السعر. حاول مجدداً.",
+      "saving": "جارٍ الحفظ…",
+      "savedToast": "تم حفظ عرض السعر",
+      "viewToastAction": "عرض",
+      "printToastAction": "طباعة",
+      "convertingBanner": "تحويل عرض السعر {code} — الأسعار المعروضة سارية",
+      "exitQuoteMode": "الخروج من وضع عرض السعر — العودة لأسعار الكتالوج",
+      "droppedLinesToast": "{count, plural, zero {لم تتم إزالة أصناف} one {تمت إزالة صنف واحد — لم يعد في الكتالوج} two {تمت إزالة صنفين — لم يعودا في الكتالوج} few {تمت إزالة {count_n} أصناف — لم تعد في الكتالوج} many {تمت إزالة {count_n} صنفاً — لم تعد في الكتالوج} other {تمت إزالة {count_n} صنف — لم تعد في الكتالوج}}"
+    },
     "offline": {
       "statusOnline": "متصل",
       "statusOffline": "غير متصل · {count, plural, zero {لا توجد} one {طلب معلّق} two {طلبان معلّقان} few {{count_n} طلبات معلّقة} many {{count_n} طلبًا معلّقًا} other {{count_n} طلب معلّق}}",

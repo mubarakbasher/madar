@@ -45,6 +45,10 @@ export interface CreateSaleInput {
   // the negative-stock conflict surfacing path.
   client_occurred_at?: string;
   offline_completed?: boolean;
+  // Conversion of a saved quotation (Quotations Task 3): when present the
+  // server prices matching lines from the quotation snapshot instead of the
+  // live catalog. Rejected together with offline_completed.
+  quotation_id?: string;
   lines: CreateSaleLineInput[];
 }
 

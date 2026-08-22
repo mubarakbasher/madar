@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { Pause, Plus, Minus, User, X } from "lucide-react";
+import { Pause, Plus, Minus, User, X, FileText } from "lucide-react";
 import type { Product } from "@/lib/mock-data/products";
 import { EmptyBasket } from "./EmptyBasket";
 import { useFormat } from "@/lib/i18n/format";
@@ -11,6 +11,15 @@ export type CartLine = {
   qty: number;
   discount: number;
   note: string;
+  /** Quote-mode price snapshot in integer minor units — when set, cart math
+   *  uses this instead of the live catalog price so totals match server
+   *  pricing on conversion. Cleared when the quote banner is dismissed. */
+  unitPriceOverrideCents?: number;
+};
+
+export type QuoteContext = {
+  id: string;
+  code: string;
 };
 
 export type CartLineEx = CartLine & {
@@ -42,8 +51,11 @@ export function Cart({
   total,
   customer,
   taxInclusive = false,
+  quoteContext = null,
   onClear,
   onHold,
+  onSaveQuote,
+  onExitQuoteMode,
   onAdjustQty,
   onTapLine,
   onToggleCustomer,
@@ -57,8 +69,11 @@ export function Cart({
   total: number;
   customer: CartCustomer | null;
   taxInclusive?: boolean;
+  quoteContext?: QuoteContext | null;
   onClear: () => void;
   onHold: () => void;
+  onSaveQuote?: () => void;
+  onExitQuoteMode?: () => void;
   onAdjustQty: (id: string, delta: number) => void;
   onTapLine: (line: CartLineEx) => void;
   onToggleCustomer: () => void;
@@ -79,12 +94,48 @@ export function Cart({
               <Pause size={12} strokeWidth={1.5} />
               {t("cart.hold")}
             </button>
+            {onSaveQuote && (
+              <button type="button" className="pos-link" onClick={onSaveQuote}>
+                <FileText size={12} strokeWidth={1.5} />
+                {t("quote.save")}
+              </button>
+            )}
             <button type="button" className="pos-link" onClick={onClear}>
               {t("cart.clear")}
             </button>
           </>
         )}
       </header>
+
+      {quoteContext && (
+        <div
+          role="status"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "var(--space-3)",
+            padding: "8px var(--space-4)",
+            background: "color-mix(in oklab, var(--accent) 12%, var(--bg))",
+            color: "var(--ink-2)",
+            fontSize: 12,
+            borderBottom: "1px solid var(--rule)",
+          }}
+        >
+          <span>{t("quote.convertingBanner", { code: quoteContext.code })}</span>
+          {onExitQuoteMode && (
+            <button
+              type="button"
+              className="pos-icon-btn"
+              onClick={onExitQuoteMode}
+              aria-label={t("quote.exitQuoteMode")}
+              title={t("quote.exitQuoteMode")}
+            >
+              <X size={12} strokeWidth={1.5} />
+            </button>
+          )}
+        </div>
+      )}
 
       <button type="button" className="pos-customer" onClick={onToggleCustomer}>
         {customer ? (
